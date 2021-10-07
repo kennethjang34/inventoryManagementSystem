@@ -30,7 +30,6 @@ class InventoryTest {
         assertEquals(0, inventory.getTotalExpense());
         assertEquals(0, inventory.getTotalRevenue());
         assertNotNull(inventory.getStocks());
-        assertNotNull(inventory.getExpiringStocks());
         assertNotNull(inventory.getLedger());
         assertNotNull(inventory.getLowStocks());
     }
@@ -65,15 +64,15 @@ class InventoryTest {
 
     @Test
     void testAddItemWithoutEXP() {
-        inventory.addItem("Nike Jordan Edition Shoes", "NJE", 100, 5, "M1");
+        inventory.addItem("Nike Jordan Edition Shoes", "NJE", 100, 70, 80 , "M1");
         assertEquals(100, inventory.getTotalQuantity());
         Item item = inventory.getItem("NJE");
         assertEquals(100, inventory.getQuantity(item));
-        inventory.addItem("Nike Jordan Edition Shoes", "NJE", 100, 7, "M2");
+        inventory.addItem("Nike Jordan Edition Shoes", "NJE", 100, 70, 90, "M2");
         assertEquals(200, inventory.getTotalQuantity());
         assertEquals(100, inventory.getQuantity(item));
         assertEquals(4, inventory.getInventorySize());
-        inventory.addItem("Adidas T shirt", "ADT", 400, 20, "A1");
+        inventory.addItem("Adidas T shirt", "ADT", 400, 20, 30, "A1");
         item = inventory.getItem("ADT");
         assertEquals(600, inventory.getTotalQuantity());
         assertEquals(400, inventory.getQuantity(item));
@@ -127,7 +126,7 @@ class InventoryTest {
 
     @Test
     void testLowThresholdUpdateByAddItem() {
-        inventory.addItem("Banana", "BNN", 1000, 5, 7, 300 "F1", LocalDate.now());
+        inventory.addItem("Banana", "BNN", 1000, 5, 7, 300, "F1", LocalDate.now());
         assertEquals(300, inventory.getItem("BNN").getLowStockThreshold());
         inventory.addItem("Banana", "BNN", 1005, 5, 8, 400, "F5", LocalDate.now());
         assertEquals(400, inventory.getItem("BNN").getLowStockThreshold());
@@ -173,7 +172,7 @@ class InventoryTest {
 
     @Test
     void testAddMultipleProductsWithEXP() {
-        inventory.addItem("Pork", "PRK", 150, "F35",LocalDate.now());
+        inventory.addItem("Pork", "PRK", 150, 20, 30, "F35",LocalDate.now());
         inventory.addProducts("PRK", 1000, 25, 35);
         assertEquals(1150, inventory.getQuantity("PRK"));
     }
@@ -212,29 +211,35 @@ class InventoryTest {
     }
 
     @Test
-    void testProcessRegularTransaction() {
+    void testProcessRegularPurchase() {
+        double initialExpense = inventory.getTotalExpense();
         int transactionNum = 11111;
-        String description = "testTransaction";
+        String description = "testPurchase";
         LocalDate date = LocalDate.now();
         ArrayList<Item> itemList = new ArrayList<>();
         itemList.add(new Item("Pizza", "PZA", 1000, 40, 60,"F60"));
+        assertEquals(40000, inventory.getTotalExpense() - initialExpense);
         itemList.add(new Item("Chicken", "CHK", 4000, 50, 70, "F60"));
-        Transaction transaction = new Transaction(transactionNum, "testTransaction", LocalDate.now(), itemList);
-        inventory.processTransaction(transaction);
+        Purchase purchase = new Purchase(transactionNum, "description", date, itemList);
+        inventory.processPurchases(purchase);
         assertEquals(1000, inventory.getQuantity("PZA"));
         assertEquals(4000, inventory.getQuantity("CHK"));
+        assertEquals(16000, inventory.getTotalExpense() - initialExpense);
     }
 
     @Test
-    void testProcessZeroQuantityTransaction() {
+    void testProcessZeroQuantityPurchase() {
         inventory = new Inventory();
         int transactionNum = 11111;
-        String description = "testTransaction";
+        String description = "testPurchase";
         LocalDate date = LocalDate.now();
         ArrayList<Item> itemList = new ArrayList<>();
         itemList.add(new Item("Pizza", "PZA", 0,5,10,"F60"));
+        assertEquals(0, inventory.getTotalExpense());
         itemList.add(new Item("Chicken", "CHK", 0,5, 10, "F60"));
-        Transaction transaction = new Transaction(transactionNum, "testTransaction", LocalDate.now(), itemList);
+        assertEquals(0, inventory.getTotalExpense());
+        Purchase purchase = new Purchase(transactionNum, description, date, itemList);
+        inventory.processPurchases(purchase);
         assertEquals(2, inventory.getInventorySize());
         assertEquals(0, inventory.getQuantity("PZA"));
         assertEquals(0, inventory.getQuantity("CHK"));

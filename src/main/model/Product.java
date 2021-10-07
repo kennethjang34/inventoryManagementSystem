@@ -7,33 +7,33 @@ public class Product {
     protected final int sku;
     protected String location;
     private LocalDate expirationDate;
-    private final double buyingPrice;
-    private double sellingPrice;
-    public Product(String itemCode, int sku, double buyingPrice, double sellingPrice, String location) {
+    private final double cost;
+    private double price;
+    public Product(String itemCode, int sku, double buyingPrice, double price, String location) {
         this.itemCode = itemCode;
         this.sku = sku;
         this.location = location;
-        this.buyingPrice = buyingPrice;
-        this.sellingPrice = sellingPrice;
+        this.cost = buyingPrice;
+        this.price = price;
         expirationDate = null;
     }
 
-    public Product(String itemCode, int sku, double buyingPrice, double sellingPrice, String location, LocalDate expirationDate) {
+    public Product(String itemCode, int sku, double buyingPrice, double price, String location, LocalDate expirationDate) {
         this.itemCode = itemCode;
         this.sku = sku;
         this.location = location;
-        this.buyingPrice = buyingPrice;
-        this.sellingPrice = sellingPrice;
+        this.cost = buyingPrice;
+        this.price = price;
         this.expirationDate = expirationDate;
     }
 
 
-    public double getSellingPrice() {
-        return sellingPrice;
+    public double getPrice() {
+        return price;
     }
 
-    public double getBuyingPrice() {
-        return buyingPrice;
+    public double getCost() {
+        return cost;
     }
 
     public LocalDate getExpirationDate() {

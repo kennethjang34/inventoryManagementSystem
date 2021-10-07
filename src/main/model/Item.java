@@ -5,6 +5,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 
 public class Item {
+    private static final int INITIAL_PRODUCT_NUMBER = 111111111;
     protected static int productNumber;
     protected String name;
     protected String code;
@@ -21,7 +22,7 @@ public class Item {
     public Item(String name, String code, int qty, double priceIn, double priceOut, int stockThreshold, String location) {
         products = new ArrayList<>();
         this.location = location;
-        productNumber = 111111111;
+        productNumber = INITIAL_PRODUCT_NUMBER;
         this.name = name;
         this.code = code;
         this.quantity = qty;
@@ -37,7 +38,7 @@ public class Item {
     public Item(String name, String code, String location) {
         products = new ArrayList<>();
         this.location = location;
-        productNumber = 111111111;
+        productNumber = INITIAL_PRODUCT_NUMBER;
         this.name = name;
         this.code = code;
         this.quantity = 0;
@@ -50,7 +51,7 @@ public class Item {
     public Item(String name, String code, int qty, double priceIn, double priceOut, int stockThreshold, String location, LocalDate exp) {
         products = new ArrayList<>();
         this.location = location;
-        productNumber = 111111111;
+        productNumber = INITIAL_PRODUCT_NUMBER;
         this.name = name;
         this.code = code;
         this.quantity = qty;
@@ -66,7 +67,7 @@ public class Item {
     public Item(String name, String code, int qty, double priceIn, double priceOut, String location, LocalDate exp) {
         products = new ArrayList<>();
         this.location = location;
-        productNumber = 111111111;
+        productNumber = INITIAL_PRODUCT_NUMBER;
         this.name = name;
         this.code = code;
         this.quantity = qty;
@@ -82,7 +83,7 @@ public class Item {
     public Item(String name, String code, int qty, double priceIn, double priceOut, String location) {
         products = new ArrayList<>();
         this.location = location;
-        productNumber = 111111111;
+        productNumber = INITIAL_PRODUCT_NUMBER;
         this.name = name;
         this.code = code;
         this.quantity = qty;
@@ -101,7 +102,7 @@ public class Item {
         this.code = code;
         products = new ArrayList<>();
         this.location = "TBD";
-        productNumber = 111111111;
+        productNumber = INITIAL_PRODUCT_NUMBER;
         this.name = name;
         this.code = code;
         this.quantity = 0;
@@ -125,6 +126,10 @@ public class Item {
 
         return count;
 
+    }
+
+    public double getDollarAmount() {
+        return dollarAmount;
     }
 
     public int getQuantity() {
@@ -179,8 +184,21 @@ public class Item {
         double dollarAmount = 0;
         for (Product p: products) {
             this.products.add(p);
-            dollarAmount += p.getBuyingPrice();
+            dollarAmount += p.getCost();
         }
+        quantity += products.size();
+        this.dollarAmount = dollarAmount;
+        sort(this.products);
+    }
+
+    public void addProducts(Item item) {
+        double dollarAmount = 0;
+        ArrayList<Product> products = item.getProducts();
+        for (Product p: products) {
+            this.products.add(p);
+            dollarAmount += p.getCost();
+        }
+        quantity += products.size();
         this.dollarAmount = dollarAmount;
         sort(this.products);
     }
@@ -229,5 +247,15 @@ public class Item {
 
     public String getItemCode() {
         return code;
+    }
+
+
+    //REQUIRES: item's products must be those that are already existing
+    //MODIFIES: this
+    //EFFECTS: from this, remove all the products in item's products' list.
+    public void removeProducts(Item item) {
+        for (Product p: item.getProducts()) {
+            products.remove(p);
+        }
     }
 }
