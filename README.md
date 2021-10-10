@@ -22,9 +22,9 @@ that take care of  individual products, is another factor that interested me in 
 
 
 ##User story:
-As a user, I want to add an item to the item list of the inventory.
+As a user, I want to add a product to the item list of the inventory.
 As a user, I want to check the quantities I have of a particular item in stock.
-As a user, I want to record purchases and sales of items.
-As a user, I want to check individual products' state and information such as its expiration date.
-As a user, I want to receive a report of the overall trend of the business.
-As a User, I want to receive a notification when particular items are running low
+As a user, I want to be able to create a serial number
+As a user, I want to check a product's best before date
+As a user, I want to be able to check the price a product was bought for
+As a user, I want to check what products were bought and loaded into the inventory on a certain date.
