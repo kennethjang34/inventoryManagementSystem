@@ -87,4 +87,9 @@ public class Admin {
         return false;
     }
 
+    public void createLoginAccount(String id, String password, String name, LocalDate birthDay, int personalCode) {
+        accounts.add(new LoginAccount(id, password, name, birthDay, personalCode));
+
+    }
+
 }

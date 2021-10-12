@@ -10,6 +10,9 @@ public class Account {
     //item code, quantity
     private final ArrayList<Object[]> itemList;
 
+
+    //REQUIRES: code must be positive integer
+    //EFFECTS: create an account that describe the transaction that occurred on the specified date.
     public Account(int code, String description, LocalDate date, ArrayList<Object[]> itemList) {
         this.code = code;
         this.description = description;
