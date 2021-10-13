@@ -14,6 +14,7 @@ public class Product {
     //REQUIRES: sku must be 9-digit natural number, cost must be positive.
     //EFFECTS: create a product with specified data.
     public Product(String itemCode, int sku, double cost, LocalDate dateGenerated, LocalDate bestBeforeDate) {
+        itemCode = itemCode.toUpperCase();
         this.itemCode = itemCode;
         this.sku = sku;
         this.cost = cost;

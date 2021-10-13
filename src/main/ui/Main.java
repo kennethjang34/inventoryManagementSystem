@@ -8,14 +8,42 @@ import java.util.Scanner;
 
 public class Main {
 
+
+
+    public static void findProduct(Manager stockManager, Scanner scanner) {
+        System.out.println("enter the item code");
+        String itemCode = scanner.nextLine();
+        ArrayList<String> locationList = stockManager.getLocationListOfProduct(itemCode);
+        System.out.println("The products belonging to the code are stored at: ");
+        for (String e: locationList) {
+            System.out.print(e + " ");
+        }
+        System.out.println();
+    }
+
+    public static void checkQuantity(Manager stockManager, Scanner scanner) {
+        System.out.println("enter the item code");
+        String itemCode = scanner.nextLine();
+        int qty = stockManager.countProduct(itemCode);
+        System.out.println("The quantity of " + qty + " of item code" + itemCode + " is stored in the inventory");
+    }
+
+    public static void checkInventory(Manager stockManager) {
+        System.out.println(stockManager.inventoryCheck());
+    }
+
     public static void printTemporaryList(Manager stockManager) {
-        ArrayList<Product> list = stockManager.getTemporaryList();
-        for (Product e: list) {
-            System.out.println(e.getItemCode() + " " + e.getSku());
-            System.out.println("Cost: " + e.getCost());
-            if (e.getBestBeforeDate() != null) {
-                System.out.print(e.getBestBeforeDate());
+        ArrayList<Object[]> list = stockManager.getTemporaryList();
+        for (Object[] productInfo : list) {
+            Product product = (Product)productInfo[0];
+            String location = (String)productInfo[1];
+            System.out.println(product.getItemCode() + " " + product.getSku());
+            System.out.println("Cost: " + product.getCost());
+            if (product.getBestBeforeDate() != null) {
+                System.out.print(product.getBestBeforeDate());
             }
+            System.out.println("Location: " + (location.equalsIgnoreCase("T")
+                    ? "Temporary storage space in the inventory" : location));
         }
         System.out.println();
     }
@@ -41,24 +69,16 @@ public class Main {
     }
 
     public static void updateInventory(Manager stockManager, Scanner scanner) {
-        System.out.println("Would you like to specify location?");
-        if (scanner.nextLine().equalsIgnoreCase("Y")) {
-            if (stockManager.updateInventory(scanner.next())) {
-                System.out.println("Successfully updated");
-                return;
-            }
-        } else {
-            if (stockManager.updateInventory()) {
-                System.out.println("Successfully updated");
-                return;
-            }
+        if (stockManager.updateInventory()) {
+            System.out.println("Successfully updated");
+            return;
         }
         System.out.println("update failed");
     }
 
     public static void removeProducts(Manager stockManager, Scanner scanner) {
         System.out.println("enter the item code");
-        String itemCode = scanner.next();
+        String itemCode = scanner.nextLine();
         System.out.println("enter quantity");
         int qty = scanner.nextInt();
         if (stockManager.removeProducts(itemCode, qty)) {
@@ -68,13 +88,27 @@ public class Main {
 
     public static void removeProductFromTemporary(Manager stockManager, Scanner scanner) {
         System.out.println("enter the item code");
-        String itemCode = scanner.next();
-        if (stockManager.removeProductFromTemporaryStorage(itemCode)) {
+        String itemCode = scanner.nextLine();
+        if (stockManager.removeProductFromTemporaryList(itemCode)) {
             System.out.println("Successfully removed");
             return;
         }
         System.out.println("Failed removing. the product cannot be found in the list");
     }
+
+    public static void countProducts(Manager stockManager, Scanner scanner) {
+        System.out.println("enter the item code");
+        String itemCode = scanner.nextLine();
+        int count = stockManager.countProduct(itemCode);
+        if (count == 0) {
+            System.out.println("There is no such product belonging to the code");
+        } else {
+            System.out.println("The number of products belonging to the code: " + itemCode + " is: ");
+            System.out.println(count);
+        }
+    }
+
+
 
     public static void createProduct(Manager stockManager, Scanner scanner) {
         String itemCode;
@@ -90,10 +124,22 @@ public class Main {
         System.out.println("enter cost");
         cost = scanner.nextDouble();
         scanner.nextLine();
-        if (stockManager.createProduct(itemCode, bestBeforeDate, cost)) {
+        System.out.println("enter Location in the form: ADD, where A represents an alphabet, D represents a digit"
+                +
+                " if you'd like to put the product in the temporary storage area of the inventory "
+                +
+                "press 'T/t'");
+        String location = scanner.nextLine();
+
+        if (stockManager.createProduct(itemCode, bestBeforeDate, cost, location)) {
             System.out.println("The product has been successfully created");
             System.out.println("Current temporary storage situation");
             printTemporaryList(stockManager);
+            System.out.println("Would you like to add another product? enter Y/N");
+            if (scanner.nextLine().equalsIgnoreCase("Y")) {
+                createProduct(stockManager, scanner);
+                return;
+            }
             System.out.println("Would you like to put all the products created  into the inventory? enter Y/N");
             if (scanner.nextLine().equalsIgnoreCase("Y")) {
                 updateInventory(stockManager, scanner);
@@ -113,6 +159,8 @@ public class Main {
                 + "belonging to the specified item code");
         System.out.println("removeT: remove a product belonging "
                 + "to the specified item code from the temporary storage");
+        System.out.println("find: find locations of products belonging to a specific item code");
+        System.out.println("logout: Log out");
     }
 
     @SuppressWarnings({"checkstyle:MethodLength", "checkstyle:SuppressWarnings"})
@@ -153,6 +201,18 @@ public class Main {
                     case "removeT":
                         removeProductFromTemporary(stockManager, scanner);
                         break;
+
+
+                    case "findLocations":
+                        findProduct(stockManager, scanner);
+
+
+                    case "checkQuantity":
+                        checkQuantity(stockManager, scanner);
+
+                    case "checkI":
+                        checkInventory(stockManager);
+
 
                     case "logout":
                         login = false;
