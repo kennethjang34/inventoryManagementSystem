@@ -158,6 +158,7 @@ public class StockManagerApplication {
 
 
 
+    @SuppressWarnings({"checkstyle:MethodLength", "checkstyle:SuppressWarnings"})
     public static void createProduct(Manager stockManager, Scanner scanner) {
         String itemCode;
         LocalDate bestBeforeDate = null;

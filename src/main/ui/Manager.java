@@ -102,10 +102,10 @@ public class Manager {
     //MODIFIES: this
     //EFFECTS: the new product list will be added to the inventory, creating a new transaction account.
     public boolean updateInventory(String description) {
-        updateLedger(description);
+        boolean succeed = updateLedger(description);
         inventory.addProducts(temporaryList);
         temporaryList.clear();
-        return true;
+        return succeed;
     }
 
 
@@ -191,6 +191,7 @@ public class Manager {
         if (account == null) {
             list.add("There is no such account with the code");
         }
+        assert account != null;
         for (Object[] fromAccount: account.getEntries()) {
             String s = "Product code: " + fromAccount[0] + '\n';
             s += "Price: " + fromAccount[1] + '\n';
@@ -213,17 +214,6 @@ public class Manager {
             nextSKU = FIRST_SKU;
         }
         return nextSKU++;
-    }
-
-    //will count the number of products belonging to a certain item code for every code that can be found in the list
-    //EFFECTS: return a map where key is item code and integer is quantity of the item.
-    public Map<String, Integer> countProduct(ArrayList<Product> products) {
-        Map<String, Integer> productCounts = new HashMap<>();
-        for (Product e: products) {
-            String itemCode = e.getItemCode();
-            productCounts.merge(itemCode, 1, Integer::sum);
-        }
-        return productCounts;
     }
 
 

@@ -189,7 +189,7 @@ public class Inventory {
     }
 
     //numeric form of this item code must be existing in inventory.
-    //Ex) if valid form of item code is "AAA", passed item code cannot be "AAAA"
+    //for example, if valid form of item code is "AAA", passed item code cannot be "QQQQ"
     //EFFECTS: find the location of a product indicated by this item code and SKU
     public int findLocation(String itemCode, int sku) {
         for (Product e: listByCode[getItemCodeNumber(itemCode)]) {
