@@ -1,6 +1,5 @@
 package ui;
 
-import model.Account;
 import model.Product;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -11,6 +10,8 @@ import java.util.Scanner;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+
+
 
 public class ManagerTester {
     private Manager manager;
@@ -43,11 +44,11 @@ public class ManagerTester {
         Product product = manager.createProduct("app", bestBeforeDate, cost, location);
         String description = "TestDescription";
         assertTrue(manager.updateInventory(description));
-        ArrayList<Account> ledger = manager.getLedger();
-        assertEquals(1, ledger.size());
-        assertEquals(1, ledger.get(0).getEntries().size());
-        assertEquals("APP", (String)(ledger.get(0).getEntries().get(0)[0]));
-        assertEquals(description, ledger.get(0).getDescription());
+        //ArrayList<Account> ledger = manager.getLedger();
+        //assertEquals(1, ledger.size());
+        //assertEquals(1, ledger.get(0).getEntries().size());
+        //assertEquals("APP", (String)(ledger.get(0).getEntries().get(0)[0]));
+        //assertEquals(description, ledger.get(0).getDescription());
     }
 
 
