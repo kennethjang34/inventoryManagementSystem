@@ -42,7 +42,7 @@ public class Admin {
         }
 
         private boolean passwordMatch(String pw) {
-            if (this.pw == pw) {
+            if (this.pw.equalsIgnoreCase(pw)) {
                 return true;
             }
             return false;
@@ -71,7 +71,7 @@ public class Admin {
 
     private LoginAccount getLoginAccount(String id) {
         for (LoginAccount account: accounts) {
-            if (account.getId() == id) {
+            if (account.getId().equalsIgnoreCase(id)) {
                 return account;
             }
         }

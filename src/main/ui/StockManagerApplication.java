@@ -6,11 +6,11 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-public class Main {
+public class StockManagerApplication {
 
 
 
-    public static void findProduct(Manager stockManager, Scanner scanner) {
+    public static void findLocations(Manager stockManager, Scanner scanner) {
         System.out.println("enter the item code");
         String itemCode = scanner.nextLine();
         ArrayList<String> locationList = stockManager.getLocationListOfProduct(itemCode);
@@ -20,6 +20,22 @@ public class Main {
         }
         System.out.println();
     }
+
+    public static void findProduct(Manager stockManager, Scanner scanner) {
+        System.out.println("enter the item code");
+        String itemCode = scanner.nextLine();
+        System.out.println("enter the SKU of the product");
+        int sku = scanner.nextInt();
+        scanner.nextLine();
+        String location = stockManager.getLocationOfProduct(itemCode, sku);
+        if (location != null) {
+            System.out.println("The product: " + itemCode + sku + " is located at " + location);
+        } else {
+            System.out.println("The product doesn't exist in the warehouse");
+        }
+    }
+
+
 
     public static void checkQuantity(Manager stockManager, Scanner scanner) {
         System.out.println("enter the item code");
@@ -69,12 +85,30 @@ public class Main {
     }
 
     public static void updateInventory(Manager stockManager, Scanner scanner) {
-        if (stockManager.updateInventory()) {
-            System.out.println("Successfully updated");
-            return;
+        System.out.println("Would you add extra info about this update?"
+                + "if yes, enter a line of description. If no, enter n");
+        String description = scanner.nextLine();
+        if (description.equalsIgnoreCase("n")) {
+            stockManager.updateInventory("");
+        } else {
+            stockManager.updateInventory(description);
         }
-        System.out.println("update failed");
+        System.out.println("Successfully updated");
     }
+
+    public static void removeProduct(Manager stockManager, Scanner scanner) {
+        System.out.println("enter the item code");
+        String itemCode = scanner.nextLine();
+        System.out.println("enter SKU of the product");
+        int sku = scanner.nextInt();
+        scanner.nextLine();
+        if (stockManager.removeProduct(itemCode, sku)) {
+            System.out.println("Successfully removed");
+        } else {
+            System.out.println("Failed removing. the product cannot be found in the list");
+        }
+    }
+
 
     public static void removeProducts(Manager stockManager, Scanner scanner) {
         System.out.println("enter the item code");
@@ -96,48 +130,6 @@ public class Main {
         System.out.println("Failed removing. the product cannot be found in the list");
     }
 
-
-    public static void createTransactionAccount(Manager stockManager, Scanner scanner) {
-        ArrayList<Object[]> list = new ArrayList<>();
-        Object[] entry = new Object[2];
-        boolean quit = false;
-        while (!quit) {
-            String itemCode;
-            LocalDate bestBeforeDate = null;
-            double cost;
-            System.out.println("enter itemCode");
-            itemCode = scanner.nextLine();
-            System.out.println("Does the product have a best-before date? enter Y/N");
-            if (scanner.nextLine().equalsIgnoreCase(("Y"))) {
-                System.out.println("enter best-before date in the form: YYYY MM DD");
-                bestBeforeDate = LocalDate.of(scanner.nextInt(), scanner.nextInt(), scanner.nextInt());
-            }
-            System.out.println("enter cost");
-            cost = scanner.nextDouble();
-            scanner.nextLine();
-            System.out.println("enter quantity");
-            int qty = scanner.nextInt();
-            scanner.nextLine();
-            System.out.println("enter Location in the form: ADD, where A represents an alphabet, D represents a digit"
-                    +
-                    " if you'd like to put the product in the temporary storage area of the inventory "
-                    +
-                    "press 'T/t'");
-            String location = scanner.nextLine();
-            for (int i = 0; i < qty; i++) {
-                if (stockManager.createProduct(itemCode, bestBeforeDate, cost, location) != null) {
-
-
-
-                    if (scanner.nextLine().equalsIgnoreCase("Y")) {
-                        createProduct(stockManager, scanner);
-                    }
-
-                    return;
-                }
-            }
-        }
-    }
 
     public static void retrievePassword(Manager stockManager, Scanner scanner) {
         System.out.println("enter id");
@@ -181,23 +173,18 @@ public class Main {
         int qty = scanner.nextInt();
         scanner.nextLine();
         System.out.println("enter Location in the form: ADD, where A represents an alphabet, D represents a digit"
-                +
-                " if you'd like to put the product in the temporary storage area of the inventory "
-                +
-                "press 'T/t'");
+                + " if you'd like to put the product in the temporary storage area of the inventory "
+                + "press 'T/t'");
         String location = scanner.nextLine();
         for (int i = 0; i < qty; i++) {
             stockManager.createProduct(itemCode, bestBeforeDate, cost, location);
         }
-        System.out.println("The product has been successfully created");
-        System.out.println("Current temporary list: ");
+        System.out.println("The product has been successfully created" + '\n' + "Current temporary List: ");
         printTemporaryList(stockManager);
         System.out.println("Would you like to add another product? enter Y/N");
         if (scanner.nextLine().equalsIgnoreCase("Y")) {
             createProduct(stockManager, scanner);
-            return;
         }
-        System.out.println("An error occurred");
     }
 
 
@@ -226,7 +213,8 @@ public class Main {
                 + "belonging to the specified item code");
         System.out.println("removeT: remove a product belonging "
                 + "to the specified item code from the temporary storage");
-        System.out.println("find: find locations of products belonging to a specific item code");
+        System.out.println("findLocations: find locations of products belonging to a specific item code");
+        System.out.println("find: find the location of a particular product with its product code and sku");
         System.out.println("logout: Log out");
     }
 
@@ -259,6 +247,8 @@ public class Main {
                     System.out.println("Login failed");
                 }
             } else {
+                printOptions();
+                option = scanner.nextLine();
                 switch (option) {
                     case "createAccount":
                         createLoginAccount(stockManager, scanner);
@@ -272,11 +262,20 @@ public class Main {
                     case "removeI":
                         removeProducts(stockManager, scanner);
                         break;
+
+                    case "removeProduct":
+                        removeProduct(stockManager, scanner);
+                        break;
+
                     case "removeT":
                         removeProductFromTemporary(stockManager, scanner);
                         break;
 
                     case "findLocations":
+                        findLocations(stockManager, scanner);
+                        break;
+
+                    case "findProduct":
                         findProduct(stockManager, scanner);
                         break;
 
@@ -302,9 +301,6 @@ public class Main {
                         break;
                 }
             }
-            printOptions();
-            option = scanner.nextLine();
-
         }
     }
 

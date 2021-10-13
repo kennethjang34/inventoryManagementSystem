@@ -41,19 +41,25 @@ public class ManagerTester {
     @Test
     void testUpdate() {
         Product product = manager.createProduct("app", bestBeforeDate, cost, location);
-        manager.updateInventory();
-        assertEquals(1, manager.countProduct(product.getItemCode()));
-    }
-
-    @Test
-    void testUpdateLedger() {
-        Product product = manager.createProduct("app", bestBeforeDate, cost, location);
-        assertTrue(manager.updateInventory());
+        String description = "TestDescription";
+        assertTrue(manager.updateInventory(description));
         ArrayList<Account> ledger = manager.getLedger();
         assertEquals(1, ledger.size());
         assertEquals(1, ledger.get(0).getEntries().size());
         assertEquals("APP", (String)(ledger.get(0).getEntries().get(0)[0]));
+        assertEquals(description, ledger.get(0).getDescription());
     }
+
+
+
+    @Test
+    void testFindLocation() {
+        Product product = manager.createProduct("app", bestBeforeDate, cost, location);
+        String description = "TestDescription";
+        assertTrue(manager.updateInventory(description));
+    }
+
+
 
 
 }
