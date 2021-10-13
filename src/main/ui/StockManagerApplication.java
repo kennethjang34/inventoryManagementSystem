@@ -79,8 +79,11 @@ public class StockManagerApplication {
         LocalDate birthDay = LocalDate.of(year, month, day);
         System.out.println("enter your personal code");
         int personalCode = scanner.nextInt();
-        stockManager.createLoginAccount(id, pw, name, birthDay, personalCode);
-        System.out.println("Successfully created");
+        if (stockManager.createLoginAccount(id, pw, name, birthDay, personalCode)) {
+            System.out.println("Successfully created");
+        } else {
+            System.out.println("Error occurred");
+        }
         scanner.nextLine();
     }
 

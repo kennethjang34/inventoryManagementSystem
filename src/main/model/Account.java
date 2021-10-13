@@ -5,7 +5,7 @@ import java.util.ArrayList;
 
 public class Account {
     private final int code;
-    private String description;
+    private final String description;
     private final LocalDate date;
     //item code, price, qty.
     private final ArrayList<Object[]> entries;
@@ -93,6 +93,7 @@ public class Account {
         return code;
     }
 
+    //EFFECTS: return the entries written in the account
     public ArrayList<Object[]> getEntries() {
         return entries;
     }

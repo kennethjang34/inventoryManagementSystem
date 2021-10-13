@@ -10,21 +10,15 @@ import java.util.ArrayList;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class AccountTester {
-    private Account account;
-    int code;
-    double cost;
-    String description;
-    LocalDate today;
+    int code = 111111111;
+    double cost = 111.11;
+    String description = "accountCreatedForTest";
+    LocalDate today = LocalDate.now();
     ArrayList<Object[]> itemList;
-
 
 
     @BeforeEach
     void runBeforeEach() {
-        code = 111111111;
-        cost = 111.11;
-        description = "accountCreatedForTest";
-        today = LocalDate.now();
         itemList = new ArrayList<>();
         Object[] entry = new Object[3];
         entry[0] = "SAD";
@@ -50,7 +44,7 @@ public class AccountTester {
 
     @Test
     void testConstructor() {
-        account = new Account(code, description, today, itemList);
+        Account account = new Account(code, description, today, itemList);
         assertEquals(code, account.getCode());
         assertEquals(250 + 666 + 1 + 10, account.getTotalQuantity());
         assertEquals(today.toString(), account.getDate().toString());

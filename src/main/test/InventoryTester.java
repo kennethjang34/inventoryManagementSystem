@@ -50,16 +50,7 @@ public class InventoryTester {
         return products;
     }
 
-    ArrayList<Object[]> createProducts(String code, double cost, int qty, String location, LocalDate date) {
-        ArrayList<Object[]> products = new ArrayList<>();
-        for (int i = 0; i < qty; i++) {
-            Object[] entry = new Object[2];
-            entry[0] = new Product(code, sku++, cost, today, date);
-            entry[1] = location;
-            products.add(entry);
-        }
-        return products;
-    }
+
 
 
     @Test
@@ -68,7 +59,7 @@ public class InventoryTester {
         assertEquals(0, inventory.getTotalQuantity());
         assertEquals(0, inventory.getTotalQuantity());
         assertEquals(0, inventory.getListOfCodes().size());
-        assertEquals(null, inventory.getProductList("PIZ"));
+        assertNull(inventory.getProductList("PIZ"));
     }
 
     @Test
@@ -88,7 +79,7 @@ public class InventoryTester {
     @Test
     void testGetNumericLocationCode() {
         String location = "F11";
-        assertEquals(511, inventory.getLocationCodeNumber("F11"));
+        assertEquals(511, inventory.getLocationCodeNumber(location));
     }
 
     @Test
@@ -173,7 +164,7 @@ public class InventoryTester {
             assertEquals(product, inventory.getProduct(itemCode, sku));
             assertTrue(inventory.removeProduct(product));
             assertEquals(0, inventory.getQuantity(product.getItemCode()));
-            assertEquals(null, inventory.getProduct(itemCode, sku));
+            assertNull(inventory.getProduct(itemCode, sku));
         }
     }
 

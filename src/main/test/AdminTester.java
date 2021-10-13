@@ -23,7 +23,7 @@ public class AdminTester {
     @Test
     void testConstructor() {
         admin = new Admin();
-        assertEquals(false,admin.checkLoginAccount("abc", "ddd"));
+        assertFalse(admin.checkLoginAccount("abc", "ddd"));
     }
 
     @Test
@@ -31,10 +31,26 @@ public class AdminTester {
         String id = "thigh";
         String pw = "drumstick";
         String name = "chicken";
-        LocalDate birthDay = LocalDate.of(2021, 07, 22);
+        LocalDate birthDay = LocalDate.of(2021, 7, 22);
         personalNum = 456789556;
         admin.createLoginAccount(id, pw, name, birthDay, personalNum);
         assertTrue(admin.checkLoginAccount(id, pw));
+    }
+
+    @Test
+    void testCreateLoginAccountWithExistingId() {
+        String id = "thigh";
+        String pw = "drumstick";
+        String name = "chicken";
+        LocalDate birthDay = LocalDate.of(2021, 7, 22);
+        admin.createLoginAccount(id, pw, name, birthDay, personalNum++);
+        assertTrue(admin.checkLoginAccount(id, pw));
+        id = "thigh";
+        pw = "wings";
+        name = "duck";
+        birthDay = LocalDate.of(2021, 8, 4);
+        assertFalse(admin.createLoginAccount(id, pw, name, birthDay, personalNum++));
+        assertFalse(admin.checkLoginAccount(id, pw));
     }
 
     @Test
@@ -42,8 +58,7 @@ public class AdminTester {
         String id = "thigh";
         String pw = "drumstick";
         String name = "chicken";
-        LocalDate birthDay = LocalDate.of(2021, 07, 22);
-        int personalNum = 456789556;
+        LocalDate birthDay = LocalDate.of(2021, 7, 22);
         admin.createLoginAccount(id, pw, name, birthDay, personalNum++);
         assertTrue(admin.checkLoginAccount(id, pw));
         assertFalse(admin.checkLoginAccount(pw, id));
@@ -51,12 +66,11 @@ public class AdminTester {
         pw = "Pig";
         name = "belly";
         birthDay = LocalDate.of(2021, 10, 10);
-        personalNum = 444444412;
         admin.createLoginAccount(id, pw, name, birthDay, personalNum++);
         assertTrue(admin.checkLoginAccount(id, pw));
         assertFalse(admin.checkLoginAccount("italian", "Pig"));
         assertFalse(admin.checkLoginAccount("Italian", "pig"));
-        assertFalse(admin.checkLoginAccount("aadsfk", "Fas"));
+        assertFalse(admin.checkLoginAccount("ads", "Fas"));
     }
 
     @Test
