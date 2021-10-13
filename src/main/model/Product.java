@@ -6,8 +6,8 @@ public class Product {
     private final String itemCode;
     private final int sku;
     private final LocalDate dateGenerated;
-    private LocalDate bestBeforeDate;
-    private double cost;
+    private final LocalDate bestBeforeDate;
+    private final double cost;
 
 
 

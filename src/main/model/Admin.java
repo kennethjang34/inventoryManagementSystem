@@ -55,16 +55,19 @@ public class Admin {
         accounts = new ArrayList<>();
     }
 
-    public String passwordForgotten(String id,  String name, LocalDate birthDay) {
+    public String retrievePassword(String id, String name, LocalDate birthDay, int personalNum) {
         LoginAccount account = getLoginAccount(id);
         if (account != null) {
-            if ((account.getName() == name) && (account.getBirthDay().toString() == birthDay.toString())) {
+            if ((account.getName().equalsIgnoreCase(name))
+                    && (account.getBirthDay().toString().equalsIgnoreCase(birthDay.toString()))
+                    && account.getPersonalCode() == personalNum) {
                 return account.getPassword();
             }
             return null;
         }
         return null;
     }
+
 
     private LoginAccount getLoginAccount(String id) {
         for (LoginAccount account: accounts) {
@@ -89,7 +92,6 @@ public class Admin {
 
     public void createLoginAccount(String id, String password, String name, LocalDate birthDay, int personalCode) {
         accounts.add(new LoginAccount(id, password, name, birthDay, personalCode));
-
     }
 
 }
