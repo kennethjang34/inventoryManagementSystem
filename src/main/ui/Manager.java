@@ -140,7 +140,6 @@ public class Manager {
     //REQUIRES: account code must be in a valid form. cannot be negative.
     //MODIFIES: this
     //EFFECTS: create a new transaction account.
-    //@SuppressWarnings({"checkstyle:MethodLength", "checkstyle:SuppressWarnings"})
     public Account createAccount(int accountCode, String description, LocalDate date) {
         Map<String, Integer>  hash = makeTemporaryCountHash();
         ArrayList<Object[]> entries = new ArrayList<>();
