@@ -64,15 +64,15 @@ public class Admin {
     //return null otherwise.
     public String retrievePassword(String id, String name, LocalDate birthDay, int personalNum) {
         LoginAccount account = getLoginAccount(id);
+        String pw = null;
         if (account != null) {
             if ((account.getName().equalsIgnoreCase(name))
                     && (account.getBirthDay().toString().equalsIgnoreCase(birthDay.toString()))
                     && account.getPersonalCode() == personalNum) {
-                return account.getPassword();
+                pw = account.getPassword();
             }
-            return null;
         }
-        return null;
+        return pw;
     }
 
     //EFFECTS: return login account matching id if there exists such an account.

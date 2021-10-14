@@ -83,4 +83,17 @@ public class AdminTest {
         assertEquals(pw, retrieved);
         assertTrue(admin.checkLoginAccount(id, retrieved));
     }
+
+    @Test
+    void testRetrievePasswordWithWrongInfo() {
+        String id = "aaa";
+        String pw = "bbb";
+        String name = "ccc";
+        admin.createLoginAccount(id, pw, name, today, personalNum);
+        assertTrue(admin.checkLoginAccount(id, pw));
+        assertNull(admin.retrievePassword(name, id, today, personalNum));
+        assertNull(admin.retrievePassword(name, name, today, personalNum));
+        assertNull(admin.retrievePassword(id, name, LocalDate.of(2011, 1, 5), personalNum));
+        assertNull(admin.retrievePassword(id, name, today, personalNum+10));
+    }
 }

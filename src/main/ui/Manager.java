@@ -253,7 +253,7 @@ public class Manager {
     }
 
 
-    //REQUIRES: id must be composed of english letters and digits only. id must typed case sensitively.
+    //REQUIRES: id must be composed of english letters and digits only. id must be typed case sensitively.
     //id cannot already be existing.
     //name must be composed of only english alphabets.
     //personal code cannot be negative.

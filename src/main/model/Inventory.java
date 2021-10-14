@@ -111,26 +111,9 @@ public class Inventory {
     }
 
 
-    //REQUIRES: products need to exist in the inventory
-    //MODIFIES: this
-    //EFFECTS: remove all the products indicated from the inventory
-    //implement try and catch block later (in case the products don't exist)
-    public void removeProducts(ArrayList<Product> products) {
-        for (Product e: products) {
-            int code = getItemCodeNumber((e.getItemCode()));
-            listByCode[code].remove(e);
-            //try and catch block needed
-            int locationCode = findLocation(e);
-            listByLocation[locationCode].remove(e);
-        }
-    }
 
 
 
-
-
-
-    @SuppressWarnings({"checkstyle:MethodLength", "checkstyle:SuppressWarnings"})
     public boolean removeProducts(String itemCode, int qty) {
         ArrayList<Product> listCode = listByCode[getItemCodeNumber(itemCode)];
         if (listCode.size() == 0) {
@@ -168,6 +151,21 @@ public class Inventory {
     }
 
 
+    //Needs to be improved
+    //REQUIRES: products need to exist in the inventory
+    //MODIFIES: this
+    //EFFECTS: remove all the products indicated from the inventory
+    //implement try and catch block later (in case the products don't exist)
+    public void removeProducts(ArrayList<Object[]> entries) {
+        for (Object[] e: entries) {
+            Product product = (Product)e[0];
+            String location = (String)e[1];
+            int code = getItemCodeNumber((product.getItemCode()));
+            listByCode[code].remove(product);
+            //try and catch block needed
+            listByLocation[getLocationCodeNumber(location)].remove(e);
+        }
+    }
 
 
 
@@ -241,6 +239,9 @@ public class Inventory {
     //REQUIRE: numeric Code must be in a valid form
     //EFFECTS: return string type item code
     public String getStringItemCode(int numericCode) {
+        if (numericCode < 0) {
+            return null;
+        }
         String stringCode = "";
         stringCode += (char)((numericCode / (26 * 26)) + 'A');
         numericCode = numericCode % (26 * 26);
@@ -266,13 +267,10 @@ public class Inventory {
         return stringCode;
     }
 
-
+    //REQUIRES: code must be in valid form.
     //EFFECTS: return the number of products belonging to the code.
     public int getQuantity(String code) {
         int itemNumber = getItemCodeNumber((code));
-        if (listByCode[itemNumber] == null) {
-            return 0;
-        }
         return listByCode[itemNumber].size();
     }
 

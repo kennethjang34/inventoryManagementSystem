@@ -229,7 +229,7 @@ public class StockManagerApplication {
 
 
 
-    @SuppressWarnings({"checkstyle:MethodLength", "checkstyle:SuppressWarnings"})
+
     public static void main(String[] args) {
         Manager stockManager = new Manager();
         Scanner scanner = new Scanner(System.in);
@@ -266,37 +266,27 @@ public class StockManagerApplication {
                     case "removeI":
                         removeProducts(stockManager, scanner);
                         break;
-
                     case "removeProduct":
                         removeProduct(stockManager, scanner);
                         break;
-
                     case "removeT":
                         removeProductFromTemporary(stockManager, scanner);
                         break;
-
                     case "findLocations":
                         findLocations(stockManager, scanner);
                         break;
-
                     case "findProduct":
                         findProduct(stockManager, scanner);
                         break;
-
                     case "checkQuantity":
                         checkQuantity(stockManager, scanner);
                         break;
-
                     case "checkI":
                         checkInventory(stockManager);
                         break;
-
-
                     case "retrievePW":
                         retrievePassword(stockManager, scanner);
                         break;
-
-
                     case "openLedger":
                         openLedger(stockManager, scanner);
                         break;

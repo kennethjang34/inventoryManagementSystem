@@ -42,40 +42,45 @@ public class Account {
     //REQUIRES: item code needs to exist in the item list.
     //EFFECTS: return  quantity of the product specified by item code processed in this
     public int getQuantity(String itemCode) {
+        int qty = 0;
         for (Object[] e: entries) {
             String code = (String)e[0];
             if (code.equalsIgnoreCase(itemCode)) {
-                return (int)e[2];
+                qty =  (int)e[2];
+                break;
             }
         }
-        return 0;
+        return qty;
     }
 
 
     //REQUIRES: item code must exist in the account.
     //EFFECTS: return the price at which each product belonging to the item code was bought
     public double getPrice(String itemCode) {
+        double price = 0;
         for (Object[] e: entries) {
             String code = (String)e[0];
             if (code.equalsIgnoreCase(itemCode)) {
-                return (double)e[1];
+                price = (double)e[1];
+                break;
             }
         }
-        return 0;
+        return price;
     }
 
     //REQUIRES: item code must exist in the account.
     //EFFECTS: return the total cost paid for all the products belonging to the item code
     public double getTotalCost(String itemCode) {
+        double totalCost = 0;
         for (Object[] e: entries) {
             String code = (String) e[0];
             int qty = (int) e[2];
-
             if (code.equalsIgnoreCase(itemCode)) {
-                return ((double)e[1]) * qty;
+                totalCost = ((double)e[1]) * qty;
+                break;
             }
         }
-        return -1;
+        return totalCost;
     }
 
     //EFFECTS: return date
@@ -93,8 +98,22 @@ public class Account {
         return code;
     }
 
-    //EFFECTS: return the entries written in the account
+    //EFFECTS: return a copy of the entries written in the account
     public ArrayList<Object[]> getEntries() {
-        return entries;
+        ArrayList<Object[]> copy = copyEntries();
+        return copy;
+    }
+
+    private ArrayList<Object[]> copyEntries() {
+        ArrayList<Object[]> copy = new ArrayList<>();
+        for (Object[] entry: entries) {
+            Object[] newEntry = new Object[3];
+            //String immutable
+            newEntry[0] = entry[0];
+            newEntry[1] = entry[1];
+            newEntry[2] = entry[2];
+            copy.add(newEntry);
+        }
+        return copy;
     }
 }

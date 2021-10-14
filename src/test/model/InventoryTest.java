@@ -70,6 +70,7 @@ public class InventoryTest {
         assertNull(inventory.getProductList("PIZ"));
     }
 
+
     @Test
     void testAddProduct() {
         inventory = new Inventory();
@@ -85,6 +86,11 @@ public class InventoryTest {
     }
 
     @Test
+    void testGetStringItemCodeNegativeInt() {
+        assertNull(inventory.getStringItemCode(-5));
+    }
+
+    @Test
     void testGetNumericLocationCode() {
         String location = "F11";
         assertEquals(511, inventory.getLocationCodeNumber(location));
@@ -95,6 +101,19 @@ public class InventoryTest {
         String location = inventory.getStringLocationCode(511);
         assertEquals("F11", location);
     }
+
+    @Test
+    void testGetStringLocationCodeWithNegativeInt() {
+        assertNull(inventory.getStringLocationCode(-3));
+    }
+
+    @Test
+    void testGetProductNotInInventory() {
+        inventory = new Inventory();
+        inventory.addProducts(createProducts("ASR", 50, 100, "T"));
+        assertNull(inventory.getProduct("BBB", 11113));
+    }
+
 
     @Test
     void testGetNumericItemCode() {
@@ -137,7 +156,7 @@ public class InventoryTest {
 
 
     @Test
-    void testFindLocationOfProduct() {
+    void testFindLocationOfProductWithProduct() {
         Product product = new Product("CHI", sku++, 11, today, bestBeforeDate);
         ArrayList<Object[]> list = new ArrayList<>();
         Object[] entry = new Object[2];
@@ -162,6 +181,56 @@ public class InventoryTest {
     }
 
     @Test
+    void testFindLocationOfProductWithProductCode() {
+        Product product = new Product("CHI", sku++, 11, today, bestBeforeDate);
+        ArrayList<Object[]> list = new ArrayList<>();
+        Object[] entry = new Object[2];
+        entry[0] = product;
+        entry[1] = "D32";
+        list.add(entry);
+        inventory.addProducts(list);
+        String itemCode = product.getItemCode();
+        int sku = product.getSku();
+        assertEquals("D32", inventory.getStringLocationCode(inventory.findLocation(itemCode, sku)));
+        entry = new Object[2];
+        entry[0] = new Product("DDD", sku++, 50, today, bestBeforeDate);
+        entry[1] = "Z99";
+        list.add(entry);
+        product = (Product)entry[0];
+        inventory.addProducts(list);
+        itemCode = product.getItemCode();
+        sku = product.getSku();
+        assertEquals("Z99", inventory.getStringLocationCode(inventory.findLocation(itemCode, sku)));
+        entry = new Object[2];
+        entry[0] = new Product("adi", sku++, 2, today, bestBeforeDate);
+        //A00 is the same as T
+        entry[1] = "A00";
+        product = (Product)entry[0];
+        list.add(entry);
+        itemCode = product.getItemCode();
+        sku = product.getSku();
+        inventory.addProducts(list);
+        assertEquals("T", inventory.getStringLocationCode(inventory.findLocation(itemCode, sku)));
+    }
+
+    @Test
+    void testFindMethodsWithNonExistingProduct() {
+        Product product = new Product("CHI", sku++, 11, today, bestBeforeDate);
+        ArrayList<Object[]> list = new ArrayList<>();
+        Object[] entry = new Object[2];
+        entry[0] = product;
+        entry[1] = "D32";
+        list.add(entry);
+        inventory.addProducts(list);
+        String itemCode = product.getItemCode();
+        int sku = product.getSku();
+        assertEquals("D32", inventory.getStringLocationCode(inventory.findLocation(itemCode, sku)));
+        Product notInInventory = new Product("ABC", sku++, 12, today, bestBeforeDate);
+        assertEquals(-1, inventory.findLocation(notInInventory));
+        assertEquals(-1, inventory.findLocation("ABC", notInInventory.getSku()));
+    }
+
+    @Test
     void testRemoveProduct() {
         inventory.addProducts(productsToAddWLocation);
         for (Object[] entry: productsToAddWLocation) {
@@ -176,11 +245,8 @@ public class InventoryTest {
         }
     }
 
-
-
-
     @Test
-    void testRemoveProducts() {
+    void testRemoveProductsWithItemCode() {
         ArrayList<Object[]> list = createProducts("NIK", 100.1, 544, "T");
         assertEquals(0, inventory.getQuantity("NIK"));
         inventory.addProducts(list);
@@ -188,6 +254,28 @@ public class InventoryTest {
         assertTrue(inventory.removeProducts("NIK", 3));
         assertEquals(544 - 3, inventory.getQuantity("NIK"));
         assertTrue(inventory.removeProducts("NIK", 1000));
+        assertEquals(0, inventory.getQuantity("NIK"));
+    }
+
+    @Test
+    void testRemoveProductsAtDifferentLocations() {
+        ArrayList<Object[]> list = createProducts("NIK", 100.1, 100, "T");
+        inventory.addProducts(list);
+        inventory.addProducts(createProducts("NIK", 100.1, 100, "A11"));
+        inventory.addProducts(createProducts("NIK", 100.1, 200, "B11"));
+        inventory.addProducts(createProducts("NIK", 100.1, 300, "C44"));
+        assertEquals(700, inventory.getQuantity("NIK"));
+        inventory.removeProducts("NIK", 650);
+        assertEquals(50, inventory.getQuantity("NIK"));
+    }
+
+    @Test
+    void testRemoveProductsWithProductList() {
+        ArrayList<Object[]> list = createProducts("NIK", 100.1, 544, "T");
+        assertEquals(0, inventory.getQuantity("NIK"));
+        inventory.addProducts(list);
+        assertEquals(544, inventory.getQuantity("NIK"));
+        inventory.removeProducts(list);
         assertEquals(0, inventory.getQuantity("NIK"));
     }
 
@@ -216,6 +304,8 @@ public class InventoryTest {
         assertEquals(99999, asdList.get(asdList.size() - 1).getSku() - asdList.get(0).getSku());
         assertEquals(9, appList.get(appList.size() - 1).getSku() - appList.get(0).getSku());
     }
+
+
 
 
 
