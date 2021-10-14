@@ -125,6 +125,18 @@ public class InventoryTest {
         assertEquals(50, product.getSku());
     }
 
+    @Test
+    void testIsValidItemCode() {
+        inventory = new Inventory();
+        assertTrue(inventory.isValidItemCode("aaa"));
+        assertFalse(inventory.isValidItemCode("cccc"));
+        assertFalse(inventory.isValidItemCode("aaacc"));
+        assertFalse(inventory.isValidItemCode("ab"));
+        assertFalse(inventory.isValidItemCode(""));
+        assertFalse(inventory.isValidItemCode("ab5"));
+
+    }
+
 
     @Test
     void testGetNumericItemCode() {

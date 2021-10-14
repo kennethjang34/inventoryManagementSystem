@@ -77,6 +77,24 @@ public class Inventory {
 
 
 
+    //REQUIRES: the code size must be set positive integer
+    //EFFECTS: return true if the code is in the valid form
+    //return false otherwise.
+    public boolean isValidItemCode(String itemCode) {
+        if (itemCode.length() > codeSize || itemCode.length() < codeSize) {
+            return false;
+        }
+        int codeNumber = 0;
+        try {
+            codeNumber = getItemCodeNumber(itemCode);
+        } catch (IllegalArgumentException e) {
+            return false;
+        }
+
+        return true;
+    }
+
+
     //REQUIRES: products need to be a list of entries that contain Product, location in String.
     public void addProducts(ArrayList<Object[]> products) {
         for (Object[] productInfo: products) {
@@ -191,11 +209,14 @@ public class Inventory {
     //REQUIRES: itemCode must be in valid form(a combination of english alphabets (upper case),
     //of size used by the inventory
     //EFFECTS: return a numeric code converted from the string code
-    public int getItemCodeNumber(String itemCode) {
+    public int getItemCodeNumber(String itemCode) throws IllegalArgumentException {
         int numericCode = 0;
         itemCode = itemCode.toUpperCase();
         for (int i = 0; i < itemCode.length(); i++) {
             numericCode *= 26;
+            if (itemCode.charAt(i) - 'A' > 25 || itemCode.charAt(i) - 'A' < 0) {
+                throw new IllegalArgumentException();
+            }
             numericCode += itemCode.charAt(i) - 'A';
         }
         return numericCode;

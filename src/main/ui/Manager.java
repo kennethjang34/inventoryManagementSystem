@@ -26,6 +26,7 @@ public class Manager {
     //Object[0] = product
     //[1] = location
     private final ArrayList<Object[]> temporaryList;
+    private Product currentProduct;
     private LocalDate currentDate;
     private int nextSKU;
     private int nextAccountNumber;
@@ -44,6 +45,7 @@ public class Manager {
         nextSKU = firstSku;
         nextAccountNumber = firstAccountNumber;
         currentDate = LocalDate.now();
+        currentProduct = null;
     }
 
 
@@ -71,7 +73,7 @@ public class Manager {
 
 
     //EFFECTS: return temporary List.
-    public ArrayList<Object[]> getTemporaryList() {
+    private ArrayList<Object[]> getTemporaryList() {
         return temporaryList;
     }
 
@@ -79,7 +81,7 @@ public class Manager {
     //MODIFIES: this
     //EFFECTS: remove one product belonging to this item code from the temporary list.
     //return true if it succeeds. return false otherwise.
-    public boolean removeProductFromTemporaryList(String itemCode) {
+    private boolean removeProductFromTemporaryList(String itemCode) {
         for (Object[] newProductInfo: temporaryList) {
             Product e = (Product)newProductInfo[0];
             if (e.getItemCode().equalsIgnoreCase(itemCode)) {
@@ -95,7 +97,7 @@ public class Manager {
     //belonging to this item code that is specified by qty from the inventory.
     //return true when it succeeds.
     //return true if it succeeds. return false otherwise.
-    public boolean removeProducts(String itemCode, int qty) {
+    private boolean removeProducts(String itemCode, int qty) {
         return inventory.removeProducts(itemCode, qty);
     }
 
@@ -103,7 +105,7 @@ public class Manager {
     //MODIFIES:this
     //EFFECTS: remove a specific product that has this item code and SKU.
     //Return ture if it succeeds. return false otherwise.
-    public boolean removeProduct(String itemCode, int sku) {
+    private boolean removeProduct(String itemCode, int sku) {
         Product product = inventory.getProduct(itemCode, sku);
         return inventory.removeProduct(product);
     }
@@ -112,7 +114,7 @@ public class Manager {
     //Will update the inventory with a new list of products that have been created.
     //MODIFIES: this
     //EFFECTS: the new product list will be added to the inventory, creating a new transaction account.
-    public boolean updateInventory(String description) {
+    private boolean updateInventory(String description) {
         boolean succeed = updateLedger(description);
         inventory.addProducts(temporaryList);
         temporaryList.clear();
@@ -122,7 +124,7 @@ public class Manager {
     //REQUIRES: temporary list of this cannot be null
     //EFFECTS: create a hashmap that has item codes as keys
     //and number of products belonging to those item code as value.
-    public Map<String, Integer> makeTemporaryCountHash() {
+    private Map<String, Integer> makeTemporaryCountHash() {
         Map<String, Integer>  hash = new HashMap<>();
         for (Object[] fromTemp: temporaryList) {
             Product product = (Product)fromTemp[0];
@@ -140,7 +142,7 @@ public class Manager {
     //REQUIRES: account code must be in a valid form. cannot be negative.
     //MODIFIES: this
     //EFFECTS: create a new transaction account.
-    public Account createAccount(int accountCode, String description, LocalDate date) {
+    private Account createAccount(int accountCode, String description, LocalDate date) {
         Map<String, Integer>  hash = makeTemporaryCountHash();
         ArrayList<Object[]> entries = new ArrayList<>();
         if (hash.entrySet().size() == 0) {
@@ -173,7 +175,7 @@ public class Manager {
     }
 
     //EFFECTS: create and return a list of information labels for each account existing in the ledger.
-    public ArrayList<String> getAccounts() {
+    private ArrayList<String> getAccounts() {
         ArrayList<String> list = new ArrayList<>();
         for (Account account: ledger) {
             String s = "Account code: " + account.getCode() + '\n';
@@ -197,7 +199,7 @@ public class Manager {
     //make a detailed label for that particular account,
     //each element of the returned list will contain each line of the label.
     //If there isn't, list will just contain information that there isn't such an account.
-    public ArrayList<String> checkAccount(int accountCode) {
+    private ArrayList<String> checkAccount(int accountCode) {
         ArrayList<String> list = new ArrayList<>();
         Account account = null;
         for (Account e: ledger) {
@@ -227,7 +229,7 @@ public class Manager {
     //Will create 9digit SKU. The first digit will start from 0.
     //EFFECTS: return a new 9 digit SKU if next sku number is less than or equal to 999999999.
     //If SKU overflows, set sku to 1.
-    public int createSku() {
+    private int createSku() {
         if (nextSKU > maxSku) {
             nextSKU = firstSku;
         }
@@ -236,13 +238,13 @@ public class Manager {
 
 
     //EFFECTS: return the number of products belonging to the item code.
-    public int countProduct(String itemCode) {
+    private int countProduct(String itemCode) {
         return inventory.getQuantity(itemCode);
     }
 
 
     //EFFECTS: return a list of labels that indicate locations of products belonging to the item code.
-    public ArrayList<String> getLocationListOfProduct(String itemCode) {
+    private ArrayList<String> getLocationListOfProduct(String itemCode) {
         ArrayList<Integer> numericList = inventory.findLocations(itemCode);
         ArrayList<String> locationList = new ArrayList<>();
         for (Integer e: numericList) {
@@ -253,20 +255,20 @@ public class Manager {
 
     //REQUIRES: item code must be in a valid form. sku must not be negative.
     //EFFECTS: return the location of the product specified by the code and SKU.
-    public String getLocationOfProduct(String itemCode, int sku) {
+    private String getLocationOfProduct(String itemCode, int sku) {
         return inventory.getStringLocationCode(inventory.findLocation(itemCode, sku));
     }
 
 
     //EFFECTS: return true if the id exist in the admin and pw matches the id.
     //return false otherwise.
-    public boolean adminAccountCheck(String id, String pw) {
+    private boolean adminAccountCheck(String id, String pw) {
         return admin.checkLoginAccount(id, pw);
     }
 
     //EFFECTS: return the password matching the id if the given information can be found.
     //return null if it cannot be found
-    public String retrievePassword(String id, String name, LocalDate birthDay, int personalCode) {
+    private String retrievePassword(String id, String name, LocalDate birthDay, int personalCode) {
         return admin.retrievePassword(id, name, birthDay, personalCode);
     }
 
@@ -279,13 +281,13 @@ public class Manager {
     //EFFECTS: creates a new login account with the given info.
     //if it succeeds creating a new login account, return true.
     //Otherwise, return false.
-    public boolean createLoginAccount(String id, String pw, String name, LocalDate birthDay, int personalCode) {
+    private boolean createLoginAccount(String id, String pw, String name, LocalDate birthDay, int personalCode) {
         return admin.createLoginAccount(id, pw, name, birthDay, personalCode);
     }
 
     //return info that contains quantities, item codes existing in the inventory.
     //EFFECTS: return a string that contains general information about the inventory
-    public String inventoryCheck() {
+    private String inventoryCheck() {
         if (inventory.getTotalQuantity() == 0) {
             return "Inventory is empty";
         }
@@ -304,7 +306,7 @@ public class Manager {
 
 
     //EFFECTS: prompt the user to enter info for finding locations of an item code.
-    public void promptFindLocations() {
+    private void promptFindLocations() {
         System.out.println("enter the item code");
         String itemCode = scanner.nextLine();
         if (inventory.getItemCodeNumber(itemCode) < 0
@@ -320,33 +322,81 @@ public class Manager {
         System.out.println();
     }
 
-    //EFFECTS: prompt the user to enter info for finding a particular product
-    public void promptFindProduct() {
+    //EFFECTS: print the information about options for a single product
+    private void printProductOptions() {
+        System.out.println("code: print the product code, which is composed of its item code and SKU");
+        System.out.println("dateG: print the date the product was created");
+        System.out.println("dateB: print the best-before date of the product. "
+                + "if the product doesn't have any, print failure statement");
+        System.out.println("cost: print the cost the product was bought for");
+        System.out.println("h: print info about options available");
+    }
+
+
+    //REQUIRES: current product must not be null
+    //EFFECTS: prompt the user to choose an option to process with the current product found
+    private void promptProductInfo() {
+        String option = "h";
+        while (!option.equalsIgnoreCase("q")) {
+            switch (option) {
+                case "code":
+                    System.out.println("The product code: " + currentProduct.getItemCode() + currentProduct.getSku());
+                    break;
+                case "dateG":
+                    System.out.println("The date generated: " + currentProduct.getDateGenerated().toString());
+                    break;
+                case "dateB":
+                    System.out.println("The best before date: "
+                            +
+                            (currentProduct.getBestBeforeDate() == null ? "N/A" : currentProduct.getBestBeforeDate()));
+                    break;
+                case "cost":
+                    System.out.println("The cost of the product: " + currentProduct.getCost());
+                    break;
+                case "h":
+                    printProductOptions();
+            }
+            System.out.println("enter one of the options you'd like to use. If none, press q. For help, press h");
+            option = scanner.nextLine();
+        }
+    }
+
+    //EFFECTS: return the maximum numeric item code value possible
+    private boolean isValidItemCode(String itemCode) {
+        return inventory.isValidItemCode(itemCode);
+    }
+
+
+
+
+    //EFFECTS: prompt the user to enter info for finding a particular product. Print location by default.
+    private void promptFindProduct() {
         System.out.println("enter the item code");
         String itemCode = scanner.nextLine();
-        if (inventory.getItemCodeNumber(itemCode) < 0
-                || inventory.getItemCodeNumber(itemCode) > 26 * 26 * 25 + 26 * 25 + 25) {
-            System.out.println("Input is not valid");
-            return;
-        }
         System.out.println("enter the SKU of the product");
         int sku = scanner.nextInt();
-        if (sku < 0) {
+        scanner.nextLine();
+        if (!isValidItemCode(itemCode) || sku < 0) {
             System.out.println("Input is not valid");
             return;
         }
-        scanner.nextLine();
+        currentProduct = inventory.getProduct(itemCode, sku);
         String location = this.getLocationOfProduct(itemCode, sku);
         if (location != null) {
             System.out.println("The product: " + itemCode + sku + " is located at " + location);
-        } else {
-            System.out.println("The product doesn't exist in the warehouse");
+            System.out.println("Would you like to check the product in detail ? press Y/N");
+            if ((scanner.nextLine().equalsIgnoreCase("Y"))) {
+                promptProductInfo();
+            }
+            return;
         }
+        System.out.println("The product doesn't exist in the warehouse");
+
     }
 
 
     //EFFECTS: prompt the user to enter info for checking quantity of an item
-    public void promptCheckQuantity() {
+    private void promptCheckQuantity() {
         System.out.println("enter the item code");
         String itemCode = scanner.nextLine();
         if (inventory.getItemCodeNumber(itemCode) < 0
@@ -359,12 +409,12 @@ public class Manager {
     }
 
     //EFFECTS: print the information of the inventory.
-    public void printInventoryInfo() {
+    private void printInventoryInfo() {
         System.out.println(this.inventoryCheck());
     }
 
     //EFFECTS: print the information of the products on the temporary list of this.
-    public void printTemporaryList() {
+    private void printTemporaryList() {
         ArrayList<Object[]> list = this.getTemporaryList();
         for (Object[] productInfo : list) {
             Product product = (Product)productInfo[0];
@@ -383,7 +433,7 @@ public class Manager {
     //MODIFIES: this
     //EFFECTS: create a new login account prompting the user to enter info to create the account.
     @SuppressWarnings({"checkstyle:MethodLength", "checkstyle:SuppressWarnings"})
-    public void promptCreateLoginAccount() {
+    private void promptCreateLoginAccount() {
         String id;
         System.out.println("enter ID");
         id = scanner.nextLine();
@@ -422,7 +472,7 @@ public class Manager {
 
     //MODIFIES: this
     //EFFECTS: prompt the user to enter a description for this update, and update the inventory
-    public void promptUpdateInventory() {
+    private void promptUpdateInventory() {
         System.out.println("Would you add extra info about this update?"
                 + "if yes, enter a line of description. If no, enter n");
         String description = scanner.nextLine();
@@ -436,7 +486,7 @@ public class Manager {
 
     //MODIFIES: this
     //EFFECTS: remove a product prompting the user to enter the item code and SKU of the product
-    public void promptRemoveProduct() {
+    private void promptRemoveProduct() {
         System.out.println("enter the item code");
         String itemCode = scanner.nextLine();
         System.out.println("enter SKU of the product");
@@ -452,7 +502,7 @@ public class Manager {
 
     //MODIFIES: this
     //EFFECTS: remove multiple products prompting the user to enter item code and quantity to remove.
-    public void promptRemoveProducts() {
+    private void promptRemoveProducts() {
         System.out.println("enter the item code");
         String itemCode = scanner.nextLine();
         System.out.println("enter quantity");
@@ -464,7 +514,7 @@ public class Manager {
 
     //MODIFIES: this
     //EFFECTS: remove a product from temporary list of this prompting the user to enter item code.
-    public void removeProductFromTemporary() {
+    private void removeProductFromTemporary() {
         System.out.println("enter the item code");
         String itemCode = scanner.nextLine();
         if (this.removeProductFromTemporaryList(itemCode)) {
@@ -476,7 +526,7 @@ public class Manager {
 
     //EFFECTS: prompt the user to enter info to retrieve password. if the info is correct, print the password
     //Otherwise, print failure statement.
-    public void promptRetrievePassword() {
+    private void promptRetrievePassword() {
         System.out.println("enter id");
         String id = scanner.nextLine();
         System.out.println("enter name");
@@ -502,7 +552,7 @@ public class Manager {
     //MODIFIES: this
     //EFFECTS: create new products prompting the user to enter info for creating them.
     @SuppressWarnings({"checkstyle:MethodLength", "checkstyle:SuppressWarnings"})
-    public void promptCreateProduct() {
+    private void promptCreateProduct() {
         String itemCode;
         LocalDate bestBeforeDate = null;
         double cost;
@@ -537,7 +587,7 @@ public class Manager {
 
     //EFFECTS: print accounts inside the ledger
     //If user enters a specific account number, print the specified account in detail
-    public void openLedger() {
+    private void openLedger() {
         System.out.println(this.getAccounts());
         System.out.println("If you'd like to check a particular account more in detail, enter the account code "
                 + "Otherwise, enter q");
@@ -554,7 +604,7 @@ public class Manager {
 
     //EFFECTS: prompt the user to login. if it succeeds signing the user in, return true
     //Otherwise, return false
-    public boolean promptLogin() {
+    private boolean promptLogin() {
         boolean login = false;
         System.out.println("Please sign in first");
         System.out.println("Enter ID");
@@ -570,8 +620,7 @@ public class Manager {
     }
 
     //EFFECTS: print options
-    public static void printOptions() {
-        System.out.println("Please select an option:");
+    private static void printOptions() {
         System.out.println("createAccount: create a new login account");
         System.out.println("create: create a new product");
         System.out.println("update: store the newly created items in the storage");
@@ -603,14 +652,22 @@ public class Manager {
         Scanner scanner = stockManager.getScanner();
         System.out.println("Please create a login account first");
         stockManager.promptCreateLoginAccount();
-        printOptions();
-        String option = scanner.nextLine();
+        String option  = "h";
         boolean login = true;
         while (!option.equalsIgnoreCase("q")) {
             if (!login) {
                 login = stockManager.promptLogin();
+                if (login) {
+                    printOptions();
+                }
             } else {
+                System.out.println("Please select an option");
+                System.out.println("if you need help, press h");
+                option = scanner.nextLine();
                 switch (option) {
+                    case "h":
+                        printOptions();
+                        break;
                     case "createAccount":
                         stockManager.promptCreateLoginAccount();
                         break;
@@ -650,12 +707,7 @@ public class Manager {
                     case "logout":
                         login = false;
                         break;
-                    case "h":
-                        printOptions();
                 }
-                System.out.println("Enter option");
-                System.out.println("If you need help, press h");
-                option = scanner.nextLine();
             }
         }
     }

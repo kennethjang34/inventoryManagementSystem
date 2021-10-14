@@ -23,12 +23,20 @@ that take care of  individual products, is another factor that interested me in 
 
 ##User story:
 As a user, I want to add a product to the item list of the inventory.
+
 As a user, I want to check the quantities I have of  particular items in stock.
+
 As a user, I want the application to create a sku automatically
+
 As a user, I want to check a product's best before date
+
 As a user, I want to be able to check the price a product was bought for
+
 As a user, I want to keep a record of change in quantity in inventory
+
 As a user, I want to make sure only a certain number of people who have login accounts can access the application
+
 As a user, I want to locate each product, as well as all the products belonging to a certain item category.
+
 As a user, I want to be able to retrieve my login account password with my information.
 
