@@ -100,8 +100,7 @@ public class Account {
 
     //EFFECTS: return a copy of the entries written in the account
     public ArrayList<Object[]> getEntries() {
-        ArrayList<Object[]> copy = copyEntries();
-        return copy;
+        return copyEntries();
     }
 
     private ArrayList<Object[]> copyEntries() {

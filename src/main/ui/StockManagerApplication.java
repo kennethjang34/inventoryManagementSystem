@@ -207,6 +207,20 @@ public class StockManagerApplication {
     }
 
 
+    public static boolean promptLogin(Manager stockManager, Scanner scanner) {
+        boolean login = false;
+        System.out.println("Please sign in first");
+        System.out.println("Enter ID");
+        String id = scanner.nextLine();
+        System.out.println("Enter PW");
+        String pw = scanner.nextLine();
+        if (stockManager.adminAccountCheck(id, pw)) {
+            login = true;
+        } else {
+            System.out.println("Login failed");
+        }
+        return login;
+    }
 
     public static void printOptions() {
         System.out.println("Please select an option:");
@@ -230,6 +244,7 @@ public class StockManagerApplication {
 
 
 
+    @SuppressWarnings({"checkstyle:MethodLength", "checkstyle:SuppressWarnings"})
     public static void main(String[] args) {
         Manager stockManager = new Manager();
         Scanner scanner = new Scanner(System.in);
@@ -240,18 +255,10 @@ public class StockManagerApplication {
         boolean login = true;
         while (!option.equalsIgnoreCase("q")) {
             if (!login) {
-                System.out.println("Please sign in first");
-                System.out.println("Enter ID");
-                String id = scanner.nextLine();
-                System.out.println("Enter PW");
-                String pw = scanner.nextLine();
-                if (stockManager.adminAccountCheck(id, pw)) {
-                    login = true;
-                } else {
-                    System.out.println("Login failed");
-                }
+                login = promptLogin(stockManager, scanner);
             } else {
-                printOptions();
+                System.out.println("Enter option");
+                System.out.println("If you need help, press h");
                 option = scanner.nextLine();
                 switch (option) {
                     case "createAccount":
@@ -293,6 +300,8 @@ public class StockManagerApplication {
                     case "logout":
                         login = false;
                         break;
+                    case "h":
+                        printOptions();
                 }
             }
         }

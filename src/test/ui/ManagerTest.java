@@ -6,7 +6,6 @@ import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Scanner;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -15,7 +14,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ManagerTest {
     private Manager manager;
-    private Scanner scanner;
     private LocalDate today;
     private LocalDate bestBeforeDate;
     private double cost;
@@ -24,7 +22,6 @@ public class ManagerTest {
     @BeforeEach
     void runBefore() {
         manager = new Manager();
-        scanner = new Scanner(System.in);
         today = LocalDate.now();
         bestBeforeDate = LocalDate.of(2021, 11, 15);
         cost = 100.52;

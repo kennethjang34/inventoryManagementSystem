@@ -111,45 +111,26 @@ public class Inventory {
     }
 
 
-
-
-
+    //REQUIRES: qty must not be negative. itemCode must be in the valid form
+    //MODIFIES: this
+    //EFFECTS: remove  the specified number of products belonging to the item code.
+    //if there are fewer products than the number, remove all the products existing in the inventory.
+    //if method removes any of the products, return true.
+    //else return false.
     public boolean removeProducts(String itemCode, int qty) {
-        ArrayList<Product> listCode = listByCode[getItemCodeNumber(itemCode)];
-        if (listCode.size() == 0) {
-            return false;
-        }
-        ArrayList<Integer> locations = findLocations(itemCode);
+        ArrayList<Product> products = listByCode[getItemCodeNumber(itemCode)];
+        ArrayList<Object[]> toBeRemoved = new ArrayList<>();
         int count = 0;
-        int index = 0;
-        int locationPos = 0;
-        ArrayList<Product> listLocation = listByLocation[locations.get(locationPos++)];
-        ArrayList<Product> toBeRemoved = new ArrayList<>();
-        while (count < qty) {
-            if (toBeRemoved.size() + count == qty) {
-                listCode.removeAll(toBeRemoved);
-                listLocation.removeAll(toBeRemoved);
-                break;
-            } else if (index == listLocation.size()) {
-                listCode.removeAll(toBeRemoved);
-                listLocation.removeAll(toBeRemoved);
-                count += toBeRemoved.size();
-                if (locationPos == locations.size()) {
-                    break;
-                }
-                index = 0;
-                listLocation = listByLocation[locations.get(locationPos++)];
-                toBeRemoved = new ArrayList<>();
-            }
-            Product product = listLocation.get(index);
-            if (product.getItemCode().equals(itemCode)) {
-                toBeRemoved.add(product);
-            }
-            index++;
+        for (; count < qty && count < products.size(); count++) {
+            Object[] entry = new Object[2];
+            Product product = products.get(count);
+            entry[0] = product;
+            entry[1] = getStringLocationCode(findLocation(product));
+            toBeRemoved.add(entry);
         }
-        return true;
+        removeProducts(toBeRemoved);
+        return (count > 0);
     }
-
 
     //Needs to be improved
     //REQUIRES: products need to exist in the inventory
@@ -199,7 +180,7 @@ public class Inventory {
     }
 
     //numeric form of this item code must be existing in inventory.
-    //Ex) if valid form of item code is "AAA", passed item code cannot be "AAAA"
+    //For instance, if valid form of item code is "AAA", passed item code cannot be "AAAA"
     //EFFECTS: return a list of locations where products belonging to the item code are located.
     public ArrayList<Integer> findLocations(String itemCode) {
         return locationsOfProductCode[getItemCodeNumber(itemCode)];

@@ -193,7 +193,7 @@ public class InventoryTest {
         int sku = product.getSku();
         assertEquals("D32", inventory.getStringLocationCode(inventory.findLocation(itemCode, sku)));
         entry = new Object[2];
-        entry[0] = new Product("DDD", sku++, 50, today, bestBeforeDate);
+        entry[0] = new Product("DDD", this.sku++, 50, today, bestBeforeDate);
         entry[1] = "Z99";
         list.add(entry);
         product = (Product)entry[0];
@@ -202,7 +202,7 @@ public class InventoryTest {
         sku = product.getSku();
         assertEquals("Z99", inventory.getStringLocationCode(inventory.findLocation(itemCode, sku)));
         entry = new Object[2];
-        entry[0] = new Product("adi", sku++, 2, today, bestBeforeDate);
+        entry[0] = new Product("adi", this.sku++, 2, today, bestBeforeDate);
         //A00 is the same as T
         entry[1] = "A00";
         product = (Product)entry[0];
@@ -225,7 +225,7 @@ public class InventoryTest {
         String itemCode = product.getItemCode();
         int sku = product.getSku();
         assertEquals("D32", inventory.getStringLocationCode(inventory.findLocation(itemCode, sku)));
-        Product notInInventory = new Product("ABC", sku++, 12, today, bestBeforeDate);
+        Product notInInventory = new Product("ABC", this.sku++, 12, today, bestBeforeDate);
         assertEquals(-1, inventory.findLocation(notInInventory));
         assertEquals(-1, inventory.findLocation("ABC", notInInventory.getSku()));
     }
