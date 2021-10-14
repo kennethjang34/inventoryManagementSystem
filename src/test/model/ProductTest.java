@@ -31,10 +31,12 @@ public class ProductTest {
         assertEquals(sku, product.getSku());
         assertEquals(today, product.getDateGenerated());
         assertEquals(bestBeforeDate, product.getBestBeforeDate());
+        assertEquals(cost, product.getCost());
         Product product2 = new Product(itemCode, sku, cost, today, null);
         assertEquals(itemCode, product2.getItemCode());
         assertEquals(sku, product2.getSku());
         assertEquals(today, product2.getDateGenerated());
+        assertEquals(cost, product2.getCost());
         assertNull(product2.getBestBeforeDate());
     }
 }
