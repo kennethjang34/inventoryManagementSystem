@@ -84,9 +84,8 @@ public class Inventory {
         if (itemCode.length() > codeSize || itemCode.length() < codeSize) {
             return false;
         }
-        int codeNumber = 0;
         try {
-            codeNumber = getItemCodeNumber(itemCode);
+            getItemCodeNumber(itemCode);
         } catch (IllegalArgumentException e) {
             return false;
         }

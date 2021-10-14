@@ -134,6 +134,9 @@ public class InventoryTest {
         assertFalse(inventory.isValidItemCode("ab"));
         assertFalse(inventory.isValidItemCode(""));
         assertFalse(inventory.isValidItemCode("ab5"));
+        assertFalse(inventory.isValidItemCode("[]a"));
+        assertFalse(inventory.isValidItemCode("~~~"));
+        assertFalse(inventory.isValidItemCode("a[b)"));
 
     }
 
