@@ -74,6 +74,16 @@ public class AccountTest {
                 newAccount.getDollarAmount());
     }
 
+    @Test
+    void testConstructorWithEmptyEntries() {
+        Account account = new Account(code, description, today, new ArrayList<>());
+        assertEquals(0, account.getQuantity("aaa"));
+        assertEquals(0, account.getEntries().size());
+        assertEquals(0, account.getTotalCost("aaa"));
+        assertEquals(0, account.getPrice("aaa"));
+        assertEquals(0, account.getDollarAmount());
+    }
+
 
 
 

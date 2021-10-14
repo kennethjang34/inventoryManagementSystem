@@ -114,6 +114,17 @@ public class InventoryTest {
         assertNull(inventory.getProduct("BBB", 11113));
     }
 
+    @Test
+    void testGetProductInMiddleList() {
+        inventory = new Inventory();
+        this.sku = 1;
+        inventory.addProducts(createProducts("ASR", 50, 100, "T"));
+        assertEquals(101, sku);
+        Product product = inventory.getProduct("ASR", 50);
+        assertEquals("ASR", product.getItemCode());
+        assertEquals(50, product.getSku());
+    }
+
 
     @Test
     void testGetNumericItemCode() {
@@ -152,6 +163,7 @@ public class InventoryTest {
         assertEquals(inventory.getLocationCodeNumber("F11"), locations.get(0));
         assertEquals(inventory.getLocationCodeNumber("T"), locations.get(1));
         assertEquals(inventory.getLocationCodeNumber("A11"), locations.get(2));
+        assertEquals(inventory.getLocationCodeNumber("A11"), inventory.findLocation("APP", sku - 1));
     }
 
 
