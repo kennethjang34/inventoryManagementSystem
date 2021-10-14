@@ -119,14 +119,11 @@ public class Manager {
         return succeed;
     }
 
-
-    //REQUIRES: account code must be in a valid form. cannot be negative.
-    //MODIFIES: this
-    //EFFECTS: create a new transaction account.
-    @SuppressWarnings({"checkstyle:MethodLength", "checkstyle:SuppressWarnings"})
-    public Account createAccount(int accountCode, String description, LocalDate date) {
+    //REQUIRES: temporary list of this cannot be null
+    //EFFECTS: create a hashmap that has item codes as keys
+    //and number of products belonging to those item code as value.
+    public Map<String, Integer> makeTemporaryCountHash() {
         Map<String, Integer>  hash = new HashMap<>();
-        ArrayList<Object[]> entries = new ArrayList<>();
         for (Object[] fromTemp: temporaryList) {
             Product product = (Product)fromTemp[0];
             if (hash.containsKey(product.getItemCode())) {
@@ -136,6 +133,17 @@ public class Manager {
                 hash.put(product.getItemCode(), 1);
             }
         }
+        return hash;
+    }
+
+
+    //REQUIRES: account code must be in a valid form. cannot be negative.
+    //MODIFIES: this
+    //EFFECTS: create a new transaction account.
+    //@SuppressWarnings({"checkstyle:MethodLength", "checkstyle:SuppressWarnings"})
+    public Account createAccount(int accountCode, String description, LocalDate date) {
+        Map<String, Integer>  hash = makeTemporaryCountHash();
+        ArrayList<Object[]> entries = new ArrayList<>();
         if (hash.entrySet().size() == 0) {
             return null;
         }
