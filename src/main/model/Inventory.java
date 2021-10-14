@@ -170,13 +170,12 @@ public class Inventory {
     //numeric form of this item code must be existing in inventory.
     //for example, if valid form of item code is "AAA", passed item code cannot be "QQQQ"
     //EFFECTS: find the location of a product indicated by this item code and SKU
-    @SuppressWarnings({"checkstyle:NeedBraces", "checkstyle:SuppressWarnings"})
     public int findLocation(String itemCode, int sku) {
-        for (Product e: listByCode[getItemCodeNumber(itemCode)])
+        for (Product e: listByCode[getItemCodeNumber(itemCode)]) {
             if (e.getSku() == sku) {
                 return findLocation(e);
             }
-
+        }
 
         return -1;
     }
@@ -274,15 +273,13 @@ public class Inventory {
 
     //EFFECTS: return the product specified by the item code and stock keeping unit(SKU).
     //If there isn't such a product, return null.
-    @SuppressWarnings({"checkstyle:NeedBraces", "checkstyle:SuppressWarnings"})
     public Product getProduct(String itemCode, int sku) {
         ArrayList<Product> list = listByCode[getItemCodeNumber(itemCode)];
-        for (Product e: list)
+        for (Product e: list) {
             if (e.getSku() == sku) {
                 return e;
             }
-
-
+        }
         return null;
     }
 
