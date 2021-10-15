@@ -21,7 +21,7 @@ that take care of  individual products, is another factor that interested me in 
 
 
 
- ##User story:
+## User story:
 As a user, I want to add a product to the item list of the inventory.
 
 As a user, I want to check the quantities I have of  particular items in stock.
