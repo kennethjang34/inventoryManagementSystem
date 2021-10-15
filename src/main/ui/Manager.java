@@ -193,7 +193,7 @@ public class Manager {
     }
 
 
-    //EFFECTS: create and return a labe containing brief information for each account existing in the ledger.
+    //EFFECTS: create and return a label containing brief information for each account existing in the ledger.
     private ArrayList<String> getAccounts() {
         ArrayList<String> list = new ArrayList<>();
         for (Account account: ledger) {
@@ -424,7 +424,7 @@ public class Manager {
             return;
         }
         int qty = this.countProduct(itemCode);
-        System.out.println("The quantity of " + qty + " of item code" + itemCode + " is stored in the inventory");
+        System.out.println("The quantity of " + qty + " of item code " + itemCode + " is stored in the inventory");
     }
 
     //EFFECTS: print the information of the inventory.
@@ -441,7 +441,7 @@ public class Manager {
             System.out.println(product.getItemCode() + " " + product.getSku());
             System.out.println("Cost: " + product.getCost());
             if (product.getBestBeforeDate() != null) {
-                System.out.print(product.getBestBeforeDate());
+                System.out.println(product.getBestBeforeDate());
             }
             System.out.println("Location: " + (location.equalsIgnoreCase("T")
                     ? "Temporary storage space in the inventory" : location));
@@ -592,6 +592,8 @@ public class Manager {
                 + " if you'd like to put the product in the temporary storage area of the inventory "
                 + "press 'T/t'");
         String location = scanner.nextLine();
+        location = inventory.getStringLocationCode(inventory.getLocationCodeNumber(location));
+
         for (int i = 0; i < qty; i++) {
             this.createProduct(itemCode, bestBeforeDate, cost, location);
         }
@@ -646,11 +648,12 @@ public class Manager {
         System.out.println("removeI: remove a certain number of products from the inventory that is "
                 + "belonging to the specified item code");
         System.out.println("removeT: remove a product belonging "
-                + "to the specified item code from the temporary storage");
+                + "to the specified item code from the temporary list");
         System.out.println("findLocations: find locations of products belonging to a specific item code");
         System.out.println("findProduct: find the location of a particular product with its product code and sku");
         System.out.println("checkQuantity: check the quantity of the specified product");
         System.out.println("checkI: check the inventory condition");
+        System.out.println("checkT: check the current temporary list");
         System.out.println("retrievePW: retrieve password");
         System.out.println("openLedger: open the ledger and print labels of accounts in the ledger");
         System.out.println("h: print options");
@@ -716,6 +719,9 @@ public class Manager {
                         break;
                     case "checkI":
                         stockManager.printInventoryInfo();
+                        break;
+                    case "checkT":
+                        stockManager.printTemporaryList();
                         break;
                     case "retrievePW":
                         stockManager.promptRetrievePassword();
