@@ -197,17 +197,16 @@ public class Manager {
     private ArrayList<String> getAccounts() {
         ArrayList<String> list = new ArrayList<>();
         for (Account account: ledger) {
-            String s = "Account code: " + account.getCode() + '\n';
-            s += "Generated date: " + account.getDate() + '\n';
+            String s = "Account code: " + account.getCode() + "\n";
+            s += "Generated date: " + account.getDate() + "\n";
             s += "extra info available: ";
             if (account.getDescription().length() > 0) {
-                s += account.getDescription();
+                s += account.getDescription() + '\n';
             } else {
                 s += "none\n";
             }
-            s += "Total quantity processed: " + account.getTotalQuantity() + '\n';
-            s += "Total dollar worth: " + account.getDollarAmount() + '\n';
-            //s += "Product code with price and quantity: \n";
+            s += "Total quantity processed: " + account.getTotalQuantity() + "\n";
+            s += "Total dollar worth: " + account.getDollarAmount() + "\n";
             list.add(s);
             list.add("-----------------------------------\n");
         }
@@ -232,10 +231,10 @@ public class Manager {
         }
         assert account != null;
         for (Object[] fromAccount: account.getEntries()) {
-            String s = "Product code: " + fromAccount[0] + '\n';
-            s += "Price: " + fromAccount[1] + '\n';
-            s += "Total quantity processed: " + fromAccount[2] + '\n';
-            s += "Total dollar worth: " + account.getTotalCost((String)fromAccount[0]) + '\n';
+            String s = "Product code: " + fromAccount[0] + "\n";
+            s += "Price: " + fromAccount[1] + "\n";
+            s += "Total quantity processed: " + fromAccount[2] + "\n";
+            s += "Total dollar worth: " + account.getTotalCost((String)fromAccount[0]) + "\n";
             list.add(s);
             list.add("-----------------------------------\n");
         }
@@ -610,13 +609,13 @@ public class Manager {
     //If user enters a specific account number, print the specified account in detail
     private void openLedger() {
         System.out.println(this.getAccounts());
-        System.out.println("If you'd like to check a particular account more in detail, enter the account code "
+        System.out.println("If you'd like to check a particular account more in detail, enter the account code. "
                 + "Otherwise, enter q");
         String option = scanner.nextLine();
         while (!option.equalsIgnoreCase("q")) {
             int accountCode = Integer.parseInt(option);
             System.out.println(this.checkAccount(accountCode));
-            System.out.println("If you'd like to check a particular account more in detail, enter the account code "
+            System.out.println("If you'd like to check a particular account more in detail, enter the account code. "
                     + "Otherwise, enter q");
             option = scanner.nextLine();
         }
@@ -659,13 +658,6 @@ public class Manager {
         System.out.println("h: print options");
         System.out.println("logout: Log out");
     }
-
-
-
-
-
-
-
 
 
     @SuppressWarnings({"checkstyle:MethodLength", "checkstyle:SuppressWarnings"})
