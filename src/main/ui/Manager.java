@@ -13,30 +13,46 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
 
-//Manager class creates products based on the user's request and add it to inventory.
+
+//creates products based on the user's request and add it to inventory.
 //for each load, create an account for record.
 //make it possible to not just search for a specific product using Inventory class,
 //but can check multiple products comparing them.
-//Maybe make it a private class?
+//Only a certain number of people who have login accounts in admin can use this
 public class Manager {
     private final Inventory inventory;
     private final ArrayList<Account> ledger;
     private final Admin admin;
+    //scanner will be used to receive input options from the user.
     private final Scanner scanner;
-    //Object[0] = product
-    //[1] = location
+
+    //temporary list is used to buffer a user's request for adding new products
+    //Before the user manually select updating inventory option, newly created products will be stored in this list
+    //for each element in the array list, the object array will contain
+    //object[0]: Product
+    //object[1]: String representing location
+    //this object array will be called entry, and the list will often be called entries later
     private final ArrayList<Object[]> temporaryList;
+
+    //current product represents a product that has been located from the user's request.
+    //User will be given several options to check the product-specific information
     private Product currentProduct;
     private LocalDate currentDate;
+    //next sku is the sku number that will be assigned to the new product.
     private int nextSKU;
+    //next account number is the account number that will be assigned to the new account.
+    //Note this account refers to the account that represents an update history of the inventory,
+    //not login account.
     private int nextAccountNumber;
     private final int maxSku = 999999999;
     private final int firstSku = 111111111;
     private final int firstAccountNumber = 111111;
 
 
+
     //EFFECTS: create a manager with an empty inventory, ledger, and admin.
     public Manager() {
+        //scanner is set to receive inputs from console
         scanner = new Scanner(System.in);
         inventory = new Inventory();
         ledger = new ArrayList<>();
@@ -49,8 +65,9 @@ public class Manager {
     }
 
 
-    //Will be called by UI main method.
     //Caller needs to supply item code, best-before-date, and cost
+    //best-before date can be any date, and even null,
+    //but it is recommended to use a date today or later if there is best-before date
     //REQUIRES: item code must be in a valid form specified by the user, cost must be positive.
     //best-before date must be today or later than today
     //MODIFIES: this
@@ -59,10 +76,10 @@ public class Manager {
         int sku = createSku();
         itemCode = itemCode.toUpperCase();
         Product product = new Product(itemCode, sku, cost, currentDate, bestBeforeDate);
-        Object[] newProductInfo = new Object[2];
-        newProductInfo[0] = product;
-        newProductInfo[1] = location;
-        temporaryList.add(newProductInfo);
+        Object[] entry = new Object[2];
+        entry[0] = product;
+        entry[1] = location;
+        temporaryList.add(entry);
         return product;
     }
 
@@ -72,7 +89,7 @@ public class Manager {
     }
 
 
-    //EFFECTS: return temporary List.
+    //EFFECTS: return temporary List with entries.
     private ArrayList<Object[]> getTemporaryList() {
         return temporaryList;
     }
@@ -82,10 +99,10 @@ public class Manager {
     //EFFECTS: remove one product belonging to this item code from the temporary list.
     //return true if it succeeds. return false otherwise.
     private boolean removeProductFromTemporaryList(String itemCode) {
-        for (Object[] newProductInfo: temporaryList) {
-            Product e = (Product)newProductInfo[0];
+        for (Object[] entry: temporaryList) {
+            Product e = (Product)entry[0];
             if (e.getItemCode().equalsIgnoreCase(itemCode)) {
-                temporaryList.remove(newProductInfo);
+                temporaryList.remove(entry);
                 return true;
             }
         }
@@ -114,6 +131,7 @@ public class Manager {
     //Will update the inventory with a new list of products that have been created.
     //MODIFIES: this
     //EFFECTS: the new product list will be added to the inventory, creating a new transaction account.
+    //the temporary list will be cleared.
     private boolean updateInventory(String description) {
         boolean succeed = updateLedger(description);
         inventory.addProducts(temporaryList);
@@ -152,8 +170,8 @@ public class Manager {
             Object[] entry = new Object[3];
             entry[0] = count.getKey();
             entry[2] = count.getValue();
-            for (Object[] fromTemp: temporaryList) {
-                Product product = (Product)fromTemp[0];
+            for (Object[] entryFromTemp: temporaryList) {
+                Product product = (Product)entryFromTemp[0];
                 if (product.getItemCode().equalsIgnoreCase((String)entry[0])) {
                     entry[1] = product.getCost();
                     break;
@@ -174,7 +192,8 @@ public class Manager {
         return true;
     }
 
-    //EFFECTS: create and return a list of information labels for each account existing in the ledger.
+
+    //EFFECTS: create and return a labe containing brief information for each account existing in the ledger.
     private ArrayList<String> getAccounts() {
         ArrayList<String> list = new ArrayList<>();
         for (Account account: ledger) {
@@ -273,9 +292,9 @@ public class Manager {
     }
 
 
-    //REQUIRES: id must be composed of english letters and digits only. id must be typed case sensitively.
-    //id cannot already be existing.
-    //name must be composed of only english alphabets.
+    //REQUIRES: id should be composed of english letters and digits only. id must be typed case sensitively.
+    //the same id cannot already be existing.
+    //name should be composed of only english alphabets.
     //personal code cannot be negative.
     //MODIFIES: this
     //EFFECTS: creates a new login account with the given info.

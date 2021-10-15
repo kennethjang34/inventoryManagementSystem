@@ -268,6 +268,8 @@ public class InventoryTest {
             assertEquals(product, inventory.getProduct(itemCode, sku));
             assertTrue(inventory.removeProduct(product));
             assertEquals(0, inventory.getQuantity(product.getItemCode()));
+            assertEquals(-1, inventory.findLocation(product));
+            assertEquals(-1, inventory.findLocation(itemCode, product.getSku()));
             assertNull(inventory.getProduct(itemCode, sku));
         }
     }
@@ -295,6 +297,20 @@ public class InventoryTest {
         inventory.removeProducts("NIK", 650);
         assertEquals(50, inventory.getQuantity("NIK"));
     }
+
+    @Test
+    void testFindLocationOfProductsRemoved() {
+        ArrayList<Object[]> list1 = createProducts("NIK", 100.1, 100, "T");
+        inventory.addProducts(list1);
+        ArrayList<Object[]> list2 = createProducts("NIK", 100.1, 100, "A11");
+        inventory.addProducts(list2);
+        assertEquals(200, inventory.getQuantity("NIK"));
+        inventory.removeProducts("NIK", 110);
+        assertEquals(90, inventory.getQuantity("NIK"));
+        Product locatedAtT = (Product)list1.get(0)[0];
+        assertEquals(-1, inventory.findLocation(locatedAtT));
+    }
+
 
     @Test
     void testRemoveProductsWithProductList() {

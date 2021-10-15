@@ -5,14 +5,16 @@ import java.util.ArrayList;
 
 public class Inventory {
     private final int codeSize;
+    //hash map that has numeric item codes as its keys and array lists of products as its value.
     private final ArrayList<Product> [] listByCode;
-    //A0 : [0], temporary storage room
-    //A1 : [1]
+
+    //hash map that has numeric location codes as its keys and array lists of products as its value.
+    //Default code size will be set to 3.
+    //index 0 represents the temporary storage room, where products without location tag will be stored.
     private final ArrayList<Product> [] listByLocation;
 
-    //this array list will represent a hashmap
-    //where key is a numeric product code and the value is an array of strings indicating its location in the inventory.
-
+    //hashmap where key is a numeric product code
+    //and the value is an array of numeric location code.
     private final ArrayList<Integer> [] locationsOfProductCode;
     private final int numberOfSections;
     private static final int NUM_ALPHABETS = 26;
@@ -124,7 +126,6 @@ public class Inventory {
             return true;
         }
         return false;
-
     }
 
 
@@ -149,7 +150,6 @@ public class Inventory {
         return (count > 0);
     }
 
-    //Needs to be improved
     //REQUIRES: products need to exist in the inventory
     //MODIFIES: this
     //EFFECTS: remove all the products indicated from the inventory
@@ -161,7 +161,7 @@ public class Inventory {
             int code = getItemCodeNumber((product.getItemCode()));
             listByCode[code].remove(product);
             //try and catch block needed
-            listByLocation[getLocationCodeNumber(location)].remove(e);
+            listByLocation[getLocationCodeNumber(location)].remove(product);
         }
     }
 
@@ -212,8 +212,8 @@ public class Inventory {
         int numericCode = 0;
         itemCode = itemCode.toUpperCase();
         for (int i = 0; i < itemCode.length(); i++) {
-            numericCode *= 26;
-            if (itemCode.charAt(i) - 'A' > 25 || itemCode.charAt(i) - 'A' < 0) {
+            numericCode *= NUM_ALPHABETS;
+            if (itemCode.charAt(i) - 'A' > NUM_ALPHABETS - 1 || itemCode.charAt(i) - 'A' < 0) {
                 throw new IllegalArgumentException();
             }
             numericCode += itemCode.charAt(i) - 'A';
@@ -245,10 +245,10 @@ public class Inventory {
             return null;
         }
         String stringCode = "";
-        stringCode += (char)((numericCode / (26 * 26)) + 'A');
-        numericCode = numericCode % (26 * 26);
-        stringCode += (char)(numericCode / 26 + 'A');
-        numericCode %= 26;
+        stringCode += (char)((numericCode / (NUM_ALPHABETS * NUM_ALPHABETS)) + 'A');
+        numericCode = numericCode % (NUM_ALPHABETS * NUM_ALPHABETS);
+        stringCode += (char)(numericCode / NUM_ALPHABETS + 'A');
+        numericCode %= NUM_ALPHABETS;
         stringCode += (char)(numericCode + 'A');
         return stringCode;
     }

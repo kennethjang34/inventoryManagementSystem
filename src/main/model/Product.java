@@ -2,15 +2,24 @@ package model;
 
 import java.time.LocalDate;
 
+//represents product. Each product will have item code, SKU (Stock keeping unit),
+//date generated, best before date, and cost it was bought for.
+//No data about the product can be changed after creation.
 public class Product {
+    //item code represents the code composed only of English alphabets that indicates
+    //the category of the product. Multiple products can have the same item code.
     private final String itemCode;
+    //SKU is unique to each product
     private final int sku;
     private final LocalDate dateGenerated;
+    //Only products given best-before date will have a valid best-before date.
     private final LocalDate bestBeforeDate;
+    //cost is the money paid for this product
     private final double cost;
 
 
-
+    //It is possible for date generated and best before date to be null,
+    //However, it is strongly recommended to ensure date generated is a valid Local Date instance.
     //REQUIRES: sku must be 9-digit natural number, cost must be positive.
     //EFFECTS: create a product with specified data.
     public Product(String itemCode, int sku, double cost, LocalDate dateGenerated, LocalDate bestBeforeDate) {

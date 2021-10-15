@@ -3,16 +3,23 @@ package model;
 import java.time.LocalDate;
 import java.util.ArrayList;
 
+//represents administration that have their own accounts
+//will contain a list of login accounts.
+//Written to provide a functionality for Inventory management system application.
 public class Admin {
 
+    //represents each individual login account.
+    //Must be distinguished from accounts that contain information about inventory update.
     private static class LoginAccount {
 
+        //Once a login account is created, no data can be changed.
         private final String id;
         private final String pw;
         private final String name;
         private final LocalDate birthDay;
         private final int personalCode;
 
+        //EFFECTS: create a new account and return it.
         private LoginAccount(String id, String password, String name, LocalDate birthDay, int personalCode) {
             this.id = id;
             this.pw = password;
@@ -53,7 +60,10 @@ public class Admin {
         }
     }
 
+    //list of login accounts. there is no limit on number of accounts but once an account is added,
+    //it cannot be removed from the list. In any circumstance, this list shouldn't be passed to the user.
     private final ArrayList<LoginAccount> accounts;
+
 
     //EFFECTS: create a new administer.
     public Admin() {
@@ -61,6 +71,10 @@ public class Admin {
     }
 
     //EFFECTS: if a login account can be found with the information given, return password of the account
+    //return null otherwise.
+    //When input data are compared to the existing accounts' data, it will be checked case-sensitively
+    //For example, if name was set to "Pizza Chicken", neither "Pizza chicken" nor "pizza Chicken" will be matched
+    //with the name successfully. "pizza chicken" will be the wrong input as well.
     //return null otherwise.
     public String retrievePassword(String id, String name, LocalDate birthDay, int personalNum) {
         LoginAccount account = getLoginAccount(id);
@@ -75,7 +89,8 @@ public class Admin {
         return pw;
     }
 
-    //EFFECTS: return login account matching id if there exists such an account.
+
+    //EFFECTS: return login account matching id if there exists such an account (case-sensitive).
     //return null otherwise.
     private LoginAccount getLoginAccount(String id) {
         for (LoginAccount account: accounts) {
@@ -86,7 +101,7 @@ public class Admin {
         return null;
     }
 
-    //EFFECTS: return true if the id exists and pw matches password of id
+    //EFFECTS: return true if the id exists and pw matches password of id (case-sensitive)
     //return false otherwise.
     public boolean checkLoginAccount(String id, String pw) {
         LoginAccount account = getLoginAccount(id);
@@ -96,7 +111,9 @@ public class Admin {
         return false;
     }
 
-    //REQUIRES: personal code must be a positive integer. No existing login account can have the same id.
+    //REQUIRES: personal code must be a positive integer. No existing login account can have the same id
+    //if the id has the same alphabetical arrangement as one of the existing ids, but in different cases like
+    //Apple and apple, they will be regarded different
     //MODIFIES: this
     //EFFECTS: create a new account with the given information.
     public boolean createLoginAccount(String id, String password, String name, LocalDate birthDay, int personalCode) {

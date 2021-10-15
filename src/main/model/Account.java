@@ -3,11 +3,16 @@ package model;
 import java.time.LocalDate;
 import java.util.ArrayList;
 
+//represents an account that contains information about the change that happens on a particular date.
+//will have account code, description, date, and quantities for each different item code.
+//Note this account must be distinguished from Login accounts, which are completely different
 public class Account {
+    //Code will be used for finding a particular account
     private final int code;
     private final String description;
     private final LocalDate date;
-    //item code, price, qty.
+
+    //entries is a list of entries each of which contains item code(String), cost(double), quantity(int)
     private final ArrayList<Object[]> entries;
 
 
@@ -19,6 +24,7 @@ public class Account {
         this.date = date;
         this.entries = entries;
     }
+
 
     //EFFECTS: return the total dollar amount of this
     public double getDollarAmount() {
@@ -103,6 +109,7 @@ public class Account {
         return copyEntries();
     }
 
+    //EFFECTS: return a copy of the list of the entries.
     private ArrayList<Object[]> copyEntries() {
         ArrayList<Object[]> copy = new ArrayList<>();
         for (Object[] entry: entries) {
