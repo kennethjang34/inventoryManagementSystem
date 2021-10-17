@@ -40,3 +40,6 @@ As a user, I want to locate each product, as well as all the products belonging 
 
 As a user, I want to be able to retrieve my login account password with my information.
 
+As a user, I want to be able to save my current inventory state
+
+As a user, I want to be able to reload my inventory in the same state as last time from file
