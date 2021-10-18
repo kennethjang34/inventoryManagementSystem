@@ -1,17 +1,11 @@
 package ui;
 
 
-import model.Account;
-import model.Admin;
-import model.Inventory;
-import model.Product;
+import model.*;
 
 import java.time.DateTimeException;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Scanner;
+import java.util.*;
 
 
 //creates products based on the user's request and add it to inventory.
@@ -32,7 +26,7 @@ public class Manager {
     //object[0]: Product
     //object[1]: String representing location
     //this object array will be called entry, and the list will often be called entries later
-    private final ArrayList<Object[]> temporaryList;
+    private final ArrayList<LocationTag> temporaryList;
 
     //current product represents a product that has been located from the user's request.
     //User will be given several options to check the product-specific information
@@ -76,10 +70,8 @@ public class Manager {
         int sku = createSku();
         itemCode = itemCode.toUpperCase();
         Product product = new Product(itemCode, sku, cost, currentDate, bestBeforeDate);
-        Object[] entry = new Object[2];
-        entry[0] = product;
-        entry[1] = location;
-        temporaryList.add(entry);
+        LocationTag locationTag = new LocationTag(product, location);
+        temporaryList.add(locationTag);
         return product;
     }
 
@@ -90,7 +82,7 @@ public class Manager {
 
 
     //EFFECTS: return temporary List with entries.
-    private ArrayList<Object[]> getTemporaryList() {
+    private ArrayList<LocationTag> getTemporaryList() {
         return temporaryList;
     }
 
@@ -99,10 +91,10 @@ public class Manager {
     //EFFECTS: remove one product belonging to this item code from the temporary list.
     //return true if it succeeds. return false otherwise.
     private boolean removeProductFromTemporaryList(String itemCode) {
-        for (Object[] entry: temporaryList) {
-            Product e = (Product)entry[0];
+        for (LocationTag tag: temporaryList) {
+            Product e = tag.getProduct();
             if (e.getItemCode().equalsIgnoreCase(itemCode)) {
-                temporaryList.remove(entry);
+                temporaryList.remove(tag);
                 return true;
             }
         }
@@ -144,8 +136,8 @@ public class Manager {
     //and number of products belonging to those item code as value.
     private Map<String, Integer> makeTemporaryCountHash() {
         Map<String, Integer>  hash = new HashMap<>();
-        for (Object[] fromTemp: temporaryList) {
-            Product product = (Product)fromTemp[0];
+        for (LocationTag tag: temporaryList) {
+            Product product = tag.getProduct();
             if (hash.containsKey(product.getItemCode())) {
                 int existing = hash.get(product.getItemCode());
                 hash.put(product.getItemCode(), existing + 1);
@@ -170,8 +162,8 @@ public class Manager {
             Object[] entry = new Object[3];
             entry[0] = count.getKey();
             entry[2] = count.getValue();
-            for (Object[] entryFromTemp: temporaryList) {
-                Product product = (Product)entryFromTemp[0];
+            for (LocationTag tag: temporaryList) {
+                Product product = tag.getProduct();
                 if (product.getItemCode().equalsIgnoreCase((String)entry[0])) {
                     entry[1] = product.getCost();
                     break;
@@ -262,9 +254,9 @@ public class Manager {
 
 
     //EFFECTS: return a list of labels that indicate locations of products belonging to the item code.
-    private ArrayList<String> getLocationListOfProduct(String itemCode) {
-        ArrayList<Integer> numericList = inventory.findLocations(itemCode);
-        ArrayList<String> locationList = new ArrayList<>();
+    private LinkedList<String> getLocationListOfProduct(String itemCode) {
+        LinkedList<Integer> numericList = inventory.findLocations(itemCode);
+        LinkedList<String> locationList = new LinkedList<>();
         for (Integer e: numericList) {
             locationList.add(inventory.getStringLocationCode(e));
         }
@@ -312,7 +304,7 @@ public class Manager {
         String info = "The inventory contains a total number of " + inventory.getTotalQuantity() + " of products";
         info += '\n' + "The item code list created is as follows: ";
         info += '\n';
-        ArrayList<String> codes = inventory.getListOfCodes();
+        LinkedList<String> codes = inventory.getListOfCodes();
         if (codes.isEmpty()) {
             System.out.println("The inventory is empty");
         }
@@ -332,7 +324,7 @@ public class Manager {
             System.out.println("Input is not valid");
             return;
         }
-        ArrayList<String> locationList = this.getLocationListOfProduct(itemCode);
+        LinkedList<String> locationList = this.getLocationListOfProduct(itemCode);
         System.out.println("The products belonging to the code are stored at: ");
         for (String e: locationList) {
             System.out.print(e + " ");
@@ -433,10 +425,10 @@ public class Manager {
 
     //EFFECTS: print the information of the products on the temporary list of this.
     private void printTemporaryList() {
-        ArrayList<Object[]> list = this.getTemporaryList();
-        for (Object[] productInfo : list) {
-            Product product = (Product)productInfo[0];
-            String location = (String)productInfo[1];
+        ArrayList<LocationTag> list = this.getTemporaryList();
+        for (LocationTag tag : list) {
+            Product product = tag.getProduct();
+            String location = tag.getLocation();
             System.out.println(product.getItemCode() + " " + product.getSku());
             System.out.println("Cost: " + product.getCost());
             if (product.getBestBeforeDate() != null) {

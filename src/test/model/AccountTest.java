@@ -15,7 +15,6 @@ public class AccountTest {
     LocalDate today = LocalDate.now();
     ArrayList<Object[]> itemList;
 
-
     @BeforeEach
     void runBeforeEach() {
         itemList = new ArrayList<>();

@@ -2,20 +2,21 @@ package model;
 
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 
 public class Inventory {
     private final int codeSize;
     //hash map that has numeric item codes as its keys and array lists of products as its value.
-    private final ArrayList<Product> [] listByCode;
+    private final ArrayList<LinkedList<Product>> listByCode;
 
     //hash map that has numeric location codes as its keys and array lists of products as its value.
     //Default code size will be set to 3.
     //index 0 represents the temporary storage room, where products without location tag will be stored.
-    private final ArrayList<Product> [] listByLocation;
+    private final ArrayList<LinkedList<Product>> listByLocation;
 
     //hashmap where key is a numeric product code
     //and the value is an array of numeric location code.
-    private final ArrayList<Integer> [] locationsOfProductCode;
+    private final ArrayList<LinkedList<Integer>> locationsOfProductCode;
     private final int numberOfSections;
     private static final int NUM_ALPHABETS = 26;
     private int quantity;
@@ -25,16 +26,17 @@ public class Inventory {
     public Inventory() {
         codeSize = 3;
         numberOfSections = 100;
-        listByCode = new ArrayList[(int)Math.pow(NUM_ALPHABETS, codeSize)];
-        locationsOfProductCode = new ArrayList[(int)Math.pow(NUM_ALPHABETS, codeSize)];
+        listByCode = new ArrayList<>((int)Math.pow(NUM_ALPHABETS, codeSize));
+        locationsOfProductCode = new ArrayList<>((int)Math.pow(NUM_ALPHABETS, codeSize));
         //In this case, the location code starts at A0 and ends at Z99
-        listByLocation = new ArrayList[NUM_ALPHABETS * numberOfSections];
-        for (int i = 0; i < listByCode.length; i++) {
-            listByCode[i] = new ArrayList<>();
-            locationsOfProductCode[i] = new ArrayList<>();
+        listByLocation = new ArrayList<>(NUM_ALPHABETS * numberOfSections);
+
+        for (int i = 0; i < (int)Math.pow(NUM_ALPHABETS, codeSize); i++) {
+            listByCode.add(new LinkedList<>());
+            locationsOfProductCode.add(new LinkedList<>());
         }
-        for (int i = 0; i < listByLocation.length; i++) {
-            listByLocation[i] = new ArrayList<>();
+        for (int i = 0; i < NUM_ALPHABETS * numberOfSections; i++) {
+            listByLocation.add(new LinkedList<>());
         }
         quantity = 0;
     }
@@ -45,17 +47,18 @@ public class Inventory {
     public Inventory(int codeSize) {
         this.codeSize = codeSize;
         numberOfSections = 100;
-        listByCode = new ArrayList[(int)Math.pow(NUM_ALPHABETS, codeSize)];
-        locationsOfProductCode = new ArrayList[(int)Math.pow(NUM_ALPHABETS, codeSize)];
-        listByLocation = new ArrayList[NUM_ALPHABETS * numberOfSections];
-        for (int i = 0; i < listByCode.length; i++) {
-            listByCode[i] = new ArrayList<>();
-            locationsOfProductCode[i] = new ArrayList<>();
-        }
-        for (int i = 0; i < listByLocation.length; i++) {
-            listByLocation[i] = new ArrayList<>();
-        }
+        listByCode = new ArrayList<>((int)Math.pow(NUM_ALPHABETS, codeSize));
+        locationsOfProductCode = new ArrayList<>((int)Math.pow(NUM_ALPHABETS, codeSize));
+        //In this case, the location code starts at A0 and ends at Z99
+        listByLocation = new ArrayList<>(NUM_ALPHABETS * numberOfSections);
         quantity = 0;
+        for (int i = 0; i < (int)Math.pow(NUM_ALPHABETS, codeSize); i++) {
+            listByCode.add(new LinkedList<>());
+            locationsOfProductCode.add(new LinkedList<>());
+        }
+        for (int i = 0; i < NUM_ALPHABETS * numberOfSections; i++) {
+            listByLocation.add(new LinkedList<>());
+        }
     }
 
     //REQUIRES: code size must be greater than 0, numberOfSections must be greater than 0.
@@ -64,17 +67,18 @@ public class Inventory {
     public Inventory(int codeSize, int numberOfSections) {
         this.codeSize = codeSize;
         this.numberOfSections = numberOfSections;
-        listByCode = new ArrayList[(int)Math.pow(NUM_ALPHABETS, codeSize)];
-        listByLocation = new ArrayList[NUM_ALPHABETS * numberOfSections];
-        locationsOfProductCode = new ArrayList[(int)Math.pow(NUM_ALPHABETS, codeSize)];
-        for (int i = 0; i < listByCode.length; i++) {
-            listByCode[i] = new ArrayList<>();
-            locationsOfProductCode[i] = new ArrayList<>();
-        }
-        for (int i = 0; i < listByLocation.length; i++) {
-            listByLocation[i] = new ArrayList<>();
-        }
+        listByCode = new ArrayList<>((int)Math.pow(NUM_ALPHABETS, codeSize));
+        locationsOfProductCode = new ArrayList<>((int)Math.pow(NUM_ALPHABETS, codeSize));
+        //In this case, the location code starts at A0 and ends at Z99
+        listByLocation = new ArrayList<>(NUM_ALPHABETS * numberOfSections);
         quantity = 0;
+        for (int i = 0; i < (int)Math.pow(NUM_ALPHABETS, codeSize); i++) {
+            listByCode.add(new LinkedList<>());
+            locationsOfProductCode.add(new LinkedList<>());
+        }
+        for (int i = 0; i < NUM_ALPHABETS * numberOfSections; i++) {
+            listByLocation.add(new LinkedList<>());
+        }
     }
 
 
@@ -97,16 +101,16 @@ public class Inventory {
 
 
     //REQUIRES: products need to be a list of entries that contain Product, location in String.
-    public void addProducts(ArrayList<Object[]> products) {
-        for (Object[] productInfo: products) {
-            Product product = (Product)productInfo[0];
-            String location = (String)productInfo[1];
+    public void addProducts(ArrayList<LocationTag> products) {
+        for (LocationTag tag: products) {
+            Product product = tag.getProduct();
+            String location = tag.getLocation();
             int itemCode = getItemCodeNumber(product.getItemCode());
             int locationCode = getLocationCodeNumber(location);
-            listByCode[itemCode].add(product);
-            listByLocation[locationCode].add(product);
-            if (!locationsOfProductCode[itemCode].contains(locationCode)) {
-                locationsOfProductCode[itemCode].add(locationCode);
+            listByCode.get(itemCode).add(product);
+            listByLocation.get(locationCode).add(product);
+            if (!locationsOfProductCode.get(itemCode).contains(locationCode)) {
+                locationsOfProductCode.get(itemCode).add(locationCode);
             }
         }
         quantity += products.size();
@@ -120,9 +124,9 @@ public class Inventory {
     //implement try and catch block later (in case the products don't exist)
     public boolean removeProduct(Product product) {
         int code = getItemCodeNumber((product.getItemCode()));
-        if (listByCode[code].remove(product)) {
+        if (listByCode.get(code).remove(product)) {
             int locationCode = findLocation(product);
-            listByLocation[locationCode].remove(product);
+            listByLocation.get(locationCode).remove(product);
             return true;
         }
         return false;
@@ -136,15 +140,14 @@ public class Inventory {
     //if method removes any of the products, return true.
     //else return false.
     public boolean removeProducts(String itemCode, int qty) {
-        ArrayList<Product> products = listByCode[getItemCodeNumber(itemCode)];
-        ArrayList<Object[]> toBeRemoved = new ArrayList<>();
+        LinkedList<Product> products = listByCode.get(getItemCodeNumber(itemCode));
+        ArrayList<LocationTag> toBeRemoved = new ArrayList<>();
         int count = 0;
         for (; count < qty && count < products.size(); count++) {
-            Object[] entry = new Object[2];
-            Product product = products.get(count);
-            entry[0] = product;
-            entry[1] = getStringLocationCode(findLocation(product));
-            toBeRemoved.add(entry);
+            LocationTag tag = new LocationTag(products.get(count),
+                    getStringLocationCode(findLocation(products.get(count))));
+
+            toBeRemoved.add(tag);
         }
         removeProducts(toBeRemoved);
         return (count > 0);
@@ -154,14 +157,14 @@ public class Inventory {
     //MODIFIES: this
     //EFFECTS: remove all the products indicated from the inventory
     //implement try and catch block later (in case the products don't exist)
-    public void removeProducts(ArrayList<Object[]> entries) {
-        for (Object[] e: entries) {
-            Product product = (Product)e[0];
-            String location = (String)e[1];
+    public void removeProducts(ArrayList<LocationTag> entries) {
+        for (LocationTag tag: entries) {
+            Product product = tag.getProduct();
+            String location = tag.getLocation();
             int code = getItemCodeNumber((product.getItemCode()));
-            listByCode[code].remove(product);
+            listByCode.get(code).remove(product);
             //try and catch block needed
-            listByLocation[getLocationCodeNumber(location)].remove(product);
+            listByLocation.get(getLocationCodeNumber(location)).remove(product);
         }
     }
 
@@ -173,10 +176,10 @@ public class Inventory {
     //if the product is stored in the temporary storage room, return 0;
     //If there is no such product in the inventory, return -1.
     public int findLocation(Product product) {
-        ArrayList<Product> list;
-        ArrayList<Integer> locations = locationsOfProductCode[getItemCodeNumber(product.getItemCode())];
+        LinkedList<Product> list;
+        LinkedList<Integer> locations = locationsOfProductCode.get(getItemCodeNumber(product.getItemCode()));
         for (Integer e: locations) {
-            list = listByLocation[e];
+            list = listByLocation.get(e);
             if (list.contains(product)) {
                 return e;
             }
@@ -188,20 +191,19 @@ public class Inventory {
     //for example, if valid form of item code is "AAA", passed item code cannot be "QQQQ"
     //EFFECTS: find the location of a product indicated by this item code and SKU
     public int findLocation(String itemCode, int sku) {
-        for (Product e: listByCode[getItemCodeNumber(itemCode)]) {
+        for (Product e: listByCode.get(getItemCodeNumber(itemCode))) {
             if (e.getSku() == sku) {
                 return findLocation(e);
             }
         }
-
         return -1;
     }
 
     //numeric form of this item code must be existing in inventory.
     //For instance, if valid form of item code is "AAA", passed item code cannot be "AAAA"
     //EFFECTS: return a list of locations where products belonging to the item code are located.
-    public ArrayList<Integer> findLocations(String itemCode) {
-        return locationsOfProductCode[getItemCodeNumber(itemCode)];
+    public LinkedList<Integer> findLocations(String itemCode) {
+        return locationsOfProductCode.get(getItemCodeNumber(itemCode));
     }
 
 
@@ -272,8 +274,8 @@ public class Inventory {
     //REQUIRES: code must be in valid form.
     //EFFECTS: return the number of products belonging to the code.
     public int getQuantity(String code) {
-        int itemNumber = getItemCodeNumber((code));
-        return listByCode[itemNumber].size();
+        int itemNumber = getItemCodeNumber(code);
+        return listByCode.get(itemNumber).size();
     }
 
     //EFFECTS: return the number of total quantities in the inventory.
@@ -283,8 +285,8 @@ public class Inventory {
 
     //EFFECTS: return the list of products specified by the item code.
     //If there isn't any of those products, return null
-    public ArrayList<Product> getProductList(String itemCode) {
-        ArrayList<Product> list = listByCode[getItemCodeNumber(itemCode)];
+    public LinkedList<Product> getProductList(String itemCode) {
+        LinkedList<Product> list = listByCode.get(getItemCodeNumber(itemCode));
         if (list.size() == 0) {
             return null;
         }
@@ -294,7 +296,7 @@ public class Inventory {
     //EFFECTS: return the product specified by the item code and stock keeping unit(SKU).
     //If there isn't such a product, return null.
     public Product getProduct(String itemCode, int sku) {
-        ArrayList<Product> list = listByCode[getItemCodeNumber(itemCode)];
+        LinkedList<Product> list = listByCode.get(getItemCodeNumber(itemCode));
         for (Product e: list) {
             if (e.getSku() == sku) {
                 return e;
@@ -304,10 +306,10 @@ public class Inventory {
     }
 
     //EFFECTS: return a list of item codes existing in the inventory.
-    public ArrayList<String> getListOfCodes() {
-        ArrayList<String> codes = new ArrayList<>();
-        for (int i = 0; i < listByCode.length; i++) {
-            ArrayList<Product> products = listByCode[i];
+    public LinkedList<String> getListOfCodes() {
+        LinkedList<String> codes = new LinkedList<>();
+        for (int i = 0; i < listByCode.size(); i++) {
+            LinkedList<Product> products = listByCode.get(i);
             if (products.size() != 0) {
                 codes.add(getStringItemCode(i));
             }
