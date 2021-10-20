@@ -1,17 +1,17 @@
 package model;
 
-public class LocationTag {
+public class ProductTag {
     private Product product;
     private String location;
 
-    public LocationTag() {
+    public ProductTag() {
         product = null;
         location = null;
     }
 
-    public LocationTag(Product product, String location) {
+    public ProductTag(Product product, String location) {
         this.product = product;
-        this.location = location;
+        this.location = location.toUpperCase();
     }
 
     public Product getProduct() {
@@ -29,4 +29,11 @@ public class LocationTag {
     public void setLocation(String location) {
         this.location = location;
     }
+
+    public String toString() {
+        String s = product.getItemCode() + product.getSku() + ", " + location;
+        return s;
+    }
+
+
 }

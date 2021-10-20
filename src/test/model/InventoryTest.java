@@ -4,14 +4,13 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.LinkedList;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 public class InventoryTest {
     private Inventory inventory;
-    private ArrayList<LocationTag> productsToAddWLocation;
+    private LinkedList<ProductTag> productsToAddWLocation;
     private static int sku = 111111111;
     private static LocalDate today = LocalDate.now();
     private static final LocalDate bestBeforeDate = LocalDate.of(2021, 10, 20);
@@ -19,24 +18,24 @@ public class InventoryTest {
     @BeforeEach
     void runBeforeEveryTest() {
         inventory = new Inventory();
-        productsToAddWLocation = new ArrayList<>();
-        LocationTag tag = new LocationTag(new Product("App", sku++, 3.2, today, bestBeforeDate), "F11");
+        productsToAddWLocation = new LinkedList<>();
+        ProductTag tag = new ProductTag(new Product("App", sku++, 3.2, today, bestBeforeDate), "F11");
         productsToAddWLocation.add(tag);
-        tag = new LocationTag(new Product("BNN", sku++, 2.8, today, bestBeforeDate), "F12");
+        tag = new ProductTag(new Product("BNN", sku++, 2.8, today, bestBeforeDate), "F12");
         productsToAddWLocation.add(tag);
-        tag = new LocationTag(new Product("CHI", sku++, 3.2, today, bestBeforeDate), "F13");
+        tag = new ProductTag(new Product("CHI", sku++, 3.2, today, bestBeforeDate), "F13");
         productsToAddWLocation.add(tag);
-        tag = new LocationTag(new Product("MGO", sku++, 3.2, today, bestBeforeDate), "F14");
+        tag = new ProductTag(new Product("MGO", sku++, 3.2, today, bestBeforeDate), "F14");
         productsToAddWLocation.add(tag);
     }
 
 
 
 
-    ArrayList<LocationTag> createProducts(String code, double cost, int qty, String location) {
-        ArrayList<LocationTag> products = new ArrayList<>();
+    LinkedList<ProductTag> createProducts(String code, double cost, int qty, String location) {
+        LinkedList<ProductTag> products = new LinkedList<>();
         for (int i = 0; i < qty; i++) {
-            LocationTag tag = new LocationTag(new Product(code, sku++, cost, today, bestBeforeDate), location);
+            ProductTag tag = new ProductTag(new Product(code, sku++, cost, today, bestBeforeDate), location);
             products.add(tag);
         }
         return products;
@@ -72,15 +71,15 @@ public class InventoryTest {
     @Test
     void testAddProduct() {
         inventory = new Inventory();
-        ArrayList<LocationTag> entries = new ArrayList<>();
-        LocationTag tag = new LocationTag();
+        LinkedList<ProductTag> entries = new LinkedList<>();
+        ProductTag tag = new ProductTag();
         tag.setProduct(new Product("App", sku++, 3.2, today, bestBeforeDate));
         tag.setLocation("F11");
         entries.add(tag);
         inventory.addProducts(entries);
         assertEquals(1, inventory.getTotalQuantity());
         assertEquals(1, inventory.getQuantity("app"));
-        assertEquals(inventory.getLocationCodeNumber("F11"), inventory.findLocation(tag.getProduct()));
+        assertEquals(inventory.getLocationCodeNumber("F11"), inventory.findProduct(tag.getProduct()));
     }
 
     @Test
@@ -115,7 +114,7 @@ public class InventoryTest {
     @Test
     void testGetProductInMiddleList() {
         inventory = new Inventory();
-        this.sku = 1;
+        sku = 1;
         inventory.addProducts(createProducts("ASR", 50, 100, "T"));
         assertEquals(101, sku);
         Product product = inventory.getProduct("ASR", 50);
@@ -176,87 +175,86 @@ public class InventoryTest {
         assertEquals(inventory.getLocationCodeNumber("F11"), locations.get(0));
         assertEquals(inventory.getLocationCodeNumber("T"), locations.get(1));
         assertEquals(inventory.getLocationCodeNumber("A11"), locations.get(2));
-        assertEquals(inventory.getLocationCodeNumber("A11"), inventory.findLocation("APP", sku - 1));
+        assertEquals(inventory.getLocationCodeNumber("A11"), inventory.findProduct("APP", sku - 1));
     }
 
 
     @Test
     void testFindLocationOfProductWithProduct() {
         Product product = new Product("CHI", sku++, 11, today, bestBeforeDate);
-        ArrayList<LocationTag> list = new ArrayList<>();
-        LocationTag tag = new LocationTag(product, "D32");
+        LinkedList<ProductTag> list = new LinkedList<>();
+        ProductTag tag = new ProductTag(product, "D32");
         list.add(tag);
         inventory.addProducts(list);
-        assertEquals("D32", inventory.getStringLocationCode(inventory.findLocation(product)));
-        tag = new LocationTag(new Product("DDD", sku++, 50, today, bestBeforeDate), "Z99");
+        assertEquals("D32", inventory.getStringLocationCode(inventory.findProduct(product)));
+        tag = new ProductTag(new Product("DDD", sku++, 50, today, bestBeforeDate), "Z99");
         list.add(tag);
         inventory.addProducts(list);
-        assertEquals("Z99", inventory.getStringLocationCode(inventory.findLocation(tag.getProduct())));
+        assertEquals("Z99", inventory.getStringLocationCode(inventory.findProduct(tag.getProduct())));
         //A00 is the same as T
-        tag = new LocationTag(new Product("adi", sku++, 2, today, bestBeforeDate), "A00");
+        tag = new ProductTag(new Product("adi", sku++, 2, today, bestBeforeDate), "A00");
         list.add(tag);
         inventory.addProducts(list);
-        assertEquals("T", inventory.getStringLocationCode(inventory.findLocation(tag.getProduct())));
+        assertEquals("T", inventory.getStringLocationCode(inventory.findProduct(tag.getProduct())));
     }
 
     @Test
     void testFindLocationOfProductWithProductCode() {
         Product product = new Product("CHI", sku++, 11, today, bestBeforeDate);
         String itemCode = product.getItemCode();
-        ArrayList<LocationTag> list = new ArrayList<>();
-        LocationTag tag = new LocationTag(product, "D32");
+        LinkedList<ProductTag> list = new LinkedList<>();
+        ProductTag tag = new ProductTag(product, "D32");
         list.add(tag);
         inventory.addProducts(list);
-        assertEquals("D32", inventory.getStringLocationCode(inventory.findLocation(itemCode, sku - 1)));
+        assertEquals("D32", inventory.getStringLocationCode(inventory.findProduct(itemCode, sku - 1)));
         product = new Product("DDD", sku++, 50, today, bestBeforeDate);
-        tag = new LocationTag(product, "Z99");
+        tag = new ProductTag(product, "Z99");
         list.add(tag);
         inventory.addProducts(list);
         itemCode = product.getItemCode();
-        assertEquals("Z99", inventory.getStringLocationCode(inventory.findLocation(itemCode, sku - 1)));
+        assertEquals("Z99", inventory.getStringLocationCode(inventory.findProduct(itemCode, sku - 1)));
         product = new Product("adi", sku++, 2, today, bestBeforeDate);
-        tag = new LocationTag(product, "A00");
+        tag = new ProductTag(product, "A00");
         list.add(tag);
         inventory.addProducts(list);
         itemCode = product.getItemCode();
-        assertEquals("T", inventory.getStringLocationCode(inventory.findLocation(itemCode, sku - 1)));
+        assertEquals("T", inventory.getStringLocationCode(inventory.findProduct(itemCode, sku - 1)));
     }
 
     @Test
     void testFindMethodsWithNonExistingProduct() {
         Product product = new Product("CHI", sku++, 11, today, bestBeforeDate);
-        ArrayList<LocationTag> list = new ArrayList<>();
-        LocationTag tag = new LocationTag(product, "D32");
+        LinkedList<ProductTag> list = new LinkedList<>();
+        ProductTag tag = new ProductTag(product, "D32");
         list.add(tag);
         inventory.addProducts(list);
         String itemCode = product.getItemCode();
-        int sku = product.getSku();
-        assertEquals("D32", inventory.getStringLocationCode(inventory.findLocation(itemCode, sku)));
-        Product notInInventory = new Product("ABC", this.sku++, 12, today, bestBeforeDate);
-        assertEquals(-1, inventory.findLocation(notInInventory));
-        assertEquals(-1, inventory.findLocation("ABC", notInInventory.getSku()));
+        assertEquals("D32", inventory.getStringLocationCode(inventory.findProduct(itemCode, product.getSku())));
+        Product notInInventory = new Product("ABC", sku++, 12, today, bestBeforeDate);
+        assertEquals(-1, inventory.findProduct(notInInventory));
+        assertEquals(-1, inventory.findProduct("ABC", notInInventory.getSku()));
     }
 
     @Test
     void testRemoveProduct() {
         inventory.addProducts(productsToAddWLocation);
-        for (LocationTag tag: productsToAddWLocation) {
+        for (ProductTag tag: productsToAddWLocation) {
             Product product = tag.getProduct();
             String itemCode = product.getItemCode();
             int sku = product.getSku();
             assertEquals(1, inventory.getQuantity(itemCode));
             assertEquals(product, inventory.getProduct(itemCode, sku));
-            assertTrue(inventory.removeProduct(product));
+            assertTrue(inventory.removeProducts(product));
             assertEquals(0, inventory.getQuantity(product.getItemCode()));
-            assertEquals(-1, inventory.findLocation(product));
-            assertEquals(-1, inventory.findLocation(itemCode, product.getSku()));
+            assertEquals(-1, inventory.findProduct(product));
+            assertEquals(-1, inventory.findProduct(itemCode, product.getSku()));
             assertNull(inventory.getProduct(itemCode, sku));
         }
     }
 
     @Test
     void testRemoveProductsWithItemCode() {
-        ArrayList<LocationTag> list = createProducts("NIK", 100.1, 544, "T");
+        LinkedList<ProductTag> list = createProducts("NIK", 100.1, 544, "T");
         assertEquals(0, inventory.getQuantity("NIK"));
         inventory.addProducts(list);
         assertEquals(544, inventory.getQuantity("NIK"));
@@ -268,7 +266,7 @@ public class InventoryTest {
 
     @Test
     void testRemoveProductsAtDifferentLocations() {
-        ArrayList<LocationTag> list = createProducts("NIK", 100.1, 100, "T");
+        LinkedList<ProductTag> list = createProducts("NIK", 100.1, 100, "T");
         inventory.addProducts(list);
         inventory.addProducts(createProducts("NIK", 100.1, 100, "A11"));
         inventory.addProducts(createProducts("NIK", 100.1, 200, "B11"));
@@ -280,21 +278,21 @@ public class InventoryTest {
 
     @Test
     void testFindLocationOfProductsRemoved() {
-        ArrayList<LocationTag> list1 = createProducts("NIK", 100.1, 100, "T");
+        LinkedList<ProductTag> list1 = createProducts("NIK", 100.1, 100, "T");
         inventory.addProducts(list1);
-        ArrayList<LocationTag> list2 = createProducts("NIK", 100.1, 100, "A11");
+        LinkedList<ProductTag> list2 = createProducts("NIK", 100.1, 100, "A11");
         inventory.addProducts(list2);
         assertEquals(200, inventory.getQuantity("NIK"));
         inventory.removeProducts("NIK", 110);
         assertEquals(90, inventory.getQuantity("NIK"));
         Product locatedAtT = list1.get(0).getProduct();
-        assertEquals(-1, inventory.findLocation(locatedAtT));
+        assertEquals(-1, inventory.findProduct(locatedAtT));
     }
 
 
     @Test
     void testRemoveProductsWithProductList() {
-        ArrayList<LocationTag> list = createProducts("NIK", 100.1, 544, "T");
+        LinkedList<ProductTag> list = createProducts("NIK", 100.1, 544, "T");
         assertEquals(0, inventory.getQuantity("NIK"));
         inventory.addProducts(list);
         assertEquals(544, inventory.getQuantity("NIK"));
@@ -305,10 +303,10 @@ public class InventoryTest {
     @Test
     void testRemoveNonExistingProduct() {
         inventory = new Inventory();
-        productsToAddWLocation = new ArrayList<>();
+        productsToAddWLocation = new LinkedList<>();
         Product product = new Product("BBB", sku++, 0.04, today, null);
         assertEquals(0, inventory.getQuantity(product.getItemCode()));
-        assertFalse(inventory.removeProduct(product));
+        assertFalse(inventory.removeProducts(product));
         assertFalse(inventory.removeProducts(product.getItemCode(), 100));
     }
 

@@ -42,7 +42,10 @@ public class AccountTest {
 
     @Test
     void testConstructor() {
-        Account account = new Account(code, description, today, itemList);
+        Account account = new Account(code, description, today);
+        for (Object[] entry: itemList) {
+            account.addEntries((String)entry[0], (double)entry[1], (int)entry[2]);
+        }
         assertEquals(code, account.getCode());
         assertEquals(250 + 666 + 1 + 10, account.getTotalQuantity());
         assertEquals(today.toString(), account.getDate().toString());
@@ -56,34 +59,14 @@ public class AccountTest {
         assertEquals("accountCreatedForTest", account.getDescription());
         assertEquals(250 * cost + 666 * cost * 2 + 1 * cost * 3 + 10 * cost * 5,
                 account.getDollarAmount());
-        ArrayList<Object[]> copyList = account.getEntries();
-        Account newAccount = new Account(code+1, "this is an account with a copied entries", today, copyList);
-        assertEquals(code + 1, newAccount.getCode());
-        assertEquals(250 + 666 + 1 + 10, newAccount.getTotalQuantity());
-        assertEquals(today.toString(), newAccount.getDate().toString());
-        assertEquals(1, newAccount.getQuantity("STR"));
-        assertEquals(10, newAccount.getQuantity("BNN"));
-        assertEquals(cost * 5, newAccount.getPrice("BNN"));
-        assertEquals(cost * 2, newAccount.getPrice("ADS"));
-        assertEquals(cost * 5 * 10, newAccount.getTotalCost("BNN"));
-        assertEquals(cost * 250, newAccount.getTotalCost("SAD"));
-        assertEquals(cost * 2 * 666, newAccount.getTotalCost("ADS"));
-        assertEquals("this is an account with a copied entries", newAccount.getDescription());
-        assertEquals(250 * cost + 666 * cost * 2 + 1 * cost * 3 + 10 * cost * 5,
-                newAccount.getDollarAmount());
     }
 
     @Test
     void testConstructorWithEmptyEntries() {
-        Account account = new Account(code, description, today, new ArrayList<>());
+        Account account = new Account(code, description, today);
         assertEquals(0, account.getQuantity("aaa"));
-        assertEquals(0, account.getEntries().size());
         assertEquals(0, account.getTotalCost("aaa"));
         assertEquals(0, account.getPrice("aaa"));
         assertEquals(0, account.getDollarAmount());
     }
-
-
-
-
 }

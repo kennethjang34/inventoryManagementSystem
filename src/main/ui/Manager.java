@@ -2,6 +2,8 @@ package ui;
 
 
 import model.*;
+import org.json.JSONObject;
+import persistence.JsonConvertable;
 
 import java.time.DateTimeException;
 import java.time.LocalDate;
@@ -13,9 +15,9 @@ import java.util.*;
 //make it possible to not just search for a specific product using Inventory class,
 //but can check multiple products comparing them.
 //Only a certain number of people who have login accounts in admin can use this
-public class Manager {
+public class Manager implements JsonConvertable {
     private final Inventory inventory;
-    private final ArrayList<Account> ledger;
+    private final Ledger ledger;
     private final Admin admin;
     //scanner will be used to receive input options from the user.
     private final Scanner scanner;
@@ -26,22 +28,17 @@ public class Manager {
     //object[0]: Product
     //object[1]: String representing location
     //this object array will be called entry, and the list will often be called entries later
-    private final ArrayList<LocationTag> temporaryList;
+    private final ArrayList<AdditionTag> listToAdd;
+
+    private final ArrayList<RemovalTag> listToRemove;
 
     //current product represents a product that has been located from the user's request.
     //User will be given several options to check the product-specific information
     private Product currentProduct;
     private LocalDate currentDate;
-    //next sku is the sku number that will be assigned to the new product.
-    private int nextSKU;
-    //next account number is the account number that will be assigned to the new account.
-    //Note this account refers to the account that represents an update history of the inventory,
-    //not login account.
-    private int nextAccountNumber;
-    private final int maxSku = 999999999;
-    private final int firstSku = 111111111;
-    private final int firstAccountNumber = 111111;
 
+    private final int accountSize = 6;
+    private final int skuSize = 9;
 
 
     //EFFECTS: create a manager with an empty inventory, ledger, and admin.
@@ -49,31 +46,16 @@ public class Manager {
         //scanner is set to receive inputs from console
         scanner = new Scanner(System.in);
         inventory = new Inventory();
-        ledger = new ArrayList<>();
+        inventory.setSkuSize(skuSize);
+        ledger = new Ledger(accountSize);
         admin = new Admin();
-        temporaryList = new ArrayList<>();
-        nextSKU = firstSku;
-        nextAccountNumber = firstAccountNumber;
+        listToAdd = new ArrayList<>();
+        listToRemove = new ArrayList<>();
         currentDate = LocalDate.now();
         currentProduct = null;
     }
 
 
-    //Caller needs to supply item code, best-before-date, and cost
-    //best-before date can be any date, and even null,
-    //but it is recommended to use a date today or later if there is best-before date
-    //REQUIRES: item code must be in a valid form specified by the user, cost must be positive.
-    //best-before date must be today or later than today
-    //MODIFIES: this
-    //EFFECTS: create a product according to the input information.
-    public Product createProduct(String itemCode, LocalDate bestBeforeDate, double cost, String location) {
-        int sku = createSku();
-        itemCode = itemCode.toUpperCase();
-        Product product = new Product(itemCode, sku, cost, currentDate, bestBeforeDate);
-        LocationTag locationTag = new LocationTag(product, location);
-        temporaryList.add(locationTag);
-        return product;
-    }
 
     //EFFECTS: return scanner
     public Scanner getScanner() {
@@ -81,108 +63,88 @@ public class Manager {
     }
 
 
-    //EFFECTS: return temporary List with entries.
-    private ArrayList<LocationTag> getTemporaryList() {
-        return temporaryList;
+    private void addToListToAdd(String itemCode, double price,
+                                LocalDate bestBeforeDate, String location, int qty) {
+        itemCode = itemCode.toUpperCase();
+        AdditionTag additionTag = new AdditionTag(itemCode, price, bestBeforeDate, location, qty);
+        listToAdd.add(additionTag);
     }
 
 
     //MODIFIES: this
     //EFFECTS: remove one product belonging to this item code from the temporary list.
     //return true if it succeeds. return false otherwise.
-    private boolean removeProductFromTemporaryList(String itemCode) {
-        for (LocationTag tag: temporaryList) {
-            Product e = tag.getProduct();
-            if (e.getItemCode().equalsIgnoreCase(itemCode)) {
-                temporaryList.remove(tag);
-                return true;
-            }
-        }
-        return false;
+    private void addToListToRemove(String itemCode, int qty, String location) throws Exception {
+        itemCode = itemCode.toUpperCase();
+        listToRemove.add(new RemovalTag(itemCode, location, qty));
     }
 
-    //MODIFIES: this
-    //EFFECTS: remove a number specified by qty of products
-    //belonging to this item code that is specified by qty from the inventory.
-    //return true when it succeeds.
-    //return true if it succeeds. return false otherwise.
-    private boolean removeProducts(String itemCode, int qty) {
-        return inventory.removeProducts(itemCode, qty);
-    }
 
 
     //MODIFIES:this
     //EFFECTS: remove a specific product that has this item code and SKU.
     //Return ture if it succeeds. return false otherwise.
     private boolean removeProduct(String itemCode, int sku) {
-        Product product = inventory.getProduct(itemCode, sku);
-        return inventory.removeProduct(product);
+        itemCode = itemCode.toUpperCase();
+        return inventory.removeProduct(itemCode, sku);
     }
 
 
-    //Will update the inventory with a new list of products that have been created.
+    //Will update the inventory with a new list of products that have been created and list of products to be removed
     //MODIFIES: this
-    //EFFECTS: the new product list will be added to the inventory, creating a new transaction account.
-    //the temporary list will be cleared.
+    //EFFECTS: products on the list to add will be added to the inventory,
+    //products on the list to remove will be removed from the inventory
+    //creating a new transaction account.
+    //the two temporary lists (list to add, list to remove) will be cleared
     private boolean updateInventory(String description) {
-        boolean succeed = updateLedger(description);
-        inventory.addProducts(temporaryList);
-        temporaryList.clear();
+        boolean succeed = true;
+        inventory.addProducts(listToAdd);
+        try {
+            inventory.removeProducts(listToRemove);
+        } catch (RemovalFailedException e) {
+            succeed = false;
+            listToRemove.removeAll(e.getFailedList());
+        }
+        updateLedger(description);
+        listToAdd.clear();
+        listToRemove.clear();
         return succeed;
     }
 
-    //REQUIRES: temporary list of this cannot be null
-    //EFFECTS: create a hashmap that has item codes as keys
-    //and number of products belonging to those item code as value.
-    private Map<String, Integer> makeTemporaryCountHash() {
-        Map<String, Integer>  hash = new HashMap<>();
-        for (LocationTag tag: temporaryList) {
-            Product product = tag.getProduct();
-            if (hash.containsKey(product.getItemCode())) {
-                int existing = hash.get(product.getItemCode());
-                hash.put(product.getItemCode(), existing + 1);
-            } else {
-                hash.put(product.getItemCode(), 1);
-            }
+    //MODIFIES: account
+    //EFFECTS: new entries for recording new products loaded into the inventory will be created
+    //and added to the account.
+    private void addEntriesForNewProducts(Account account) {
+        LinkedList<AdditionTag> tags = new ArrayList<>();
+        for (AdditionTag tag: listToAdd) {
+            account.addEntries(tags);
         }
-        return hash;
     }
+
 
 
     //REQUIRES: account code must be in a valid form. cannot be negative.
     //MODIFIES: this
     //EFFECTS: create a new transaction account.
     private Account createAccount(int accountCode, String description, LocalDate date) {
-        Map<String, Integer>  hash = makeTemporaryCountHash();
-        ArrayList<Object[]> entries = new ArrayList<>();
-        if (hash.entrySet().size() == 0) {
+        if (listToAdd.size() == 0 && listToRemove.size() == 0) {
             return null;
         }
-        for (Map.Entry<String, Integer> count: hash.entrySet()) {
-            Object[] entry = new Object[3];
-            entry[0] = count.getKey();
-            entry[2] = count.getValue();
-            for (LocationTag tag: temporaryList) {
-                Product product = tag.getProduct();
-                if (product.getItemCode().equalsIgnoreCase((String)entry[0])) {
-                    entry[1] = product.getCost();
-                    break;
-                }
-                entry[1] = 0;
-            }
-            entries.add(entry);
-        }
-        return new Account(accountCode, description, date, entries);
+        Account account = new Account(accountCode, description, date);
+        addEntriesForNewProducts(account);
+
+        addEntriesForRemovedProducts(account);
+        return account;
     }
 
 
     //MODIFIES: this
     //EFFECTS: will update the ledger with the latest info.
     private boolean updateLedger(String description) {
-        Account account = createAccount(nextAccountNumber++, description, currentDate);
-        ledger.add(account);
+        ledger.addAccount(description, currentDate);
         return true;
     }
+
 
 
     //EFFECTS: create and return a label containing brief information for each account existing in the ledger.
@@ -210,6 +172,9 @@ public class Manager {
     //each element of the returned list will contain each line of the label.
     //If there isn't, list will just contain information that there isn't such an account.
     private ArrayList<String> checkAccount(int accountCode) {
+        if (accountCode < 0) {
+            throw new IllegalArgumentException("Negative number cannot be an account code");
+        }
         ArrayList<String> list = new ArrayList<>();
         Account account = null;
         for (Account e: ledger) {
@@ -222,13 +187,12 @@ public class Manager {
             list.add("There is no such account with the code");
         }
         assert account != null;
-        for (Object[] fromAccount: account.getEntries()) {
-            String s = "Product code: " + fromAccount[0] + "\n";
-            s += "Price: " + fromAccount[1] + "\n";
-            s += "Total quantity processed: " + fromAccount[2] + "\n";
-            s += "Total dollar worth: " + account.getTotalCost((String)fromAccount[0]) + "\n";
-            list.add(s);
-            list.add("-----------------------------------\n");
+        for (String code: account.getItemCodes()) {
+            double price = account.getPrice(code);
+            int qty = account.getQuantity(code);
+            String s = "Item code: " + code + "\n" + "Price: " + price + "\n";
+            s += "Total quantity processed: " + qty + "\n" + "Total dollar worth of this item: " + qty * price + "\n";
+            list.add(s + "-----------------------------------\n");
         }
         return list;
     }
@@ -236,25 +200,17 @@ public class Manager {
 
 
 
-    //Will create 9digit SKU. The first digit will start from 0.
-    //EFFECTS: return a new 9 digit SKU if next sku number is less than or equal to 999999999.
-    //If SKU overflows, set sku to 1.
-    private int createSku() {
-        if (nextSKU > maxSku) {
-            nextSKU = firstSku;
-        }
-        return nextSKU++;
-    }
-
 
     //EFFECTS: return the number of products belonging to the item code.
     private int countProduct(String itemCode) {
+        itemCode = itemCode.toUpperCase();
         return inventory.getQuantity(itemCode);
     }
 
 
     //EFFECTS: return a list of labels that indicate locations of products belonging to the item code.
     private LinkedList<String> getLocationListOfProduct(String itemCode) {
+        itemCode = itemCode.toUpperCase();
         LinkedList<Integer> numericList = inventory.findLocations(itemCode);
         LinkedList<String> locationList = new LinkedList<>();
         for (Integer e: numericList) {
@@ -266,7 +222,9 @@ public class Manager {
     //REQUIRES: item code must be in a valid form. sku must not be negative.
     //EFFECTS: return the location of the product specified by the code and SKU.
     private String getLocationOfProduct(String itemCode, int sku) {
-        return inventory.getStringLocationCode(inventory.findLocation(itemCode, sku));
+        itemCode = itemCode.toUpperCase();
+        ProductTag tag = inventory.findProduct(itemCode, sku);
+        return tag.getLocation();
     }
 
 
@@ -423,21 +381,47 @@ public class Manager {
         System.out.println(this.inventoryCheck());
     }
 
+
+    private void printListToAdd() {
+        for (Map.Entry<String, LinkedList<ProductTag>> entry: listToAdd.entrySet()) {
+            for (ProductTag tag : entry.getValue()) {
+                Product product = tag.getProduct();
+                String location = tag.getLocation();
+                System.out.println(product.getItemCode() + " " + product.getSku());
+                System.out.println("Cost: " + product.getCost());
+                if (product.getBestBeforeDate() != null) {
+                    System.out.println(product.getBestBeforeDate());
+                }
+                System.out.println("Location assigned: " + (location.equalsIgnoreCase("T")
+                        ? "Temporary storage space in the inventory" : location));
+            }
+        }
+    }
+
+    private void printListToRemove() {
+        for (Map.Entry<String, LinkedList<ProductTag>> entry: listToRemove.entrySet()) {
+            for (ProductTag tag : entry.getValue()) {
+                Product product = tag.getProduct();
+                String location = tag.getLocation();
+                System.out.println(product.getItemCode() + " " + product.getSku());
+                System.out.println("Cost: " + product.getCost());
+                if (product.getBestBeforeDate() != null) {
+                    System.out.println(product.getBestBeforeDate());
+                }
+                System.out.println("Location : " + (location.equalsIgnoreCase("T")
+                        ? "Temporary storage space in the inventory" : location));
+            }
+        }
+    }
+
     //EFFECTS: print the information of the products on the temporary list of this.
     private void printTemporaryList() {
-        ArrayList<LocationTag> list = this.getTemporaryList();
-        for (LocationTag tag : list) {
-            Product product = tag.getProduct();
-            String location = tag.getLocation();
-            System.out.println(product.getItemCode() + " " + product.getSku());
-            System.out.println("Cost: " + product.getCost());
-            if (product.getBestBeforeDate() != null) {
-                System.out.println(product.getBestBeforeDate());
-            }
-            System.out.println("Location: " + (location.equalsIgnoreCase("T")
-                    ? "Temporary storage space in the inventory" : location));
-        }
-        System.out.println();
+        System.out.println("The list of newly created products: ");
+        printListToAdd();
+        System.out.println("----------------------------------");
+        System.out.println("The list of products to remove: ");
+        printListToRemove();
+        System.out.println("----------------------------------");
     }
 
     //MODIFIES: this
@@ -502,7 +486,7 @@ public class Manager {
         System.out.println("enter SKU of the product");
         int sku = scanner.nextInt();
         scanner.nextLine();
-        if (this.removeProduct(itemCode, sku)) {
+        if (removeProduct(itemCode, sku)) {
             System.out.println("Successfully removed");
         } else {
             System.out.println("Failed removing. the product cannot be found in the list");
@@ -516,22 +500,72 @@ public class Manager {
         System.out.println("enter the item code");
         String itemCode = scanner.nextLine();
         System.out.println("enter quantity");
-        int qty = scanner.nextInt();
-        if (this.removeProducts(itemCode, qty)) {
-            System.out.println("Failed removing. the product cannot be found in the list");
+        try {
+            int qty = scanner.nextInt();
+            scanner.nextLine();
+            addToListToRemove(itemCode, qty);
+        } catch (Exception e) {
+            System.out.println(e);
         }
     }
 
     //MODIFIES: this
-    //EFFECTS: remove a product from temporary list of this prompting the user to enter item code.
-    private void removeProductFromTemporary() {
+    //EFFECTS: remove a product from  list of products to add prompting the user to enter item code.
+    private void promptRemoveProductFromListToAdd() {
         System.out.println("enter the item code");
         String itemCode = scanner.nextLine();
-        if (this.removeProductFromTemporaryList(itemCode)) {
+        itemCode = itemCode.toUpperCase();
+        System.out.println("enter the quantity");
+        int qty = scanner.nextInt();
+        scanner.nextLine();
+        try {
+            removeEntryFromListToAdd(itemCode, qty);
             System.out.println("Successfully removed");
-            return;
+        } catch (Exception e) {
+            System.out.println(e);
         }
-        System.out.println("Failed removing. the product cannot be found in the list");
+    }
+
+    //MODIFIES: this
+    //EFFECTS: remove a product from  list of products to remove prompting the user to enter item code.
+    private void promptRemoveProductFromListToRemove() {
+        System.out.println("enter the item code");
+        String itemCode = scanner.nextLine();
+        System.out.println("enter the quantity");
+        int qty = scanner.nextInt();
+        scanner.nextLine();
+        try {
+            removeEntryFromListToRemove(itemCode, qty);
+            System.out.println("Successfully removed");
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+    }
+
+    private void removeEntryFromListToAdd(String itemCode, int qty) throws Exception {
+        itemCode = itemCode.toUpperCase();
+        LinkedList<ProductTag> tags = listToAdd.get(itemCode);
+        if (tags == null) {
+            throw new Exception("There is no such products with such an item code");
+        }
+        if (tags.size() < qty) {
+            tags.clear();
+        } else {
+            tags.subList(0, qty).clear();
+        }
+    }
+
+    private void removeEntryFromListToRemove(String itemCode, int qty) throws Exception {
+        itemCode = itemCode.toUpperCase();
+        LinkedList<ProductTag> tags = listToAdd.get(itemCode);
+        if (tags == null) {
+            throw new Exception("There is no such products with such an item code");
+        }
+        if (tags.size() < qty) {
+            tags.clear();
+        } else {
+            tags.subList(0, qty).clear();
+        }
     }
 
     //EFFECTS: prompt the user to enter info to retrieve password. if the info is correct, print the password
@@ -584,10 +618,7 @@ public class Manager {
                 + "press 'T/t'");
         String location = scanner.nextLine();
         location = inventory.getStringLocationCode(inventory.getLocationCodeNumber(location));
-
-        for (int i = 0; i < qty; i++) {
-            this.createProduct(itemCode, bestBeforeDate, cost, location);
-        }
+        addToListToAdd(itemCode, cost, bestBeforeDate, location, qty);
         System.out.println("The product has been successfully created" + '\n' + "Current temporary List: ");
         printTemporaryList();
         System.out.println("Would you like to add another product? enter Y/N");
@@ -605,11 +636,19 @@ public class Manager {
                 + "Otherwise, enter q");
         String option = scanner.nextLine();
         while (!option.equalsIgnoreCase("q")) {
-            int accountCode = Integer.parseInt(option);
-            System.out.println(this.checkAccount(accountCode));
-            System.out.println("If you'd like to check a particular account more in detail, enter the account code. "
-                    + "Otherwise, enter q");
-            option = scanner.nextLine();
+            try {
+                int accountCode = Integer.parseInt(option);
+                System.out.println(checkAccount(accountCode));
+                System.out.println("If you'd like to check a particular account more in detail, enter the account code."
+                        + "Otherwise, enter q");
+                option = scanner.nextLine();
+            } catch (NumberFormatException e) {
+                System.out.println("The input doesn't contain a valid account number");
+                option = scanner.nextLine();
+            } catch (IllegalArgumentException e) {
+                System.out.println(e);
+                option = scanner.nextLine();
+            }
         }
     }
 
@@ -638,7 +677,9 @@ public class Manager {
         System.out.println("update: store the newly created items in the storage");
         System.out.println("removeI: remove a certain number of products from the inventory that is "
                 + "belonging to the specified item code");
-        System.out.println("removeT: remove a product belonging "
+        System.out.println("removeFLA: remove a product belonging "
+                + "to the specified item code from the temporary list");
+        System.out.println("removeFLR: remove a product belonging "
                 + "to the specified item code from the temporary list");
         System.out.println("findLocations: find locations of products belonging to a specific item code");
         System.out.println("findProduct: find the location of a particular product with its product code and sku");
@@ -651,6 +692,13 @@ public class Manager {
         System.out.println("logout: Log out");
     }
 
+
+    @Override
+    public JSONObject toJson() {
+        JSONObject inventoryJson = inventory.toJson();
+        JSONObject adminJson = inventory.toJson();
+
+    }
 
     @SuppressWarnings({"checkstyle:MethodLength", "checkstyle:SuppressWarnings"})
     public static void main(String[] args) {
@@ -689,8 +737,11 @@ public class Manager {
                     case "removeProduct":
                         stockManager.promptRemoveProduct();
                         break;
-                    case "removeT":
-                        stockManager.removeProductFromTemporary();
+                    case "removeFLA":
+                        stockManager.promptRemoveProductFromListToAdd();
+                        break;
+                    case "removeFLR":
+                        stockManager.promptRemoveProductFromListToRemove();
                         break;
                     case "findLocations":
                         stockManager.promptFindLocations();
