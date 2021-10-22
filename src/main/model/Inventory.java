@@ -4,6 +4,7 @@ package model;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 
 public class Inventory {
     private final int codeSize;
@@ -23,6 +24,24 @@ public class Inventory {
     private int skuSize;
     private LocalDate currentDate;
 
+    public ArrayList<QuantityTag> getQuantitiesAtLocations(String itemCode) {
+        itemCode = itemCode.toUpperCase();
+        ArrayList<QuantityTag> tags = new ArrayList<>();
+        for (int i = 0; i < locations.size(); i++) {
+            ItemList items = locations.get(i);
+            if (items != null) {
+                int qty = items.getQuantity(itemCode);
+                if (qty > 0) {
+                    tags.add(new QuantityTag(itemCode, getStringLocationCode(i), qty));
+                }
+            }
+        }
+        if (tags.size() == 0) {
+            return null;
+        }
+        return tags;
+    }
+
 
     //list of items, each of which is again a list of products.
     public class ItemList {
@@ -37,28 +56,36 @@ public class Inventory {
 
         public LinkedList<Product> getProducts(String itemCode) {
             int numericItemCode = getItemCodeNumber(itemCode);
-            return items.get(numericItemCode);
+            try {
+                return items.get(numericItemCode);
+            } catch (IndexOutOfBoundsException e) {
+                return null;
+            }
         }
 
         public int getQuantity(String itemCode) {
             int numericItemCode = getItemCodeNumber(itemCode);
-            return items.get(numericItemCode).size();
+            if (items != null) {
+                if (items.get(numericItemCode) != null) {
+                    return items.get(numericItemCode).size();
+                }
+            }
+            return 0;
         }
 
         public boolean contains(String itemCode) {
-            int numericItemCode = getItemCodeNumber(itemCode);
-            LinkedList<Product> products = items.get(numericItemCode);
-            if (products == null || products.size() == 0) {
-                return false;
-            }
-            return true;
+            itemCode = itemCode.toUpperCase();
+            LinkedList<Product> products = getProducts(itemCode);
+            return products != null && products.size() != 0;
         }
 
         public Product getProduct(String itemCode, int sku) {
             int numericItemCode = getItemCodeNumber(itemCode);
             LinkedList<Product> products = items.get(numericItemCode);
-            for (int i = 0; i < products.size(); i++) {
-                Product product = products.get(i);
+            if (products == null) {
+                return null;
+            }
+            for (Product product : products) {
                 if (product.getSku() == sku) {
                     return product;
                 }
@@ -67,11 +94,13 @@ public class Inventory {
         }
 
         public void addProducts(String itemCode, double price, LocalDate bestBeforeDate,  int qty) {
+            itemCode = itemCode.toUpperCase();
             int numericCode = getItemCodeNumber(itemCode);
             LinkedList<Product> products = items.get(numericCode);
             int existingQty = quantities.get(numericCode);
             if (products == null) {
                 products = new LinkedList<>();
+                items.set(numericCode, products);
             }
             for (int i = 0; i < qty; i++) {
                 products.add(new Product(itemCode, createSku(), price, currentDate, bestBeforeDate));
@@ -79,16 +108,18 @@ public class Inventory {
             quantities.set(numericCode, existingQty + qty);
         }
 
-        public void removeProducts(String itemCode, int qty) throws Exception {
+        public LinkedList<Product> removeProducts(String itemCode, int qty) {
             int numericCode = getItemCodeNumber(itemCode);
             LinkedList<Product> products = items.get(numericCode);
             int existingQty = quantities.get(numericCode);
-            if (products.size() < qty) {
-                throw new Exception("Cannot remove more than existing products");
+            if (products == null || products.size() < qty) {
+                return null;
             }
+            LinkedList<Product> removed = new LinkedList<>(products.subList(0, qty));
             products.subList(0, qty).clear();
             quantities.set(numericCode, existingQty - qty);
             assert existingQty - qty >= 0;
+            return removed;
         }
 
         public boolean remove(Product product) {
@@ -166,6 +197,10 @@ public class Inventory {
         currentDate = LocalDate.now();
     }
 
+    public LocalDate getCurrentDate() {
+        return currentDate;
+    }
+
 
     //MODIFIES: this
     //EFFECTS: set the current Date
@@ -219,22 +254,38 @@ public class Inventory {
         return true;
     }
 
+    public boolean isValidLocationCode(String location) {
+        int numeric;
+        try {
+            numeric = getLocationCodeNumber(location);
+        } catch (NumberFormatException e) {
+            return false;
+        }
+        if (numeric > ('z' - 'a') * numberOfSections || numeric < 0) {
+            return false;
+        }
+        return true;
+    }
+
+
     //String itemCode, double price, LocalDate date, String location, int quantity
     //REQUIRES: tags need to be a list of entries that contain information for new products and its location
     //MODIFIES: this
     //EFFECTS: will put new products in the inventory list using information in the tags
-    public void addProducts(ArrayList<AdditionTag> tags) {
-        for (AdditionTag tag: tags) {
+    public void addProducts(List<InventoryTag> tags) {
+        for (InventoryTag tag: tags) {
             int qty = tag.getQuantity();
-            String itemCode = tag.getItemCode();
+            String itemCode = tag.getItemCode().toUpperCase();
             double price = tag.getPrice();
             LocalDate bestBeforeDate = tag.getBestBeforeDate();
-            String location = tag.getLocation();
+            String location = tag.getLocation().toUpperCase();
             int numericLocationCode = getLocationCodeNumber(location);
             ItemList items = locations.get(numericLocationCode);
             if (items == null) {
-                locations.add(numericLocationCode, new ItemList());
+                locations.set(numericLocationCode, new ItemList());
+                items = locations.get(numericLocationCode);
             }
+            assert items != null;
             items.addProducts(itemCode, price, bestBeforeDate, qty);
             quantity += tag.getQuantity();
         }
@@ -249,55 +300,46 @@ public class Inventory {
         int numericLocationCode = getLocationCodeNumber(location);
         Product product = tag.getProduct();
         ItemList items = locations.get(numericLocationCode);
-        items.remove(product);
+        if (items.remove(product)) {
+            int numericItemCode = getItemCodeNumber(itemCode);
+            int qtyBefore = quantities.get(numericItemCode);
+            quantities.set(numericItemCode, qtyBefore - 1);
+        }
         return true;
     }
 
 
-    //REQUIRES: product needs to exist in the inventory
+
     //MODIFIES: this
-    //EFFECTS: remove the product indicated from the inventory. If the product is removed
-    //return true. If the product cannot be found, return false.
+    //EFFECTS: remove the product indicated from the inventory.
+    //return a list of products that have been removed. If quantity to remove exceeds that inside the inventory,
+    //skip the tag(quantity)
     //implement try and catch block later (in case the products don't exist)
-    public void removeProducts(ArrayList<RemovalTag> tags) throws RemovalFailedException {
-        ArrayList<RemovalTag> failed = new ArrayList<>();
-        for (RemovalTag tag: tags) {
+    public LinkedList<QuantityTag> removeProducts(List<QuantityTag> tags) {
+        LinkedList<QuantityTag> receipt = new LinkedList<>();
+        LinkedList<Product> removed;
+        ArrayList<QuantityTag> failed = new ArrayList<>();
+        for (QuantityTag tag: tags) {
             int qty = tag.getQuantity();
             String itemCode = tag.getItemCode();
-            String location = tag.getLocation();
+            String location = tag.getLocation().toUpperCase();
             int numericLocationCode = getLocationCodeNumber(location);
             ItemList items = locations.get(numericLocationCode);
             if (items == null) {
                 failed.add(tag);
             } else {
-                try {
-                    items.removeProducts(itemCode, qty);
-                } catch (Exception e) {
-                    failed.add(tag);
+                removed = items.removeProducts(itemCode, qty);
+                if (removed != null) {
+                    quantity -= removed.size();
+                    receipt.add(new QuantityTag(itemCode, location, -removed.size()));
                 }
             }
         }
-        if (failed.size() != 0) {
-            throw new RemovalFailedException(failed, "cannot remove more than what exist in the location");
-        }
-    }
 
-
-    //EFFECTS: return a list of product codes and corresponding location, which are composed of item code + SKU.
-    public LinkedList<ProductTag> getProducts(String itemCode, int qty) {
-        int numericCode = getItemCodeNumber(itemCode);
-        int count = 0;
-        LinkedList products = new LinkedList();
-        for (ItemList items: locations) {
-            LinkedList<Product> productsAtThisLocation = items.getProducts(itemCode);
-            if (productsAtThisLocation != null) {
-                if (qty - products.size() < productsAtThisLocation.size()) {
-                    int gap = qty - products.size();
-                    products.addAll(productsAtThisLocation.subList(0, gap));
-                }
-            }
+        if (receipt.size() == 0) {
+            return null;
         }
-        return products;
+        return receipt;
     }
 
 
@@ -311,11 +353,12 @@ public class Inventory {
         ProductTag tag = null;
         for (int i = 0; i < locations.size(); i++) {
             ItemList items = locations.get(i);
-            Product product = items.getProduct(itemCode, sku);
-            if (product != null) {
-                tag.setProduct(product);
-                tag.setLocation(getStringLocationCode(i));
-                break;
+            if (items != null) {
+                Product product = items.getProduct(itemCode, sku);
+                if (product != null) {
+                    tag = new ProductTag(product, getStringLocationCode(i));
+                    break;
+                }
             }
         }
         return tag;
@@ -325,12 +368,18 @@ public class Inventory {
     //For instance, if valid form of item code is "AAA", passed item code cannot be "AAAA"
     //EFFECTS: return a list of locations where products belonging to the item code are located.
     public LinkedList<Integer> findLocations(String itemCode) {
+        itemCode = itemCode.toUpperCase();
         LinkedList<Integer> foundLocations = new LinkedList<>();
         for (int i = 0; i < locations.size(); i++) {
-            ItemList items = locations.get(0);
-            if (items.contains(itemCode)) {
-                foundLocations.add(i);
+            ItemList items = locations.get(i);
+            if (items != null) {
+                if (items.contains(itemCode)) {
+                    foundLocations.add(i);
+                }
             }
+        }
+        if (foundLocations.size() == 0) {
+            return null;
         }
         return foundLocations;
     }
@@ -363,12 +412,15 @@ public class Inventory {
         //alphabet's value
         location = location.toUpperCase();
         int alphabetValue = location.charAt(0) - 'A';
+        if (location.length() == 1) {
+            return alphabetValue * numberOfSections;
+        }
         numericCode = alphabetValue * numberOfSections;
+        //If A99: 99
         try {
-            //If A99: 99, B99:
-            numericCode +=  Integer.parseInt(location.substring(1));
-        } catch (Exception e) {
-            return numericCode;
+            numericCode += Integer.parseInt(location.substring(1));
+        } catch (NumberFormatException e) {
+            throw new NumberFormatException();
         }
         return numericCode;
     }
@@ -407,8 +459,8 @@ public class Inventory {
 
     //REQUIRES: code must be in valid form.
     //EFFECTS: return the number of products belonging to the code.
-    public int getQuantity(String code) {
-        int numericCode = getItemCodeNumber(code);
+    public int getQuantity(String itemCode) {
+        int numericCode = getItemCodeNumber(itemCode);
         return quantities.get(numericCode);
     }
 
@@ -420,10 +472,15 @@ public class Inventory {
     //EFFECTS: return the list of products specified by the item code.
     //If there isn't any of those products, return null
     public LinkedList<Product> getProductList(String itemCode) {
+        itemCode = itemCode.toUpperCase();
         LinkedList<Product> list = new LinkedList<>();
-        for (ItemList items: locations) {
-            if (items.getProducts(itemCode) != null) {
-                list.addAll(items.getProducts(itemCode));
+        for (ItemList items : locations) {
+            if (items != null) {
+                try {
+                    list.addAll(items.getProducts(itemCode));
+                } catch (NullPointerException e) {
+                    //if getProducts is null, don't add null pointer value to the product list
+                }
             }
         }
         if (list.size() == 0) {
@@ -436,9 +493,11 @@ public class Inventory {
     //If there isn't such a product, return null.
     public Product getProduct(String itemCode, int sku) {
         for (ItemList items: locations) {
-            Product product = items.getProduct(itemCode, sku);
-            if (product != null) {
-                return product;
+            if (items != null) {
+                Product product = items.getProduct(itemCode, sku);
+                if (product != null) {
+                    return product;
+                }
             }
         }
         return null;
@@ -453,6 +512,9 @@ public class Inventory {
             if (qty != 0) {
                 codes.add(getStringItemCode(i));
             }
+        }
+        if (codes.size() == 0) {
+            return null;
         }
         return codes;
     }

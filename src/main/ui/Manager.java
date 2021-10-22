@@ -2,12 +2,13 @@ package ui;
 
 
 import model.*;
-import org.json.JSONObject;
-import persistence.JsonConvertable;
 
 import java.time.DateTimeException;
 import java.time.LocalDate;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Scanner;
 
 
 //creates products based on the user's request and add it to inventory.
@@ -15,7 +16,7 @@ import java.util.*;
 //make it possible to not just search for a specific product using Inventory class,
 //but can check multiple products comparing them.
 //Only a certain number of people who have login accounts in admin can use this
-public class Manager implements JsonConvertable {
+public class Manager {
     private final Inventory inventory;
     private final Ledger ledger;
     private final Admin admin;
@@ -28,9 +29,9 @@ public class Manager implements JsonConvertable {
     //object[0]: Product
     //object[1]: String representing location
     //this object array will be called entry, and the list will often be called entries later
-    private final ArrayList<AdditionTag> listToAdd;
+    private final ArrayList<InventoryTag> listToAdd;
 
-    private final ArrayList<RemovalTag> listToRemove;
+    private final ArrayList<QuantityTag> listToRemove;
 
     //current product represents a product that has been located from the user's request.
     //User will be given several options to check the product-specific information
@@ -66,17 +67,16 @@ public class Manager implements JsonConvertable {
     private void addToListToAdd(String itemCode, double price,
                                 LocalDate bestBeforeDate, String location, int qty) {
         itemCode = itemCode.toUpperCase();
-        AdditionTag additionTag = new AdditionTag(itemCode, price, bestBeforeDate, location, qty);
-        listToAdd.add(additionTag);
+        InventoryTag inventoryTag = new InventoryTag(itemCode, price, bestBeforeDate, location, qty);
+        listToAdd.add(inventoryTag);
     }
 
 
     //MODIFIES: this
     //EFFECTS: remove one product belonging to this item code from the temporary list.
     //return true if it succeeds. return false otherwise.
-    private void addToListToRemove(String itemCode, int qty, String location) throws Exception {
-        itemCode = itemCode.toUpperCase();
-        listToRemove.add(new RemovalTag(itemCode, location, qty));
+    private void addToListToRemove(QuantityTag tag) {
+        listToRemove.add(tag);
     }
 
 
@@ -89,68 +89,40 @@ public class Manager implements JsonConvertable {
         return inventory.removeProduct(itemCode, sku);
     }
 
-
     //Will update the inventory with a new list of products that have been created and list of products to be removed
     //MODIFIES: this
     //EFFECTS: products on the list to add will be added to the inventory,
     //products on the list to remove will be removed from the inventory
     //creating a new transaction account.
     //the two temporary lists (list to add, list to remove) will be cleared
-    private boolean updateInventory(String description) {
-        boolean succeed = true;
+    private void updateInventory(String description) {
         inventory.addProducts(listToAdd);
-        try {
-            inventory.removeProducts(listToRemove);
-        } catch (RemovalFailedException e) {
-            succeed = false;
-            listToRemove.removeAll(e.getFailedList());
+        LinkedList<QuantityTag> receipt = inventory.removeProducts(listToRemove);
+        LinkedList<QuantityTag> added = new LinkedList<>();
+        for (InventoryTag tag: listToAdd) {
+            added.add(new QuantityTag(tag.getItemCode(),tag.getLocation(), tag.getQuantity()));
         }
-        updateLedger(description);
+
+
+        updateLedger(added, receipt, description);
         listToAdd.clear();
         listToRemove.clear();
-        return succeed;
     }
 
-    //MODIFIES: account
-    //EFFECTS: new entries for recording new products loaded into the inventory will be created
-    //and added to the account.
-    private void addEntriesForNewProducts(Account account) {
-        LinkedList<AdditionTag> tags = new ArrayList<>();
-        for (AdditionTag tag: listToAdd) {
-            account.addEntries(tags);
-        }
-    }
-
-
-
-    //REQUIRES: account code must be in a valid form. cannot be negative.
-    //MODIFIES: this
-    //EFFECTS: create a new transaction account.
-    private Account createAccount(int accountCode, String description, LocalDate date) {
-        if (listToAdd.size() == 0 && listToRemove.size() == 0) {
-            return null;
-        }
-        Account account = new Account(accountCode, description, date);
-        addEntriesForNewProducts(account);
-
-        addEntriesForRemovedProducts(account);
-        return account;
-    }
 
 
     //MODIFIES: this
     //EFFECTS: will update the ledger with the latest info.
-    private boolean updateLedger(String description) {
-        ledger.addAccount(description, currentDate);
-        return true;
+    private void updateLedger(List<QuantityTag> added, LinkedList<QuantityTag> removed, String description) {
+        ledger.addAccount(added, removed, description, currentDate);
     }
 
 
 
     //EFFECTS: create and return a label containing brief information for each account existing in the ledger.
-    private ArrayList<String> getAccounts() {
+    private ArrayList<String> printGeneralAccountInfo() {
         ArrayList<String> list = new ArrayList<>();
-        for (Account account: ledger) {
+        for (Account account: ledger.getAccounts()) {
             String s = "Account code: " + account.getCode() + "\n";
             s += "Generated date: " + account.getDate() + "\n";
             s += "extra info available: ";
@@ -160,7 +132,6 @@ public class Manager implements JsonConvertable {
                 s += "none\n";
             }
             s += "Total quantity processed: " + account.getTotalQuantity() + "\n";
-            s += "Total dollar worth: " + account.getDollarAmount() + "\n";
             list.add(s);
             list.add("-----------------------------------\n");
         }
@@ -177,7 +148,7 @@ public class Manager implements JsonConvertable {
         }
         ArrayList<String> list = new ArrayList<>();
         Account account = null;
-        for (Account e: ledger) {
+        for (Account e: ledger.getAccounts()) {
             if (e.getCode() == accountCode) {
                 account = e;
                 break;
@@ -187,26 +158,9 @@ public class Manager implements JsonConvertable {
             list.add("There is no such account with the code");
         }
         assert account != null;
-        for (String code: account.getItemCodes()) {
-            double price = account.getPrice(code);
-            int qty = account.getQuantity(code);
-            String s = "Item code: " + code + "\n" + "Price: " + price + "\n";
-            s += "Total quantity processed: " + qty + "\n" + "Total dollar worth of this item: " + qty * price + "\n";
-            list.add(s + "-----------------------------------\n");
-        }
+        list = account.getQuantitiesInfo();
         return list;
     }
-
-
-
-
-
-    //EFFECTS: return the number of products belonging to the item code.
-    private int countProduct(String itemCode) {
-        itemCode = itemCode.toUpperCase();
-        return inventory.getQuantity(itemCode);
-    }
-
 
     //EFFECTS: return a list of labels that indicate locations of products belonging to the item code.
     private LinkedList<String> getLocationListOfProduct(String itemCode) {
@@ -224,6 +178,9 @@ public class Manager implements JsonConvertable {
     private String getLocationOfProduct(String itemCode, int sku) {
         itemCode = itemCode.toUpperCase();
         ProductTag tag = inventory.findProduct(itemCode, sku);
+        if (tag == null) {
+            return null;
+        }
         return tag.getLocation();
     }
 
@@ -253,24 +210,42 @@ public class Manager implements JsonConvertable {
         return admin.createLoginAccount(id, pw, name, birthDay, personalCode);
     }
 
+
     //return info that contains quantities, item codes existing in the inventory.
     //EFFECTS: return a string that contains general information about the inventory
-    private String inventoryCheck() {
+    private String checkInventory() {
         if (inventory.getTotalQuantity() == 0) {
             return "Inventory is empty";
         }
         String info = "The inventory contains a total number of " + inventory.getTotalQuantity() + " of products";
-        info += '\n' + "The item code list created is as follows: ";
+        info += '\n' + "Quantity of each item code: ";
         info += '\n';
         LinkedList<String> codes = inventory.getListOfCodes();
-        if (codes.isEmpty()) {
-            System.out.println("The inventory is empty");
-        }
-        for (String e: codes) {
-            info += e + " ";
+        for (String code: codes) {
+            info += code + ": " + inventory.getQuantity(code) + "\n";
         }
         return info;
     }
+
+
+    //return info that contains quantities, item codes existing in the inventory.
+    //EFFECTS: return a string that contains general information about the inventory
+//    private String checkInventory() {
+//        if (inventory.getTotalQuantity() == 0) {
+//            return "Inventory is empty";
+//        }
+//        String info = "The inventory contains a total number of " + inventory.getTotalQuantity() + " of products";
+//        info += '\n' + "The item code list created is as follows: ";
+//        info += '\n';
+//        LinkedList<String> codes = inventory.getListOfCodes();
+//        if (codes.isEmpty()) {
+//            System.out.println("The inventory is empty");
+//        }
+//        for (String e: codes) {
+//            info += e + " ";
+//        }
+//        return info;
+//    }
 
 
     //EFFECTS: prompt the user to enter info for finding locations of an item code.
@@ -329,14 +304,6 @@ public class Manager implements JsonConvertable {
         }
     }
 
-    //EFFECTS: return the maximum numeric item code value possible
-    private boolean isValidItemCode(String itemCode) {
-        return inventory.isValidItemCode(itemCode);
-    }
-
-
-
-
     //EFFECTS: prompt the user to enter info for finding a particular product. Print location by default.
     private void promptFindProduct() {
         System.out.println("enter the item code");
@@ -344,14 +311,14 @@ public class Manager implements JsonConvertable {
         System.out.println("enter the SKU of the product");
         int sku = scanner.nextInt();
         scanner.nextLine();
-        if (!isValidItemCode(itemCode) || sku < 0) {
+        if (!inventory.isValidItemCode(itemCode) || sku < 0) {
             System.out.println("Input is not valid");
             return;
         }
         currentProduct = inventory.getProduct(itemCode, sku);
         String location = this.getLocationOfProduct(itemCode, sku);
         if (location != null) {
-            System.out.println("The product: " + itemCode + sku + " is located at " + location);
+            System.out.println("The product: " + itemCode.toUpperCase() + sku + " is located at " + location);
             System.out.println("Would you like to check the product in detail ? press Y/N");
             if ((scanner.nextLine().equalsIgnoreCase("Y"))) {
                 promptProductInfo();
@@ -372,47 +339,55 @@ public class Manager implements JsonConvertable {
             System.out.println("Input is not valid");
             return;
         }
-        int qty = this.countProduct(itemCode);
-        System.out.println("The quantity of " + qty + " of item code " + itemCode + " is stored in the inventory");
+        List<QuantityTag> quantities = inventory.getQuantitiesAtLocations(itemCode);
+        if (quantities == null) {
+            System.out.println(" There is no such products");
+        } else {
+            int totalQty = inventory.getQuantity(itemCode);
+
+            System.out.println("Stocks in the inventory belonging to item code " + itemCode + ": " + totalQty);
+            for (QuantityTag tag : quantities) {
+                String location  = tag.getLocation();
+                System.out.println(location + ": " + tag.getQuantity());
+            }
+        }
     }
 
     //EFFECTS: print the information of the inventory.
     private void printInventoryInfo() {
-        System.out.println(this.inventoryCheck());
+        System.out.println(this.checkInventory());
     }
 
 
     private void printListToAdd() {
-        for (Map.Entry<String, LinkedList<ProductTag>> entry: listToAdd.entrySet()) {
-            for (ProductTag tag : entry.getValue()) {
-                Product product = tag.getProduct();
-                String location = tag.getLocation();
-                System.out.println(product.getItemCode() + " " + product.getSku());
-                System.out.println("Cost: " + product.getCost());
-                if (product.getBestBeforeDate() != null) {
-                    System.out.println(product.getBestBeforeDate());
-                }
-                System.out.println("Location assigned: " + (location.equalsIgnoreCase("T")
-                        ? "Temporary storage space in the inventory" : location));
+        for (InventoryTag tag: listToAdd) {
+            String itemCode = tag.getItemCode();
+            int qty = tag.getQuantity();
+            double price = tag.getPrice();
+            LocalDate bestBeforeDate = tag.getBestBeforeDate();
+            String location = tag.getLocation();
+            System.out.println(itemCode + " " + ", quantity: " + qty);
+            System.out.println("Cost: " + price);
+            if (bestBeforeDate != null) {
+                System.out.println(bestBeforeDate);
             }
+            System.out.println("Location assigned: " + (location.equalsIgnoreCase("T")
+                    ? "Temporary storage space in the inventory" : location));
         }
     }
 
     private void printListToRemove() {
-        for (Map.Entry<String, LinkedList<ProductTag>> entry: listToRemove.entrySet()) {
-            for (ProductTag tag : entry.getValue()) {
-                Product product = tag.getProduct();
-                String location = tag.getLocation();
-                System.out.println(product.getItemCode() + " " + product.getSku());
-                System.out.println("Cost: " + product.getCost());
-                if (product.getBestBeforeDate() != null) {
-                    System.out.println(product.getBestBeforeDate());
-                }
-                System.out.println("Location : " + (location.equalsIgnoreCase("T")
-                        ? "Temporary storage space in the inventory" : location));
-            }
+        for (QuantityTag tag: listToRemove) {
+            String itemCode = tag.getItemCode();
+            String location = tag.getLocation();
+            int qty = tag.getQuantity();
+            System.out.println(itemCode + " ");
+            System.out.println("Location : " + (location.equalsIgnoreCase("T")
+                    ? "Temporary storage space in the inventory" : location));
+            System.out.println("Quantity: " + qty);
         }
     }
+
 
     //EFFECTS: print the information of the products on the temporary list of this.
     private void printTemporaryList() {
@@ -496,30 +471,70 @@ public class Manager implements JsonConvertable {
 
     //MODIFIES: this
     //EFFECTS: remove multiple products prompting the user to enter item code and quantity to remove.
+    @SuppressWarnings({"checkstyle:MethodLength", "checkstyle:SuppressWarnings"})
     private void promptRemoveProducts() {
         System.out.println("enter the item code");
         String itemCode = scanner.nextLine();
-        System.out.println("enter quantity");
-        try {
-            int qty = scanner.nextInt();
-            scanner.nextLine();
-            addToListToRemove(itemCode, qty);
-        } catch (Exception e) {
-            System.out.println(e);
+        ArrayList<QuantityTag> tags = inventory.getQuantitiesAtLocations(itemCode);
+        printTags(tags);
+        while (tags == null) {
+            System.out.println("enter the item code. If you'd like to quit, enter q");
+            itemCode = scanner.nextLine();
+            if (itemCode.equalsIgnoreCase("q")) {
+                return;
+            }
+            tags = inventory.getQuantitiesAtLocations(itemCode);
+            printTags(tags);
         }
+        System.out.println("Choose the index. If you'd like to quit, please type q");
+        String index = scanner.nextLine();
+        while (!index.equalsIgnoreCase("q")) {
+            try {
+                QuantityTag tag = tags.get(Integer.parseInt(index));
+                System.out.println("Enter the quantity. ");
+                int quantity = scanner.nextInt();
+                scanner.nextLine();
+                while (quantity > tag.getQuantity()) {
+                    System.out.println("Quantity too big. Enter quantity again");
+                    quantity = scanner.nextInt();
+                    scanner.nextLine();
+                }
+                addToListToRemove(new QuantityTag(tag.getItemCode(), tag.getLocation(), quantity));
+                System.out.println("Successfully added to the list for removal");
+                printTags(tags);
+                System.out.println("Choose the index. If you'd like to quit, please type q");
+                index = scanner.nextLine();
+            } catch (NumberFormatException e) {
+                System.out.println("You entered an invalid index");
+                System.out.println("Choose the index. If you'd like to quit, please type q");
+                index = scanner.nextLine();
+            }
+        }
+
+
+    }
+
+
+    private void printTags(ArrayList<QuantityTag> tags) {
+        if (tags == null) {
+            System.out.println("There is no such products");
+        } else {
+            for (QuantityTag tag : tags) {
+                System.out.println(tag.toString());
+            }
+        }
+
     }
 
     //MODIFIES: this
     //EFFECTS: remove a product from  list of products to add prompting the user to enter item code.
     private void promptRemoveProductFromListToAdd() {
-        System.out.println("enter the item code");
-        String itemCode = scanner.nextLine();
-        itemCode = itemCode.toUpperCase();
-        System.out.println("enter the quantity");
-        int qty = scanner.nextInt();
+        printListToAdd();
+        System.out.println("enter the index of the entry. The indices start from 0");
+        int index = scanner.nextInt();
         scanner.nextLine();
         try {
-            removeEntryFromListToAdd(itemCode, qty);
+            removeEntryFromListToAdd(index);
             System.out.println("Successfully removed");
         } catch (Exception e) {
             System.out.println(e);
@@ -529,42 +544,31 @@ public class Manager implements JsonConvertable {
     //MODIFIES: this
     //EFFECTS: remove a product from  list of products to remove prompting the user to enter item code.
     private void promptRemoveProductFromListToRemove() {
-        System.out.println("enter the item code");
-        String itemCode = scanner.nextLine();
-        System.out.println("enter the quantity");
-        int qty = scanner.nextInt();
+        printListToRemove();
+        System.out.println("enter the index of the entry. The indices start from 0");
+        int index = scanner.nextInt();
         scanner.nextLine();
         try {
-            removeEntryFromListToRemove(itemCode, qty);
+            removeEntryFromListToRemove(index);
             System.out.println("Successfully removed");
         } catch (Exception e) {
             System.out.println(e);
         }
     }
 
-    private void removeEntryFromListToAdd(String itemCode, int qty) throws Exception {
-        itemCode = itemCode.toUpperCase();
-        LinkedList<ProductTag> tags = listToAdd.get(itemCode);
-        if (tags == null) {
-            throw new Exception("There is no such products with such an item code");
-        }
-        if (tags.size() < qty) {
-            tags.clear();
-        } else {
-            tags.subList(0, qty).clear();
+    private void removeEntryFromListToAdd(int index) throws Exception {
+        try {
+            listToAdd.remove(index);
+        } catch (IndexOutOfBoundsException e) {
+            throw new Exception("There is no such entry");
         }
     }
 
-    private void removeEntryFromListToRemove(String itemCode, int qty) throws Exception {
-        itemCode = itemCode.toUpperCase();
-        LinkedList<ProductTag> tags = listToAdd.get(itemCode);
-        if (tags == null) {
-            throw new Exception("There is no such products with such an item code");
-        }
-        if (tags.size() < qty) {
-            tags.clear();
-        } else {
-            tags.subList(0, qty).clear();
+    private void removeEntryFromListToRemove(int index) throws Exception {
+        try {
+            listToRemove.remove(index);
+        } catch (IndexOutOfBoundsException e) {
+            throw new Exception("There is no such entry");
         }
     }
 
@@ -602,22 +606,56 @@ public class Manager implements JsonConvertable {
         double cost;
         System.out.println("enter itemCode");
         itemCode = scanner.nextLine();
+        while (!inventory.isValidItemCode(itemCode)) {
+            System.out.println("the item code is in invalid format");
+            System.out.println("enter itemCode");
+            itemCode = scanner.nextLine();
+        }
         System.out.println("Does the product have a best-before date? enter Y/N");
         if (scanner.nextLine().equalsIgnoreCase(("Y"))) {
             System.out.println("enter best-before date in the form: YYYY MM DD");
-            bestBeforeDate = LocalDate.of(scanner.nextInt(), scanner.nextInt(), scanner.nextInt());
+            int year = scanner.nextInt();
+            int month = scanner.nextInt();
+            int day = scanner.nextInt();
+            while (bestBeforeDate == null) {
+                try {
+                    bestBeforeDate = LocalDate.of(year, month, day);
+                } catch (DateTimeException e) {
+                    System.out.println("the date is in invalid format");
+                    System.out.println("enter best-before date in the form: YYYY MM DD");
+                    year = scanner.nextInt();
+                    month = scanner.nextInt();
+                    day = scanner.nextInt();
+                }
+            }
         }
         System.out.println("enter cost");
         cost = scanner.nextDouble();
+        while (cost < 0) {
+            System.out.println("Cost cannot be negative");
+            System.out.println("enter cost");
+            cost = scanner.nextDouble();
+        }
         scanner.nextLine();
         System.out.println("enter quantity");
         int qty = scanner.nextInt();
+        while (qty < 0) {
+            System.out.println("Quantity cannot be negative");
+            System.out.println("enter cost");
+            qty = scanner.nextInt();
+        }
         scanner.nextLine();
         System.out.println("enter Location in the form: ADD, where A represents an alphabet, D represents a digit"
                 + " if you'd like to put the product in the temporary storage area of the inventory "
                 + "press 'T/t'");
         String location = scanner.nextLine();
-        location = inventory.getStringLocationCode(inventory.getLocationCodeNumber(location));
+        while (!inventory.isValidLocationCode(location)) {
+            System.out.println("The location code is in invalid format");
+            System.out.println("enter Location in the form: ADD, where A represents an alphabet, D represents a digit"
+                    + " if you'd like to put the product in the temporary storage area of the inventory "
+                    + "press 'T/t'");
+            location = scanner.nextLine();
+        }
         addToListToAdd(itemCode, cost, bestBeforeDate, location, qty);
         System.out.println("The product has been successfully created" + '\n' + "Current temporary List: ");
         printTemporaryList();
@@ -631,7 +669,7 @@ public class Manager implements JsonConvertable {
     //EFFECTS: print accounts inside the ledger
     //If user enters a specific account number, print the specified account in detail
     private void openLedger() {
-        System.out.println(this.getAccounts());
+        System.out.println(this.printGeneralAccountInfo());
         System.out.println("If you'd like to check a particular account more in detail, enter the account code. "
                 + "Otherwise, enter q");
         String option = scanner.nextLine();
@@ -693,12 +731,12 @@ public class Manager implements JsonConvertable {
     }
 
 
-    @Override
-    public JSONObject toJson() {
-        JSONObject inventoryJson = inventory.toJson();
-        JSONObject adminJson = inventory.toJson();
-
-    }
+//    @Override
+//    public JSONObject toJson() {
+//        JSONObject inventoryJson = inventory.toJson();
+//        JSONObject adminJson = inventory.toJson();
+//
+//    }
 
     @SuppressWarnings({"checkstyle:MethodLength", "checkstyle:SuppressWarnings"})
     public static void main(String[] args) {

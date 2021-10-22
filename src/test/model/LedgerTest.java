@@ -4,12 +4,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 public class LedgerTest {
     private Ledger ledger;
@@ -22,37 +20,66 @@ public class LedgerTest {
         ledger = new Ledger();
     }
 
-    private  LinkedList<ProductTag> createLocationTags(String itemCode, double cost, int qty, String location) {
-        LinkedList<ProductTag> tags = new LinkedList<>();
-        for (int i = 0; i < qty; i++) {
-            tags.add(new ProductTag(new Product(itemCode, sku++, cost, TODAY, null), location));
-        }
-        return tags;
-    }
+
 
     @Test
     void testConstructor() {
         ledger = new Ledger();
-        assertEquals(9, ledger.getCodeSize());
-        assertEquals(0, ledger.getSize());
-        ledger = new Ledger(6);
         assertEquals(6, ledger.getCodeSize());
+        assertEquals(0, ledger.getSize());
+        ledger = new Ledger(9);
+        assertEquals(9, ledger.getCodeSize());
         assertEquals(0, ledger.getSize());
     }
 
     @Test
     void testAddAccount() {
         assertEquals(0, ledger.getSize());
-        Map<String, LinkedList<ProductTag>> tempList = new HashMap<>();
-        LinkedList<ProductTag> tags = createLocationTags("AAA", defaultCost, 100, "T");
-        tempList.put("AAA", tags);
-        ledger.addAccount(tempList, "test", TODAY);
+        LinkedList<QuantityTag> tags = new LinkedList<>();
+        tags.add(new QuantityTag("CHI", "T", 100));
+        ledger.addAccount(tags, new LinkedList<>(),"nothing", LocalDate.now());
         assertEquals(1, ledger.getSize());
-        assertEquals("test", ledger.getAccount(111111));
         assertEquals(1, ledger.getAccounts().size());
         assertEquals(ledger.getAccount(111111), ledger.getAccounts().get(0));
         assertEquals(1, ledger.getAccounts(TODAY).size());
         assertEquals(ledger.getAccount(111111), ledger.getAccounts(TODAY).get(0));
+        assertEquals(null,
+                ledger.addAccount(new LinkedList<QuantityTag>(),
+                        new LinkedList<>(),"test", LocalDate.now()));
+    }
+
+
+
+    @Test
+    void testGetAccountsWithDate() {
+        LocalDate today = LocalDate.now();
+        LinkedList<QuantityTag> tags = new LinkedList<>();
+        tags.add(new QuantityTag("aaa", "T", 100));
+        ledger.addAccount(tags,new LinkedList<>(), "nothing", today);
+        assertEquals(1, ledger.getSize());
+        assertEquals("AAA", ledger.getAccounts(today).get(0).getItemCodes().get(0));
+        assertEquals(tags.get(0).getQuantity(),
+                ledger.getAccounts(today).get(0).getQuantity("aaa"));
+        tags.clear();
+        tags.add(new QuantityTag("CHI", "A", 20));
+        ledger.addAccount(tags, new LinkedList<>(), "something", LocalDate.of(2021, 12 ,12));
+        assertEquals(2, ledger.getSize());
+        assertEquals("CHI",
+                ledger.getAccounts(LocalDate.of(2021, 12 ,12)).get(0).getItemCodes().get(0));
+        assertEquals(tags.get(0).getQuantity(),
+                ledger.getAccounts(LocalDate.of(2021, 12 ,12)).get(0).getQuantity("CHI"));
+        assertNull(ledger.getAccounts(LocalDate.of(2030, 12, 12)));
+    }
+
+    @Test
+    void testGetNonExistingAccount() {
+        //By default, Account number in Ledger will start from 111111
+        LocalDate today = LocalDate.now();
+        LinkedList<QuantityTag> tags = new LinkedList<>();
+        tags.add(new QuantityTag("aaa", "T", 100));
+        ledger.addAccount(tags, new LinkedList<>(),"nothing", today);
+        assertEquals(1, ledger.getSize());
+        assertNull(ledger.getAccount(111112));
     }
 
 

@@ -5,68 +5,111 @@ import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class AccountTest {
     int code = 111111111;
-    double cost = 111.11;
+    LocalDate currentDate = LocalDate.now();
     String description = "accountCreatedForTest";
     LocalDate today = LocalDate.now();
-    ArrayList<Object[]> itemList;
+    ArrayList<QuantityTag> tags;
+    Account account;
 
     @BeforeEach
     void runBeforeEach() {
-        itemList = new ArrayList<>();
-        Object[] entry = new Object[3];
-        entry[0] = "SAD";
-        entry[1] = cost;
-        entry[2] = 250;
-        itemList.add(entry);
-        entry = new Object[3];
-        entry[0] = "ADS";
-        entry[1] = cost * 2;
-        entry[2] = 666;
-        itemList.add(entry);
-        entry = new Object[3];
-        entry[0] = "STR";
-        entry[1] = cost * 3;
-        entry[2] = 1;
-        itemList.add(entry);
-        entry = new Object[3];
-        entry[0] = "BNN";
-        entry[1] = cost * 5;
-        entry[2] = 10;
-        itemList.add(entry);
+        tags = new ArrayList<>();
+        QuantityTag tag = new QuantityTag("SAD", "T", 250);
+        tags.add(tag);
+        tag = new QuantityTag("ADS", "e0", 666);
+        tags.add(tag);
+        tag = new QuantityTag("STR", "f11", 1);
+        tags.add(tag);
+        tag = new QuantityTag("bnn", "f00", 10);
+        tags.add(tag);
     }
 
     @Test
     void testConstructor() {
-        Account account = new Account(code, description, today);
-        for (Object[] entry: itemList) {
-            account.addEntries((String)entry[0], (double)entry[1], (int)entry[2]);
-        }
-        assertEquals(code, account.getCode());
+        account = new Account(code++, "constructorTest", currentDate, tags, null);
         assertEquals(250 + 666 + 1 + 10, account.getTotalQuantity());
-        assertEquals(today.toString(), account.getDate().toString());
-        assertEquals(1, account.getQuantity("STR"));
-        assertEquals(10, account.getQuantity("BNN"));
-        assertEquals(cost * 5, account.getPrice("BNN"));
-        assertEquals(cost * 2, account.getPrice("ADS"));
-        assertEquals(cost * 5 * 10, account.getTotalCost("BNN"));
-        assertEquals(cost * 250, account.getTotalCost("SAD"));
-        assertEquals(cost * 2 * 666, account.getTotalCost("ADS"));
-        assertEquals("accountCreatedForTest", account.getDescription());
-        assertEquals(250 * cost + 666 * cost * 2 + 1 * cost * 3 + 10 * cost * 5,
-                account.getDollarAmount());
+        assertEquals(code - 1, account.getCode());
+        assertEquals(666, account.getQuantity("ads"));
+        assertEquals(currentDate, account.getDate());
+        assertEquals("constructorTest", account.getDescription());
+        tags.add(new QuantityTag("Bnn", "f24", 20));
+        account = new Account(code++, "ConstructionTest", currentDate, tags, null);
+        assertEquals(30, account.getQuantity("bnn"));
+        assertEquals(20, account.getQuantityAtLocation("bnn", "f24"));
+        assertEquals(2, account.getLocations("bnn").size());
+        assertEquals("F00", account.getLocations("bnn").get(0));
+        assertEquals("F24", account.getLocations("bnn").get(1));
     }
 
     @Test
-    void testConstructorWithEmptyEntries() {
-        Account account = new Account(code, description, today);
-        assertEquals(0, account.getQuantity("aaa"));
-        assertEquals(0, account.getTotalCost("aaa"));
-        assertEquals(0, account.getPrice("aaa"));
-        assertEquals(0, account.getDollarAmount());
+    void testConstructorWithSameCodeSameQty() {
+        tags.add(new QuantityTag("SAD", "T", 150));
+        account = new Account(code++, "constructorTest", currentDate, tags, null);
+        assertEquals(250 + 666 + 1 + 10 + 150, account.getTotalQuantity());
+        assertEquals(code - 1, account.getCode());
+        assertEquals(400, account.getQuantity("sad"));
     }
+
+    @Test
+    void testConstructorWithRemovedList() {
+        //tag for removed products
+        QuantityTag tag = new QuantityTag("chi", "z99", -50);
+        ArrayList<QuantityTag> removed = new ArrayList<>();
+        removed.add(tag);
+        account = new Account(code++, "testTotalQtyWithRemoved", today, tags, removed);
+        assertEquals(250 + 666 + 1 + 10 + 50, account.getTotalQuantity());
+        assertEquals(code - 1, account.getCode());
+        assertEquals(666, account.getQuantity("ads"));
+        assertEquals(currentDate, account.getDate());
+        assertEquals("testTotalQtyWithRemoved", account.getDescription());
+        tags.add(new QuantityTag("Bnn", "f24", 20));
+        assertEquals(1, account.getLocations("chi").size());
+        assertEquals("Z99", account.getLocations("chi").get(0));
+        assertEquals(-50, account.getQuantity("chi"));
+    }
+
+    @Test
+    void testGetQtyAtLocation() {
+        tags.add(new QuantityTag("ADS", "e12", 30));
+        account = new Account(code++, "testGetQtyAtLocation", currentDate, tags, null);
+        assertEquals(30, account.getQuantityAtLocation("ads", "e12"));
+        assertEquals(0, account.getQuantityAtLocation("ads", "e"));
+        assertEquals(0, account.getQuantityAtLocation("ads", "e50"));
+        assertEquals(0, account.getQuantityAtLocation("ascd", "e50"));
+        assertEquals(666, account.getQuantityAtLocation("ADS", "e0"));
+    }
+
+
+    @Test
+    void testGetQuantitiesInfo() {
+        QuantityTag tag = new QuantityTag("chi", "z99", -50);
+        ArrayList<QuantityTag> removed = new ArrayList<>();
+        removed.add(tag);
+        account = new Account(code++, "testTotalQtyWithRemoved", today, tags, removed);
+        ArrayList<String> info = account.getQuantitiesInfo();
+        assertEquals(10, info.size());
+        assertEquals("ADS: 666", info.get(2));
+        assertEquals("\tE0: 666", info.get(3));
+    }
+
+
+
+
+
+    @Test
+    void testGetItemCodes() {
+        account = new Account(code++, "itemCodesTest", currentDate, tags, null);
+        assertEquals(4, account.getItemCodes().size());
+        List<String> codes = account.getItemCodes();
+        for (int i = 0; i < codes.size(); i++) {
+            assertEquals(tags.get(i).getItemCode(), codes.get(i));
+        }
+    }
+
 }

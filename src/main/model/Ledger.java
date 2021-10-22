@@ -2,8 +2,7 @@ package model;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.Map;
+import java.util.List;
 
 public class Ledger {
     private ArrayList<Account> accounts;
@@ -12,13 +11,15 @@ public class Ledger {
 
 
     public Ledger() {
-        codeSize = 9;
+        codeSize = 6;
         accounts = new ArrayList<>();
+        nextAccountNumber = ((int)Math.pow(10, codeSize) - 1) / 9;
     }
 
     public Ledger(int accountNumberSize) {
         this.codeSize = accountNumberSize;
         accounts = new ArrayList<>();
+        nextAccountNumber = ((int)Math.pow(10, codeSize) - 1) / 9;
     }
 
     public int getCodeSize() {
@@ -30,6 +31,11 @@ public class Ledger {
     }
 
     public Account getAccount(int code) {
+        for (Account account: accounts) {
+            if (account.getCode() == code) {
+                return account;
+            }
+        }
         return null;
     }
 
@@ -38,18 +44,28 @@ public class Ledger {
     }
 
     public ArrayList<Account> getAccounts(LocalDate date) {
-        return null;
+        ArrayList<Account> accountOnDate = new ArrayList<>();
+        for (Account account: accounts) {
+            if (account.getDate().equals(date)) {
+                accountOnDate.add(account);
+            }
+        }
+        if (accountOnDate.size() == 0) {
+            return null;
+        }
+        return accountOnDate;
     }
 
 
 
     //tagBox: hash map composed of listToAdd and listToRemove
-    public Account addAccount(Map<String, LinkedList<AdditionTag>> itemTags, String description, LocalDate date) {
-
-        if (itemTags.size() == 0) {
+    public Account addAccount(List<QuantityTag> added, List<QuantityTag> removed, String description, LocalDate date) {
+        if (added.size() == 0 && removed.size() == 0) {
             return null;
         }
-        Account account = new Account(nextAccountNumber, description, date, itemTags);
+
+        Account account = new Account(nextAccountNumber++, description, date, added, removed);
+        accounts.add(account);
         return account;
     }
 
