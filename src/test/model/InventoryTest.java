@@ -4,6 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -181,6 +182,7 @@ public class InventoryTest {
         tags.add(new InventoryTag("ASR", 50, "T", basicQty));
         inventory.addProducts(tags);
         assertNull(inventory.getProduct("BBB", 11113));
+        assertNull(inventory.getProduct("ASR", 33333333));
     }
 
     @Test
@@ -485,6 +487,26 @@ public class InventoryTest {
         assertNull(inventory.findLocations("zzz"));
     }
 
+    @Test
+    void testFindLocationsOfRemoved() {
+        tags.add(new InventoryTag("chi", price, bestBeforeDate, "f50", basicQty));
+        tags.add(new InventoryTag("chi", price, bestBeforeDate, "t", basicQty));
+        inventory.addProducts(tags);
+        List<Integer> locations = inventory.findLocations("chi");
+        assertEquals(3, locations.size());
+        assertEquals(inventory.getLocationCodeNumber("t"), locations.get(0));
+        assertEquals(inventory.getLocationCodeNumber("f13"), locations.get(1));
+        assertEquals(inventory.getLocationCodeNumber("f50"), locations.get(2));
+        locations = inventory.findLocations("mgo");
+        assertEquals(1, locations.size());
+        assertEquals(inventory.getLocationCodeNumber("f14"), locations.get(0));
+        ArrayList<QuantityTag> removed = new ArrayList<>();
+        removed.add(new QuantityTag("chi", "t", basicQty));
+        inventory.removeProducts(removed);
+        locations = inventory.findLocations("chi");
+        assertEquals(inventory.getLocationCodeNumber("f13"), locations.get(0));
+        assertEquals(inventory.getLocationCodeNumber("f50"), locations.get(1));
+    }
 
     @Test
     void testGetQtysAtDiffLocations() {

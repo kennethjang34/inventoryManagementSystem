@@ -76,10 +76,8 @@ public class Inventory implements JsonConvertible {
         //EFFECTS: return the number of products in this list that belong to the item cdoe
         public int getQuantity(String itemCode) {
             int numericItemCode = getItemCodeNumber(itemCode);
-            if (items != null) {
-                if (items.get(numericItemCode) != null) {
-                    return items.get(numericItemCode).size();
-                }
+            if (items.get(numericItemCode) != null) {
+                return items.get(numericItemCode).size();
             }
             return 0;
         }
@@ -145,7 +143,6 @@ public class Inventory implements JsonConvertible {
             LinkedList<Product> removed = new LinkedList<>(products.subList(0, qty));
             products.subList(0, qty).clear();
             quantities.set(numericCode, existingQty - qty);
-            assert existingQty - qty >= 0;
             return removed;
         }
 
@@ -381,7 +378,6 @@ public class Inventory implements JsonConvertible {
                 locations.set(numericLocationCode, new ItemList());
                 items = locations.get(numericLocationCode);
             }
-            assert items != null;
             items.addProducts(itemCode, price, bestBeforeDate, qty);
             quantity += tag.getQuantity();
         }
@@ -400,11 +396,11 @@ public class Inventory implements JsonConvertible {
         int numericLocationCode = getLocationCodeNumber(location);
         Product product = tag.getProduct();
         ItemList items = locations.get(numericLocationCode);
-        if (items.remove(product)) {
-            int numericItemCode = getItemCodeNumber(itemCode);
-            int qtyBefore = quantities.get(numericItemCode);
-            quantities.set(numericItemCode, qtyBefore - 1);
-        }
+        items.remove(product);
+        int numericItemCode = getItemCodeNumber(itemCode);
+        int qtyBefore = quantities.get(numericItemCode);
+        quantities.set(numericItemCode, qtyBefore - 1);
+
         return true;
     }
 
