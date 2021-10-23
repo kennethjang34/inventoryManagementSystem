@@ -3,20 +3,21 @@ package model;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
-import persistence.JsonConvertable;
+import persistence.JsonConvertible;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-public class Inventory implements JsonConvertable {
+public class Inventory implements JsonConvertible {
     private final int codeSize;
     //hash map that has numeric item codes as its keys and array lists of products as its value.
 
     //hash map that has numeric location codes as its keys and array lists of products as its value.
     //Default code size will be set to 3.
     //index 0 represents the temporary storage room, where products without location tag will be stored.
+    //For UI, A0 and T will both be referring to the temporary storage room.
     private final ArrayList<ItemList> locations;
     private final ArrayList<Integer> quantities;
     //hashmap where key is a numeric product code
@@ -30,9 +31,10 @@ public class Inventory implements JsonConvertable {
 
 
     //list of items, each of which is again a list of products.
-    public class ItemList implements JsonConvertable {
+    public class ItemList implements JsonConvertible {
         ArrayList<LinkedList<Product>> items;
 
+        //EFFECTS: create a new empty item list
         public ItemList() {
             items = new ArrayList<>((int) Math.pow(NUM_ALPHABETS, codeSize));
             for (int i = 0; i < (int) Math.pow(NUM_ALPHABETS, codeSize); i++) {
@@ -40,23 +42,28 @@ public class Inventory implements JsonConvertable {
             }
         }
 
+        //REQUIRES: the data in JSON format must be containing all necessary information
+        //for creating an item list with matching names
+        //EFFECTS: create a new item list from data in JSON format
         public ItemList(JSONObject jsonItemList) {
             items = new ArrayList<>((int) Math.pow(NUM_ALPHABETS, codeSize));
             JSONArray jsonItems = jsonItemList.getJSONArray("items");
             for (int i = 0; i < jsonItems.length(); i++) {
-                JSONArray item = jsonItems.getJSONArray(i);
-                if (item.toString().equalsIgnoreCase("Null")) {
+                if (jsonItems.get(i).toString().equalsIgnoreCase("Null")) {
                     items.add(null);
                 } else {
+                    JSONArray item = jsonItems.getJSONArray(i);
                     LinkedList<Product> products = new LinkedList<>();
                     for (int j = 0; j < item.length(); j++) {
-                        products.add(new Product(item.getJSONObject(i)));
+                        products.add(new Product(item.getJSONObject(j)));
                     }
                     items.add(products);
                 }
             }
         }
 
+        //EFFECTS: return a list of products that belong to this item code in this
+        //If there isn't any, return null.
         public LinkedList<Product> getProducts(String itemCode) {
             int numericItemCode = getItemCodeNumber(itemCode);
             try {
@@ -66,6 +73,7 @@ public class Inventory implements JsonConvertable {
             }
         }
 
+        //EFFECTS: return the number of products in this list that belong to the item cdoe
         public int getQuantity(String itemCode) {
             int numericItemCode = getItemCodeNumber(itemCode);
             if (items != null) {
@@ -76,12 +84,18 @@ public class Inventory implements JsonConvertable {
             return 0;
         }
 
+
+        //EFFECTS: return true if this contains any products belonging to the item code.
+        //Otherwise, return false.
         public boolean contains(String itemCode) {
             itemCode = itemCode.toUpperCase();
             LinkedList<Product> products = getProducts(itemCode);
             return products != null && products.size() != 0;
         }
 
+
+        //return a product with the item code and SKU in the item list.
+        //if there isn't such a product, return null.
         public Product getProduct(String itemCode, int sku) {
             int numericItemCode = getItemCodeNumber(itemCode);
             LinkedList<Product> products = items.get(numericItemCode);
@@ -96,8 +110,15 @@ public class Inventory implements JsonConvertable {
             return null;
         }
 
+        //REQUIRES: item code must be in valid form. price, quantity cannot be negative
+        //MODIFIES: this
+        //EFFECTS: add products with the given information.
+        //If any of the arguments are invalid, throw an IllegalArgumentException.
         public void addProducts(String itemCode, double price, LocalDate bestBeforeDate, int qty) {
             itemCode = itemCode.toUpperCase();
+            if (!isValidItemCode(itemCode) || price < 0 || qty < 0) {
+                throw new IllegalArgumentException();
+            }
             int numericCode = getItemCodeNumber(itemCode);
             LinkedList<Product> products = items.get(numericCode);
             int existingQty = quantities.get(numericCode);
@@ -111,6 +132,9 @@ public class Inventory implements JsonConvertable {
             quantities.set(numericCode, existingQty + qty);
         }
 
+        //REQUIRES: itemCode must be in a valid form, quantity cannot be negative
+        //MODIFIES: this
+        //EFFECTS: remove as many products specified by the item code as qty from this
         public LinkedList<Product> removeProducts(String itemCode, int qty) {
             int numericCode = getItemCodeNumber(itemCode);
             LinkedList<Product> products = items.get(numericCode);
@@ -125,6 +149,8 @@ public class Inventory implements JsonConvertable {
             return removed;
         }
 
+        //MODIFIES: this
+        //EFFECTS: remove the product from this.
         public boolean remove(Product product) {
             String itemCode = product.getItemCode();
             int numericCode = getItemCodeNumber(itemCode);
@@ -132,6 +158,7 @@ public class Inventory implements JsonConvertable {
             return products.remove(product);
         }
 
+        //EFFECTS: convert this to JSONObject and return it
         @Override
         public JSONObject toJson() {
             JSONObject json = new JSONObject();
@@ -180,7 +207,6 @@ public class Inventory implements JsonConvertable {
     public Inventory(int codeSize) {
         this.codeSize = codeSize;
         numberOfSections = 100;
-        //In this case, the location code starts at A0 and ends at Z99
         quantity = 0;
         quantities = new ArrayList<>((int)Math.pow(NUM_ALPHABETS, codeSize));
         for (int i = 0; i < (int)Math.pow(NUM_ALPHABETS, codeSize); i++) {
@@ -216,6 +242,9 @@ public class Inventory implements JsonConvertable {
         currentDate = LocalDate.now();
     }
 
+    //REQUIRES: the data in JSON format must contain all necessary information
+    //required for creating inventory with matching names.
+    //EFFECTS: create a new inventory with the given information from the data in JSON format
     public Inventory(JSONObject jsonInventory) {
         currentDate = LocalDate.now();
         nextSKU = jsonInventory.getInt("nextSKU");
@@ -231,7 +260,7 @@ public class Inventory implements JsonConvertable {
         JSONArray jsonLocations = jsonInventory.getJSONArray("locations");
         locations = new ArrayList<>(NUM_ALPHABETS * numberOfSections);
         for (int i = 0; i < jsonLocations.length(); i++) {
-            if (jsonLocations.getJSONObject(i).toString().equals("Null")) {
+            if (jsonLocations.get(i).toString().equalsIgnoreCase("Null")) {
                 locations.add(null);
             } else {
                 locations.add(new ItemList(jsonLocations.getJSONObject(i)));
@@ -240,6 +269,8 @@ public class Inventory implements JsonConvertable {
     }
 
 
+    //EFFECTS: return  a list of tags that contain information about quantities at each location
+    //Only locations with at least one product belonging to the item code will be added to the list
     public ArrayList<QuantityTag> getQuantitiesAtLocations(String itemCode) {
         itemCode = itemCode.toUpperCase();
         ArrayList<QuantityTag> tags = new ArrayList<>();
@@ -259,6 +290,7 @@ public class Inventory implements JsonConvertable {
     }
 
 
+    //EFFECTS: return the currentDate
     public LocalDate getCurrentDate() {
         return currentDate;
     }
@@ -316,6 +348,8 @@ public class Inventory implements JsonConvertable {
         return true;
     }
 
+    //If the given location code is in a valid form, return true
+    //else return false.
     public boolean isValidLocationCode(String location) {
         int numeric;
         try {
@@ -323,14 +357,14 @@ public class Inventory implements JsonConvertable {
         } catch (NumberFormatException e) {
             return false;
         }
-        if (numeric > ('z' - 'a') * numberOfSections || numeric < 0) {
+
+        if (numeric >= ('z' - 'a' + 1) * numberOfSections || numeric < 0) {
             return false;
         }
         return true;
     }
 
 
-    //String itemCode, double price, LocalDate date, String location, int quantity
     //REQUIRES: tags need to be a list of entries that contain information for new products and its location
     //MODIFIES: this
     //EFFECTS: will put new products in the inventory list using information in the tags
@@ -352,6 +386,10 @@ public class Inventory implements JsonConvertable {
             quantity += tag.getQuantity();
         }
     }
+
+    //MODIFIES: this
+    //EFFECTS: remove a product with its item code and SKU. if the product is removed, return true
+    //if there is no such product, return false.
 
     public boolean removeProduct(String itemCode, int sku) {
         ProductTag tag = findProduct(itemCode, sku);
@@ -467,17 +505,19 @@ public class Inventory implements JsonConvertable {
     //in the form used by the inventory (upper case))
     //EFFECTS: return a numeric code converted from the string code. If location is null, return 0;
     public int getLocationCodeNumber(String location) {
-        int numericCode;
-        if (location.equalsIgnoreCase("T")) {
-            return 0;
-        }
-        //alphabet's value
+        int alphabetValue;
         location = location.toUpperCase();
-        int alphabetValue = location.charAt(0) - 'A';
         if (location.length() == 1) {
-            return alphabetValue * numberOfSections;
+            if (location.equalsIgnoreCase("T")) {
+                return 0;
+            } else {
+                alphabetValue = location.charAt(0) - 'A';
+                return alphabetValue * numberOfSections;
+            }
         }
-        numericCode = alphabetValue * numberOfSections;
+        //Only one alphabet at first is allowed
+        alphabetValue = location.charAt(0) - 'A';
+        int numericCode = alphabetValue * numberOfSections;
         //If A99: 99
         try {
             numericCode += Integer.parseInt(location.substring(1));
@@ -583,7 +623,7 @@ public class Inventory implements JsonConvertable {
 
 
 
-
+    //EFFECTS: convert this to JSONObject and return it.
     @Override
     public JSONObject toJson() {
         JSONObject json = new JSONObject();

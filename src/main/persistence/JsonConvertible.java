@@ -4,16 +4,17 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.List;
-import java.util.Map;
 //This interface was modelled after JsonSerializationDemo
 //a sample application for using JSON package provided by UBC Computer science Faculty
 //for CPSC 210 Students (2021/10/19).
 
-public interface JsonConvertable {
 
-    default JSONArray convertToJsonArray(List<? extends JsonConvertable> list) {
+public interface JsonConvertible {
+
+    //EFFECTS: convert JsonConvertible objects in the list into JSONObject and return newly built list
+    default JSONArray convertToJsonArray(List<? extends JsonConvertible> list) {
         org.json.JSONArray jsons = new JSONArray();
-        for (JsonConvertable convertable: list) {
+        for (JsonConvertible convertable: list) {
             if (convertable == null) {
                 jsons.put("null");
             } else {
@@ -23,13 +24,6 @@ public interface JsonConvertable {
         return jsons;
     }
 
-    default JSONObject convertMapToJson(Map<String, ? extends JsonConvertable> map) {
-        JSONObject json = new JSONObject();
-        for (Map.Entry<String, ? extends JsonConvertable> entry: map.entrySet()) {
-            json.put(entry.getKey(), entry.getValue().toJson());
-        }
-        return json;
-    }
-
+    //EFFECTS: convert to JSONObject and return it
     JSONObject toJson();
 }

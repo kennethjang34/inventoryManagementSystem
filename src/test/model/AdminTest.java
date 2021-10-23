@@ -96,4 +96,41 @@ public class AdminTest {
         assertNull(admin.retrievePassword(id, name, LocalDate.of(2011, 1, 5), personalNum));
         assertNull(admin.retrievePassword(id, name, today, personalNum+10));
     }
+
+    @Test
+    void testJsonConversion() {
+        String id = "thigh";
+        String pw = "drumstick";
+        String name = "chicken";
+        LocalDate birthDay = LocalDate.of(2021, 7, 22);
+        admin.createLoginAccount(id, pw, name, birthDay, personalNum++);
+        assertTrue(admin.checkLoginAccount(id, pw));
+        assertFalse(admin.checkLoginAccount(pw, id));
+        id = "Italian";
+        pw = "Pig";
+        name = "belly";
+        birthDay = LocalDate.of(2021, 10, 10);
+        admin.createLoginAccount(id, pw, name, birthDay, personalNum++);
+        assertTrue(admin.checkLoginAccount(id, pw));
+        assertFalse(admin.checkLoginAccount("italian", "Pig"));
+        assertFalse(admin.checkLoginAccount("Italian", "pig"));
+        assertFalse(admin.checkLoginAccount("ads", "Fas"));
+        admin = new Admin(admin.toJson());
+        id = "thigh";
+        pw = "drumstick";
+        name = "chicken";
+        birthDay = LocalDate.of(2021, 7, 22);
+        admin.createLoginAccount(id, pw, name, birthDay, personalNum++);
+        assertTrue(admin.checkLoginAccount(id, pw));
+        assertFalse(admin.checkLoginAccount(pw, id));
+        id = "Italian";
+        pw = "Pig";
+        name = "belly";
+        birthDay = LocalDate.of(2021, 10, 10);
+        admin.createLoginAccount(id, pw, name, birthDay, personalNum++);
+        assertTrue(admin.checkLoginAccount(id, pw));
+        assertFalse(admin.checkLoginAccount("italian", "Pig"));
+        assertFalse(admin.checkLoginAccount("Italian", "pig"));
+        assertFalse(admin.checkLoginAccount("ads", "Fas"));
+    }
 }

@@ -111,4 +111,19 @@ public class AccountTest {
         }
     }
 
+    @Test
+    void testToJson() {
+        account = new Account(code++, "itemCodesTest", currentDate, tags, null);
+        assertEquals(4, account.getItemCodes().size());
+        List<String> codes = account.getItemCodes();
+        for (int i = 0; i < codes.size(); i++) {
+            assertEquals(tags.get(i).getItemCode(), codes.get(i));
+        }
+        account = new Account(account.toJson());
+        assertEquals(4, account.getItemCodes().size());
+        for (int i = 0; i < codes.size(); i++) {
+            assertEquals(tags.get(i).getItemCode(), codes.get(i));
+        }
+    }
+
 }

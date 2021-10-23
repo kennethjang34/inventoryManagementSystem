@@ -26,6 +26,8 @@ As a user, I want to add a product to the item list of the inventory.
 
 As a user, I want to check the quantities I have of  particular items in stock.
 
+As a user, I want to check stocks of a certain item by location
+
 As a user, I want the application to create a sku automatically
 
 As a user, I want to check a product's best before date
@@ -40,6 +42,6 @@ As a user, I want to locate each product, as well as all the products belonging 
 
 As a user, I want to be able to retrieve my login account password with my information.
 
-As a user, I want to be able to save my current inventory state
+As a user, I want to be able to save my current inventory manager state
 
-As a user, I want to be able to reload my inventory in the same state as last time from file
+As a user, I want to be able to reload my inventory manager state from file

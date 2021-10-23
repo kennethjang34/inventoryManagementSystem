@@ -82,6 +82,30 @@ public class LedgerTest {
         assertNull(ledger.getAccount(111112));
     }
 
+    @Test
+    void testJsonConversion() {
+        LinkedList<QuantityTag> tags = new LinkedList<>();
+        tags.add(new QuantityTag("CHI", "T", 100));
+        ledger.addAccount(tags, new LinkedList<>(),"nothing", LocalDate.now());
+        assertEquals(1, ledger.getSize());
+        assertEquals(1, ledger.getAccounts().size());
+        assertEquals(ledger.getAccount(111111), ledger.getAccounts().get(0));
+        assertEquals(1, ledger.getAccounts(TODAY).size());
+        assertEquals(ledger.getAccount(111111), ledger.getAccounts(TODAY).get(0));
+        assertEquals(null,
+                ledger.addAccount(new LinkedList<QuantityTag>(),
+                        new LinkedList<>(),"test", LocalDate.now()));
+        ledger = new Ledger(ledger.toJson());
+        assertEquals(1, ledger.getSize());
+        assertEquals(1, ledger.getAccounts().size());
+        assertEquals(ledger.getAccount(111111), ledger.getAccounts().get(0));
+        assertEquals(1, ledger.getAccounts(TODAY).size());
+        assertEquals(ledger.getAccount(111111), ledger.getAccounts(TODAY).get(0));
+        assertEquals(null,
+                ledger.addAccount(new LinkedList<QuantityTag>(),
+                        new LinkedList<>(),"test", LocalDate.now()));
+    }
+
 
 
 }

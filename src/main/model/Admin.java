@@ -2,7 +2,7 @@ package model;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
-import persistence.JsonConvertable;
+import persistence.JsonConvertible;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -10,17 +10,17 @@ import java.util.ArrayList;
 //represents administration that have their own accounts
 //will contain a list of login accounts.
 //Written to provide a functionality for Inventory management system application.
-public class Admin implements JsonConvertable {
+public class Admin implements JsonConvertible {
 
     //represents each individual login account.
     //Must be distinguished from accounts that contain information about inventory update.
-    private static class LoginAccount implements JsonConvertable {
+    private static class LoginAccount implements JsonConvertible {
 
         //Once a login account is created, no data can be changed.
         private final String id;
         private final String pw;
         private final String name;
-        private final LocalDate birthDay;
+        private final LocalDate birthday;
         private final int personalCode;
 
         //EFFECTS: create a new account and return it.
@@ -28,7 +28,7 @@ public class Admin implements JsonConvertable {
             this.id = id;
             this.pw = password;
             this.name = name;
-            this.birthDay = birthDay;
+            this.birthday = birthDay;
             this.personalCode = personalCode;
         }
 
@@ -39,8 +39,8 @@ public class Admin implements JsonConvertable {
             pw = jsonLoginAccount.getString("pw");
             name = jsonLoginAccount.getString("name");
             personalCode = jsonLoginAccount.getInt("personalCode");
-            JSONObject jsonDate = jsonLoginAccount.getJSONObject("birthDay");
-            birthDay = LocalDate.of(jsonDate.getInt("year"),
+            JSONObject jsonDate = jsonLoginAccount.getJSONObject("birthday");
+            birthday = LocalDate.of(jsonDate.getInt("year"),
                     jsonDate.getInt("month"), jsonDate.getInt("day"));
         }
 
@@ -50,8 +50,8 @@ public class Admin implements JsonConvertable {
         }
 
         //EFFECTS: return birthday
-        private LocalDate getBirthDay() {
-            return birthDay;
+        private LocalDate getBirthday() {
+            return birthday;
         }
 
         //EFFECTS: return personal code
@@ -75,6 +75,7 @@ public class Admin implements JsonConvertable {
             return this.pw.equals(pw);
         }
 
+        //EFFECTS: convert this to JSONObject and return it.
         @Override
         public JSONObject toJson() {
             JSONObject json = new JSONObject();
@@ -82,11 +83,11 @@ public class Admin implements JsonConvertable {
             json.put("pw", pw);
             json.put("name", name);
             JSONObject date = new JSONObject();
-            date.put("year", birthDay.getYear());
-            date.put("month", birthDay.getMonthValue());
-            date.put("day", birthDay.getDayOfMonth());
+            date.put("year", birthday.getYear());
+            date.put("month", birthday.getMonthValue());
+            date.put("day", birthday.getDayOfMonth());
             json.put("birthday", date);
-            json.put("personCode", personalCode);
+            json.put("personalCode", personalCode);
             return json;
         }
     }
@@ -101,12 +102,12 @@ public class Admin implements JsonConvertable {
         accounts = new ArrayList<>();
     }
 
-    //JSONObject must have all information needed to build admin with the matching name
+    //REQUIRES: JSONObject must have all information needed to build admin with the matching name
+    //EFFECTS: create a new admin with data in JSON format
     public Admin(JSONObject jsonAdmin) {
         accounts = new ArrayList<>();
         JSONArray jsonAccounts = jsonAdmin.getJSONArray("accounts");
         jsonAccounts.forEach(json -> accounts.add(new LoginAccount((JSONObject)json)));
-
     }
 
     //EFFECTS: if a login account can be found with the information given, return password of the account
@@ -120,7 +121,7 @@ public class Admin implements JsonConvertable {
         String pw = null;
         if (account != null) {
             if ((account.getName().equalsIgnoreCase(name))
-                    && (account.getBirthDay().toString().equalsIgnoreCase(birthDay.toString()))
+                    && (account.getBirthday().toString().equalsIgnoreCase(birthDay.toString()))
                     && account.getPersonalCode() == personalNum) {
                 pw = account.getPassword();
             }
@@ -163,6 +164,7 @@ public class Admin implements JsonConvertable {
         return true;
     }
 
+    //EFFECTS: convert this to JSONObject and return it.
     @Override
     public JSONObject toJson() {
         JSONObject json = new JSONObject();

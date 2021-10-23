@@ -3,7 +3,7 @@ package ui;
 
 import model.*;
 import org.json.JSONObject;
-import persistence.JsonConvertable;
+import persistence.JsonConvertible;
 import persistence.Reader;
 import persistence.Writer;
 
@@ -22,7 +22,7 @@ import java.util.Scanner;
 //make it possible to not just search for a specific product using Inventory class,
 //but can check multiple products comparing them.
 //Only a certain number of people who have login accounts in admin can use this
-public class Manager implements JsonConvertable {
+public class Manager implements JsonConvertible {
     private static final String fileLocation = "./data/inventory_management_system.json";
     private final Inventory inventory;
     private final Ledger ledger;
@@ -63,7 +63,8 @@ public class Manager implements JsonConvertable {
         currentProduct = null;
     }
 
-
+    //REQUIRES: The data in JSON format must contain all the information for creating the manager with matching name
+    //EFFECTS: create a manager with data in JSON format.
     public Manager(JSONObject json) {
         listToAdd = new ArrayList<>();
         listToRemove = new ArrayList<>();
@@ -83,8 +84,18 @@ public class Manager implements JsonConvertable {
     }
 
 
+    //REQUIRES: price, quantity must not be negative, item code must be in valid form
+    //MODIFIES: this
+    //EFFECTS: add a new product entry to the list to add to the inventory.
+    //Note this method itself won't change inventory.
     private void addToListToAdd(String itemCode, double price,
                                 LocalDate bestBeforeDate, String location, int qty) {
+        if (!inventory.isValidItemCode(itemCode) || !inventory.isValidLocationCode(location)) {
+            throw new IllegalArgumentException();
+        }
+        if (price < 0 || qty < 0) {
+            throw new IllegalArgumentException();
+        }
         itemCode = itemCode.toUpperCase();
         InventoryTag inventoryTag = new InventoryTag(itemCode, price, bestBeforeDate, location, qty);
         listToAdd.add(inventoryTag);
@@ -92,8 +103,8 @@ public class Manager implements JsonConvertable {
 
 
     //MODIFIES: this
-    //EFFECTS: remove one product belonging to this item code from the temporary list.
-    //return true if it succeeds. return false otherwise.
+    //EFFECTS: add a tag to the list so the specified products can be deleted from the inventory later.
+    //Note this method itself won't change inventory.
     private void addToListToRemove(QuantityTag tag) {
         listToRemove.add(tag);
     }
@@ -121,8 +132,6 @@ public class Manager implements JsonConvertable {
         for (InventoryTag tag: listToAdd) {
             added.add(new QuantityTag(tag.getItemCode(),tag.getLocation(), tag.getQuantity()));
         }
-
-
         updateLedger(added, receipt, description);
         listToAdd.clear();
         listToRemove.clear();
@@ -131,7 +140,7 @@ public class Manager implements JsonConvertable {
 
 
     //MODIFIES: this
-    //EFFECTS: will update the ledger with the latest info.
+    //EFFECTS: add an account that contains information about the update of the inventory when it was called
     private void updateLedger(List<QuantityTag> added, LinkedList<QuantityTag> removed, String description) {
         ledger.addAccount(added, removed, description, currentDate);
     }
@@ -139,6 +148,7 @@ public class Manager implements JsonConvertable {
 
 
     //EFFECTS: create and return a label containing brief information for each account existing in the ledger.
+    //if ledger is empty, empty string list will be returned
     private ArrayList<String> printGeneralAccountInfo() {
         ArrayList<String> list = new ArrayList<>();
         for (Account account: ledger.getAccounts()) {
@@ -157,8 +167,9 @@ public class Manager implements JsonConvertable {
         return list;
     }
 
+    //REQUIRES: accountCode cannot be negative
     //EFFECTS: if there is an account with the specified account code,
-    //make a detailed label for that particular account,
+    //make a detailed label for that particular account (code, quantity, location, date)
     //each element of the returned list will contain each line of the label.
     //If there isn't, list will just contain information that there isn't such an account.
     private ArrayList<String> checkAccount(int accountCode) {
@@ -182,6 +193,7 @@ public class Manager implements JsonConvertable {
     }
 
     //EFFECTS: return a list of labels that indicate locations of products belonging to the item code.
+    //If there isn't such products with the specified item code, return an empty list
     private LinkedList<String> getLocationListOfProduct(String itemCode) {
         itemCode = itemCode.toUpperCase();
         LinkedList<Integer> numericList = inventory.findLocations(itemCode);
@@ -194,6 +206,7 @@ public class Manager implements JsonConvertable {
 
     //REQUIRES: item code must be in a valid form. sku must not be negative.
     //EFFECTS: return the location of the product specified by the code and SKU.
+    //If no such product has been found, return null.
     private String getLocationOfProduct(String itemCode, int sku) {
         itemCode = itemCode.toUpperCase();
         ProductTag tag = inventory.findProduct(itemCode, sku);
@@ -209,6 +222,8 @@ public class Manager implements JsonConvertable {
     private boolean adminAccountCheck(String id, String pw) {
         return admin.checkLoginAccount(id, pw);
     }
+
+
 
     //EFFECTS: return the password matching the id if the given information can be found.
     //return null if it cannot be found
@@ -357,6 +372,7 @@ public class Manager implements JsonConvertable {
     }
 
 
+    //EFFECTS: print the entries of the list of products to add
     private void printListToAdd() {
         for (InventoryTag tag: listToAdd) {
             String itemCode = tag.getItemCode();
@@ -374,6 +390,7 @@ public class Manager implements JsonConvertable {
         }
     }
 
+    //EFFECTS: print the entries of the list of products to remove
     private void printListToRemove() {
         for (QuantityTag tag: listToRemove) {
             String itemCode = tag.getItemCode();
@@ -513,23 +530,28 @@ public class Manager implements JsonConvertable {
     }
 
 
+    //EFFECTS: print tags in the list. if the list is null or empty, print "nothing to print"
     private void printTags(ArrayList<QuantityTag> tags) {
-        if (tags == null) {
-            System.out.println("There is no such products");
+        if (tags == null || tags.size() == 0) {
+            System.out.println("Nothing to print");
         } else {
             for (QuantityTag tag : tags) {
                 System.out.println(tag.toString());
             }
         }
-
     }
 
     //MODIFIES: this
     //EFFECTS: remove a product from  list of products to add prompting the user to enter item code.
     private void promptRemoveProductFromListToAdd() {
         printListToAdd();
-        System.out.println("enter the index of the entry. The indices start from 0");
-        int index = scanner.nextInt();
+        System.out.println("enter the index of the entry. The indices start from 0. To end, enter non-digit");
+        int index;
+        try {
+            index = scanner.nextInt();
+        } catch (NumberFormatException e) {
+            return;
+        }
         scanner.nextLine();
         try {
             removeEntryFromListToAdd(index);
@@ -554,6 +576,9 @@ public class Manager implements JsonConvertable {
         }
     }
 
+    //REQUIRES: index must be a valid one
+    //MODIFIES: this
+    //EFFECTS: remove an entry on the list of products to add
     private void removeEntryFromListToAdd(int index) throws Exception {
         try {
             listToAdd.remove(index);
@@ -562,6 +587,9 @@ public class Manager implements JsonConvertable {
         }
     }
 
+    //REQUIRES: index must be a valid one
+    //MODIFIES: this
+    //EFFECTS: remove an entry on the list of products to remove
     private void removeEntryFromListToRemove(int index) throws Exception {
         try {
             listToRemove.remove(index);
