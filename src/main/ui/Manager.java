@@ -2,7 +2,13 @@ package ui;
 
 
 import model.*;
+import org.json.JSONObject;
+import persistence.JsonConvertable;
+import persistence.Reader;
+import persistence.Writer;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -16,7 +22,8 @@ import java.util.Scanner;
 //make it possible to not just search for a specific product using Inventory class,
 //but can check multiple products comparing them.
 //Only a certain number of people who have login accounts in admin can use this
-public class Manager {
+public class Manager implements JsonConvertable {
+    private static final String fileLocation = "./data/inventory_management_system.json";
     private final Inventory inventory;
     private final Ledger ledger;
     private final Admin admin;
@@ -54,6 +61,18 @@ public class Manager {
         listToRemove = new ArrayList<>();
         currentDate = LocalDate.now();
         currentProduct = null;
+    }
+
+
+    public Manager(JSONObject json) {
+        listToAdd = new ArrayList<>();
+        listToRemove = new ArrayList<>();
+        currentDate = LocalDate.now();
+        currentProduct = null;
+        scanner = new Scanner(System.in);
+        inventory = new Inventory(json.getJSONObject("inventory"));
+        ledger = new Ledger(json.getJSONObject("ledger"));
+        admin = new Admin(json.getJSONObject("admin"));
     }
 
 
@@ -228,26 +247,6 @@ public class Manager {
     }
 
 
-    //return info that contains quantities, item codes existing in the inventory.
-    //EFFECTS: return a string that contains general information about the inventory
-//    private String checkInventory() {
-//        if (inventory.getTotalQuantity() == 0) {
-//            return "Inventory is empty";
-//        }
-//        String info = "The inventory contains a total number of " + inventory.getTotalQuantity() + " of products";
-//        info += '\n' + "The item code list created is as follows: ";
-//        info += '\n';
-//        LinkedList<String> codes = inventory.getListOfCodes();
-//        if (codes.isEmpty()) {
-//            System.out.println("The inventory is empty");
-//        }
-//        for (String e: codes) {
-//            info += e + " ";
-//        }
-//        return info;
-//    }
-
-
     //EFFECTS: prompt the user to enter info for finding locations of an item code.
     private void promptFindLocations() {
         System.out.println("enter the item code");
@@ -294,7 +293,7 @@ public class Manager {
                             (currentProduct.getBestBeforeDate() == null ? "N/A" : currentProduct.getBestBeforeDate()));
                     break;
                 case "cost":
-                    System.out.println("The cost of the product: " + currentProduct.getCost());
+                    System.out.println("The cost of the product: " + currentProduct.getPrice());
                     break;
                 case "h":
                     printProductOptions();
@@ -328,7 +327,6 @@ public class Manager {
         System.out.println("The product doesn't exist in the warehouse");
 
     }
-
 
     //EFFECTS: prompt the user to enter info for checking quantity of an item
     private void promptCheckQuantity() {
@@ -731,21 +729,53 @@ public class Manager {
     }
 
 
-//    @Override
-//    public JSONObject toJson() {
-//        JSONObject inventoryJson = inventory.toJson();
-//        JSONObject adminJson = inventory.toJson();
-//
-//    }
+    public JSONObject toJson() {
+        JSONObject json = new JSONObject();
+        json.put("inventory", inventory.toJson());
+        json.put("ledger", ledger.toJson());
+        json.put("admin", admin.toJson());
+        return json;
+    }
+
+
+    //MODIFIES: this
+    //EFFECTS: save the current state of the application
+    public void save() {
+        try {
+            Writer writer = new Writer(fileLocation);
+            writer.write(this);
+            writer.close();
+        } catch (FileNotFoundException e) {
+            System.out.println("The current file cannot be found");
+        }
+    }
+
+
 
     @SuppressWarnings({"checkstyle:MethodLength", "checkstyle:SuppressWarnings"})
     public static void main(String[] args) {
-        Manager stockManager = new Manager();
+        Manager stockManager;
+        boolean login = false;
+        try {
+            Reader reader = new Reader(fileLocation);
+            stockManager = new Manager(reader.read());
+        } catch (IOException e) {
+            System.out.println("No existing data can be found. please create a new inventory manager");
+            stockManager = new Manager();
+            Scanner scanner = stockManager.getScanner();
+            System.out.println("Please create a login account first");
+            stockManager.promptCreateLoginAccount();
+            login = true;
+        } catch (IllegalArgumentException e) {
+            System.out.println("Data for manager is in wrong format. please create a new inventory manager");
+            stockManager = new Manager();
+            Scanner scanner = stockManager.getScanner();
+            System.out.println("Please create a login account first");
+            stockManager.promptCreateLoginAccount();
+            login = true;
+        }
         Scanner scanner = stockManager.getScanner();
-        System.out.println("Please create a login account first");
-        stockManager.promptCreateLoginAccount();
         String option  = "h";
-        boolean login = true;
         while (!option.equalsIgnoreCase("q")) {
             if (!login) {
                 login = stockManager.promptLogin();
@@ -808,5 +838,6 @@ public class Manager {
                 }
             }
         }
+        stockManager.save();
     }
 }

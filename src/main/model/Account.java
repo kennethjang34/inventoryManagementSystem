@@ -1,12 +1,16 @@
 package model;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+import persistence.JsonConvertable;
+
 import java.time.LocalDate;
 import java.util.*;
 
 //represents an account that contains information about the change that happens on a particular date.
 //will have account code, description, date, and quantities for each different item code.
 //Note this account must be distinguished from Login accounts, which are completely different
-public class Account {
+public class Account implements JsonConvertable {
     //Code will be used for finding a particular account
     private final int code;
     private final String description;
@@ -15,7 +19,7 @@ public class Account {
     //entries is a list of entries each of which contains item code(String), cost(double), quantity(int)
     private final ArrayList<AccountEntry> entries;
 
-    private static class  AccountEntry {
+    private static class  AccountEntry implements JsonConvertable {
         private final String itemCode;
         //price of each product
         private int quantity;
@@ -26,6 +30,13 @@ public class Account {
             itemCode = tag.getItemCode().toUpperCase();
             distribution = new HashMap<>();
             distribution.put(tag.getLocation(), tag.getQuantity());
+        }
+
+        private AccountEntry(JSONObject json) {
+            itemCode = json.getString("itemCode");
+            quantity = json.getInt("quantity");
+            distribution = new HashMap<>();
+            JSONObject jsonDistribution = json.getJSONObject("distribution");
         }
 
         private String getItemCode() {
@@ -58,6 +69,16 @@ public class Account {
         private int getQuantity() {
             return quantity;
         }
+
+        @Override
+        public JSONObject toJson() {
+            JSONObject json = new JSONObject();
+            json.put("itemCode", itemCode);
+            json.put("quantity", quantity);
+            JSONObject jsonDistribution = new JSONObject(distribution);
+            json.put("distribution", jsonDistribution.toMap());
+            return json;
+        }
     }
 
 
@@ -68,6 +89,21 @@ public class Account {
         this.entries = new ArrayList<>();
         addEntries(added);
         addEntries(removed);
+    }
+
+    public Account(JSONObject json) {
+        code = json.getInt("code");
+        description = json.getString("description");
+        JSONObject jsonDate = json.getJSONObject("date");
+        date = LocalDate.of(jsonDate.getInt("year"), jsonDate.getInt("month"), jsonDate.getInt("day"));
+        entries = new ArrayList<>();
+        JSONArray jsonEntries = json.getJSONArray("entries");
+        for (int i = 0; i < jsonEntries.length(); i++) {
+            JSONObject entry = jsonEntries.getJSONObject(i);
+            if (!entry.toString().equalsIgnoreCase("Null")) {
+                entries.add(new AccountEntry(entry));
+            }
+        }
     }
 
     //MODIFIES: this
@@ -187,5 +223,16 @@ public class Account {
             codes.add(entry.getItemCode());
         }
         return codes;
+    }
+
+
+    @Override
+    public JSONObject toJson() {
+        JSONObject json = new JSONObject();
+        json.put("code", code);
+        json.put("description", description);
+        json.put("date", date.toString());
+        json.put("entries", convertToJsonArray(entries));
+        return json;
     }
 }

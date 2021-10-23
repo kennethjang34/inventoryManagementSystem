@@ -1,10 +1,14 @@
 package model;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+import persistence.JsonConvertable;
+
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Ledger {
+public class Ledger implements JsonConvertable {
     private ArrayList<Account> accounts;
     private int nextAccountNumber;
     private int codeSize;
@@ -20,6 +24,16 @@ public class Ledger {
         this.codeSize = accountNumberSize;
         accounts = new ArrayList<>();
         nextAccountNumber = ((int)Math.pow(10, codeSize) - 1) / 9;
+    }
+
+    public Ledger(JSONObject jsonLedger) {
+        nextAccountNumber = jsonLedger.getInt("nextAccountNumber");
+        codeSize = jsonLedger.getInt("codeSize");
+        accounts = new ArrayList<>();
+        JSONArray jsonAccounts = jsonLedger.getJSONArray("accounts");
+        for (int i = 0; i < jsonAccounts.length(); i++) {
+            accounts.add(new Account(jsonAccounts.getJSONObject(i)));
+        }
     }
 
     public int getCodeSize() {
@@ -69,5 +83,12 @@ public class Ledger {
         return account;
     }
 
-
+    @Override
+    public JSONObject toJson() {
+        JSONObject json = new JSONObject();
+        json.put("accounts", convertToJsonArray(accounts));
+        json.put("nextAccountNumber", nextAccountNumber);
+        json.put("codeSize", codeSize);
+        return json;
+    }
 }

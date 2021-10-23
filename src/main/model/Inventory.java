@@ -1,12 +1,16 @@
 package model;
 
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+import persistence.JsonConvertable;
+
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-public class Inventory {
+public class Inventory implements JsonConvertable {
     private final int codeSize;
     //hash map that has numeric item codes as its keys and array lists of products as its value.
 
@@ -24,33 +28,32 @@ public class Inventory {
     private int skuSize;
     private LocalDate currentDate;
 
-    public ArrayList<QuantityTag> getQuantitiesAtLocations(String itemCode) {
-        itemCode = itemCode.toUpperCase();
-        ArrayList<QuantityTag> tags = new ArrayList<>();
-        for (int i = 0; i < locations.size(); i++) {
-            ItemList items = locations.get(i);
-            if (items != null) {
-                int qty = items.getQuantity(itemCode);
-                if (qty > 0) {
-                    tags.add(new QuantityTag(itemCode, getStringLocationCode(i), qty));
-                }
-            }
-        }
-        if (tags.size() == 0) {
-            return null;
-        }
-        return tags;
-    }
-
 
     //list of items, each of which is again a list of products.
-    public class ItemList {
+    public class ItemList implements JsonConvertable {
         ArrayList<LinkedList<Product>> items;
 
         public ItemList() {
-            items = new ArrayList<>((int)Math.pow(NUM_ALPHABETS, codeSize));
-            for (int i = 0; i < (int)Math.pow(NUM_ALPHABETS, codeSize); i++) {
+            items = new ArrayList<>((int) Math.pow(NUM_ALPHABETS, codeSize));
+            for (int i = 0; i < (int) Math.pow(NUM_ALPHABETS, codeSize); i++) {
                 items.add(null);
+            }
+        }
+
+        public ItemList(JSONObject jsonItemList) {
+            items = new ArrayList<>((int) Math.pow(NUM_ALPHABETS, codeSize));
+            JSONArray jsonItems = jsonItemList.getJSONArray("items");
+            for (int i = 0; i < jsonItems.length(); i++) {
+                JSONArray item = jsonItems.getJSONArray(i);
+                if (item.toString().equalsIgnoreCase("Null")) {
+                    items.add(null);
+                } else {
+                    LinkedList<Product> products = new LinkedList<>();
+                    for (int j = 0; j < item.length(); j++) {
+                        products.add(new Product(item.getJSONObject(i)));
+                    }
+                    items.add(products);
+                }
             }
         }
 
@@ -93,7 +96,7 @@ public class Inventory {
             return null;
         }
 
-        public void addProducts(String itemCode, double price, LocalDate bestBeforeDate,  int qty) {
+        public void addProducts(String itemCode, double price, LocalDate bestBeforeDate, int qty) {
             itemCode = itemCode.toUpperCase();
             int numericCode = getItemCodeNumber(itemCode);
             LinkedList<Product> products = items.get(numericCode);
@@ -128,7 +131,23 @@ public class Inventory {
             LinkedList<Product> products = items.get(numericCode);
             return products.remove(product);
         }
+
+        @Override
+        public JSONObject toJson() {
+            JSONObject json = new JSONObject();
+            JSONArray jsons = new JSONArray();
+            for (LinkedList<Product> products : items) {
+                if (products == null) {
+                    jsons.put("null");
+                } else {
+                    jsons.put(convertToJsonArray(products));
+                }
+            }
+            json.put("items", jsons);
+            return json;
+        }
     }
+
 
 
 
@@ -145,7 +164,7 @@ public class Inventory {
         for (int i = 0; i < (int)Math.pow(NUM_ALPHABETS, codeSize); i++) {
             quantities.add(0);
         }
-        locations = new ArrayList<>();
+        locations = new ArrayList<>(NUM_ALPHABETS * numberOfSections);
         for (int i = 0; i < NUM_ALPHABETS * numberOfSections; i++) {
             locations.add(null);
         }
@@ -167,7 +186,7 @@ public class Inventory {
         for (int i = 0; i < (int)Math.pow(NUM_ALPHABETS, codeSize); i++) {
             quantities.add(0);
         }
-        locations = new ArrayList<>();
+        locations = new ArrayList<>(NUM_ALPHABETS * numberOfSections);
         for (int i = 0; i < NUM_ALPHABETS * numberOfSections; i++) {
             locations.add(null);
         }
@@ -188,7 +207,7 @@ public class Inventory {
         for (int i = 0; i < (int)Math.pow(NUM_ALPHABETS, codeSize); i++) {
             quantities.add(0);
         }
-        locations = new ArrayList<>();
+        locations = new ArrayList<>(NUM_ALPHABETS * numberOfSections);
         for (int i = 0; i < NUM_ALPHABETS * numberOfSections; i++) {
             locations.add(null);
         }
@@ -196,6 +215,49 @@ public class Inventory {
         skuSize = 999999999;
         currentDate = LocalDate.now();
     }
+
+    public Inventory(JSONObject jsonInventory) {
+        currentDate = LocalDate.now();
+        nextSKU = jsonInventory.getInt("nextSKU");
+        skuSize = jsonInventory.getInt("skuSize");
+        codeSize = jsonInventory.getInt("codeSize");
+        numberOfSections = jsonInventory.getInt("numberOfSections");
+        quantity = jsonInventory.getInt("quantity");
+        quantities = new ArrayList<>((int)Math.pow(NUM_ALPHABETS, codeSize));
+        JSONArray jsonQuantities = jsonInventory.getJSONArray("quantities");
+        for (Object json: jsonQuantities) {
+            quantities.add((int)json);
+        }
+        JSONArray jsonLocations = jsonInventory.getJSONArray("locations");
+        locations = new ArrayList<>(NUM_ALPHABETS * numberOfSections);
+        for (int i = 0; i < jsonLocations.length(); i++) {
+            if (jsonLocations.getJSONObject(i).toString().equals("Null")) {
+                locations.add(null);
+            } else {
+                locations.add(new ItemList(jsonLocations.getJSONObject(i)));
+            }
+        }
+    }
+
+
+    public ArrayList<QuantityTag> getQuantitiesAtLocations(String itemCode) {
+        itemCode = itemCode.toUpperCase();
+        ArrayList<QuantityTag> tags = new ArrayList<>();
+        for (int i = 0; i < locations.size(); i++) {
+            ItemList items = locations.get(i);
+            if (items != null) {
+                int qty = items.getQuantity(itemCode);
+                if (qty > 0) {
+                    tags.add(new QuantityTag(itemCode, getStringLocationCode(i), qty));
+                }
+            }
+        }
+        if (tags.size() == 0) {
+            return null;
+        }
+        return tags;
+    }
+
 
     public LocalDate getCurrentDate() {
         return currentDate;
@@ -518,5 +580,23 @@ public class Inventory {
         }
         return codes;
     }
+
+
+
+
+    @Override
+    public JSONObject toJson() {
+        JSONObject json = new JSONObject();
+        JSONArray jsonLocations = convertToJsonArray(locations);
+        json.put("locations", jsonLocations);
+        json.put("quantities", new JSONArray(quantities));
+        json.put("nextSKU", nextSKU);
+        json.put("skuSize", skuSize);
+        json.put("quantity", quantity);
+        json.put("codeSize", codeSize);
+        json.put("numberOfSections", numberOfSections);
+        return json;
+    }
+
 }
 

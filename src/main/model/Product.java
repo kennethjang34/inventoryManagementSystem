@@ -1,11 +1,14 @@
 package model;
 
+import org.json.JSONObject;
+import persistence.JsonConvertable;
+
 import java.time.LocalDate;
 
 //represents product. Each product will have item code, SKU (Stock keeping unit),
 //date generated, best before date, and cost it was bought for.
 //No data about the product can be changed after creation.
-public class Product {
+public class Product implements JsonConvertable {
     //item code represents the code composed only of English alphabets that indicates
     //the category of the product. Multiple products can have the same item code.
     private final String itemCode;
@@ -15,20 +18,33 @@ public class Product {
     //Only products given best-before date will have a valid best-before date.
     private final LocalDate bestBeforeDate;
     //cost is the money paid for this product
-    private final double cost;
+    private final double price;
 
 
     //It is possible for date generated and best before date to be null,
     //However, it is strongly recommended to ensure date generated is a valid Local Date instance.
     //REQUIRES: sku must be 9-digit natural number, cost must be positive.
     //EFFECTS: create a product with specified data.
-    public Product(String itemCode, int sku, double cost, LocalDate dateGenerated, LocalDate bestBeforeDate) {
+    public Product(String itemCode, int sku, double price, LocalDate dateGenerated, LocalDate bestBeforeDate) {
         itemCode = itemCode.toUpperCase();
         this.itemCode = itemCode;
         this.sku = sku;
-        this.cost = cost;
+        this.price = price;
         this.dateGenerated = dateGenerated;
         this.bestBeforeDate = bestBeforeDate;
+    }
+
+    public Product(JSONObject json) {
+        itemCode = json.getString("itemCode");
+        sku = json.getInt("sku");
+        price = json.getDouble("price");
+        JSONObject jsonDate = json.getJSONObject("dateGenerated");
+
+        dateGenerated = LocalDate.of(jsonDate.getInt("year"),
+                jsonDate.getInt("month"), jsonDate.getInt("day"));
+        jsonDate = json.getJSONObject("bestBeforeDate");
+        bestBeforeDate = LocalDate.of(jsonDate.getInt("year"),
+                jsonDate.getInt("month"), jsonDate.getInt("day"));
     }
 
     //EFFECTS: return the string item code of this product
@@ -52,8 +68,27 @@ public class Product {
     }
 
     //EFFECTS: return the cost paid for this product
-    public double getCost() {
-        return cost;
+    public double getPrice() {
+        return price;
+    }
+
+    @Override
+    public JSONObject toJson() {
+        JSONObject json = new JSONObject();
+        json.put("itemCode", itemCode);
+        json.put("sku", sku);
+        json.put("price", price);
+        JSONObject jsonDate = new JSONObject();
+        jsonDate.put("year", dateGenerated.getYear());
+        jsonDate.put("month", dateGenerated.getMonthValue());
+        jsonDate.put("day", dateGenerated.getDayOfMonth());
+        json.put("dateGenerated", jsonDate);
+        jsonDate = new JSONObject();
+        jsonDate.put("year", bestBeforeDate.getYear());
+        jsonDate.put("month", bestBeforeDate.getMonthValue());
+        jsonDate.put("day", bestBeforeDate.getDayOfMonth());
+        json.put("bestBeforeDate", bestBeforeDate.toString());
+        return json;
     }
 }
 

@@ -12,7 +12,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class AccountTest {
     int code = 111111111;
     LocalDate currentDate = LocalDate.now();
-    String description = "accountCreatedForTest";
     LocalDate today = LocalDate.now();
     ArrayList<QuantityTag> tags;
     Account account;

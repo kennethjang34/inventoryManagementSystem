@@ -1,16 +1,20 @@
 package model;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+import persistence.JsonConvertable;
+
 import java.time.LocalDate;
 import java.util.ArrayList;
 
 //represents administration that have their own accounts
 //will contain a list of login accounts.
 //Written to provide a functionality for Inventory management system application.
-public class Admin {
+public class Admin implements JsonConvertable {
 
     //represents each individual login account.
     //Must be distinguished from accounts that contain information about inventory update.
-    private static class LoginAccount {
+    private static class LoginAccount implements JsonConvertable {
 
         //Once a login account is created, no data can be changed.
         private final String id;
@@ -26,6 +30,18 @@ public class Admin {
             this.name = name;
             this.birthDay = birthDay;
             this.personalCode = personalCode;
+        }
+
+        //REQUIRES: data in json format must contain all the fields of this class with matching name.
+        //EFFECTS: create a new account with data in json format
+        private LoginAccount(JSONObject jsonLoginAccount) {
+            id = jsonLoginAccount.getString("id");
+            pw = jsonLoginAccount.getString("pw");
+            name = jsonLoginAccount.getString("name");
+            personalCode = jsonLoginAccount.getInt("personalCode");
+            JSONObject jsonDate = jsonLoginAccount.getJSONObject("birthDay");
+            birthDay = LocalDate.of(jsonDate.getInt("year"),
+                    jsonDate.getInt("month"), jsonDate.getInt("day"));
         }
 
         //EFFECTS: return password
@@ -58,6 +74,21 @@ public class Admin {
         private boolean passwordMatch(String pw) {
             return this.pw.equals(pw);
         }
+
+        @Override
+        public JSONObject toJson() {
+            JSONObject json = new JSONObject();
+            json.put("id", id);
+            json.put("pw", pw);
+            json.put("name", name);
+            JSONObject date = new JSONObject();
+            date.put("year", birthDay.getYear());
+            date.put("month", birthDay.getMonthValue());
+            date.put("day", birthDay.getDayOfMonth());
+            json.put("birthday", date);
+            json.put("personCode", personalCode);
+            return json;
+        }
     }
 
     //list of login accounts. there is no limit on number of accounts but once an account is added,
@@ -68,6 +99,14 @@ public class Admin {
     //EFFECTS: create a new administer.
     public Admin() {
         accounts = new ArrayList<>();
+    }
+
+    //JSONObject must have all information needed to build admin with the matching name
+    public Admin(JSONObject jsonAdmin) {
+        accounts = new ArrayList<>();
+        JSONArray jsonAccounts = jsonAdmin.getJSONArray("accounts");
+        jsonAccounts.forEach(json -> accounts.add(new LoginAccount((JSONObject)json)));
+
     }
 
     //EFFECTS: if a login account can be found with the information given, return password of the account
@@ -124,4 +163,10 @@ public class Admin {
         return true;
     }
 
+    @Override
+    public JSONObject toJson() {
+        JSONObject json = new JSONObject();
+        json.put("accounts", convertToJsonArray(accounts));
+        return json;
+    }
 }
