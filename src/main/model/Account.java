@@ -41,6 +41,11 @@ public class Account implements JsonConvertible {
             quantity = json.getInt("quantity");
             distribution = new HashMap<>();
             JSONObject jsonDistribution = json.getJSONObject("distribution");
+            Iterator<String> locations = jsonDistribution.keys();
+            while (locations.hasNext()) {
+                String location = locations.next();
+                distribution.put(location, (Integer)jsonDistribution.get(location));
+            }
         }
 
         //EFFECTS: return item code in this

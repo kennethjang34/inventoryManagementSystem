@@ -350,7 +350,7 @@ public class InventoryTest {
         LinkedList<QuantityTag> toBeRemoved = new LinkedList<>();
         toBeRemoved.add(new QuantityTag("AaA", "f11", basicQty * 3));
         LinkedList<QuantityTag> removed = inventory.removeProducts(toBeRemoved);
-        assertNull(removed);
+        assertEquals(0, removed.size());
         assertEquals(basicQty, inventory.getQuantity("aAa"));
         List<Integer> list = inventory.findLocations("aaa");
         assertEquals(1, list.size());
@@ -403,7 +403,7 @@ public class InventoryTest {
         LinkedList<QuantityTag> toBeRemoved = new LinkedList<>();
         toBeRemoved.add(new QuantityTag("ZZZ", "A11", basicQty * 3));
         LinkedList<QuantityTag> removed = inventory.removeProducts(toBeRemoved);
-        assertNull(removed);
+        assertEquals(0, removed.size());
         assertEquals(4 * basicQty, inventory.getTotalQuantity());
         assertEquals(basicQty, inventory.getQuantity("aaa"));
         assertEquals("AAA", tags.get(0).getItemCode());
@@ -415,7 +415,7 @@ public class InventoryTest {
         toBeRemoved = new LinkedList<>();
         toBeRemoved.add(new QuantityTag("AAa", "f13", basicQty));
         removed = inventory.removeProducts(toBeRemoved);
-        assertNull(removed);
+        assertEquals(0, removed.size());
         assertEquals(4 * basicQty, inventory.getTotalQuantity());
         assertEquals(basicQty, inventory.getQuantity("aaa"));
         assertEquals("AAA", tags.get(0).getItemCode());

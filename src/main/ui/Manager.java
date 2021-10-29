@@ -97,6 +97,7 @@ public class Manager implements JsonConvertible {
             throw new IllegalArgumentException();
         }
         itemCode = itemCode.toUpperCase();
+        location = location.toUpperCase();
         InventoryTag inventoryTag = new InventoryTag(itemCode, price, bestBeforeDate, location, qty);
         listToAdd.add(inventoryTag);
     }
@@ -199,7 +200,11 @@ public class Manager implements JsonConvertible {
         LinkedList<Integer> numericList = inventory.findLocations(itemCode);
         LinkedList<String> locationList = new LinkedList<>();
         for (Integer e: numericList) {
-            locationList.add(inventory.getStringLocationCode(e));
+            if (inventory.getStringLocationCode(e).equalsIgnoreCase("T")) {
+                locationList.add("Temporary storage space");
+            } else {
+                locationList.add(inventory.getStringLocationCode(e));
+            }
         }
         return locationList;
     }
@@ -251,14 +256,15 @@ public class Manager implements JsonConvertible {
         if (inventory.getTotalQuantity() == 0) {
             return "Inventory is empty";
         }
-        String info = "The inventory contains a total number of " + inventory.getTotalQuantity() + " of products";
-        info += '\n' + "Quantity of each item code: ";
-        info += '\n';
+        StringBuilder info = new StringBuilder("The inventory contains a total number of "
+                + inventory.getTotalQuantity() + " of products");
+        info.append('\n' + "Quantity of each item code: ");
+        info.append('\n');
         LinkedList<String> codes = inventory.getListOfCodes();
         for (String code: codes) {
-            info += code + ": " + inventory.getQuantity(code) + "\n";
+            info.append(code).append(": ").append(inventory.getQuantity(code)).append("\n");
         }
-        return info;
+        return info.toString();
     }
 
 
@@ -375,11 +381,11 @@ public class Manager implements JsonConvertible {
     //EFFECTS: print the entries of the list of products to add
     private void printListToAdd() {
         for (InventoryTag tag: listToAdd) {
-            String itemCode = tag.getItemCode();
+            String itemCode = tag.getItemCode().toUpperCase();
             int qty = tag.getQuantity();
             double price = tag.getPrice();
             LocalDate bestBeforeDate = tag.getBestBeforeDate();
-            String location = tag.getLocation();
+            String location = tag.getLocation().toUpperCase();
             System.out.println(itemCode + " " + ", quantity: " + qty);
             System.out.println("Cost: " + price);
             if (bestBeforeDate != null) {
@@ -393,8 +399,8 @@ public class Manager implements JsonConvertible {
     //EFFECTS: print the entries of the list of products to remove
     private void printListToRemove() {
         for (QuantityTag tag: listToRemove) {
-            String itemCode = tag.getItemCode();
-            String location = tag.getLocation();
+            String itemCode = tag.getItemCode().toUpperCase();
+            String location = tag.getLocation().toUpperCase();
             int qty = tag.getQuantity();
             System.out.println(itemCode + " ");
             System.out.println("Location : " + (location.equalsIgnoreCase("T")
@@ -414,9 +420,27 @@ public class Manager implements JsonConvertible {
         System.out.println("----------------------------------");
     }
 
+    //EFFECTS: prompt the user to enter a valid birthday in YYYY MM DD format until they enter a proper one
+    //and return it
+    private LocalDate promptEnterBirthday() {
+        LocalDate birthDay = null;
+        while (birthDay == null) {
+            try {
+                System.out.println("enter your birth day in the form: YYYY MM DD");
+                int year = scanner.nextInt();
+                int month = scanner.nextInt();
+                int day = scanner.nextInt();
+                birthDay = LocalDate.of(year, month, day);
+            } catch (DateTimeException e) {
+                System.out.println("the date info is incorrect");
+            }
+        }
+        scanner.nextLine();
+        return birthDay;
+    }
+
     //MODIFIES: this
     //EFFECTS: create a new login account prompting the user to enter info to create the account.
-    @SuppressWarnings({"checkstyle:MethodLength", "checkstyle:SuppressWarnings"})
     private void promptCreateLoginAccount() {
         String id;
         System.out.println("enter ID");
@@ -425,21 +449,7 @@ public class Manager implements JsonConvertible {
         String pw = scanner.nextLine();
         System.out.println("enter your name");
         String name = scanner.nextLine();
-        LocalDate birthDay = null;
-        boolean error = true;
-        while (error) {
-            try {
-                error = false;
-                System.out.println("enter your birth day in the form: YYYY MM DD");
-                int year = scanner.nextInt();
-                int month = scanner.nextInt();
-                int day = scanner.nextInt();
-                birthDay = LocalDate.of(year, month, day);
-            } catch (DateTimeException e) {
-                System.out.println("the date info is incorrect");
-                error = true;
-            }
-        }
+        LocalDate birthDay = promptEnterBirthday();
         System.out.println("enter your personal code");
         int personalCode = scanner.nextInt();
         while (personalCode < 0) {
@@ -525,8 +535,6 @@ public class Manager implements JsonConvertible {
                 index = scanner.nextLine();
             }
         }
-
-
     }
 
 
@@ -620,41 +628,31 @@ public class Manager implements JsonConvertible {
 
 
 
-
-
-
-    //MODIFIES: this
-    //EFFECTS: create new products prompting the user to enter info for creating them.
-    @SuppressWarnings({"checkstyle:MethodLength", "checkstyle:SuppressWarnings"})
-    private void promptCreateProduct() {
-        String itemCode;
+    //EFFECTS: prompt the user to enter a best-before date of a product and return it
+    private LocalDate promptEnterBestBeforeDate() {
         LocalDate bestBeforeDate = null;
-        double cost;
-        System.out.println("enter itemCode");
-        itemCode = scanner.nextLine();
-        while (!inventory.isValidItemCode(itemCode)) {
-            System.out.println("the item code is in invalid format");
-            System.out.println("enter itemCode");
-            itemCode = scanner.nextLine();
-        }
-        System.out.println("Does the product have a best-before date? enter Y/N");
-        if (scanner.nextLine().equalsIgnoreCase(("Y"))) {
-            System.out.println("enter best-before date in the form: YYYY MM DD");
-            int year = scanner.nextInt();
-            int month = scanner.nextInt();
-            int day = scanner.nextInt();
-            while (bestBeforeDate == null) {
-                try {
-                    bestBeforeDate = LocalDate.of(year, month, day);
-                } catch (DateTimeException e) {
-                    System.out.println("the date is in invalid format");
-                    System.out.println("enter best-before date in the form: YYYY MM DD");
-                    year = scanner.nextInt();
-                    month = scanner.nextInt();
-                    day = scanner.nextInt();
-                }
+        System.out.println("enter best-before date in the form: YYYY MM DD");
+        int year = scanner.nextInt();
+        int month = scanner.nextInt();
+        int day = scanner.nextInt();
+        while (bestBeforeDate == null) {
+            try {
+                bestBeforeDate = LocalDate.of(year, month, day);
+            } catch (DateTimeException e) {
+                System.out.println("the date is in invalid format");
+                System.out.println("enter best-before date in the form: YYYY MM DD");
+                year = scanner.nextInt();
+                month = scanner.nextInt();
+                day = scanner.nextInt();
             }
         }
+        scanner.nextLine();
+        return bestBeforeDate;
+    }
+
+    //EFFECTS: prompt the user to enter cost of the product and return it
+    private double promptEnterCost() {
+        double cost;
         System.out.println("enter cost");
         cost = scanner.nextDouble();
         while (cost < 0) {
@@ -663,6 +661,11 @@ public class Manager implements JsonConvertible {
             cost = scanner.nextDouble();
         }
         scanner.nextLine();
+        return cost;
+    }
+
+    //EFFECTS:prompt the user to enter quantity of the products and return it
+    private int promptEnterQty() {
         System.out.println("enter quantity");
         int qty = scanner.nextInt();
         while (qty < 0) {
@@ -671,6 +674,26 @@ public class Manager implements JsonConvertible {
             qty = scanner.nextInt();
         }
         scanner.nextLine();
+        return qty;
+    }
+
+    //EFFECTS: prompt the user to enter itemCode until they enter a valid item code and return it.
+    private String promptEnterValidItemCode() {
+        String itemCode;
+        System.out.println("enter itemCode");
+        itemCode = scanner.nextLine();
+        while (!inventory.isValidItemCode(itemCode)) {
+            System.out.println("the item code is in invalid format");
+            System.out.println("enter itemCode");
+            itemCode = scanner.nextLine();
+        }
+
+        return itemCode;
+    }
+
+    //prompt the user to enter location of the product to be assigned until they enter a proper location
+    // and return it.
+    private String promptEnterLocation() {
         System.out.println("enter Location in the form: ADD, where A represents an alphabet, D represents a digit"
                 + " if you'd like to put the product in the temporary storage area of the inventory "
                 + "press 'T/t'");
@@ -682,6 +705,24 @@ public class Manager implements JsonConvertible {
                     + "press 'T/t'");
             location = scanner.nextLine();
         }
+        return location;
+    }
+
+
+    //MODIFIES: this
+    //EFFECTS: create new products prompting the user to enter info for creating them.
+    private void promptCreateProduct() {
+        String itemCode;
+        LocalDate bestBeforeDate = null;
+        double cost;
+        itemCode = promptEnterValidItemCode();
+        System.out.println("Does the product have a best-before date? enter Y/N");
+        if (scanner.nextLine().equalsIgnoreCase(("Y"))) {
+            bestBeforeDate = promptEnterBestBeforeDate();
+        }
+        cost = promptEnterCost();
+        int qty = promptEnterQty();
+        String location = promptEnterLocation();
         addToListToAdd(itemCode, cost, bestBeforeDate, location, qty);
         System.out.println("The product has been successfully created" + '\n' + "Current temporary List: ");
         printTemporaryList();
@@ -704,7 +745,7 @@ public class Manager implements JsonConvertible {
                 int accountCode = Integer.parseInt(option);
                 System.out.println(checkAccount(accountCode));
                 System.out.println("If you'd like to check a particular account more in detail, enter the account code."
-                        + "Otherwise, enter q");
+                        + " Otherwise, enter q");
                 option = scanner.nextLine();
             } catch (NumberFormatException e) {
                 System.out.println("The input doesn't contain a valid account number");
@@ -790,14 +831,12 @@ public class Manager implements JsonConvertible {
         } catch (IOException e) {
             System.out.println("No existing data can be found. please create a new inventory manager");
             stockManager = new Manager();
-            Scanner scanner = stockManager.getScanner();
             System.out.println("Please create a login account first");
             stockManager.promptCreateLoginAccount();
             login = true;
         } catch (IllegalArgumentException e) {
             System.out.println("Data for manager is in wrong format. please create a new inventory manager");
             stockManager = new Manager();
-            Scanner scanner = stockManager.getScanner();
             System.out.println("Please create a login account first");
             stockManager.promptCreateLoginAccount();
             login = true;

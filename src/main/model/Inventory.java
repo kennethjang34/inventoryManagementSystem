@@ -410,7 +410,6 @@ public class Inventory implements JsonConvertible {
     //EFFECTS: remove the product indicated from the inventory.
     //return a list of products that have been removed. If quantity to remove exceeds that inside the inventory,
     //skip the tag(quantity)
-    //implement try and catch block later (in case the products don't exist)
     public LinkedList<QuantityTag> removeProducts(List<QuantityTag> tags) {
         LinkedList<QuantityTag> receipt = new LinkedList<>();
         LinkedList<Product> removed;
@@ -430,10 +429,6 @@ public class Inventory implements JsonConvertible {
                     receipt.add(new QuantityTag(itemCode, location, -removed.size()));
                 }
             }
-        }
-
-        if (receipt.size() == 0) {
-            return null;
         }
         return receipt;
     }
