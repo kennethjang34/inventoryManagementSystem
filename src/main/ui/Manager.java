@@ -366,7 +366,7 @@ public class Manager implements JsonConvertible {
         }
         List<QuantityTag> quantities = inventory.getQuantitiesAtLocations(itemCode);
         if (quantities == null) {
-            System.out.println(" There is no such products");
+            System.out.println("There is no such products");
         } else {
             int totalQty = inventory.getQuantity(itemCode);
 
