@@ -124,7 +124,7 @@ public class Account implements JsonConvertible {
         JSONArray jsonEntries = json.getJSONArray("entries");
         for (int i = 0; i < jsonEntries.length(); i++) {
             JSONObject entry = jsonEntries.getJSONObject(i);
-            if (!entry.toString().equalsIgnoreCase("Null")) {
+            if (!entry.equals(JSONObject.NULL)) {
                 entries.add(new AccountEntry(entry));
             }
         }

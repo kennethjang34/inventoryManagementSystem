@@ -4,6 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.LinkedList;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -46,6 +47,13 @@ public class LedgerTest {
         assertEquals(null,
                 ledger.addAccount(new LinkedList<QuantityTag>(),
                         new LinkedList<>(),"test", LocalDate.now()));
+    }
+
+    //Expected to make/add no account
+    @Test
+    void testAddingAccountWithNoChange() {
+        ledger = new Ledger();
+        assertNull(ledger.addAccount(new ArrayList<>(), new ArrayList<>(), "nullExpected", LocalDate.now()));
     }
 
 

@@ -846,16 +846,28 @@ public class Manager implements JsonConvertible {
     //MODIFIES: this
     //EFFECTS: save current login accounts in admin
 //    public void saveAdmin() {
-//        try {
-//            JSONObject jsonAdmin = admin.toJson();
-//            jsonObject.put("admin", jsonAdmin);
-//            Writer writer = new Writer(fileLocation);
-//            writer.write(jsonObject);
-//            writer.close();
-//        } catch (FileNotFoundException e) {
-//            System.out.println("The current file cannot be found");
-//        }
+//
+//       JSONObject jsonAdmin = admin.toJson();
+//       jsonObject.put("admin", jsonAdmin);
+//
 //    }
+
+
+    //MODIFIES: this
+    //EFFECTS: change the inventory and ledger in the current json object storing data of the application
+    //current state of the inventory and accounts in the ledger
+//    public void saveInventory() {
+//
+//      JSONObject jsonInventory = inventory.toJson();
+//      jsonObject.put("inventory", jsonInventory);
+//      JSONObject jsonLedger = ledger.toJson();
+//      jsonObject.put("ledger", jsonLedger);
+//
+//    }
+
+
+
+
 
 
 

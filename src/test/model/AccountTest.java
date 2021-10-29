@@ -73,6 +73,7 @@ public class AccountTest {
         assertEquals(-50, account.getQuantity("chi"));
     }
 
+
     @Test
     void testGetQtyAtLocation() {
         tags.add(new QuantityTag("ADS", "e12", 30));
