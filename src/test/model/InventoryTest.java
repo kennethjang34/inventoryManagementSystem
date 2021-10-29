@@ -50,18 +50,18 @@ public class InventoryTest {
         inventory = new Inventory();
         assertEquals(0, inventory.getTotalQuantity());
         assertEquals(0, inventory.getTotalQuantity());
-        assertNull(inventory.getListOfCodes());
-        assertNull(inventory.getProductList("PIZ"));
+        assertEquals(0, inventory.getListOfCodes().size());
+        assertEquals(0, inventory.getProductList("PIZ").size());
         inventory = new Inventory(3);
         assertEquals(0, inventory.getTotalQuantity());
         assertEquals(0, inventory.getTotalQuantity());
-        assertNull(inventory.getListOfCodes());
-        assertNull(inventory.getProductList("PIZ"));
+        assertEquals(0, inventory.getListOfCodes().size());
+        assertEquals(0, inventory.getProductList("PIZ").size());
         inventory = new Inventory(3, 100);
         assertEquals(0, inventory.getTotalQuantity());
         assertEquals(0, inventory.getTotalQuantity());
-        assertNull(inventory.getListOfCodes());
-        assertNull(inventory.getProductList("PIZ"));
+        assertEquals(0, inventory.getListOfCodes().size());
+        assertEquals(0, inventory.getProductList("PIZ").size());
     }
 
 
@@ -233,7 +233,7 @@ public class InventoryTest {
     @Test
     void testGetProductsWithInvalidCode() {
         inventory.addProducts(tags);
-        assertNull(inventory.getProductList("ASFKJDL"));
+        assertEquals(0, inventory.getProductList("ASFKJDL").size());
     }
 
     @Test
@@ -273,7 +273,7 @@ public class InventoryTest {
 
     @Test
     void testGetListOfCodes() {
-        assertNull(inventory.getListOfCodes());
+        assertEquals(0, inventory.getListOfCodes().size());
         inventory.addProducts(tags);
         List<String> list = inventory.getListOfCodes();
         assertEquals(4, list.size());
@@ -318,6 +318,7 @@ public class InventoryTest {
         assertFalse(inventory.isValidLocationCode("{"));
         assertFalse(inventory.isValidLocationCode("1"));
         assertFalse(inventory.isValidLocationCode("Abb"));
+        assertFalse(inventory.isValidLocationCode("a123"));
     }
 
 

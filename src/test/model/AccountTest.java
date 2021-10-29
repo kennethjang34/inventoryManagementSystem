@@ -91,7 +91,7 @@ public class AccountTest {
         ArrayList<QuantityTag> removed = new ArrayList<>();
         removed.add(tag);
         account = new Account(code++, "testTotalQtyWithRemoved", today, tags, removed);
-        ArrayList<String> info = account.getQuantitiesInfo();
+        List<String> info = account.getQuantitiesInfo();
         assertEquals(10, info.size());
         assertEquals("ADS: 666", info.get(2));
         assertEquals("\tE0: 666", info.get(3));

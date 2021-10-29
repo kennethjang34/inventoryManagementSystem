@@ -174,7 +174,7 @@ public class Account implements JsonConvertible {
     }
 
     //EFFECTS: return a list of strings that contains quantity change at each location
-    public ArrayList<String> getQuantitiesInfo() {
+    public List<String> getQuantitiesInfo() {
         ArrayList<String> quantities = new ArrayList<>();
         for (AccountEntry entry: entries) {
             quantities.add(entry.getItemCode() + ": " + entry.getQuantity());
@@ -216,7 +216,7 @@ public class Account implements JsonConvertible {
 
 
     //EFFECTS: return a list of locations where products belonging to this item code exist
-    public ArrayList<String> getLocations(String itemCode) {
+    public List<String> getLocations(String itemCode) {
         ArrayList<String> locations = new ArrayList<>();
         for (AccountEntry entry: entries) {
             if (entry.getItemCode().equalsIgnoreCase(itemCode)) {
@@ -244,7 +244,7 @@ public class Account implements JsonConvertible {
 
 
     //EFFECTS: return a list of all item codes existing in this account
-    public ArrayList<String> getItemCodes() {
+    public List<String> getItemCodes() {
         ArrayList<String> codes = new ArrayList<>();
         for (AccountEntry entry: entries) {
             codes.add(entry.getItemCode());

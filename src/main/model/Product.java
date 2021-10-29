@@ -43,7 +43,7 @@ public class Product implements JsonConvertible {
         JSONObject jsonDate = json.getJSONObject("dateGenerated");
         dateGenerated = LocalDate.of(jsonDate.getInt("year"),
                 jsonDate.getInt("month"), jsonDate.getInt("day"));
-        if (json.get("bestBeforeDate").toString().equalsIgnoreCase("null")) {
+        if (json.get("bestBeforeDate").equals(JSONObject.NULL)) {
             bestBeforeDate = null;
         } else {
             jsonDate = json.getJSONObject("bestBeforeDate");
@@ -90,7 +90,7 @@ public class Product implements JsonConvertible {
         jsonDate.put("day", dateGenerated.getDayOfMonth());
         json.put("dateGenerated", jsonDate);
         if (bestBeforeDate == null) {
-            json.put("bestBeforeDate", "null");
+            json.put("bestBeforeDate", JSONObject.NULL);
         } else {
             jsonDate = new JSONObject();
             jsonDate.put("year", bestBeforeDate.getYear());

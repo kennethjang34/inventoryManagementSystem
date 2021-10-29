@@ -42,6 +42,6 @@ As a user, I want to locate each product, as well as all the products belonging 
 
 As a user, I want to be able to retrieve my login account password with my information.
 
-As a user, I want to be able to save my current inventory manager state
+As a user, I want to be able to save my current inventory manager state whenever I update my inventory.
 
-As a user, I want to be able to reload my inventory manager state from file
+As a user, I want to be able to reload my inventory manager state from file when I restart the application

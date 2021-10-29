@@ -10,6 +10,8 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+
+
 public class Inventory implements JsonConvertible {
     private final int codeSize;
     //hash map that has numeric item codes as its keys and array lists of products as its value.
@@ -49,7 +51,7 @@ public class Inventory implements JsonConvertible {
             items = new ArrayList<>((int) Math.pow(NUM_ALPHABETS, codeSize));
             JSONArray jsonItems = jsonItemList.getJSONArray("items");
             for (int i = 0; i < jsonItems.length(); i++) {
-                if (jsonItems.get(i).toString().equalsIgnoreCase("Null")) {
+                if (jsonItems.get(i).equals(JSONObject.NULL)) {
                     items.add(null);
                 } else {
                     JSONArray item = jsonItems.getJSONArray(i);
@@ -162,7 +164,7 @@ public class Inventory implements JsonConvertible {
             JSONArray jsons = new JSONArray();
             for (LinkedList<Product> products : items) {
                 if (products == null) {
-                    jsons.put("null");
+                    jsons.put(JSONObject.NULL);
                 } else {
                     jsons.put(convertToJsonArray(products));
                 }
@@ -257,7 +259,7 @@ public class Inventory implements JsonConvertible {
         JSONArray jsonLocations = jsonInventory.getJSONArray("locations");
         locations = new ArrayList<>(NUM_ALPHABETS * numberOfSections);
         for (int i = 0; i < jsonLocations.length(); i++) {
-            if (jsonLocations.get(i).toString().equalsIgnoreCase("Null")) {
+            if (jsonLocations.get(i).equals(JSONObject.NULL)) {
                 locations.add(null);
             } else {
                 locations.add(new ItemList(jsonLocations.getJSONObject(i)));
@@ -351,7 +353,7 @@ public class Inventory implements JsonConvertible {
         int numeric;
         try {
             numeric = getLocationCodeNumber(location);
-        } catch (NumberFormatException e) {
+        } catch (LocationFormatException e) {
             return false;
         }
 
@@ -511,9 +513,12 @@ public class Inventory implements JsonConvertible {
         int numericCode = alphabetValue * numberOfSections;
         //If A99: 99
         try {
+            if ((Integer.parseInt(location.substring(1)) >= numberOfSections)) {
+                throw new LocationFormatException();
+            }
             numericCode += Integer.parseInt(location.substring(1));
         } catch (NumberFormatException e) {
-            throw new NumberFormatException();
+            throw new LocationFormatException();
         }
         return numericCode;
     }
@@ -564,7 +569,7 @@ public class Inventory implements JsonConvertible {
 
     //EFFECTS: return the list of products specified by the item code.
     //If there isn't any of those products, return null
-    public LinkedList<Product> getProductList(String itemCode) {
+    public List<Product> getProductList(String itemCode) {
         itemCode = itemCode.toUpperCase();
         LinkedList<Product> list = new LinkedList<>();
         for (ItemList items : locations) {
@@ -575,9 +580,6 @@ public class Inventory implements JsonConvertible {
                     //if getProducts is null, don't add null pointer value to the product list
                 }
             }
-        }
-        if (list.size() == 0) {
-            return null;
         }
         return list;
     }
@@ -597,7 +599,7 @@ public class Inventory implements JsonConvertible {
     }
 
     //EFFECTS: return a list of item codes existing in the inventory.
-    public LinkedList<String> getListOfCodes() {
+    public List<String> getListOfCodes() {
         LinkedList<String> codes = new LinkedList<>();
 
         for (int i = 0; i < quantities.size(); i++) {
@@ -605,9 +607,6 @@ public class Inventory implements JsonConvertible {
             if (qty != 0) {
                 codes.add(getStringItemCode(i));
             }
-        }
-        if (codes.size() == 0) {
-            return null;
         }
         return codes;
     }

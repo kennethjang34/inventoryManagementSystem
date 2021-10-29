@@ -16,7 +16,7 @@ public interface JsonConvertible {
         org.json.JSONArray jsons = new JSONArray();
         for (JsonConvertible convertable: list) {
             if (convertable == null) {
-                jsons.put("null");
+                jsons.put(JSONObject.NULL);
             } else {
                 jsons.put(convertable.toJson());
             }

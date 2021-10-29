@@ -68,7 +68,7 @@ public class LedgerTest {
                 ledger.getAccounts(LocalDate.of(2021, 12 ,12)).get(0).getItemCodes().get(0));
         assertEquals(tags.get(0).getQuantity(),
                 ledger.getAccounts(LocalDate.of(2021, 12 ,12)).get(0).getQuantity("CHI"));
-        assertNull(ledger.getAccounts(LocalDate.of(2030, 12, 12)));
+        assertEquals(0, ledger.getAccounts(LocalDate.of(2030, 12, 12)).size());
     }
 
     @Test

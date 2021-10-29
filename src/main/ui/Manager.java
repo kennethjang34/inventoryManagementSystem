@@ -29,7 +29,9 @@ public class Manager implements JsonConvertible {
     private final Admin admin;
     //scanner will be used to receive input options from the user.
     private final Scanner scanner;
-
+    //JSONObject where the data for the current manager was obtained
+    //If there was no existing data, null
+    private final JSONObject jsonObject;
     //temporary list is used to buffer a user's request for adding new products
     //Before the user manually select updating inventory option, newly created products will be stored in this list
     //for each element in the array list, the object array will contain
@@ -44,7 +46,6 @@ public class Manager implements JsonConvertible {
     //User will be given several options to check the product-specific information
     private Product currentProduct;
     private LocalDate currentDate;
-
     private final int accountSize = 6;
     private final int skuSize = 9;
 
@@ -61,11 +62,13 @@ public class Manager implements JsonConvertible {
         listToRemove = new ArrayList<>();
         currentDate = LocalDate.now();
         currentProduct = null;
+        jsonObject = null;
     }
 
     //REQUIRES: The data in JSON format must contain all the information for creating the manager with matching name
     //EFFECTS: create a manager with data in JSON format.
     public Manager(JSONObject json) {
+        jsonObject = json;
         listToAdd = new ArrayList<>();
         listToRemove = new ArrayList<>();
         currentDate = LocalDate.now();
@@ -127,6 +130,9 @@ public class Manager implements JsonConvertible {
     //creating a new transaction account.
     //the two temporary lists (list to add, list to remove) will be cleared
     private void updateInventory(String description) {
+        if (listToAdd.size() == 0 && listToRemove.size() == 0) {
+            throw new NothingToUpdateWithException();
+        }
         inventory.addProducts(listToAdd);
         LinkedList<QuantityTag> receipt = inventory.removeProducts(listToRemove);
         LinkedList<QuantityTag> added = new LinkedList<>();
@@ -150,7 +156,7 @@ public class Manager implements JsonConvertible {
 
     //EFFECTS: create and return a label containing brief information for each account existing in the ledger.
     //if ledger is empty, empty string list will be returned
-    private ArrayList<String> printGeneralAccountInfo() {
+    private List<String> printGeneralAccountInfo() {
         ArrayList<String> list = new ArrayList<>();
         for (Account account: ledger.getAccounts()) {
             String s = "Account code: " + account.getCode() + "\n";
@@ -173,11 +179,11 @@ public class Manager implements JsonConvertible {
     //make a detailed label for that particular account (code, quantity, location, date)
     //each element of the returned list will contain each line of the label.
     //If there isn't, list will just contain information that there isn't such an account.
-    private ArrayList<String> checkAccount(int accountCode) {
+    private List<String> checkAccount(int accountCode) {
         if (accountCode < 0) {
             throw new IllegalArgumentException("Negative number cannot be an account code");
         }
-        ArrayList<String> list = new ArrayList<>();
+        List<String> list = new ArrayList<>();
         Account account = null;
         for (Account e: ledger.getAccounts()) {
             if (e.getCode() == accountCode) {
@@ -189,13 +195,13 @@ public class Manager implements JsonConvertible {
             list.add("There is no such account with the code");
         }
         assert account != null;
-        list = account.getQuantitiesInfo();
+        list.addAll(account.getQuantitiesInfo());
         return list;
     }
 
     //EFFECTS: return a list of labels that indicate locations of products belonging to the item code.
     //If there isn't such products with the specified item code, return an empty list
-    private LinkedList<String> getLocationListOfProduct(String itemCode) {
+    private List<String> getLocationListOfProduct(String itemCode) {
         itemCode = itemCode.toUpperCase();
         LinkedList<Integer> numericList = inventory.findLocations(itemCode);
         LinkedList<String> locationList = new LinkedList<>();
@@ -260,7 +266,7 @@ public class Manager implements JsonConvertible {
                 + inventory.getTotalQuantity() + " of products");
         info.append('\n' + "Quantity of each item code: ");
         info.append('\n');
-        LinkedList<String> codes = inventory.getListOfCodes();
+        List<String> codes = inventory.getListOfCodes();
         for (String code: codes) {
             info.append(code).append(": ").append(inventory.getQuantity(code)).append("\n");
         }
@@ -277,7 +283,7 @@ public class Manager implements JsonConvertible {
             System.out.println("Input is not valid");
             return;
         }
-        LinkedList<String> locationList = this.getLocationListOfProduct(itemCode);
+        List<String> locationList = this.getLocationListOfProduct(itemCode);
         System.out.println("The products belonging to the code are stored at: ");
         for (String e: locationList) {
             System.out.print(e + " ");
@@ -374,7 +380,7 @@ public class Manager implements JsonConvertible {
 
     //EFFECTS: print the information of the inventory.
     private void printInventoryInfo() {
-        System.out.println(this.checkInventory());
+        System.out.println(checkInventory());
     }
 
 
@@ -458,6 +464,7 @@ public class Manager implements JsonConvertible {
         }
         if (this.createLoginAccount(id, pw, name, birthDay, personalCode)) {
             System.out.println("Successfully created");
+            //saveAdmin();
         } else {
             System.out.println("Error occurred");
         }
@@ -470,12 +477,16 @@ public class Manager implements JsonConvertible {
         System.out.println("Would you add extra info about this update?"
                 + "if yes, enter a line of description. If no, enter n");
         String description = scanner.nextLine();
-        if (description.equalsIgnoreCase("n")) {
-            this.updateInventory("");
-        } else {
-            this.updateInventory(description);
+        try {
+            if (description.equalsIgnoreCase("n")) {
+                this.updateInventory("");
+            } else {
+                this.updateInventory(description);
+            }
+            System.out.println("Successfully updated");
+        } catch (NothingToUpdateWithException e) {
+            System.out.println(e);
         }
-        System.out.println("Successfully updated");
     }
 
     //MODIFIES: this
@@ -552,6 +563,10 @@ public class Manager implements JsonConvertible {
     //MODIFIES: this
     //EFFECTS: remove a product from  list of products to add prompting the user to enter item code.
     private void promptRemoveProductFromListToAdd() {
+        if (listToAdd.size() == 0) {
+            System.out.println("There is no entry to remove in the list");
+            return;
+        }
         printListToAdd();
         System.out.println("enter the index of the entry. The indices start from 0. To end, enter non-digit");
         int index;
@@ -572,6 +587,10 @@ public class Manager implements JsonConvertible {
     //MODIFIES: this
     //EFFECTS: remove a product from  list of products to remove prompting the user to enter item code.
     private void promptRemoveProductFromListToRemove() {
+        if (listToRemove.size() == 0) {
+            System.out.println("There is no entry to remove in the list");
+            return;
+        }
         printListToRemove();
         System.out.println("enter the index of the entry. The indices start from 0");
         int index = scanner.nextInt();
@@ -617,6 +636,7 @@ public class Manager implements JsonConvertible {
         LocalDate birthday = LocalDate.of(scanner.nextInt(), scanner.nextInt(), scanner.nextInt());
         System.out.println("enter personal code");
         int personalNum = scanner.nextInt();
+        scanner.nextLine();
         String retrieved = this.retrievePassword(id, name, birthday, personalNum);
         if (retrieved != null) {
             System.out.println(retrieved);
@@ -765,8 +785,12 @@ public class Manager implements JsonConvertible {
         System.out.println("Please sign in first");
         System.out.println("Enter ID");
         String id = scanner.nextLine();
-        System.out.println("Enter PW");
+        System.out.println("Enter PW. If you cannot recall your password, enter \"retrieve\"");
         String pw = scanner.nextLine();
+        if (pw.equalsIgnoreCase("retrieve")) {
+            promptRetrievePassword();
+            return promptLogin();
+        }
         if (this.adminAccountCheck(id, pw)) {
             login = true;
         } else {
@@ -819,92 +843,112 @@ public class Manager implements JsonConvertible {
         }
     }
 
+    //MODIFIES: this
+    //EFFECTS: save current login accounts in admin
+//    public void saveAdmin() {
+//        try {
+//            JSONObject jsonAdmin = admin.toJson();
+//            jsonObject.put("admin", jsonAdmin);
+//            Writer writer = new Writer(fileLocation);
+//            writer.write(jsonObject);
+//            writer.close();
+//        } catch (FileNotFoundException e) {
+//            System.out.println("The current file cannot be found");
+//        }
+//    }
+
+
 
 
     @SuppressWarnings({"checkstyle:MethodLength", "checkstyle:SuppressWarnings"})
     public static void main(String[] args) {
-        Manager stockManager;
-        boolean login = false;
+        Manager stockManager = null;
         try {
-            Reader reader = new Reader(fileLocation);
-            stockManager = new Manager(reader.read());
-        } catch (IOException e) {
-            System.out.println("No existing data can be found. please create a new inventory manager");
-            stockManager = new Manager();
-            System.out.println("Please create a login account first");
-            stockManager.promptCreateLoginAccount();
-            login = true;
-        } catch (IllegalArgumentException e) {
-            System.out.println("Data for manager is in wrong format. please create a new inventory manager");
-            stockManager = new Manager();
-            System.out.println("Please create a login account first");
-            stockManager.promptCreateLoginAccount();
-            login = true;
-        }
-        Scanner scanner = stockManager.getScanner();
-        String option  = "h";
-        while (!option.equalsIgnoreCase("q")) {
-            if (!login) {
-                login = stockManager.promptLogin();
-                if (login) {
-                    printOptions();
-                }
-            } else {
-                System.out.println("Please select an option");
-                System.out.println("if you need help, press h");
-                option = scanner.nextLine();
-                switch (option) {
-                    case "h":
+            boolean login = false;
+            try {
+                Reader reader = new Reader(fileLocation);
+                stockManager = new Manager(reader.read());
+            } catch (IOException e) {
+                System.out.println("No existing data can be found. please create a new inventory manager");
+                stockManager = new Manager();
+                System.out.println("Please create a login account first");
+                stockManager.promptCreateLoginAccount();
+                login = true;
+            } catch (IllegalArgumentException e) {
+                System.out.println("Data for manager is in wrong format. please create a new inventory manager");
+                stockManager = new Manager();
+                System.out.println("Please create a login account first");
+                stockManager.promptCreateLoginAccount();
+                login = true;
+            }
+            Scanner scanner = stockManager.getScanner();
+            String option = "h";
+            while (!option.equalsIgnoreCase("q")) {
+                if (!login) {
+                    login = stockManager.promptLogin();
+                    if (login) {
                         printOptions();
-                        break;
-                    case "createAccount":
-                        stockManager.promptCreateLoginAccount();
-                        break;
-                    case "create":
-                        stockManager.promptCreateProduct();
-                        break;
-                    case "update":
-                        stockManager.promptUpdateInventory();
-                        break;
-                    case "removeI":
-                        stockManager.promptRemoveProducts();
-                        break;
-                    case "removeProduct":
-                        stockManager.promptRemoveProduct();
-                        break;
-                    case "removeFLA":
-                        stockManager.promptRemoveProductFromListToAdd();
-                        break;
-                    case "removeFLR":
-                        stockManager.promptRemoveProductFromListToRemove();
-                        break;
-                    case "findLocations":
-                        stockManager.promptFindLocations();
-                        break;
-                    case "findProduct":
-                        stockManager.promptFindProduct();
-                        break;
-                    case "checkQuantity":
-                        stockManager.promptCheckQuantity();
-                        break;
-                    case "checkI":
-                        stockManager.printInventoryInfo();
-                        break;
-                    case "checkT":
-                        stockManager.printTemporaryList();
-                        break;
-                    case "retrievePW":
-                        stockManager.promptRetrievePassword();
-                        break;
-                    case "openLedger":
-                        stockManager.openLedger();
-                        break;
-                    case "logout":
-                        login = false;
-                        break;
+                    }
+                } else {
+                    System.out.println("Please select an option");
+                    System.out.println("if you need help, press h");
+                    option = scanner.nextLine();
+                    switch (option) {
+                        case "h":
+                            printOptions();
+                            break;
+                        case "createAccount":
+                            stockManager.promptCreateLoginAccount();
+                            break;
+                        case "create":
+                            stockManager.promptCreateProduct();
+                            break;
+                        case "update":
+                            stockManager.promptUpdateInventory();
+                            break;
+                        case "removeI":
+                            stockManager.promptRemoveProducts();
+                            break;
+                        case "removeProduct":
+                            stockManager.promptRemoveProduct();
+                            break;
+                        case "removeFLA":
+                            stockManager.promptRemoveProductFromListToAdd();
+                            break;
+                        case "removeFLR":
+                            stockManager.promptRemoveProductFromListToRemove();
+                            break;
+                        case "findLocations":
+                            stockManager.promptFindLocations();
+                            break;
+                        case "findProduct":
+                            stockManager.promptFindProduct();
+                            break;
+                        case "checkQuantity":
+                            stockManager.promptCheckQuantity();
+                            break;
+                        case "checkI":
+                            stockManager.printInventoryInfo();
+                            break;
+                        case "checkT":
+                            stockManager.printTemporaryList();
+                            break;
+                        case "retrievePW":
+                            stockManager.promptRetrievePassword();
+                            break;
+                        case "openLedger":
+                            stockManager.openLedger();
+                            break;
+                        case "logout":
+                            login = false;
+                            break;
+                    }
                 }
             }
+        } finally {
+            if (stockManager != null) {
+                stockManager.save();
+            }
         }
-        stockManager.save();
     }
 }

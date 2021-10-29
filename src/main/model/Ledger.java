@@ -77,9 +77,6 @@ public class Ledger implements JsonConvertible {
                 accountOnDate.add(account);
             }
         }
-        if (accountOnDate.size() == 0) {
-            return null;
-        }
         return accountOnDate;
     }
 
