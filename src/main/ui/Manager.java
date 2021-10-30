@@ -11,10 +11,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.time.DateTimeException;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
 
 //creates products based on the user's request and add it to inventory.
@@ -193,6 +190,7 @@ public class Manager implements JsonConvertible {
         }
         if (account == null) {
             list.add("There is no such account with the code");
+            return list;
         }
         assert account != null;
         list.addAll(account.getQuantitiesInfo());
@@ -203,8 +201,15 @@ public class Manager implements JsonConvertible {
     //If there isn't such products with the specified item code, return an empty list
     private List<String> getLocationListOfProduct(String itemCode) {
         itemCode = itemCode.toUpperCase();
-        LinkedList<Integer> numericList = inventory.findLocations(itemCode);
         LinkedList<String> locationList = new LinkedList<>();
+        List<Integer> numericList;
+        try {
+            numericList = inventory.findLocations(itemCode);
+        } catch (InvalidItemCodeException e) {
+            System.out.println(e);
+            return locationList;
+        }
+
         for (Integer e: numericList) {
             if (inventory.getStringLocationCode(e).equalsIgnoreCase("T")) {
                 locationList.add("Temporary storage space");
@@ -278,12 +283,15 @@ public class Manager implements JsonConvertible {
     private void promptFindLocations() {
         System.out.println("enter the item code");
         String itemCode = scanner.nextLine();
-        if (inventory.getItemCodeNumber(itemCode) < 0
-                || inventory.getItemCodeNumber(itemCode) > 26 * 26 * 25 + 26 * 25 + 25) {
-            System.out.println("Input is not valid");
-            return;
+        while (!inventory.isValidItemCode(itemCode) && !itemCode.equalsIgnoreCase("q")) {
+            System.out.println("The item code is invalid. Enter item code again. To end, enter q");
+            itemCode = scanner.nextLine();
         }
         List<String> locationList = this.getLocationListOfProduct(itemCode);
+        if (locationList.size() == 0) {
+            System.out.println("There is no such product");
+            return;
+        }
         System.out.println("The products belonging to the code are stored at: ");
         for (String e: locationList) {
             System.out.print(e + " ");
@@ -672,14 +680,19 @@ public class Manager implements JsonConvertible {
 
     //EFFECTS: prompt the user to enter cost of the product and return it
     private double promptEnterCost() {
-        double cost;
-        System.out.println("enter cost");
-        cost = scanner.nextDouble();
-        while (cost < 0) {
-            System.out.println("Cost cannot be negative");
+        double cost = -1;
+        do {
             System.out.println("enter cost");
-            cost = scanner.nextDouble();
-        }
+            try {
+                cost = scanner.nextDouble();
+                if (cost < 0) {
+                    System.out.println("The cost must be a non-negative number");
+                }
+            } catch (InputMismatchException e) {
+                System.out.println("The cost must be a non-negative number");
+                scanner.nextLine();
+            }
+        } while (cost < 0);
         scanner.nextLine();
         return cost;
     }

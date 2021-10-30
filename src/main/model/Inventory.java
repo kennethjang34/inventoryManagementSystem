@@ -66,7 +66,7 @@ public class Inventory implements JsonConvertible {
 
         //EFFECTS: return a list of products that belong to this item code in this
         //If there isn't any, return null.
-        public LinkedList<Product> getProducts(String itemCode) {
+        public List<Product> getProducts(String itemCode) {
             int numericItemCode = getItemCodeNumber(itemCode);
             try {
                 return items.get(numericItemCode);
@@ -89,7 +89,7 @@ public class Inventory implements JsonConvertible {
         //Otherwise, return false.
         public boolean contains(String itemCode) {
             itemCode = itemCode.toUpperCase();
-            LinkedList<Product> products = getProducts(itemCode);
+            List<Product> products = getProducts(itemCode);
             return products != null && products.size() != 0;
         }
 
@@ -341,7 +341,7 @@ public class Inventory implements JsonConvertible {
         }
         try {
             getItemCodeNumber(itemCode);
-        } catch (IllegalArgumentException e) {
+        } catch (InvalidItemCodeException e) {
             return false;
         }
         return true;
@@ -460,7 +460,10 @@ public class Inventory implements JsonConvertible {
     //numeric form of this item code must be existing in inventory.
     //For instance, if valid form of item code is "AAA", passed item code cannot be "AAAA"
     //EFFECTS: return a list of locations where products belonging to the item code are located.
-    public LinkedList<Integer> findLocations(String itemCode) {
+    public List<Integer> findLocations(String itemCode) throws InvalidItemCodeException {
+        if (!isValidItemCode(itemCode)) {
+            throw new InvalidItemCodeException();
+        }
         itemCode = itemCode.toUpperCase();
         LinkedList<Integer> foundLocations = new LinkedList<>();
         for (int i = 0; i < locations.size(); i++) {
@@ -471,9 +474,6 @@ public class Inventory implements JsonConvertible {
                 }
             }
         }
-        if (foundLocations.size() == 0) {
-            return null;
-        }
         return foundLocations;
     }
 
@@ -481,13 +481,16 @@ public class Inventory implements JsonConvertible {
     //REQUIRES: itemCode must be in valid form(a combination of english alphabets (upper case),
     //of size used by the inventory
     //EFFECTS: return a numeric code converted from the string code
-    public int getItemCodeNumber(String itemCode) throws IllegalArgumentException {
+    public int getItemCodeNumber(String itemCode)  {
+        if (itemCode.length() > codeSize) {
+            throw new InvalidItemCodeException();
+        }
         int numericCode = 0;
         itemCode = itemCode.toUpperCase();
         for (int i = 0; i < itemCode.length(); i++) {
             numericCode *= NUM_ALPHABETS;
             if (itemCode.charAt(i) - 'A' > NUM_ALPHABETS - 1 || itemCode.charAt(i) - 'A' < 0) {
-                throw new IllegalArgumentException();
+                throw new InvalidItemCodeException();
             }
             numericCode += itemCode.charAt(i) - 'A';
         }

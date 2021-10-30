@@ -233,7 +233,12 @@ public class InventoryTest {
     @Test
     void testGetProductsWithInvalidCode() {
         inventory.addProducts(tags);
-        assertEquals(0, inventory.getProductList("ASFKJDL").size());
+        try {
+            inventory.getProductList("ASFKJDL");
+            fail();
+        } catch (InvalidItemCodeException e) {
+
+        }
     }
 
     @Test
@@ -485,7 +490,7 @@ public class InventoryTest {
         locations = inventory.findLocations("mgo");
         assertEquals(1, locations.size());
         assertEquals(inventory.getLocationCodeNumber("f14"), locations.get(0));
-        assertNull(inventory.findLocations("zzz"));
+        assertEquals(0, inventory.findLocations("zzz").size());
     }
 
     @Test
