@@ -1,13 +1,14 @@
 package ui;
 
 import model.Admin;
+import model.Inventory;
+import model.Ledger;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
-public class InventoryManagementSystemApplication extends JFrame implements ActionListener {
+public class InventoryManagementSystemApplication extends JFrame {
 
     public static final int WIDTH = 1100;
     public static final int HEIGHT = 850;
@@ -19,18 +20,23 @@ public class InventoryManagementSystemApplication extends JFrame implements Acti
     private JPanel ledgerPanel;
     private JPanel adminPanel;
     private JMenuBar menuBar;
-    private Manager manager;
+    private final Admin admin;
+    private final Ledger ledger;
+    private final Inventory inventory;
 
-    InventoryManagementSystemApplication(Manager manager) {
-        this.manager = manager;
+
+    InventoryManagementSystemApplication() {
+        admin = new Admin();
+        ledger = new Ledger();
+        inventory = new Inventory();
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         cardLayout = new CardLayout();
         tabbedPane = new JTabbedPane();
-        inventoryPanel = new InventoryPanel();
-        ledgerPanel = new LedgerPanel();
-        adminPanel = new AdminPanel();
-        loginPanel = new LoginPanel(new Admin());
-        tabbedPane.addTab("Inventory", tabbedPane);
+        inventoryPanel = new InventoryPanel(inventory);
+        ledgerPanel = new LedgerPanel(ledger);
+        //adminPanel = new AdminPanel(admin);
+        loginPanel = new LoginPanel(admin, this);
+        tabbedPane.addTab("Inventory", inventoryPanel);
         tabbedPane.addTab("Ledger", ledgerPanel);
         tabbedPane.addTab("Admin", adminPanel);
         menuBar = createMenuBar();
@@ -52,34 +58,11 @@ public class InventoryManagementSystemApplication extends JFrame implements Acti
     }
 
 
-
-
-
-    //MODIFIES: this
-    //EFFECTS: create a panel that prompts the user to sign in. If the attempt is successful, load application panel
-    private JPanel createLoginPanel() {
-        loginPanel = new JPanel();
-        JLabel descriptionLabel = new JLabel(description);
-        JLabel idLabel = new JLabel("ID");
-        JLabel pwLabel = new JLabel("PW");
-        JTextField idField = new JTextField();
-        JPasswordField passwordField = new JPasswordField();
-
-
-
-
-        return null;
-
-    }
-
-
     //EFFECTS: if there exists the id and password entered by the user, switch to the application panel.
     //Otherwise, display error
     public void loginActionPerformed(ActionEvent e) {
 
     }
-
-
 
 
     //MODIFIES: this
@@ -88,9 +71,5 @@ public class InventoryManagementSystemApplication extends JFrame implements Acti
         return null;
     }
 
-
-
-
-
-
 }
+

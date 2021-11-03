@@ -4,7 +4,7 @@ import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public abstract class AbstractLoginAccountPanel extends JPanel implements ActionListener {
+public abstract class AbstractLoginAccountPanel extends JDialog implements ActionListener {
     protected JTextField nameField;
     protected JTextField birthdayField;
     protected JTextField codeField;
@@ -15,10 +15,10 @@ public abstract class AbstractLoginAccountPanel extends JPanel implements Action
     protected JLabel nameLabel;
 
     protected AbstractLoginAccountPanel() {
-        nameField = new JTextField();
-        birthdayField = new JTextField();
-        codeField = new JTextField();
-        idField = new JTextField();
+        nameField = new JTextField(10);
+        birthdayField = new JTextField(10);
+        codeField = new JTextField(10);
+        idField = new JTextField(10);
         nameLabel = new JLabel("Name: ");
         idLabel = new JLabel("ID: ");
         birthdayLabel = new JLabel("Birthday: ");

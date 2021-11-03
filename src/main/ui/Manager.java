@@ -7,7 +7,6 @@ import persistence.JsonConvertible;
 import persistence.Reader;
 import persistence.Writer;
 
-import java.beans.PropertyChangeSupport;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.time.DateTimeException;
@@ -20,7 +19,7 @@ import java.util.*;
 //make it possible to not just search for a specific product using Inventory class,
 //but can check multiple products comparing them.
 //Only a certain number of people who have login accounts in admin can use this
-public class Manager extends PropertyChangeSupport implements JsonConvertible {
+public class Manager implements JsonConvertible {
     private static final String fileLocation = "./data/inventory_management_system.json";
     private final Inventory inventory;
     private final Ledger ledger;
@@ -64,7 +63,6 @@ public class Manager extends PropertyChangeSupport implements JsonConvertible {
         currentProduct = null;
         jsonObject = null;
         loginStatus = false;
-        application = new InventoryManagementSystemApplication();
     }
 
     //REQUIRES: The data in JSON format must contain all the information for creating the manager with matching name
