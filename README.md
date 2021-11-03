@@ -26,17 +26,17 @@ As a user, I want to add a product to the item list of the inventory.
 
 As a user, I want to check the quantities I have of  particular items in stock.
 
-As a user, I want to check stocks of a certain item by location
+As a user, I want to check stocks of a certain item by location.
 
-As a user, I want the application to create a sku automatically
+As a user, I want the application to create a sku automatically.
 
-As a user, I want to check a product's best before date
+As a user, I want to check a product's best before date.
 
-As a user, I want to be able to check the price a product was bought for
+As a user, I want to be able to check the price a product was bought for.
 
-As a user, I want to keep a record of change in quantity in inventory
+As a user, I want to keep a record of change in quantity in inventory.
 
-As a user, I want to make sure only a certain number of people who have login accounts can access the application
+As a user, I want to make sure only a certain number of people who have login accounts can access the application.
 
 As a user, I want to locate each product, as well as all the products belonging to a certain item category.
 
@@ -44,4 +44,8 @@ As a user, I want to be able to retrieve my login account password with my infor
 
 As a user, I want to be able to save my current inventory manager state whenever I update my inventory.
 
-As a user, I want to be able to reload my inventory manager state from file when I restart the application
+As a user, I want to be able to reload my inventory manager state from file when I restart the application.
+
+As a user, I want to check the changes in stocks of products that happened on a particular date.
+
+As a user, I want to be able to check the price change of a certain product over a period of time with a graph.

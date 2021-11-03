@@ -7,6 +7,7 @@ import persistence.JsonConvertible;
 import persistence.Reader;
 import persistence.Writer;
 
+import java.beans.PropertyChangeSupport;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.time.DateTimeException;
@@ -19,11 +20,13 @@ import java.util.*;
 //make it possible to not just search for a specific product using Inventory class,
 //but can check multiple products comparing them.
 //Only a certain number of people who have login accounts in admin can use this
-public class Manager implements JsonConvertible {
+public class Manager extends PropertyChangeSupport implements JsonConvertible {
     private static final String fileLocation = "./data/inventory_management_system.json";
     private final Inventory inventory;
     private final Ledger ledger;
     private final Admin admin;
+    private boolean loginStatus;
+    private InventoryManagementSystemApplication application;
     //scanner will be used to receive input options from the user.
     private final Scanner scanner;
     //JSONObject where the data for the current manager was obtained
@@ -60,6 +63,8 @@ public class Manager implements JsonConvertible {
         currentDate = LocalDate.now();
         currentProduct = null;
         jsonObject = null;
+        loginStatus = false;
+        application = new InventoryManagementSystemApplication();
     }
 
     //REQUIRES: The data in JSON format must contain all the information for creating the manager with matching name
@@ -74,6 +79,23 @@ public class Manager implements JsonConvertible {
         inventory = new Inventory(json.getJSONObject("inventory"));
         ledger = new Ledger(json.getJSONObject("ledger"));
         admin = new Admin(json.getJSONObject("admin"));
+        loginStatus = false;
+    }
+
+
+    //REQUIRES: login status must be false already
+    //MODIFIES: this
+    //EFFECTS: if the login attempt is successful,
+    //permit the access to the program and return true and fire propertyChange event.
+    //Otherwise, return false.
+    public boolean login(String id, char[] pw) {
+        assert !loginStatus;
+        if (checkLoginAccount(id, String.valueOf(pw))) {
+            loginStatus = true;
+
+            return true;
+        }
+        return false;
     }
 
 
@@ -360,7 +382,6 @@ public class Manager implements JsonConvertible {
             return;
         }
         System.out.println("The product doesn't exist in the warehouse");
-
     }
 
     //EFFECTS: prompt the user to enter info for checking quantity of an item
@@ -811,6 +832,14 @@ public class Manager implements JsonConvertible {
         }
         return login;
     }
+
+    //EFFECTS: check if the id and password is in the admin. if there is, return true.
+    //Otherwise, return false.
+    public boolean checkLoginAccount(String id, String pw) {
+        return admin.checkLoginAccount(id, pw);
+    }
+
+
 
     //EFFECTS: print options
     private static void printOptions() {
