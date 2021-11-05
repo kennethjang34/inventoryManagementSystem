@@ -59,7 +59,7 @@ public class LoginPanel extends JPanel implements ActionListener {
         public void actionPerformed(ActionEvent e) {
             int personalCode = Integer.parseInt(this.codeField.getText());
             String birthdayText = birthdayField.getText();
-            LocalDate birthDay = convertToLocalDate(birthdayText);
+            LocalDate birthDay = InventoryManagementSystemApplication.convertToLocalDate(birthdayText);
             admin.createLoginAccount(idField.getText(), String.valueOf(pwField.getPassword()),
                     nameField.getText(), birthDay, personalCode);
             JOptionPane.showMessageDialog(this, "a new account is successfully created");
@@ -92,7 +92,7 @@ public class LoginPanel extends JPanel implements ActionListener {
         //If there isn't any, display error message.
         public void actionPerformed(ActionEvent e) {
             int personalCode = Integer.parseInt(codeField.getText());
-            LocalDate birthday = convertToLocalDate(birthdayField.getText());
+            LocalDate birthday = InventoryManagementSystemApplication.convertToLocalDate(birthdayField.getText());
             String pw = admin.retrievePassword(idField.getText(), nameField.getText(), birthday, personalCode);
             if (pw != null) {
                 JOptionPane.showMessageDialog(null, "The password is : " + pw);
@@ -125,14 +125,6 @@ public class LoginPanel extends JPanel implements ActionListener {
 
 
 
-    //REQUIRES: the date must be a string type in YYYYMMDD form without any space in between
-    //EFFECTS: convert the date in string form into LocalDate type
-    public static LocalDate convertToLocalDate(String date) {
-        int year = Integer.parseInt(date.substring(0, 4));
-        int month = Integer.parseInt(date.substring(4, 6));
-        int day = Integer.parseInt(date.substring(6, 8));
-        return LocalDate.of(year, month, day);
-    }
 
 
 

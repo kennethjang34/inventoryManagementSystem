@@ -7,6 +7,7 @@ import model.Ledger;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.time.LocalDate;
 
 public class InventoryManagementSystemApplication extends JFrame {
 
@@ -29,7 +30,7 @@ public class InventoryManagementSystemApplication extends JFrame {
         admin = new Admin();
         ledger = new Ledger();
         inventory = new Inventory();
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         cardLayout = new CardLayout();
         tabbedPane = new JTabbedPane();
         inventoryPanel = new InventoryPanel(inventory);
@@ -42,7 +43,15 @@ public class InventoryManagementSystemApplication extends JFrame {
         menuBar = createMenuBar();
         cardLayout.addLayoutComponent(tabbedPane, "ControlPanel");
         cardLayout.addLayoutComponent(loginPanel, "LoginPanel");
-        setLayout(cardLayout);
+        JPanel panel = new JPanel();
+        panel.setLayout(cardLayout);
+        panel.add(tabbedPane);
+        panel.add(loginPanel);
+        //panel.setVisible(true);
+        add(panel);
+        setPreferredSize(new Dimension(400, 500));
+        setSize(700, 800);
+        setVisible(true);
     }
 
     //MODIFIES: this
@@ -71,5 +80,18 @@ public class InventoryManagementSystemApplication extends JFrame {
         return null;
     }
 
+
+    //REQUIRES: the date must be a string type in YYYYMMDD form without any space in between
+    //EFFECTS: convert the date in string form into LocalDate type
+    public static LocalDate convertToLocalDate(String date) {
+        int year = Integer.parseInt(date.substring(0, 4));
+        int month = Integer.parseInt(date.substring(4, 6));
+        int day = Integer.parseInt(date.substring(6, 8));
+        return LocalDate.of(year, month, day);
+    }
+
+    public static void main(String[] args) {
+        new InventoryManagementSystemApplication();
+    }
 }
 

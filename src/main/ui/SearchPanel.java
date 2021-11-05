@@ -17,8 +17,8 @@ public class SearchPanel extends JPanel implements ActionListener {
 
     public SearchPanel(Inventory inventory) {
         this.inventory = inventory;
-        itemCodeField = new JTextField();
-        skuField = new JTextField();
+        itemCodeField = new JTextField(10);
+        skuField = new JTextField(10);
         add(new JLabel("Item code"));
         add(itemCodeField);
         add(new JLabel("SKU"));

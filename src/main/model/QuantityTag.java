@@ -31,6 +31,32 @@ public class QuantityTag {
         return quantity;
     }
 
+    //REQUIRES: quantity must be non-negative
+    //MODIFIES: this
+    //EFFECTS: change the quantity to the given value
+    public void setQuantity(int qty) {
+        quantity = qty;
+    }
+
+    //return true if the given objet is equal to this. Otherwise, return false.
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof QuantityTag)) {
+            return false;
+        }
+        QuantityTag tag = (QuantityTag)o;
+        if (tag.getItemCode().equalsIgnoreCase(itemCode) && tag.getLocation().equalsIgnoreCase(location)) {
+            return true;
+        }
+        return false;
+    }
+
+    //EFFECTS: return hash code of this
+    @Override
+    public int hashCode() {
+        return itemCode.hashCode();
+    }
+
     //EFFECTS: return a string description that contains all information of this
     @Override
     public String toString() {
