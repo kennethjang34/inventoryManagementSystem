@@ -49,8 +49,8 @@ public class InventoryManagementSystemApplication extends JFrame {
         panel.add(loginPanel);
         //panel.setVisible(true);
         add(panel);
-        setPreferredSize(new Dimension(400, 500));
-        setSize(700, 800);
+        setPreferredSize(new Dimension(1500, 2000));
+        pack();
         setVisible(true);
     }
 

@@ -8,9 +8,7 @@ import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
+import java.awt.event.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,15 +18,16 @@ public class InventoryPanel extends JPanel implements ActionListener {
     private final SearchPanel searchPanel;
     private JPanel addListPanel;
     private JPanel removeListPanel;
-    private JPanel stockPanel;
+    private StockPanel stockPanel;
     private String add = "add";
     private String remove = "remove";
     private String update = "update";
+    private String search = "search";
     private final ArrayList<InventoryTag> listToAdd;
     private final ArrayList<QuantityTag> listToRemove;
     private JTable tableForNew;
     private JTable tableForRemoval;
-
+    private JTable stockTable;
 
 
 
@@ -129,12 +128,22 @@ public class InventoryPanel extends JPanel implements ActionListener {
                 }
             };
             JTable table = new JTable(tableModel);
-            //https://stackoverflow.com/questions/18326822/edit-a-specific-cell-in-jtable-on-enter-key-and-show-the-cursor
-            InputMap im = table.getInputMap(JTable.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
-            KeyStroke enter = KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0);
-            KeyStroke f2 = KeyStroke.getKeyStroke(KeyEvent.VK_F2, 0);
-            im.put(enter, im.get(f2));
-            //
+            table.addFocusListener(new FocusAdapter() {
+                @Override
+                public void focusLost(FocusEvent e) {
+                    super.focusLost(e);
+                    JTable table = (JTable)e.getSource();
+                    if (table.isEditing()) {
+                        table.getCellEditor().stopCellEditing();
+                    }
+                }
+            });
+//            //https://stackoverflow.com/questions/18326822/edit-a-specific-cell-in-jtable-on-enter-key-and-show-the-cursor
+//            InputMap im = table.getInputMap(JTable.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+//            KeyStroke enter = KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0);
+//            KeyStroke f2 = KeyStroke.getKeyStroke(KeyEvent.VK_F2, 0);
+//            im.put(enter, im.get(f2));
+//            //
             JScrollPane pane = new JScrollPane(table);
             //pane.add(table);
             JButton button = new JButton("Register");
@@ -249,7 +258,7 @@ public class InventoryPanel extends JPanel implements ActionListener {
         searchPanel = new SearchPanel(inventory);
         addListPanel = createAddListPanel();
         removeListPanel = createRemoveListPanel();
-        stockPanel = createStockPanel();
+        stockPanel = new StockPanel(inventory);
         add(searchPanel);
         add(addListPanel);
         add(removeListPanel);
@@ -280,16 +289,30 @@ public class InventoryPanel extends JPanel implements ActionListener {
         } else if (e.getActionCommand().equals(update)) {
             inventory.addProducts(listToAdd);
             inventory.removeProducts(listToRemove);
-            listToAdd.clear();
-            listToRemove.clear();
             DefaultTableModel tableModel = (DefaultTableModel)tableForNew.getModel();
             tableModel.setRowCount(0);
             tableModel = (DefaultTableModel)tableForRemoval.getModel();
             tableModel.setRowCount(0);
             tableForNew.revalidate();
             tableForRemoval.revalidate();
-//            addListPanel.revalidate();
-//            removeListPanel.revalidate();
+            List<String> codes = new ArrayList<>();
+            for (QuantityTag tag: listToRemove) {
+                String code = tag.getItemCode();
+                if (!codes.contains(code)) {
+                    codes.add(code);
+                }
+            }
+
+            for (InventoryTag tag: listToAdd) {
+                String code = tag.getItemCode();
+                if (!codes.contains(code)) {
+                    codes.add(code);
+                }
+            }
+            listToAdd.clear();
+            listToRemove.clear();
+            stockPanel.update(codes);
+            stockPanel.revalidate();
         }
     }
 
@@ -359,6 +382,7 @@ public class InventoryPanel extends JPanel implements ActionListener {
         return table;
     }
 
+
     //EFFECTS: create a new panel for removing products from the inventory
     public JPanel createRemoveListPanel() {
         JPanel panel = new JPanel();
@@ -377,16 +401,17 @@ public class InventoryPanel extends JPanel implements ActionListener {
     //EFFECTS: create a new panel for displaying a list of stocks
     public JPanel createStockPanel() {
         JPanel panel = new JPanel();
+
         return panel;
+
+
+
+
+
     }
 
 
 
-//    //EFFECTS: create a new panel for prompting user to enter information for stocks to remove
-//    private JPanel createRemovePanel() {
-//        JPanel panel = new JPanel();
-//        return panel;
-//    }
 
 
 
