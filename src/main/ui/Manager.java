@@ -337,7 +337,7 @@ public class Manager implements JsonConvertible {
         while (!option.equalsIgnoreCase("q")) {
             switch (option) {
                 case "code":
-                    System.out.println("The product code: " + currentProduct.getItemCode() + currentProduct.getSku());
+                    System.out.println("The product code: " + currentProduct.getCategory() + currentProduct.getSku());
                     break;
                 case "dateG":
                     System.out.println("The date generated: " + currentProduct.getDateGenerated().toString());
