@@ -44,6 +44,11 @@ public class Inventory implements JsonConvertible {
             }
         }
 
+
+        //testing
+
+
+
         //REQUIRES: the data in JSON format must be containing all necessary information
         //for creating an item list with matching names
         //EFFECTS: create a new item list from data in JSON format
@@ -103,7 +108,7 @@ public class Inventory implements JsonConvertible {
                 return null;
             }
             for (Product product : products) {
-                if (product.getSku() == sku) {
+                if (product.getSku().equals(sku)) {
                     return product;
                 }
             }
@@ -151,7 +156,7 @@ public class Inventory implements JsonConvertible {
         //MODIFIES: this
         //EFFECTS: remove the product from this.
         public boolean remove(Product product) {
-            String itemCode = product.getItemCode();
+            String itemCode = product.getCategory();
             int numericCode = getItemCodeNumber(itemCode);
             LinkedList<Product> products = items.get(numericCode);
             return products.remove(product);

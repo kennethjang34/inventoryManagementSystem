@@ -72,7 +72,7 @@ public class ReaderTest {
             fail();
         }
         Product fromJson = new Product (jsonProduct);
-        assertEquals(product.getItemCode(), fromJson.getItemCode());
+        assertEquals(product.getCategory(), fromJson.getCategory());
         assertEquals(product.getSku(), fromJson.getSku());
         assertEquals(product.getBestBeforeDate(), fromJson.getBestBeforeDate());
         assertEquals(product.getDateGenerated(), fromJson.getDateGenerated());

@@ -201,7 +201,7 @@ public class InventoryTest {
         for (int i = 0; i < inventory.getQuantity("asr"); i++) {
             Product product = inventory.getProduct("ASR", 111111 + i);
             assertEquals(products.get(i), product);
-            assertEquals("ASR", product.getItemCode());
+            assertEquals("ASR", product.getCategory());
             assertEquals(111111 + i, product.getSku());
         }
     }
@@ -225,7 +225,7 @@ public class InventoryTest {
         for (int i = 0; i < inventory.getQuantity("asr"); i++) {
             Product product = inventory.getProduct("ASR", 111111 + i);
             assertEquals(products.get(i), product);
-            assertEquals("ASR", product.getItemCode());
+            assertEquals("ASR", product.getCategory());
             assertEquals(111111 + i, product.getSku());
         }
     }
@@ -383,19 +383,19 @@ public class InventoryTest {
         for (int i = 0; i < initialQty; i++) {
             int qty = inventory.getQuantity("aaa");
             Product product = inventory.getProduct("aaa", 111111 + i);
-            assertEquals("AAA", product.getItemCode());
+            assertEquals("AAA", product.getCategory());
             assertEquals(111111 + i, product.getSku());
-            inventory.removeProduct(product.getItemCode(), product.getSku());
-            assertNull(inventory.getProduct(product.getItemCode(), product.getSku()));
+            inventory.removeProduct(product.getCategory(), Integer.parseInt(product.getSku()));
+            assertNull(inventory.getProduct(product.getCategory(), Integer.parseInt(product.getSku())));
             assertEquals(qty - 1, inventory.getQuantity("aaa"));
         }
         for (int i = 0; i < initialQty; i++) {
             int qty = inventory.getQuantity("asr");
             Product product = inventory.getProduct("asr",  111111 + basicQty + i);
-            assertEquals("ASR", product.getItemCode());
+            assertEquals("ASR", product.getCategory());
             assertEquals(111111 + basicQty + i, product.getSku());
-            inventory.removeProduct(product.getItemCode(), product.getSku());
-            assertNull(inventory.getProduct(product.getItemCode(), product.getSku()));
+            inventory.removeProduct(product.getCategory(), Integer.valueOf(product.getSku()));
+            assertNull(inventory.getProduct(product.getCategory(), Integer.parseInt(product.getSku())));
             assertEquals(qty - 1, inventory.getQuantity("asr"));
         }
 
@@ -462,7 +462,7 @@ public class InventoryTest {
             ProductTag tag = inventory.findProduct("asr", 111111 + i);
             Product product = tag.getProduct();
             assertEquals(products.get(i), product);
-            assertEquals("ASR", product.getItemCode());
+            assertEquals("ASR", product.getCategory());
             assertEquals(111111 + i, product.getSku());
             if (i < basicQty) {
                 assertEquals("T", tag.getLocation());

@@ -11,24 +11,27 @@ import java.time.LocalDate;
 public class Product implements JsonConvertible {
     //item code represents the code composed only of English alphabets that indicates
     //the category of the product. Multiple products can have the same item code.
-    private final String itemCode;
+    private final String category;
     //SKU is unique to each product
-    private final int sku;
+    private final String sku;
     private final LocalDate dateGenerated;
     //Only products given best-before date will have a valid best-before date.
     private final LocalDate bestBeforeDate;
     //cost is the money paid for this product
-    private final double price;
+    private double price;
+    private final double cost;
 
 
     //It is possible for date generated and best before date to be null,
     //However, it is strongly recommended to ensure date generated is a valid Local Date instance.
     //REQUIRES: sku must be 9-digit natural number, cost must be positive.
     //EFFECTS: create a product with specified data.
-    public Product(String itemCode, int sku, double price, LocalDate dateGenerated, LocalDate bestBeforeDate) {
-        itemCode = itemCode.toUpperCase();
-        this.itemCode = itemCode;
+    public Product(String category, String sku, double cost, double price,
+                   LocalDate dateGenerated, LocalDate bestBeforeDate) {
+        category = category.toUpperCase();
+        this.category = category;
         this.sku = sku;
+        this.cost = cost;
         this.price = price;
         this.dateGenerated = dateGenerated;
         this.bestBeforeDate = bestBeforeDate;
@@ -37,9 +40,10 @@ public class Product implements JsonConvertible {
     //REQUIRES: data in JSONObject format must contain all the information necessary for creating a new product
     //EFFECTS: create a new product with data in JSON format
     public Product(JSONObject json) {
-        itemCode = json.getString("itemCode");
-        sku = json.getInt("sku");
+        category = json.getString("itemCode");
+        sku = json.getString("sku");
         price = json.getDouble("price");
+        cost = json.getDouble("cost");
         JSONObject jsonDate = json.getJSONObject("dateGenerated");
         dateGenerated = LocalDate.of(jsonDate.getInt("year"),
                 jsonDate.getInt("month"), jsonDate.getInt("day"));
@@ -52,13 +56,16 @@ public class Product implements JsonConvertible {
         }
     }
 
+
+
     //EFFECTS: return the string item code of this product
-    public String getItemCode() {
-        return itemCode;
+    public String getCategory() {
+        return category;
     }
 
+
     //EFFECTS: return the stock keeping unit(SKU) of this product
-    public int getSku() {
+    public String getSku() {
         return sku;
     }
 
@@ -73,16 +80,33 @@ public class Product implements JsonConvertible {
     }
 
     //EFFECTS: return the cost paid for this product
+    public double getCost() {
+        return cost;
+    }
+
+    //EFFECTS: return the default price set for this product
     public double getPrice() {
         return price;
     }
+
+    //MODIFIES: this
+    //EFFECTS: set the price of this product to the given value.
+    //If the given price is negative, throw an exception
+    public void setPrice(double price) {
+        if (price < 0) {
+            throw new IllegalArgumentException("Price cannot be negative");
+        }
+        this.price = price;
+    }
+
 
     //EFFECTS: convert this to JSONObject and return it.
     @Override
     public JSONObject toJson() {
         JSONObject json = new JSONObject();
-        json.put("itemCode", itemCode);
+        json.put("itemCode", category);
         json.put("sku", sku);
+        json.put("cost", cost);
         json.put("price", price);
         JSONObject jsonDate = new JSONObject();
         jsonDate.put("year", dateGenerated.getYear());
