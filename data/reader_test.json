@@ -1,0 +1,15 @@
+{
+    "dateGenerated": {
+        "month": 10,
+        "year": 2021,
+        "day": 29
+    },
+    "price": 20.1,
+    "itemCode": "ABC",
+    "bestBeforeDate": {
+        "month": 10,
+        "year": 2021,
+        "day": 29
+    },
+    "sku": 111111119
+}
