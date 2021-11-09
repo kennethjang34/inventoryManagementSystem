@@ -358,6 +358,7 @@ public class Manager implements JsonConvertible {
         }
     }
 
+
     //EFFECTS: prompt the user to enter info for finding a particular product. Print location by default.
     private void promptFindProduct() {
         System.out.println("enter the item code");

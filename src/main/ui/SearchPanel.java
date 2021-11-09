@@ -25,6 +25,7 @@ public class SearchPanel extends JPanel implements ActionListener {
         add(skuField);
         JButton searchButton = new JButton("Search");
         searchButton.addActionListener(this);
+        add(searchButton);
         setVisible(true);
     }
 

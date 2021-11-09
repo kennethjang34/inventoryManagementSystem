@@ -5,10 +5,12 @@ import model.InventoryTag;
 import model.QuantityTag;
 
 import javax.swing.*;
-import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,7 +41,7 @@ public class InventoryPanel extends JPanel implements ActionListener {
         JTextField codeField = new JTextField(10);
         //JTextField skuField = new JTextField();
         List<JTextField> quantityFields = new ArrayList<>();
-        AbstractTableModel tableModel;
+        DefaultTableModel tableModel;
         String search = "search";
 
         private class QuantityField extends JTextField {
@@ -100,6 +102,8 @@ public class InventoryPanel extends JPanel implements ActionListener {
                     return 3;
                 }
 
+
+
                 @Override
                 public Object getValueAt(int rowIndex, int columnIndex) {
                     QuantityTag tag = tags.get(rowIndex);
@@ -127,6 +131,10 @@ public class InventoryPanel extends JPanel implements ActionListener {
                     return;
                 }
             };
+
+            tableModel.setColumnIdentifiers(new Object[]{
+                    "Location", "Quantity in stock", "Quantity to remove"
+            });
             JTable table = new JTable(tableModel);
             table.addFocusListener(new FocusAdapter() {
                 @Override

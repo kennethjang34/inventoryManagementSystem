@@ -25,7 +25,6 @@ public class InventoryManagementSystemApplication extends JFrame {
     private final Ledger ledger;
     private final Inventory inventory;
 
-
     InventoryManagementSystemApplication() {
         admin = new Admin();
         ledger = new Ledger();

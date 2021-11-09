@@ -68,6 +68,8 @@ public class StockPanel extends JPanel {
         }
 
 
+
+
         //MODIFIES: this
         //EFFECTS: modify this so that the panel displays the latest information of stocks
         public void update(List<String> codes) {
@@ -123,7 +125,10 @@ public class StockPanel extends JPanel {
             Object[] columnsForLocations = new Object[]{"Location", "Quantity"};
             DefaultTableModel tableModel = new DefaultTableModel();
             tableModel.setDataVector(data, columnsForLocations);
-            dialog.add(new JTable(tableModel));
+            JScrollPane scrollPane = new JScrollPane(new JTable(tableModel));
+            scrollPane.setVisible(true);
+            scrollPane.setSize(500, 600);
+            dialog.add(scrollPane);
             dialog.setSize(600, 700);
             dialog.setVisible(true);
         }
