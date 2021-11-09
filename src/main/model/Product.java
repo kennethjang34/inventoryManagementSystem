@@ -8,10 +8,10 @@ import java.time.LocalDate;
 //represents product. Each product will have item code, SKU (Stock keeping unit),
 //date generated, best before date, and cost it was bought for.
 //No data about the product can be changed after creation.
-public class Product implements JsonConvertible {
+public class Product implements JsonConvertible, TableEntryConvertible {
     //item code represents the code composed only of English alphabets that indicates
     //the category of the product. Multiple products can have the same item code.
-    private final String category;
+    private final String id;
     //SKU is unique to each product
     private final String sku;
     private final LocalDate dateGenerated;
@@ -20,27 +20,28 @@ public class Product implements JsonConvertible {
     //cost is the money paid for this product
     private double price;
     private final double cost;
-
+    private String location;
 
     //It is possible for date generated and best before date to be null,
     //However, it is strongly recommended to ensure date generated is a valid Local Date instance.
     //REQUIRES: sku must be 9-digit natural number, cost must be positive.
     //EFFECTS: create a product with specified data.
-    public Product(String category, String sku, double cost, double price,
-                   LocalDate dateGenerated, LocalDate bestBeforeDate) {
-        category = category.toUpperCase();
-        this.category = category;
+    public Product(String id, String sku, double cost, double price,
+                   LocalDate dateGenerated, LocalDate bestBeforeDate, String location) {
+        id = id.toUpperCase();
+        this.id = id;
         this.sku = sku;
         this.cost = cost;
         this.price = price;
         this.dateGenerated = dateGenerated;
         this.bestBeforeDate = bestBeforeDate;
+        this.location = location;
     }
 
     //REQUIRES: data in JSONObject format must contain all the information necessary for creating a new product
     //EFFECTS: create a new product with data in JSON format
     public Product(JSONObject json) {
-        category = json.getString("itemCode");
+        id = json.getString("id");
         sku = json.getString("sku");
         price = json.getDouble("price");
         cost = json.getDouble("cost");
@@ -54,13 +55,14 @@ public class Product implements JsonConvertible {
             bestBeforeDate = LocalDate.of(jsonDate.getInt("year"),
                     jsonDate.getInt("month"), jsonDate.getInt("day"));
         }
+        location = json.getString("location");
     }
 
 
 
     //EFFECTS: return the string item code of this product
-    public String getCategory() {
-        return category;
+    public String getId() {
+        return id;
     }
 
 
@@ -99,12 +101,37 @@ public class Product implements JsonConvertible {
         this.price = price;
     }
 
+    //EFFECTS: return the location of this product
+    public String getLocation() {
+        return location;
+    }
+
+    //MODIFIES: this
+    //EFFECTS: change the location of this product
+    public void setLocation(String location) {
+        this.location = location;
+    }
+
+
+
+    //EFFECTS: return an array of column names for table entry
+    @Override
+    public Object[] getColumnNames() {
+        return new Object[0];
+    }
+
+    //EFFECTS: return an array of info segments for table entry
+    @Override
+    public Object[] convertToTableEntry() {
+        return new Object[0];
+    }
+
 
     //EFFECTS: convert this to JSONObject and return it.
     @Override
     public JSONObject toJson() {
         JSONObject json = new JSONObject();
-        json.put("itemCode", category);
+        json.put("itemCode", id);
         json.put("sku", sku);
         json.put("cost", cost);
         json.put("price", price);
@@ -122,6 +149,7 @@ public class Product implements JsonConvertible {
             jsonDate.put("day", bestBeforeDate.getDayOfMonth());
             json.put("bestBeforeDate", jsonDate);
         }
+        json.put("location", location);
         return json;
     }
 }

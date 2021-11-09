@@ -69,7 +69,7 @@ public class SearchPanel extends JPanel implements ActionListener {
     //to show the given product's information
     private JPanel createProductPanel(String itemCode, int sku) {
         JPanel panel = new JPanel();
-        ProductTag tag = inventory.findProduct(itemCode, sku);
+        ProductTag tag = inventory.getProduct(itemCode, sku);
         if (tag == null) {
             panel.add(new JLabel("There is no such product"));
             panel.setVisible(true);

@@ -168,10 +168,10 @@ public class InventoryPanel extends JPanel implements ActionListener {
                                 tag.setQuantity(tag.getQuantity() + Integer.parseInt(field.getText()));
                                 model.setValueAt(tag.getQuantity(), i, 2);
                             } else {
-                                toRemove.add(new QuantityTag(tag.getItemCode(),
+                                toRemove.add(new QuantityTag(tag.getId(),
                                         tag.getLocation(), Integer.parseInt(field.getText())));
                                 model.addRow(new Object[]{
-                                        tag.getItemCode(),
+                                        tag.getId(),
                                         tag.getLocation(), field.getText()
                                 });
                             }
@@ -305,14 +305,14 @@ public class InventoryPanel extends JPanel implements ActionListener {
             tableForRemoval.revalidate();
             List<String> codes = new ArrayList<>();
             for (QuantityTag tag: listToRemove) {
-                String code = tag.getItemCode();
+                String code = tag.getId();
                 if (!codes.contains(code)) {
                     codes.add(code);
                 }
             }
 
             for (InventoryTag tag: listToAdd) {
-                String code = tag.getItemCode();
+                String code = tag.getId();
                 if (!codes.contains(code)) {
                     codes.add(code);
                 }
@@ -336,7 +336,7 @@ public class InventoryPanel extends JPanel implements ActionListener {
         for (int i = 0; i < listToAdd.size(); i++) {
             InventoryTag tag = listToAdd.get(i);
             entries[i] = new Object[]{
-                    tag.getItemCode(), tag.getPrice(),
+                    tag.getId(), tag.getUnitCost(),
                     (tag.getBestBeforeDate() == null ? "N/A" : tag.getBestBeforeDate()),
                     tag.getLocation(), tag.getQuantity()
             };
@@ -359,7 +359,7 @@ public class InventoryPanel extends JPanel implements ActionListener {
         for (int i = 0; i < listToAdd.size(); i++) {
             InventoryTag tag = listToAdd.get(i);
             entries[i] = new Object[]{
-                    tag.getItemCode(), tag.getPrice(),
+                    tag.getId(), tag.getUnitCost(),
                     (tag.getBestBeforeDate() == null ? "N/A" : tag.getBestBeforeDate()),
                     tag.getLocation(), tag.getQuantity()
             };
@@ -379,7 +379,7 @@ public class InventoryPanel extends JPanel implements ActionListener {
         for (int i = 0; i < listToRemove.size(); i++) {
             QuantityTag tag = listToRemove.get(i);
             entries[i] = new Object[]{
-                    tag.getItemCode(), tag.getLocation(), tag.getQuantity()
+                    tag.getId(), tag.getLocation(), tag.getQuantity()
             };
         }
         DefaultTableModel tableModel = new DefaultTableModel(entries, columnNames);
