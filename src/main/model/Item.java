@@ -1,17 +1,21 @@
 package model;
 
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+import persistence.JsonConvertible;
+
 import java.time.LocalDate;
 import java.util.*;
 
 //represents each item in the inventory.
 //contains product list belonging to it
 //item can be thought of a super-category of products
-public class Item implements  TableEntryConvertible {
+public class Item implements  TableEntryConvertible, JsonConvertible {
     private static int count = 0;
     private final String id;
     private final String name;
-    private Category category;
+    private String category;
     private String description;
     private double averageCost;
     private double listPrice;
@@ -21,9 +25,9 @@ public class Item implements  TableEntryConvertible {
     //key: location, value: stock
     private LinkedHashMap<String, List<Product>> stocks;
 
-    //ID, name must be composed of digits or English letters
+    //REQUIRES: ID, name must be composed of digits or English letters
     //EFFECTS: create a new item containing an empty product list with given information
-    public Item(String id, String name, Category category, double listPrice, String description, String note) {
+    public Item(String id, String name, String category, double listPrice, String description, String note) {
         this.id = id;
         this.name = name;
         this.category = category;
@@ -33,6 +37,32 @@ public class Item implements  TableEntryConvertible {
         averageCost = 0;
         products = new LinkedHashMap<>();
         stocks = new LinkedHashMap<>();
+    }
+
+    //REQUIRES: json must be in a valid JSONObject format containing all necessary info for item class
+    public Item(JSONObject json) {
+        count = json.getInt("count");
+        id = json.getString("id");
+        name = json.getString("name");
+        category = json.getString("category");
+        description = json.getString("description");
+        note = json.getString("note");
+        listPrice = json.getDouble("listPrice");
+        averageCost = json.getDouble("averageCost");
+        products = new LinkedHashMap<>();
+        stocks = new LinkedHashMap<>();
+        JSONArray jsonStocks = json.getJSONArray("stocks");
+        for (Object obj: jsonStocks) {
+            JSONArray jsonList = (JSONArray) obj;
+            List<Product> productList = new ArrayList<>();
+            for (Object toBeJson: jsonList) {
+                JSONObject jsonObject = (JSONObject)toBeJson;
+                Product product = new Product(jsonObject);
+                productList.add(product);
+                products.put(product.getSku(), product);
+            }
+            stocks.put(productList.get(0).getLocation(), productList);
+        }
     }
 
 //    //REQUIRES:ID, name must be composed of digits or English letters
@@ -60,7 +90,7 @@ public class Item implements  TableEntryConvertible {
     }
 
     //EFFECTS: return the category of this item
-    public Category getCategory() {
+    public String getCategory() {
         return category;
     }
 
@@ -169,14 +199,8 @@ public class Item implements  TableEntryConvertible {
 
     //MODIFIES: this
     //EFFECTS: change the category of this item
-    public void setCategory(Category category) {
-        if (this.category != null && !this.category.getName().equalsIgnoreCase(category.getName())) {
-            Category oldCategory = this.category;
-            this.category = category;
-            oldCategory.removeItem(getName());
-        } else {
-            this.category = category;
-        }
+    public void setCategory(String category) {
+        this.category = category;
     }
 
 
@@ -189,16 +213,14 @@ public class Item implements  TableEntryConvertible {
     //MODIFIES: this
     //EFFECTS: add products to this with the given inventory tag
     public void addProducts(InventoryTag tag) {
+        int originalQty = getQuantity();
         int quantity = tag.getQuantity();
         double unitCost = tag.getUnitCost();
-        double unitPrice = tag.getUnitPrice();
-        LocalDate bestBeforeDate = tag.getBestBeforeDate();
-        LocalDate dateGenerated = tag.getDateGenerated();
         String location = tag.getLocation();
         List<Product> toBeAdded = new ArrayList<>();
         for (int i = 0; i < quantity; i++) {
-            Product product = new Product(id, createSku(), unitCost, unitPrice,
-                    dateGenerated, bestBeforeDate, location);
+            Product product = new Product(id, createSku(), unitCost, tag.getUnitPrice(),
+                    tag.getDateGenerated(), tag.getBestBeforeDate(), location);
             toBeAdded.add(product);
             products.put(product.getSku(), product);
         }
@@ -208,6 +230,11 @@ public class Item implements  TableEntryConvertible {
         } else {
             existing.addAll(toBeAdded);
         }
+        if (originalQty != 0) {
+            averageCost = (averageCost * originalQty + unitCost * quantity) / (originalQty + quantity);
+        } else {
+            averageCost = unitCost;
+        }
     }
 
     //MODIFIES: this
@@ -215,6 +242,7 @@ public class Item implements  TableEntryConvertible {
     public void addProducts(double cost, double price, LocalDate bestBeforeDate,
                             LocalDate dateGenerated, String location, int qty) {
         List<Product> toBeAdded = new ArrayList<>();
+        int originalQty = getQuantity();
         for (int i = 0; i < qty; i++) {
             Product product = new Product(id, createSku(), cost, price,
                     dateGenerated, bestBeforeDate, location);
@@ -227,6 +255,11 @@ public class Item implements  TableEntryConvertible {
         } else {
             existing.addAll(toBeAdded);
         }
+        if (originalQty != 0) {
+            averageCost = (averageCost * originalQty + cost * qty) / (originalQty + qty);
+        } else {
+            averageCost = cost;
+        }
     }
 
     //MODIFIES: this
@@ -234,6 +267,7 @@ public class Item implements  TableEntryConvertible {
     public void addProducts(String id, double cost, double price, LocalDate dateGenerated,
                             String location, int qty) {
         List<Product> toBeAdded = new ArrayList<>();
+        int originalQty = getQuantity();
         for (int i = 0; i < qty; i++) {
             Product product = new Product(id, createSku(), cost, price,
                     dateGenerated, null, location);
@@ -245,6 +279,11 @@ public class Item implements  TableEntryConvertible {
             stocks.put(location, toBeAdded);
         } else {
             existing.addAll(toBeAdded);
+        }
+        if (originalQty != 0) {
+            averageCost = (averageCost * originalQty + cost * qty) / (originalQty + qty);
+        } else {
+            averageCost = cost;
         }
     }
 
@@ -277,12 +316,37 @@ public class Item implements  TableEntryConvertible {
     //EFFECTS: return an array of column names for table entry
     @Override
     public Object[] getColumnNames() {
-        return new Object[0];
+        Object[] columns = new Object[]{
+                "Category", "ID", "Name", "Description", "Special Note", "Quantity", "Average Cost", "List Price"
+        };
+        return columns;
     }
 
     //EFFECTS: return an array of info segments for table entry
     @Override
     public Object[] convertToTableEntry() {
-        return new Object[0];
+        return new Object[]{
+                category, id, name, description, note, getQuantity(), averageCost, listPrice
+        };
+    }
+
+    @Override
+    public JSONObject toJson() {
+        JSONObject json = new JSONObject();
+        json.put("count", count);
+        json.put("id", id);
+        json.put("name", name);
+        json.put("category", category);
+        json.put("description", description);
+        json.put("note", note);
+        json.put("listPrice", listPrice);
+        json.put("averageCost", averageCost);
+        //json.put("products", new JSONArray(convertToJsonArray(JsonConvertible.convertToList(products))));
+        JSONArray jsonStocks = new JSONArray();
+        for (Map.Entry<String, List<Product>> entry: stocks.entrySet()) {
+            jsonStocks.put(convertToJsonArray(entry.getValue()));
+        }
+        json.put("stocks", jsonStocks);
+        return json;
     }
 }

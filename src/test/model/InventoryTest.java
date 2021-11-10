@@ -32,17 +32,17 @@ public class InventoryTest {
         tags.add(new InventoryTag("CHI", cost, price, bestBeforeDate, "F13", basicQty));
         tags.add(new InventoryTag("MGO", cost, price, bestBeforeDate, "F14", basicQty));
         inventory.createCategory("FOOD");
-        inventory.createItem("AAA", "aaa", category,
+        inventory.createItem("AAA", "aaa", category.getName(),
                 price, description, note);
-        inventory.createItem("BNN", "BnnD", category,
+        inventory.createItem("BNN", "BnnD", category.getName(),
                 price, description, note);
-        inventory.createItem("CHI", "chi", category,
+        inventory.createItem("CHI", "chi", category.getName(),
                 price, description, note);
-        inventory.createItem("MGO", "MGO", category,
+        inventory.createItem("MGO", "MGO", category.getName(),
                 price, description, note);
-        inventory.createItem("ASR", "ASR", category,
+        inventory.createItem("ASR", "ASR", category.getName(),
                 price, description, note);
-        inventory.createItem("ASD", "ASD", category,
+        inventory.createItem("ASD", "ASD", category.getName(),
                 price, description, note);
     }
 
@@ -69,13 +69,13 @@ public class InventoryTest {
     void testAddItems() {
         inventory = new Inventory();
         inventory.createCategory("FOOD");
-        assertTrue(inventory.createItem("AAA", "aaa", category,
+        assertTrue(inventory.createItem("AAA", "aaa", category.getName(),
                 price, description, note));
-        assertTrue(inventory.createItem("BNN", "bnn", category,
+        assertTrue(inventory.createItem("BNN", "bnn", category.getName(),
                 price, description, note));
-        assertTrue(inventory.createItem("CHI", "chi", category,
+        assertTrue(inventory.createItem("CHI", "chi", category.getName(),
                 price, description, note));
-        assertTrue(inventory.createItem("MGO", "mgo", category,
+        assertTrue(inventory.createItem("MGO", "mgo", category.getName(),
                 price, description, note));
     }
 

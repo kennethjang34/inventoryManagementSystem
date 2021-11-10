@@ -1,6 +1,7 @@
 package model;
 
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 import persistence.JsonConvertible;
 
@@ -11,8 +12,8 @@ import java.util.*;
 public class Inventory implements JsonConvertible {
 
     //hashmap with key and value being id of the item and item object respectively
-    private final LinkedHashMap<String, Item> items;
-    private List<Category> categories;
+    private final Map<String, Item> items;
+    private Map<String, Category> categories;
 
     private int quantity;
     private LocalDate currentDate;
@@ -26,7 +27,7 @@ public class Inventory implements JsonConvertible {
     //EFFECTS: create an empty inventory.
     public Inventory() {
         items = new LinkedHashMap<>();
-        categories = new ArrayList<>();
+        categories = new HashMap<>();
         quantity = 0;
         currentDate = LocalDate.now();
     }
@@ -36,27 +37,19 @@ public class Inventory implements JsonConvertible {
     //required for creating inventory with matching names.
     //EFFECTS: create a new inventory with the given information from the data in JSON format
     public Inventory(JSONObject jsonInventory) {
-        items = new LinkedHashMap<>();
-//        currentDate = LocalDate.now();
-//        nextSKU = jsonInventory.getInt("nextSKU");
-//        skuSize = jsonInventory.getInt("skuSize");
-//        codeSize = jsonInventory.getInt("codeSize");
-//        numberOfSections = jsonInventory.getInt("numberOfSections");
-//        quantity = jsonInventory.getInt("quantity");
-//        quantities = new ArrayList<>((int)Math.pow(NUM_ALPHABETS, codeSize));
-//        JSONArray jsonQuantities = jsonInventory.getJSONArray("quantities");
-//        for (Object json: jsonQuantities) {
-//            quantities.add((int)json);
-//        }
-//        JSONArray jsonLocations = jsonInventory.getJSONArray("locations");
-//        locations = new ArrayList<>(NUM_ALPHABETS * numberOfSections);
-//        for (int i = 0; i < jsonLocations.length(); i++) {
-//            if (jsonLocations.get(i).equals(JSONObject.NULL)) {
-//                locations.add(null);
-//            } else {
-//                locations.add(new ItemList(jsonLocations.getJSONObject(i)));
-//            }
-//        }
+        items = new HashMap<>();
+        categories = new HashMap<>();
+        JSONArray jsonItems = jsonInventory.getJSONArray("items");
+        for (Object obj: jsonItems) {
+            Item item = new Item((JSONObject)obj);
+            items.put(item.getId(), item);
+        }
+        JSONArray jsonCategories = jsonInventory.getJSONArray("categories");
+        for (Object obj: jsonCategories) {
+            Category category = new Category((JSONObject)obj);
+            categories.put(category.getName(), category);
+        }
+
     }
 
 
@@ -86,16 +79,18 @@ public class Inventory implements JsonConvertible {
     //MODIFIES: this
     //EFFECTS: create a new category if there isn't any
     public boolean createCategory(String name) {
-        if (categories.contains(name)) {
+        if (categories.containsKey(name)) {
             return false;
         }
-        categories.add(new Category(name));
+        categories.put(name, new Category(name));
         return true;
     }
 
     //EFFECTS: return true if this inventory contains a category with the given name
     public boolean containsCategory(String name) {
+        List<Category> categories = new ArrayList<>(this.categories.values());
         for (Category category: categories) {
+//            Category category = (Category)obj;
             if (category.getName().equalsIgnoreCase(name)) {
                 return true;
             }
@@ -106,15 +101,15 @@ public class Inventory implements JsonConvertible {
 
     //MODIFIES: this
     //EFFECTS: create a new item if there isn't any item with the same id
-    public boolean createItem(String id, String name, Category category, double listPrice,
+    public boolean createItem(String id, String name, String category, double listPrice,
                               String description, String note) {
-        if (!containsCategory(category.getName())) {
+        if (!containsCategory(category)) {
             return false;
         }
         if (items.containsKey(id)) {
             return false;
         }
-        items.put(id, new Item(id, name, category, listPrice, description, note));
+        items.put(id, new Item(id, name, categories.get(category).getName(), listPrice, description, note));
         return true;
     }
 
@@ -151,6 +146,8 @@ public class Inventory implements JsonConvertible {
         }
         return false;
     }
+
+
 
 
 
@@ -298,9 +295,16 @@ public class Inventory implements JsonConvertible {
 //    @Override
     public JSONObject toJson() {
         JSONObject json = new JSONObject();
-        //JSONArray jsonLocations = convertToJsonArray(locations);
-       // json.put("locations", jsonLocations);
-       // json.put("quantities", new JSONArray(quantities));
+        JSONArray jsonItems = new JSONArray();
+        for (Map.Entry<String, Item> entry: items.entrySet()) {
+            jsonItems.put(entry.getValue().toJson());
+        }
+        json.put("items", jsonItems);
+        JSONArray jsonCategories = new JSONArray();
+        for (Map.Entry<String, Category> entry: categories.entrySet()) {
+            jsonCategories.put(entry.getValue().toJson());
+        }
+        json.put("categories", jsonCategories);
         json.put("quantity", quantity);
         return json;
     }

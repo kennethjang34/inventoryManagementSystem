@@ -131,7 +131,7 @@ public class Product implements JsonConvertible, TableEntryConvertible {
     @Override
     public JSONObject toJson() {
         JSONObject json = new JSONObject();
-        json.put("itemCode", id);
+        json.put("id", id);
         json.put("sku", sku);
         json.put("cost", cost);
         json.put("price", price);

@@ -6,8 +6,7 @@ import org.junit.jupiter.api.Test;
 import java.time.LocalDate;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class ItemTest {
 
@@ -16,7 +15,7 @@ public class ItemTest {
     String description = "This is a description for the test";
     String note = "This is a special note for the test";
     String name = "T";
-    Category category = new Category("Test");
+    String category = "Test";
     String id = "T1000111";
     String location = "F11";
     int quantity = 1000;
@@ -73,23 +72,14 @@ public class ItemTest {
         item.removeStocks(location, 1);
         assertEquals(quantity - 1, item.getQuantity());
         assertEquals(quantity - 1, item.getQuantity(location));
-        try {
-            item.removeStocks(location, quantity);
-            fail();
-        } catch (IllegalArgumentException e) {
-            //an exception expected
-        }
+        assertFalse(item.removeStocks(location, quantity));
+
 
         item.removeStocks(location, quantity - 2);
         assertEquals(1, item.getQuantity());
         assertEquals(1, item.getQuantity(location));
+        assertFalse(item.removeStocks("A", 1));
 
-        try {
-            item.removeStocks("A", 1);
-            fail();
-        } catch (IllegalArgumentException e) {
-            //an exception expected
-        }
     }
 
     @Test
@@ -99,6 +89,21 @@ public class ItemTest {
         assertEquals(quantity, products.size());
         for (Product p: products) {
             assertEquals(p, item.getProduct(p.getSku()));
+        }
+    }
+
+    @Test
+    void testJsonConversion() {
+        item.addProducts(id, cost, listPrice, LocalDate.now(), location, quantity);
+        List<Product> products = item.getProducts(location);
+        assertEquals(quantity, products.size());
+        for (Product p: products) {
+            assertEquals(p, item.getProduct(p.getSku()));
+        }
+        item = new Item(item.toJson());
+        //assertEquals(products.size(), item.getQuantity());
+        for (Product p: products) {
+            assertEquals(p.getSku(), item.getProduct(p.getSku()).getSku());
         }
     }
 

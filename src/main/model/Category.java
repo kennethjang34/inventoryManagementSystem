@@ -1,14 +1,16 @@
 package model;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
+import org.json.JSONArray;
+import org.json.JSONObject;
+import persistence.JsonConvertible;
 
-public class Category {
+import java.util.*;
+
+public class Category implements JsonConvertible {
     private final String name;
     private int quantity;
-    //the map will use items' names in upper case for keys.
-    private final LinkedHashMap<String, Item> items;
+    //set containing id's of items belonging to this category
+    private final Set<String> items;
 
 
     //REQUIRES: category must be composed of English letters or digits only
@@ -16,7 +18,16 @@ public class Category {
     public Category(String category) {
         this.name = category;
         quantity = 0;
-        items = new LinkedHashMap<>();
+        items = new HashSet<>();
+    }
+
+    //REQUIRES: the data must be in valid JSONObject form
+    public Category(JSONObject json) {
+        name = json.getString("name");
+        quantity = json.getInt("quantity");
+        items = new HashSet<>();
+        JSONArray jsonItems = json.getJSONArray("items");
+
     }
 
     //EFFECTS: return the name of this category
@@ -35,39 +46,33 @@ public class Category {
     }
 
     //EFFECTS: return the list of items belonging to this category
-    public List<Item> getItems() {
-        List<Item> items = new ArrayList<>();
-        return items;
+    public List<String> getItems() {
+        List<String> ids = new ArrayList<>();
+        ids.addAll(items);
+        return ids;
     }
 
     //EFFECTS: return true if this category contains a particular item of the name specified
     //Otherwise, return false
     public boolean contains(String name) {
-        return false;
+        return items.contains(name);
     }
 
 
     //REQUIRES: the item mustn't be existing in this category
     //MODIFIES: this
-    //EFFECTS: add a new item to this category
-    public void addItem(Item item) {
-        if (items.containsKey(item.getId())) {
-            throw new IllegalArgumentException();
-        }
-        items.put(item.getId(), item);
+    //EFFECTS: if there is no such item, add a new item to this category, return true
+    //Otherwise, return false
+    public boolean addItem(Item item) {
+        return items.add(item.getId());
     }
 
 
     //MODIFIES: this
     //EFFECTS: remove the item with the given name from this category
     //The item removed will also have its category changed from this
-    public void removeItem(String itemName) {
-        Item item = items.get(itemName);
-        if (item == null) {
-            return;
-        }
-        item.setCategory(null);
-        items.remove(itemName);
+    public boolean removeItem(String id) {
+        return  items.remove(id);
     }
 
 
@@ -84,6 +89,18 @@ public class Category {
             return true;
         }
         return false;
+    }
+
+    //EFFECTS: return JSONObject containing data of this
+    @Override
+    public JSONObject toJson() {
+        JSONObject json = new JSONObject();
+        json.put("name", name);
+        json.put("quantity", quantity);
+        List<String> itemList = new ArrayList<>();
+        itemList.addAll(items);
+        json.put("items", itemList);
+        return json;
     }
 
 //    //EFFECTS: return the hash code of this.

@@ -17,17 +17,21 @@ public class CategoryTest {
     double cost = 50.1;
     double price = 70.95;
 
-    @BeforeAll
-    void runBeforeAll() {
-        items.add(new Item("APP54656", "apple", new Category("fruit"), price, "description","note"));
-        items.add(new Item("BNN599A", "banana", new Category("fruit"), price * 2, "description","note"));
-        items.add(new Item("CHIADFS", "strawberry", new Category("fruit"), price * 2, "description","note"));
-        items.add(new Item("WEEWQW", "mango", new Category("fruit"), price, "description","note"));
-    }
+//    @BeforeAll
+//    void runBeforeAll() {
+//        items.add(new Item("APP54656", "apple", "Fruit", price, "description","note"));
+//        items.add(new Item("BNN599A", "banana", "Fruit", price * 2, "description","note"));
+//        items.add(new Item("CHIADFS", "strawberry", "Fruit", price * 2, "description","note"));
+//        items.add(new Item("WEEWQW", "mango", "Fruit", price, "description","note"));
+//    }
 
     @BeforeEach
     void runBefore() {
         category = new Category(name);
+        items.add(new Item("APP54656", "apple", "Fruit", price, "description","note"));
+        items.add(new Item("BNN599A", "banana", "Fruit", price * 2, "description","note"));
+        items.add(new Item("CHIADFS", "strawberry", "Fruit", price * 2, "description","note"));
+        items.add(new Item("WEEWQW", "mango", "Fruit", price, "description","note"));
         for (Item item: items) {
             category.addItem(item);
         }
@@ -51,13 +55,11 @@ public class CategoryTest {
         assertEquals(name, category.getName());
         assertEquals(4, category.getNumberOfItems());
         assertEquals(4, category.getItems().size());
-        assertTrue(category.contains("apple"));
-        assertTrue(category.contains("banana"));
-        assertTrue(category.contains("strawBerry"));
-        assertTrue(category.contains("MANGO"));
-        for (int i = 0; i < items.size(); i++) {
-            assertEquals(items.get(i), category.getItems().get(i));
-        }
+        assertTrue(category.contains("APP54656"));
+        assertTrue(category.contains("BNN599A"));
+        assertTrue(category.contains("CHIADFS"));
+        assertTrue(category.contains("WEEWQW"));
+
     }
 
 
@@ -69,10 +71,10 @@ public class CategoryTest {
         }
         for (int i = 0; i < items.size(); i++) {
             Item item = items.get(i);
-            String name = item.getName();
-            assertTrue(category.contains(name));
-            category.removeItem(name);
-            assertFalse(category.contains(name));
+            String id = item.getId();
+            assertTrue(category.contains(id));
+            category.removeItem(id);
+            assertFalse(category.contains(id));
             if (item.getCategory().equals(category)) {
                 fail();
             }
