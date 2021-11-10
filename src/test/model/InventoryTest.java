@@ -18,30 +18,33 @@ public class InventoryTest {
     private static int basicQty = 3;
     private static double cost = 3;
     private static double price = 5;
+    private static Category category = new Category("FOOD");
+    private static String description = "Description";
+    private static String note = "note";
 
     @BeforeEach
     void runBeforeEveryTest() {
         inventory = new Inventory();
         basicQty = 3;
         tags = new LinkedList<>();
-        tags.add(new InventoryTag("aaa", cost, price, bestBeforeDate, "F11", basicQty));
+        tags.add(new InventoryTag("AAA", cost, price, bestBeforeDate, "F11", basicQty));
         tags.add(new InventoryTag("BNN", cost, price, bestBeforeDate, "F12", basicQty));
         tags.add(new InventoryTag("CHI", cost, price, bestBeforeDate, "F13", basicQty));
         tags.add(new InventoryTag("MGO", cost, price, bestBeforeDate, "F14", basicQty));
+        inventory.createCategory("FOOD");
+        inventory.createItem("AAA", "aaa", category,
+                price, description, note);
+        inventory.createItem("BNN", "BnnD", category,
+                price, description, note);
+        inventory.createItem("CHI", "chi", category,
+                price, description, note);
+        inventory.createItem("MGO", "MGO", category,
+                price, description, note);
+        inventory.createItem("ASR", "ASR", category,
+                price, description, note);
+        inventory.createItem("ASD", "ASD", category,
+                price, description, note);
     }
-
-
-
-
-
-//    LinkedList<ProductTag> createInventoryTag(String code, double cost, int qty, String location) {
-//        LinkedList<ProductTag> products = new LinkedList<>();
-//        for (int i = 0; i < qty; i++) {
-//            ProductTag tag = new ProductTag(new Product(code, sku++, cost, today, bestBeforeDate), location);
-//            products.add(tag);
-//        }
-//        return products;
-//    }
 
 
 
@@ -55,6 +58,37 @@ public class InventoryTest {
         assertEquals(0, inventory.getProductList("PIZ").size());
 
     }
+
+    @Test
+    void testAddCategory() {
+        assertTrue(inventory.createCategory("Fruit"));
+        assertTrue(inventory.containsCategory("Fruit"));
+    }
+
+    @Test
+    void testAddItems() {
+        inventory = new Inventory();
+        inventory.createCategory("FOOD");
+        assertTrue(inventory.createItem("AAA", "aaa", category,
+                price, description, note));
+        assertTrue(inventory.createItem("BNN", "bnn", category,
+                price, description, note));
+        assertTrue(inventory.createItem("CHI", "chi", category,
+                price, description, note));
+        assertTrue(inventory.createItem("MGO", "mgo", category,
+                price, description, note));
+    }
+
+
+//    LinkedList<ProductTag> createInventoryTag(String code, double cost, int qty, String location) {
+//        LinkedList<ProductTag> products = new LinkedList<>();
+//        for (int i = 0; i < qty; i++) {
+//            ProductTag tag = new ProductTag(new Product(code, sku++, cost, today, bestBeforeDate), location);
+//            products.add(tag);
+//        }
+//        return products;
+//    }
+
 
 
 
@@ -73,17 +107,15 @@ public class InventoryTest {
 
     @Test
     void testAddProduct() {
-        inventory = new Inventory();
         inventory.addProducts(tags);
-        assertEquals(4 * basicQty, inventory.getTotalQuantity());
-        assertEquals(basicQty, inventory.getQuantity("aaa"));
+        //assertEquals(4 * basicQty, inventory.getTotalQuantity());
+        assertEquals(basicQty, inventory.getQuantity("AAA"));
         assertEquals("AAA", tags.get(0).getId());
-        assertEquals(1, inventory.findLocations("aaa").size());
+        assertEquals(1, inventory.findLocations("AAA").size());
         assertEquals("F11",
-                inventory.findLocations(tags.get(0).getId()).get(0));
-        List<Product> products = inventory.getProductList("bnn");
+                inventory.findLocations(tags.get(0).getId()).get(0).getLocation());
+        List<Product> products = inventory.getProductList("BNN");
         assertEquals(basicQty, products.size());
-
     }
 
 
@@ -103,55 +135,53 @@ public class InventoryTest {
     @Test
     void testGetProductRegularCase() {
         basicQty = 50;
-        inventory = new Inventory();
         tags = new LinkedList<>();
         tags.add(new InventoryTag("ASR", cost, price,bestBeforeDate,"T", basicQty));
         inventory.addProducts(tags);
         //It is expected that sku for this "ASR" products range from 111111 to 111160.
         assertEquals(basicQty, inventory.getTotalQuantity());
-        assertEquals(basicQty, inventory.getQuantity("asr"));
+        assertEquals(basicQty, inventory.getQuantity("ASR"));
         List<Product> products = inventory.getProductList("ASR");
-        for (int i = 0; i < inventory.getQuantity("asr"); i++) {
-            Product product = inventory.getOldestProduct("asr");
+        for (int i = 0; i < inventory.getQuantity("ASR"); i++) {
+            Product product = inventory.getOldestProduct("ASR");
             assertEquals(products.get(i), product);
             assertEquals("ASR", product.getId());
-            assertEquals(111111 + i, product.getSku());
+            assertTrue(inventory.removeProduct(product.getSku()));
+            //assertEquals(111111 + i, product.getSku());
         }
     }
 
     @Test
     void testGetProductAtDiffLocations() {
-        basicQty = 50;
-        inventory = new Inventory();
-        tags = new LinkedList<>();
         tags.add(new InventoryTag("ASR", cost, price, bestBeforeDate, bestBeforeDate, "f10",basicQty));
         tags.add(new InventoryTag("ASR", cost, price, bestBeforeDate, bestBeforeDate, "f11",basicQty));
-        tags.add(new InventoryTag("bnn", cost, price, LocalDate.now(), "f11", basicQty));
+        tags.add(new InventoryTag("BNN", cost, price, LocalDate.now(), "f11", basicQty));
         inventory.addProducts(tags);
         //It is expected that sku for this "ASR" products range from 111111 to 111260.
-        assertEquals(basicQty * 3, inventory.getTotalQuantity());
-        assertEquals(basicQty * 2, inventory.getQuantity("asr"));
-        assertEquals(basicQty, inventory.getQuantity("bnn"));
+        assertEquals(basicQty * 7, inventory.getTotalQuantity());
+        assertEquals(basicQty * 2, inventory.getQuantity("ASR"));
+        assertEquals(basicQty * 2, inventory.getQuantity("BNN"));
         List<Product> products = inventory.getProductList("ASR");
-        for (int i = 0; i < inventory.getQuantity("asr"); i++) {
-            Product product = inventory.getOldestProduct("asr");
+        for (int i = 0; i < inventory.getQuantity("ASR"); i++) {
+            Product product = inventory.getOldestProduct("ASR");
             assertEquals(products.get(i), product);
             assertEquals("ASR", product.getId());
-            assertEquals( product, inventory.getProduct(product.getSku()));
+            assertEquals(product, inventory.getProduct(product.getSku()));
+            assertTrue(inventory.removeProduct(product.getSku()));
         }
     }
 
 
     @Test
     void testGetListOfCodes() {
-        assertEquals(0, inventory.getListOfCodes().size());
+        assertEquals(6, inventory.getListOfCodes().size());
         inventory.addProducts(tags);
         List<String> list = inventory.getListOfCodes();
-        assertEquals(4, list.size());
-        assertEquals("AAA", list.get(0));
-        assertEquals("BNN", list.get(1));
-        assertEquals("CHI", list.get(2));
-        assertEquals("MGO", list.get(3));
+        assertEquals(6, list.size());
+        assertTrue(list.contains("AAA"));
+        assertTrue(list.contains("BNN"));
+        assertTrue(list.contains("CHI"));
+        assertTrue(list.contains("MGO"));
     }
 
 
@@ -169,8 +199,8 @@ public class InventoryTest {
     @Test
     void testRemoveProducts() {
         inventory.addProducts(tags);
-        LinkedList<QuantityTag> toBeRemoved = new LinkedList<>();
-        toBeRemoved.add(new QuantityTag("AaA", "f11", basicQty/2));
+        List<QuantityTag> toBeRemoved = new LinkedList<>();
+        toBeRemoved.add(new QuantityTag("AAA", "F11", basicQty/2));
         List<QuantityTag> removed = inventory.removeStocks(toBeRemoved);
         assertEquals(1, removed.size());
         QuantityTag removedTag = removed.get(0);
@@ -179,18 +209,18 @@ public class InventoryTest {
         int removedQty = removedTag.getQuantity();
         assertEquals("AAA", removedItemCode);
         assertEquals("F11", removedLocation);
-        assertEquals(-1, removedQty);
+        assertEquals(1, removedQty);
     }
 
     @Test
     void testRemoveProductsMoreThanExisting() {
         inventory.addProducts(tags);
         LinkedList<QuantityTag> toBeRemoved = new LinkedList<>();
-        toBeRemoved.add(new QuantityTag("AaA", "f11", basicQty * 3));
+        toBeRemoved.add(new QuantityTag("AAA", "F11", basicQty * 3));
         List<QuantityTag> removed = inventory.removeStocks(toBeRemoved);
         assertEquals(0, removed.size());
-        assertEquals(basicQty, inventory.getQuantity("aAa"));
-        List<QuantityTag> list = inventory.findLocations("aaa");
+        assertEquals(basicQty, inventory.getQuantity("AAA"));
+        List<QuantityTag> list = inventory.findLocations("AAA");
         assertEquals(1, list.size());
         assertEquals(basicQty, list.get(0).getQuantity());
         assertEquals("F11", list.get(0).getLocation());
@@ -198,41 +228,37 @@ public class InventoryTest {
 
     @Test
     void testRemoveSingleProduct() {
-        basicQty = 2;
-        inventory = new Inventory();
-        tags = new LinkedList<>();
-        tags.add(new InventoryTag("aaa", 50, 60, bestBeforeDate, "T", basicQty));
-        tags.add(new InventoryTag("asr", 50, 60, bestBeforeDate, "d11", basicQty));
-        tags.add(new InventoryTag("asd", 50, 60, bestBeforeDate, "a33", basicQty));
+        tags.add(new InventoryTag("AAA", 50, 60, bestBeforeDate, "T", basicQty));
+        tags.add(new InventoryTag("ASR", 50, 60, bestBeforeDate, "D11", basicQty));
+        tags.add(new InventoryTag("ASD", 50, 60, bestBeforeDate, "A33", basicQty));
         inventory.addProducts(tags);
-        //It is expected that sku for this "ASR" products range from 111111 to 111260.
-        assertEquals(basicQty * 3, inventory.getTotalQuantity());
-        assertEquals(basicQty, inventory.getQuantity("aaa"));
-        assertEquals(basicQty, inventory.getQuantity("asr"));
-        assertEquals(basicQty, inventory.getQuantity("asd"));
-        int initialQty = inventory.getQuantity("aaa");
+        assertEquals(basicQty * 7, inventory.getTotalQuantity());
+        assertEquals(basicQty * 2, inventory.getQuantity("AAA"));
+        assertEquals(basicQty, inventory.getQuantity("ASR"));
+        assertEquals(basicQty, inventory.getQuantity("ASD"));
+        int initialQty = inventory.getQuantity("AAA");
         for (int i = 0; i < initialQty; i++) {
-            int qty = inventory.getQuantity("aaa");
-            Product product = inventory.getOldestProduct("aaa");
+            int qty = inventory.getQuantity("AAA");
+            Product product = inventory.getOldestProduct("AAA");
             assertEquals("AAA", product.getId());
             assertEquals(product, inventory.getProduct(product.getSku()));
             inventory.removeProduct(product.getSku());
             assertNull(inventory.getProduct(product.getSku()));
-            assertEquals(qty - 1, inventory.getQuantity("aaa"));
+            assertEquals(qty - 1, inventory.getQuantity("AAA"));
         }
-
+        initialQty = inventory.getQuantity("ASD");
         for (int i = 0; i < initialQty; i++) {
-            int qty = inventory.getQuantity("asr");
-            Product product = inventory.getOldestProduct("asr");
+            int qty = inventory.getQuantity("ASR");
+            Product product = inventory.getOldestProduct("ASR");
             assertEquals("ASR", product.getId());
             assertEquals(product, inventory.getProduct(product.getSku()));
             inventory.removeProduct(product.getSku());
             assertNull(inventory.getProduct(product.getSku()));
-            assertEquals(qty - 1, inventory.getQuantity("asr"));
+            assertEquals(qty - 1, inventory.getQuantity("ASR"));
         }
 
 
-        assertEquals(0, inventory.getQuantity("aaa"));
+        assertEquals(0, inventory.getQuantity("AAA"));
     }
 
     @Test
@@ -243,28 +269,27 @@ public class InventoryTest {
         List<QuantityTag> removed = inventory.removeStocks(toBeRemoved);
         assertEquals(0, removed.size());
         assertEquals(4 * basicQty, inventory.getTotalQuantity());
-        assertEquals(basicQty, inventory.getQuantity("aaa"));
+        assertEquals(basicQty, inventory.getQuantity("AAA"));
         assertEquals("AAA", tags.get(0).getId());
-        assertEquals(1, inventory.findLocations("aaa").size());
+        assertEquals(1, inventory.findLocations("AAA").size());
         assertEquals("F11",
-                inventory.findLocations(tags.get(0).getId()).get(0));
-        List<Product> products = inventory.getProductList("bnn");
+                inventory.findLocations(tags.get(0).getId()).get(0).getLocation());
+        List<Product> products = inventory.getProductList("BNN");
         assertEquals(basicQty, products.size());
         toBeRemoved = new LinkedList<>();
-        toBeRemoved.add(new QuantityTag("AAa", "f13", basicQty));
+        toBeRemoved.add(new QuantityTag("AAA", "F13", basicQty));
         removed = inventory.removeStocks(toBeRemoved);
         assertEquals(0, removed.size());
         assertEquals(4 * basicQty, inventory.getTotalQuantity());
-        assertEquals(basicQty, inventory.getQuantity("aaa"));
+        assertEquals(basicQty, inventory.getQuantity("AAA"));
         assertEquals("AAA", tags.get(0).getId());
-        assertEquals(1, inventory.findLocations("aaa").size());
+        assertEquals(1, inventory.findLocations("AAA").size());
         assertEquals("F11",
                 inventory.findLocations(tags.get(0).getId()).get(0).getLocation());
-        products = inventory.getProductList("bnn");
+        products = inventory.getProductList("BNN");
         assertEquals(basicQty, products.size());
 
         assertEquals(0, inventory.getProductList("ZZZ").size());
-        assertEquals(0, inventory.getProductList("AAa").size());
 
     }
 
@@ -279,16 +304,15 @@ public class InventoryTest {
     @Test
     void testGetProduct() {
         basicQty = 50;
-        inventory = new Inventory();
         tags = new LinkedList<>();
         tags.add(new InventoryTag("ASR", 50, 60,bestBeforeDate,  "T", basicQty));
         //It is expected that sku for this "ASR" products range from 111111 to 111160.
-        tags.add(new InventoryTag("ASR", 50, 60,  bestBeforeDate,"f11", basicQty));
+        tags.add(new InventoryTag("ASR", 50, 60,  bestBeforeDate,"F11", basicQty));
         inventory.addProducts(tags);
         //It is expected that sku for this "ASR" products range from 111111 to 111200.
         assertEquals(basicQty * 2, inventory.getTotalQuantity());
-        assertEquals(basicQty * 2, inventory.getQuantity("asr"));
-        List<Product> products = inventory.getProductList("asr");
+        assertEquals(basicQty * 2, inventory.getQuantity("ASR"));
+        List<Product> products = inventory.getProductList("ASR");
         for (Product product: products) {
             String sku = product.getSku();
             assertEquals(product, inventory.getProduct(sku));
@@ -302,72 +326,71 @@ public class InventoryTest {
     //tags.add(new InventoryTag("MGO", price, bestBeforeDate, "F14", basicQty));
     @Test
     void testFindLocations() {
-        tags.add(new InventoryTag("chi", cost, price, bestBeforeDate, "f50", basicQty));
-        tags.add(new InventoryTag("chi", cost, price, bestBeforeDate, "t", basicQty));
+        tags.add(new InventoryTag("CHI", cost, price, bestBeforeDate, "F50", basicQty));
+        tags.add(new InventoryTag("CHI", cost, price, bestBeforeDate, "T", basicQty));
         inventory.addProducts(tags);
-        List<QuantityTag> locations = inventory.findLocations("chi");
+        List<QuantityTag> locations = inventory.findLocations("CHI");
         assertEquals(3, locations.size());
-        assertEquals("T", locations.get(0).getLocation());
-        assertEquals("F13", locations.get(1).getLocation());
-        assertEquals("F50", locations.get(2).getLocation());
-        locations = inventory.findLocations("mgo");
+        assertEquals("T", locations.get(2).getLocation());
+        assertEquals("F13", locations.get(0).getLocation());
+        assertEquals("F50", locations.get(1).getLocation());
+        locations = inventory.findLocations("MGO");
         assertEquals(1, locations.size());
         assertEquals("F14", locations.get(0).getLocation());
-        assertEquals(0, inventory.findLocations("zzz").size());
+        assertEquals(0, inventory.findLocations("ZZZ").size());
     }
 
     @Test
     void testFindLocationsOfRemoved() {
-        tags.add(new InventoryTag("chi", cost, price, bestBeforeDate, "f50", basicQty));
-        tags.add(new InventoryTag("chi", cost, price, bestBeforeDate, "t", basicQty));
+        tags.add(new InventoryTag("CHI", cost, price, bestBeforeDate, "f50", basicQty));
+        tags.add(new InventoryTag("CHI", cost, price, bestBeforeDate, "t", basicQty));
         inventory.addProducts(tags);
-        List<QuantityTag> locations = inventory.findLocations("chi");
+        List<QuantityTag> locations = inventory.findLocations("CHI");
         assertEquals(3, locations.size());
-        assertEquals("T", locations.get(0).getLocation());
-        assertEquals("F13", locations.get(1).getLocation());
-        assertEquals("F50", locations.get(2).getLocation());
-        locations = inventory.findLocations("mgo");
+        assertEquals("T", locations.get(2).getLocation());
+        assertEquals("F13", locations.get(0).getLocation());
+        assertEquals("F50", locations.get(1).getLocation());
+        locations = inventory.findLocations("MGO");
         assertEquals(1, locations.size());
         assertEquals("F14", locations.get(0).getLocation());
         ArrayList<QuantityTag> toBeRemoved = new ArrayList<>();
-        toBeRemoved.add(new QuantityTag("chi", "t", basicQty));
+        toBeRemoved.add(new QuantityTag("CHI", "T", basicQty));
         inventory.removeStocks(toBeRemoved);
-        locations = inventory.findLocations("chi");
+        locations = inventory.findLocations("CHI");
         assertEquals("F13", locations.get(0).getLocation());
         assertEquals("F50", locations.get(1).getLocation());
     }
 
     @Test
     void testGetQtysAtDiffLocations() {
-        tags.add(new InventoryTag("chi", cost, price, bestBeforeDate, "f50", basicQty));
-        tags.add(new InventoryTag("chi", cost, price, bestBeforeDate, "t", basicQty * 2));
+        tags.add(new InventoryTag("CHI", cost, price, bestBeforeDate, "F50", basicQty));
+        tags.add(new InventoryTag("CHI", cost, price, bestBeforeDate, "T", basicQty * 2));
         inventory.addProducts(tags);
-        List<QuantityTag> list = inventory.getQuantitiesAtLocations("chi");
-        assertEquals(basicQty * 2, list.get(0).getQuantity());
+        List<QuantityTag> list = inventory.getQuantitiesAtLocations("CHI");
+        assertEquals(basicQty * 2, list.get(2).getQuantity());
+        assertEquals(basicQty, list.get(0).getQuantity());
         assertEquals(basicQty, list.get(1).getQuantity());
-        assertEquals(basicQty, list.get(2).getQuantity());
-        assertNull(inventory.getQuantitiesAtLocations("zzz"));
+        assertEquals(0, inventory.getQuantitiesAtLocations("ZZZ").size());
     }
 
     @Test
     void testJsonConversion() {
-        inventory = new Inventory();
         inventory.addProducts(tags);
         assertEquals(4 * basicQty, inventory.getTotalQuantity());
-        assertEquals(basicQty, inventory.getQuantity("aaa"));
+        assertEquals(basicQty, inventory.getQuantity("AAA"));
         assertEquals("AAA", tags.get(0).getId());
-        assertEquals(1, inventory.findLocations("aaa").size());
+        assertEquals(1, inventory.findLocations("AAA").size());
         assertEquals("F11",
-                inventory.findLocations(tags.get(0).getId()).get(0));
-        List<Product> products = inventory.getProductList("bnn");
+                inventory.findLocations(tags.get(0).getId()).get(0).getLocation());
+        List<Product> products = inventory.getProductList("BNN");
         assertEquals(basicQty, products.size());
         inventory = new Inventory(inventory.toJson());
         assertEquals(4 * basicQty, inventory.getTotalQuantity());
-        assertEquals(basicQty, inventory.getQuantity("aaa"));
+        assertEquals(basicQty, inventory.getQuantity("AAA"));
         assertEquals("AAA", tags.get(0).getId());
-        assertEquals(1, inventory.findLocations("aaa").size());
+        assertEquals(1, inventory.findLocations("AAA").size());
         assertEquals("F11",
-                inventory.findLocations(tags.get(0).getId()).get(0));
+                inventory.findLocations(tags.get(0).getId()).get(0).getLocation());
         assertEquals(basicQty, products.size());
     }
 }

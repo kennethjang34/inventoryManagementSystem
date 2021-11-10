@@ -2,10 +2,7 @@ package model;
 
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.List;
+import java.util.*;
 
 //represents each item in the inventory.
 //contains product list belonging to it
@@ -16,7 +13,6 @@ public class Item implements  TableEntryConvertible {
     private final String name;
     private Category category;
     private String description;
-    private int quantity;
     private double averageCost;
     private double listPrice;
     private String note;
@@ -34,7 +30,6 @@ public class Item implements  TableEntryConvertible {
         this.listPrice = listPrice;
         this.description = description;
         this.note = note;
-        quantity = 0;
         averageCost = 0;
         products = new LinkedHashMap<>();
         stocks = new LinkedHashMap<>();
@@ -71,12 +66,15 @@ public class Item implements  TableEntryConvertible {
 
     //EFFECTS: return stock of this item
     public int getQuantity() {
-        return quantity;
+        return products.size();
     }
 
     //EFFECTS: return the number of products at a particular location
     public int getQuantity(String location) {
-        return 0;
+        if (stocks.get(location) == null) {
+            return 0;
+        }
+        return stocks.get(location).size();
     }
 
     //EFFECTS: return the list price
@@ -146,12 +144,12 @@ public class Item implements  TableEntryConvertible {
         }
         int originalQty = getQuantity(location);
         List<Product> products = getProducts(location);
-
-        for (Product product: products) {
-            products.remove(product);
+        for (int i = 0; i < qty; i++) {
+            Product product = products.get(0);
             this.products.remove(product.getSku());
+            products.remove(product);
         }
-        assert getQuantity(location) == originalQty;
+        //assert getQuantity(location) == originalQty - qty;
         return true;
     }
 
@@ -217,7 +215,7 @@ public class Item implements  TableEntryConvertible {
     public void addProducts(double cost, double price, LocalDate bestBeforeDate,
                             LocalDate dateGenerated, String location, int qty) {
         List<Product> toBeAdded = new ArrayList<>();
-        for (int i = 0; i < quantity; i++) {
+        for (int i = 0; i < qty; i++) {
             Product product = new Product(id, createSku(), cost, price,
                     dateGenerated, bestBeforeDate, location);
             toBeAdded.add(product);
@@ -236,7 +234,7 @@ public class Item implements  TableEntryConvertible {
     public void addProducts(String id, double cost, double price, LocalDate dateGenerated,
                             String location, int qty) {
         List<Product> toBeAdded = new ArrayList<>();
-        for (int i = 0; i < quantity; i++) {
+        for (int i = 0; i < qty; i++) {
             Product product = new Product(id, createSku(), cost, price,
                     dateGenerated, null, location);
             toBeAdded.add(product);
@@ -252,21 +250,25 @@ public class Item implements  TableEntryConvertible {
 
     //EFFECTS: return a list of products belonging to this item
     public List<Product> getProducts() {
-        List<Product> products = new ArrayList<>();
-
+        List<Product> products = new ArrayList<Product>(this.products.values());
         return products;
     }
 
     //EFFECTS: return a list of products at a specified location
     public List<Product> getProducts(String location) {
-        List<Product> products = new ArrayList<>();
-
+        List<Product> products = stocks.get(location);
+        if (products == null) {
+            return Collections.emptyList();
+        }
         return products;
     }
 
     //EFFECTS: return a list of quantity tags that contain stock information at different location
     public List<QuantityTag> getQuantities() {
         List<QuantityTag> tags = new ArrayList<>();
+        for (Map.Entry<String, List<Product>> entry: stocks.entrySet()) {
+            tags.add(new QuantityTag(id, entry.getKey(), entry.getValue().size()));
+        }
         return tags;
     }
 

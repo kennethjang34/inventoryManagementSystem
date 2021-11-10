@@ -71,6 +71,27 @@ public class Category {
     }
 
 
+    //EFFECTS: return true if the two objects are the same or it has the same name field or it itself is the name
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof Category)) {
+            if (o instanceof String) {
+                return o.equals(getName());
+            }
+            return false;
+        }
+        if (((Category) o).getName().equals(getName())) {
+            return true;
+        }
+        return false;
+    }
+
+//    //EFFECTS: return the hash code of this.
+//    //Same name means same category
+//    @Override
+//    public int hashCode() {
+//        return getName().hashCode();
+//    }
 
 
 

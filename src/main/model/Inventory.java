@@ -12,6 +12,7 @@ public class Inventory implements JsonConvertible {
 
     //hashmap with key and value being id of the item and item object respectively
     private final LinkedHashMap<String, Item> items;
+    private List<Category> categories;
 
     private int quantity;
     private LocalDate currentDate;
@@ -22,10 +23,10 @@ public class Inventory implements JsonConvertible {
 
 
 
-    //EFFECTS: create an empty inventory. By default, Item code and sections numbers will have three alphabets and
-    // 100 numbers from 0 to 99
+    //EFFECTS: create an empty inventory.
     public Inventory() {
         items = new LinkedHashMap<>();
+        categories = new ArrayList<>();
         quantity = 0;
         currentDate = LocalDate.now();
     }
@@ -82,6 +83,40 @@ public class Inventory implements JsonConvertible {
     }
 
 
+    //MODIFIES: this
+    //EFFECTS: create a new category if there isn't any
+    public boolean createCategory(String name) {
+        if (categories.contains(name)) {
+            return false;
+        }
+        categories.add(new Category(name));
+        return true;
+    }
+
+    //EFFECTS: return true if this inventory contains a category with the given name
+    public boolean containsCategory(String name) {
+        for (Category category: categories) {
+            if (category.getName().equalsIgnoreCase(name)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+
+    //MODIFIES: this
+    //EFFECTS: create a new item if there isn't any item with the same id
+    public boolean createItem(String id, String name, Category category, double listPrice,
+                              String description, String note) {
+        if (!containsCategory(category.getName())) {
+            return false;
+        }
+        if (items.containsKey(id)) {
+            return false;
+        }
+        items.put(id, new Item(id, name, category, listPrice, description, note));
+        return true;
+    }
 
 
     //REQUIRES: tags need to be a list of entries that contain information for new products and its location
@@ -175,6 +210,18 @@ public class Inventory implements JsonConvertible {
     //return quantity tags that have been successfully processed
     public List<QuantityTag> removeStocks(List<QuantityTag> tags) {
         List<QuantityTag> succeeded = new ArrayList<>();
+        for (QuantityTag tag: tags) {
+            String id = tag.getId();
+            Item item = items.get(id);
+            if (item != null) {
+                if (item.removeStocks(tag.getLocation(), tag.getQuantity())) {
+                    succeeded.add(tag);
+                }
+            }
+        }
+        if (succeeded.size() == 0) {
+            return Collections.emptyList();
+        }
         return succeeded;
     }
 
@@ -203,7 +250,7 @@ public class Inventory implements JsonConvertible {
 
     //EFFECTS: return a list of entries of item hashmap
     private List<Item> getItemList() {
-        return new ArrayList<Item>(items.values());
+        return new ArrayList<>(items.values());
     }
 
 
