@@ -106,14 +106,16 @@ public class Item implements  TableEntryConvertible {
 
     //MODIFIES: this
     //EFFECTS: remove the product specified by the sku
-    //If there was the product, and it has been removed, return true.
+    //If there was the product, and it has been removed, return true
     //Otherwise, return false.
     public boolean removeProduct(String sku) {
-
-        if (products.remove(sku) == null) {
+        Product product = products.remove(sku);
+        if (product == null) {
             return false;
+        } else {
+            stocks.get(product.getLocation()).remove(product);
+            return true;
         }
-        return true;
     }
 
 
@@ -182,25 +184,70 @@ public class Item implements  TableEntryConvertible {
 
 
 
+    //Inventory tag contains following info
+    //
 
+    //REQUIRES: the tag must have id of this
     //MODIFIES: this
     //EFFECTS: add products to this with the given inventory tag
     public void addProducts(InventoryTag tag) {
-
+        int quantity = tag.getQuantity();
+        double unitCost = tag.getUnitCost();
+        double unitPrice = tag.getUnitPrice();
+        LocalDate bestBeforeDate = tag.getBestBeforeDate();
+        LocalDate dateGenerated = tag.getDateGenerated();
+        String location = tag.getLocation();
+        List<Product> toBeAdded = new ArrayList<>();
+        for (int i = 0; i < quantity; i++) {
+            Product product = new Product(id, createSku(), unitCost, unitPrice,
+                    dateGenerated, bestBeforeDate, location);
+            toBeAdded.add(product);
+            products.put(product.getSku(), product);
+        }
+        List<Product> existing = stocks.get(location);
+        if (existing == null) {
+            stocks.put(location, toBeAdded);
+        } else {
+            existing.addAll(toBeAdded);
+        }
     }
 
     //MODIFIES: this
     //EFFECTS: add products to this with the given info
     public void addProducts(double cost, double price, LocalDate bestBeforeDate,
                             LocalDate dateGenerated, String location, int qty) {
-        //stub
+        List<Product> toBeAdded = new ArrayList<>();
+        for (int i = 0; i < quantity; i++) {
+            Product product = new Product(id, createSku(), cost, price,
+                    dateGenerated, bestBeforeDate, location);
+            toBeAdded.add(product);
+            products.put(product.getSku(), product);
+        }
+        List<Product> existing = stocks.get(location);
+        if (existing == null) {
+            stocks.put(location, toBeAdded);
+        } else {
+            existing.addAll(toBeAdded);
+        }
     }
 
     //MODIFIES: this
     //EFFECTS: add products to this with the given info without best before date
     public void addProducts(String id, double cost, double price, LocalDate dateGenerated,
                             String location, int qty) {
-        //stub
+        List<Product> toBeAdded = new ArrayList<>();
+        for (int i = 0; i < quantity; i++) {
+            Product product = new Product(id, createSku(), cost, price,
+                    dateGenerated, null, location);
+            toBeAdded.add(product);
+            products.put(product.getSku(), product);
+        }
+        List<Product> existing = stocks.get(location);
+        if (existing == null) {
+            stocks.put(location, toBeAdded);
+        } else {
+            existing.addAll(toBeAdded);
+        }
     }
 
     //EFFECTS: return a list of products belonging to this item
