@@ -86,40 +86,7 @@ public class InventoryTest {
 
     }
 
-    @Test
-    void testAddIllegalProduct() {
-        inventory = new Inventory();
-        tags.add(new InventoryTag("aaa", -1, "t", 42));
-        try {
-            inventory.addProducts(tags);
-            fail();
-        } catch (IllegalArgumentException e) {
 
-        }
-
-        tags.set(4, new InventoryTag("[{}{}]{}", 2, "t", 20));
-        try {
-            inventory.addProducts(tags);
-            fail();
-        } catch (IllegalArgumentException e) {
-
-        }
-
-        tags.set(4, new InventoryTag("abc", 2, "t", -20));
-        try {
-            inventory.addProducts(tags);
-            fail();
-        } catch (IllegalArgumentException e) {
-
-        }
-        tags.set(4, new InventoryTag("aaasdfaswe", 2, "t", 20));
-        try {
-            inventory.addProducts(tags);
-            fail();
-        } catch (IllegalArgumentException e) {
-
-        }
-    }
 
 
 
@@ -128,7 +95,7 @@ public class InventoryTest {
     void testGetProductNotInInventory() {
         inventory = new Inventory();
         tags = new LinkedList<>();
-        tags.add(new InventoryTag("ASR", cost, price, "T", basicQty));
+        tags.add(new InventoryTag("ASR", cost, price,bestBeforeDate, "T", basicQty));
         inventory.addProducts(tags);
         assertNull(inventory.getProduct("afdjlkfadsjsdf"));
     }
@@ -138,7 +105,7 @@ public class InventoryTest {
         basicQty = 50;
         inventory = new Inventory();
         tags = new LinkedList<>();
-        tags.add(new InventoryTag("ASR", cost, price, "T", basicQty));
+        tags.add(new InventoryTag("ASR", cost, price,bestBeforeDate,"T", basicQty));
         inventory.addProducts(tags);
         //It is expected that sku for this "ASR" products range from 111111 to 111160.
         assertEquals(basicQty, inventory.getTotalQuantity());
@@ -157,9 +124,9 @@ public class InventoryTest {
         basicQty = 50;
         inventory = new Inventory();
         tags = new LinkedList<>();
-        tags.add(new InventoryTag("ASR", cost, price, "T", basicQty));
-        tags.add(new InventoryTag("ASR", cost, price, "f11", basicQty));
-        tags.add(new InventoryTag("bnn", cost, price, "f11", basicQty));
+        tags.add(new InventoryTag("ASR", cost, price, bestBeforeDate, bestBeforeDate, "f10",basicQty));
+        tags.add(new InventoryTag("ASR", cost, price, bestBeforeDate, bestBeforeDate, "f11",basicQty));
+        tags.add(new InventoryTag("bnn", cost, price, LocalDate.now(), "f11", basicQty));
         inventory.addProducts(tags);
         //It is expected that sku for this "ASR" products range from 111111 to 111260.
         assertEquals(basicQty * 3, inventory.getTotalQuantity());
@@ -234,9 +201,9 @@ public class InventoryTest {
         basicQty = 2;
         inventory = new Inventory();
         tags = new LinkedList<>();
-        tags.add(new InventoryTag("aaa", 50, 60,  "T", basicQty));
-        tags.add(new InventoryTag("asr", 50, 60, "d11", basicQty));
-        tags.add(new InventoryTag("asd", 50, 60, "a33", basicQty));
+        tags.add(new InventoryTag("aaa", 50, 60, bestBeforeDate, "T", basicQty));
+        tags.add(new InventoryTag("asr", 50, 60, bestBeforeDate, "d11", basicQty));
+        tags.add(new InventoryTag("asd", 50, 60, bestBeforeDate, "a33", basicQty));
         inventory.addProducts(tags);
         //It is expected that sku for this "ASR" products range from 111111 to 111260.
         assertEquals(basicQty * 3, inventory.getTotalQuantity());
@@ -314,9 +281,9 @@ public class InventoryTest {
         basicQty = 50;
         inventory = new Inventory();
         tags = new LinkedList<>();
-        tags.add(new InventoryTag("ASR", 50, 60,  "T", basicQty));
+        tags.add(new InventoryTag("ASR", 50, 60,bestBeforeDate,  "T", basicQty));
         //It is expected that sku for this "ASR" products range from 111111 to 111160.
-        tags.add(new InventoryTag("ASR", 50, 60,  "f11", basicQty));
+        tags.add(new InventoryTag("ASR", 50, 60,  bestBeforeDate,"f11", basicQty));
         inventory.addProducts(tags);
         //It is expected that sku for this "ASR" products range from 111111 to 111200.
         assertEquals(basicQty * 2, inventory.getTotalQuantity());

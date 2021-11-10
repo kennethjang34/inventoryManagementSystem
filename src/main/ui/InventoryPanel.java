@@ -30,7 +30,7 @@ public class InventoryPanel extends JPanel implements ActionListener {
     private JTable tableForNew;
     private JTable tableForRemoval;
     private JTable stockTable;
-
+    private double price = 12;
 
 
 
@@ -234,13 +234,13 @@ public class InventoryPanel extends JPanel implements ActionListener {
             int qty = Integer.parseInt(quantityField.getText());
             if (qty > 0) {
                 DefaultTableModel model = (DefaultTableModel)(tableForNew.getModel());
-                InventoryTag tag = new InventoryTag(code, cost, bestBeforeDate, location, qty);
+                InventoryTag tag = new InventoryTag(code, cost, price, bestBeforeDate, LocalDate.now(), location, qty);
                 if (listToAdd.contains(tag)) {
                     InventoryTag existing = listToAdd.get(listToAdd.indexOf(tag));
                     existing.setQuantity(existing.getQuantity() + qty);
                     model.setValueAt(existing.getQuantity(),listToAdd.indexOf(existing), 4);
                 } else {
-                    listToAdd.add(new InventoryTag(code, cost, bestBeforeDate, location, qty));
+                    listToAdd.add(new InventoryTag(code, cost, price, bestBeforeDate, location, qty));
                     model.addRow(new Object[]{ code, cost,
                             (bestBeforeDate == null ? "N/A" : stringBBD), location, qty});
                 }
@@ -296,7 +296,7 @@ public class InventoryPanel extends JPanel implements ActionListener {
             removeListPanel.revalidate();
         } else if (e.getActionCommand().equals(update)) {
             inventory.addProducts(listToAdd);
-            inventory.removeProducts(listToRemove);
+            inventory.removeStocks(listToRemove);
             DefaultTableModel tableModel = (DefaultTableModel)tableForNew.getModel();
             tableModel.setRowCount(0);
             tableModel = (DefaultTableModel)tableForRemoval.getModel();

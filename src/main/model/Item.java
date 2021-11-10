@@ -3,6 +3,7 @@ package model;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 
@@ -22,7 +23,7 @@ public class Item implements  TableEntryConvertible {
     //key: sku, value: product
     private LinkedHashMap<String, Product> products;
     //key: location, value: stock
-    private LinkedHashMap<String, Integer> stocks;
+    private LinkedHashMap<String, List<Product>> stocks;
 
     //ID, name must be composed of digits or English letters
     //EFFECTS: create a new item containing an empty product list with given information
@@ -100,38 +101,62 @@ public class Item implements  TableEntryConvertible {
 
     //EFFECTS: return the product with the specified sku
     public Product getProduct(String sku) {
-        return null;
+        return products.get(sku);
     }
 
     //MODIFIES: this
     //EFFECTS: remove the product specified by the sku
-    public void removeProduct(String sku) {
-        //stub
+    //If there was the product, and it has been removed, return true.
+    //Otherwise, return false.
+    public boolean removeProduct(String sku) {
+
+        if (products.remove(sku) == null) {
+            return false;
+        }
+        return true;
     }
 
 
     //REQUIRES: for each tag, there must be enough stock for removal.
     //MODIFIES: this
     //EFFECTS:remove as many products as specified by the quantity tags.
-    public void removeProducts(List<QuantityTag> tags) {
-        //stub
+    //return  tags skipped because there was not enough stock
+    public List<QuantityTag> removeStocks(List<QuantityTag> tags) {
+        List<QuantityTag> failed = new ArrayList<>();
+        for (QuantityTag tag: tags) {
+            if (!removeStocks(tag.getLocation(), tag.getQuantity())) {
+                failed.add(tag);
+            }
+        }
+        if (failed.size() == 0) {
+            return Collections.emptyList();
+        }
+        return failed;
     }
 
     //REQUIRES: there must be enough stock for removal
     //MODIFIES: this
     //EFFECTS:remove as many products as specified. If succeeded, return true
     //Otherwise if there is not enough stock, return false.
-    public boolean removeProducts(String location, int qty) {
+    public boolean removeStocks(String location, int qty) {
         if (getQuantity(location) < qty) {
             return false;
         }
+        int originalQty = getQuantity(location);
+        List<Product> products = getProducts(location);
 
+        for (Product product: products) {
+            products.remove(product);
+            this.products.remove(product.getSku());
+        }
+        assert getQuantity(location) == originalQty;
+        return true;
     }
 
     //MODIFIES: this
     //EFFECTS: create a next sku
     public String createSku() {
-        return null;
+        return id + count++;
     }
 
     //EFFECTS: return true if this contains the product with the given SKU

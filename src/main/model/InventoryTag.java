@@ -10,9 +10,10 @@ public class InventoryTag {
     private final double unitCost;
     private double unitPrice;
     private final LocalDate bestBeforeDate;
+    private final LocalDate dateGenerated;
 
     //EFFECTS: create a new tag that contains all information needed for creating a product with its assigned location
-    public InventoryTag(String itemCode, double cost, double price,
+    public InventoryTag(String itemCode, double cost, double price, LocalDate dateGenerated,
                         LocalDate bestBeforeDate, String location, int quantity) {
         this.id = itemCode.toUpperCase();
         this.quantity = quantity;
@@ -20,18 +21,38 @@ public class InventoryTag {
         this.unitPrice = price;
         this.location = location;
         this.bestBeforeDate = bestBeforeDate;
+        this.dateGenerated = dateGenerated;
     }
 
     //EFFECTS: create a new tag that contains all information needed for creating a product with its assigned location
     //that's without best before date
-    public InventoryTag(String itemCode, double cost, double price, String location, int quantity) {
+    public InventoryTag(String itemCode, double cost, double price,
+                        LocalDate dateGenerated, String location, int quantity) {
         this.id = itemCode.toUpperCase();
         this.quantity = quantity;
         this.unitCost = cost;
         this.unitPrice = price;
         this.location = location;
         this.bestBeforeDate = null;
+        this.dateGenerated = dateGenerated;
     }
+
+    //EFFECTS: return the date generated
+    public LocalDate getDateGenerated() {
+        return dateGenerated;
+    }
+
+    //MODIFIES: this
+    //EFFECTS: change the unit price of this product
+
+
+    public void setUnitPrice(double unitPrice) {
+        if (unitPrice < 0) {
+            throw new IllegalArgumentException("Unit price cannot be negative");
+        }
+        this.unitPrice = unitPrice;
+    }
+
 
 
     //EFFECTS: return the unit price set for the new products
@@ -64,11 +85,15 @@ public class InventoryTag {
         return unitCost;
     }
 
-    //REQUIRES: the quantity must be non-negative
     //MODIFIES: this
+    //EFFECTS: set the quantity to the given number
     public void setQuantity(int qty) {
+        if (qty < 0) {
+            throw new IllegalArgumentException("Quantity cannot be negative");
+        }
         quantity = qty;
     }
+
 
     //EFFECTS: return true if the given object is equal to this
     @Override

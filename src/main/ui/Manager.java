@@ -13,6 +13,7 @@ import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.util.*;
 
+/*
 
 //creates products based on the user's request and add it to inventory.
 //for each load, create an account for record.
@@ -151,7 +152,7 @@ public class Manager implements JsonConvertible {
             throw new NothingToUpdateWithException();
         }
         inventory.addProducts(listToAdd);
-        LinkedList<QuantityTag> receipt = inventory.removeProducts(listToRemove);
+        List<QuantityTag> receipt = inventory.removeStocks(listToRemove);
         LinkedList<QuantityTag> added = new LinkedList<>();
         for (InventoryTag tag: listToAdd) {
             added.add(new QuantityTag(tag.getId(),tag.getLocation(), tag.getQuantity()));
@@ -165,7 +166,7 @@ public class Manager implements JsonConvertible {
 
     //MODIFIES: this
     //EFFECTS: add an account that contains information about the update of the inventory when it was called
-    private void updateLedger(List<QuantityTag> added, LinkedList<QuantityTag> removed, String description) {
+    private void updateLedger(List<QuantityTag> added, List<QuantityTag> removed, String description) {
         ledger.addAccount(added, removed, description, currentDate);
     }
 
@@ -1005,3 +1006,5 @@ public class Manager implements JsonConvertible {
         }
     }
 }
+
+*/

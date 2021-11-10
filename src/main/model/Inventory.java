@@ -1,11 +1,9 @@
 package model;
 
 
-import org.json.JSONArray;
 import org.json.JSONObject;
 import persistence.JsonConvertible;
 
-import java.sql.Array;
 import java.time.LocalDate;
 import java.util.*;
 
@@ -63,22 +61,11 @@ public class Inventory implements JsonConvertible {
 
     //EFFECTS: return  a list of tags that contain information about quantities at each location
     //Only locations with at least one product belonging to the item code will be added to the list
-    public ArrayList<QuantityTag> getQuantitiesAtLocations(String itemCode) {
-        itemCode = itemCode.toUpperCase();
-        ArrayList<QuantityTag> tags = new ArrayList<>();
-        for (int i = 0; i < locations.size(); i++) {
-            ItemList items = locations.get(i);
-            if (items != null) {
-                int qty = items.getQuantity(itemCode);
-                if (qty > 0) {
-                    tags.add(new QuantityTag(itemCode, getStringLocationCode(i), qty));
-                }
-            }
+    public List<QuantityTag> getQuantitiesAtLocations(String id) {
+        if (!items.containsKey(id)) {
+            return Collections.emptyList();
         }
-        if (tags.size() == 0) {
-            return null;
-        }
-        return tags;
+        return items.get(id).getQuantities();
     }
 
 
@@ -168,7 +155,7 @@ public class Inventory implements JsonConvertible {
         if (item == null) {
             return false;
         }
-        return item.removeProducts(tag.getLocation(), tag.getQuantity());
+        return item.removeStocks(tag.getLocation(), tag.getQuantity());
     }
 
 
@@ -180,7 +167,7 @@ public class Inventory implements JsonConvertible {
         if (item == null) {
             return false;
         }
-        return item.removeProducts(location, qty);
+        return item.removeStocks(location, qty);
     }
 
     //MODIFIES: this
@@ -260,13 +247,13 @@ public class Inventory implements JsonConvertible {
         return (items.keySet().size() == 0 ? Collections.emptyList() : new ArrayList<>(items.keySet()));
     }
 
-    //EFFECTS: convert this to JSONObject and return it.
-    @Override
+//    //EFFECTS: convert this to JSONObject and return it.
+//    @Override
     public JSONObject toJson() {
         JSONObject json = new JSONObject();
-        JSONArray jsonLocations = convertToJsonArray(locations);
-        json.put("locations", jsonLocations);
-        json.put("quantities", new JSONArray(quantities));
+        //JSONArray jsonLocations = convertToJsonArray(locations);
+       // json.put("locations", jsonLocations);
+       // json.put("quantities", new JSONArray(quantities));
         json.put("quantity", quantity);
         return json;
     }

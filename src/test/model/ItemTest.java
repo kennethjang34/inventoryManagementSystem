@@ -70,22 +70,22 @@ public class ItemTest {
     @Test
     void testRemoveProducts() {
         item.addProducts(id, cost, listPrice, LocalDate.now(),location, quantity);
-        item.removeProducts(location, 1);
+        item.removeStocks(location, 1);
         assertEquals(quantity - 1, item.getQuantity());
         assertEquals(quantity - 1, item.getQuantity(location));
         try {
-            item.removeProducts(location, quantity);
+            item.removeStocks(location, quantity);
             fail();
         } catch (IllegalArgumentException e) {
             //an exception expected
         }
 
-        item.removeProducts(location, quantity - 2);
+        item.removeStocks(location, quantity - 2);
         assertEquals(1, item.getQuantity());
         assertEquals(1, item.getQuantity(location));
 
         try {
-            item.removeProducts("A", 1);
+            item.removeStocks("A", 1);
             fail();
         } catch (IllegalArgumentException e) {
             //an exception expected
