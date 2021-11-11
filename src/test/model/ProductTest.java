@@ -25,7 +25,7 @@ public class ProductTest {
         cost = 1005.20;
         price = 2000;
     }
-
+    //test
     @Test
     void testConstructor() {
         Product product = new Product(id, sku, cost, price, today, bestBeforeDate, "a");
