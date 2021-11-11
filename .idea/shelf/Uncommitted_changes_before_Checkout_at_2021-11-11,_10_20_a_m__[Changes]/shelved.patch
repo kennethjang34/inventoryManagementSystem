@@ -1,0 +1,463 @@
+Index: src/main/ui/StockPanel.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package ui;\n\nimport model.Inventory;\nimport model.InventoryTag;\nimport model.Item;\nimport model.QuantityTag;\n\nimport javax.swing.*;\nimport javax.swing.table.DefaultTableModel;\nimport javax.swing.table.TableCellRenderer;\nimport javax.swing.tree.*;\nimport java.awt.*;\nimport java.awt.event.ActionEvent;\nimport java.awt.event.ActionListener;\nimport java.time.LocalDate;\nimport java.util.ArrayList;\nimport java.util.List;\n\n//A panel that will display stock situation of the inventory\npublic class StockPanel extends JPanel {\n    private StockTableModel tableModel;\n    private Inventory inventory;\n    private String[] columnNames;\n    private StockTree stockTree;\n\n\n\n\n\n\n    //represents a tree of data\n    private class StockTree extends JTree implements TableCellRenderer {\n        private DefaultMutableTreeNode root;\n        private DefaultTreeModel treeModel;\n\n        private StockTree(Object[][] data) {\n            root = new DefaultMutableTreeNode();\n            for (Object[] obj: data) {\n//                if (obj == null) {\n//                    throw new IllegalArgumentException();\n//                }\n                DefaultMutableTreeNode itemNode = new DefaultMutableTreeNode(obj);\n                root.add(itemNode);\n                Object[] entry = (Object[]) itemNode.getUserObject();\n                String id = (String)entry[1];\n                List<QuantityTag> tags = inventory.getQuantitiesAtLocations(id);\n//                if (!inventory.containsCategory((String)entry[0])) {\n//                    throw new IllegalArgumentException();\n//                }\n                for (QuantityTag tag: tags) {\n                    itemNode.add(new DefaultMutableTreeNode(tag));\n                }\n            }\n            treeModel = new DefaultTreeModel(root);\n            setModel(treeModel);\n//            addTreeSelectionListener(new TreeSelectionListener() {\n//                @Override\n//                public void valueChanged(TreeSelectionEvent e) {\n//                    DefaultMutableTreeNode locationNode = (DefaultMutableTreeNode)\n//                            e.getNewLeadSelectionPath().getLastPathComponent();\n//\n//                }\n//            });\n        }\n\n        public TreeModel getTreeModel() {\n            return treeModel;\n        }\n\n\n        public Object getValueAt(int row, int column) {\n            TreePath path = getPathForRow(row);\n            DefaultMutableTreeNode child = (DefaultMutableTreeNode)path.getLastPathComponent();\n            if (child.isLeaf()) {\n                QuantityTag tag = (QuantityTag)child.getUserObject();\n                if (column == 0) {\n                    return tag.getLocation();\n                }\n                return tag.getQuantity();\n            }\n\n            Object[] entry = (Object[])child.getUserObject();\n            if (entry == null) {\n                return null;\n            }\n            return entry[column];\n        }\n\n//        @Override\n//        public Component getTreeCellRendererComponent(JTree tree, Object value, boolean selected,\n//                                                      boolean expanded, boolean leaf, int row, boolean hasFocus) {\n//            return this;\n//        }\n\n        @Override\n        public Component getTableCellRendererComponent(JTable table, Object value,\n                                                       boolean isSelected, boolean hasFocus, int row, int column) {\n            return this;\n        }\n    }\n\n    //represents a table model\n    //that will contain information of stock situation with buttons to search for quantities at different locations\n    private class StockTableModel extends DefaultTableModel implements ActionListener {\n        Object[][] tableData;\n\n        private StockTableModel() {\n            tableData = inventory.getData();\n            stockTree = new StockTree(tableData);\n            //setDataVector(tableData, columnNames);\n            setSize(new Dimension(500, 600));\n            //setDefaultRenderer(getColumnClass(0), renderer);\n        }\n\n        //EFFECTS: return row number\n        @Override\n        public int getRowCount() {\n            if (tableData == null) {\n                return 1;\n            }\n            return tableData.length;\n        }\n\n        //EFFECTS: return column number\n        @Override\n        public int getColumnCount() {\n            return columnNames.length;\n        }\n\n        @Override\n        public Object getValueAt(int rowIndex, int columnIndex) {\n            return stockTree.getValueAt(rowIndex, columnIndex);\n        }\n\n\n        @Override\n        public boolean isCellEditable(int rowIndex, int columnIndex) {\n//            if (columnIndex == 2) {\n//                return true;\n//            }\n            return super.isCellEditable(rowIndex, columnIndex);\n        }\n\n\n\n//\n//        //MODIFIES: this\n//        //EFFECTS: modify this so that the panel displays the latest information of stocks\n//        public void update(List<Item> items) {\n//            for (Item item : items) {\n//                int cellIndex = -1;\n//                for (int j = 0; j < tableModel.getRowCount(); j++) {\n//                    if (item.getId().equalsIgnoreCase((String) tableModel.getValueAt(j, 1))) {\n//                        cellIndex = j;\n//                        break;\n//                    }\n//                }\n//                if (cellIndex != -1) {\n//                    setValueAt(inventory.getQuantity(item.getId()), cellIndex, 1);\n//                } else {\n//                    addRow(item.convertToTableEntry());\n//                }\n//            }\n//            fireTableDataChanged();\n//        }\n\n//        //REQUIRES: code must be existing in the inventory\n//        //MODIFIES: this\n//        //EFFECTS: add a new row of stock information to the table and display it\n//        public void addRow(Item item) {\n//\n////            fireTableDataChanged();\n////            int quantity = inventory.getQuantity(code);\n////            JButton button = new JButton(\"Search\");\n////            button.setActionCommand(code);\n////            button.addActionListener(this);\n//        }\n\n        //EFFECTS: return the name of the column\n        public String getColumnName(int col) {\n            return columnNames[col];\n        }\n\n\n        @Override\n        public void actionPerformed(ActionEvent e) {\n//            JDialog dialog = new JDialog();\n//            dialog.setLayout(new FlowLayout());\n//            String selected = e.getActionCommand();\n//            List<QuantityTag> tags = inventory.getQuantitiesAtLocations(selected);\n//            Object[][] data = new Object[tags.size()][];\n//            for (int i = 0; i < tags.size(); i++) {\n//                QuantityTag tag = tags.get(i);\n//                data[i] = new Object[]{\n//                        tag.getLocation(), tag.getQuantity()\n//                };\n//            }\n//            Object[] columnsForLocations = new Object[]{\"Location\", \"Quantity\"};\n//            DefaultTableModel tableModel = new DefaultTableModel();\n//            tableModel.setDataVector(data, columnsForLocations);\n//            JScrollPane scrollPane = new JScrollPane(new JTable(tableModel));\n//            scrollPane.setVisible(true);\n//            scrollPane.setSize(500, 600);\n//            dialog.add(scrollPane);\n//            dialog.setSize(600, 700);\n//            dialog.setVisible(true);\n        }\n    }\n\n//\n//    //A renderer than is responsible for rendering JButton in JTable\n//    private class StockTreeTableRenderer extends JTable {\n//\n//        TableCellRenderer renderer;\n//        public StockTreeTableRenderer(TableModel model) {\n//            this.renderer = renderer;\n//\n//        }\n\n\n\n//        @Override\n//        public Component getTableCellEditorComponent(\n//                JTable table, Object value, boolean isSelected, int row, int column) {\n//\n//            if (column == 2 || value instanceof JButton) {\n//                return (JButton)table.getValueAt(row, column);\n//                //return buttons.get(row);\n//            }\n//            return new TextField();\n//        }\n//\n//\n//        @Override\n//        public Object getCellEditorValue() {\n//            return new JTextField();\n//        }\n//\n//        @Override\n//        public boolean isCellEditable(EventObject anEvent) {\n//            return true;\n//        }\n//\n//        @Override\n//        public boolean shouldSelectCell(EventObject anEvent) {\n//            return false;\n//        }\n//\n//        @Override\n//        public boolean stopCellEditing() {\n//            return false;\n//        }\n//\n//        @Override\n//        public void cancelCellEditing() {\n//\n//        }\n//\n//        @Override\n//        public void addCellEditorListener(CellEditorListener l) {\n//\n//        }\n//\n//        @Override\n//        public void removeCellEditorListener(CellEditorListener l) {\n//\n//        }\n//    }\n\n\n    //EFFECTS: create new stock panel with given inventory\n    public StockPanel(Inventory inventory) {\n        this.inventory = inventory;\n        columnNames = Inventory.getDataList();\n        tableModel = new StockTableModel();\n        JTable jtable = new JTable(tableModel);\n        jtable.setDefaultRenderer(jtable.getColumnClass(2), stockTree);\n//        jtable.setDefaultEditor(jtable.getColumnClass(2), new JTextFiel);\n        //jtable.getColumnModel().getColumn(2).setCellRenderer(renderer);\n        //jtable.getColumn(\"Search\").setCellEditor(renderer);\n        for (int i = 0; i < jtable.getColumnCount(); i++) {\n            jtable.getColumnModel().getColumn(i).setPreferredWidth(300);\n        }\n        add(jtable);\n        jtable.setSize(1000, 700);\n        setSize(1000, 1500);\n        setVisible(true);\n    }\n\n    //MODIFIES: this\n    //EFFECTS: update the table and this to display the latest information\n    public void update(List<Item> items) {\n        //tableModel.update(codes);\n        revalidate();\n    }\n\n\n    public static void main(String[] args) {\n        Inventory inventory = new Inventory();\n        inventory.createCategory(\"Fruit\");\n        inventory.createItem(\"app\", \"apple\", \"Fruit\", 4, \"test\", \"test\");\n        List<InventoryTag> tags = new ArrayList<>();\n        tags.add(new InventoryTag(\"abc\", 20, 30, LocalDate.now(), \"f11\", 100));\n        inventory.addProducts(tags);\n//        if (inventory.getData() == null) {\n//            throw new IllegalArgumentException(\n        inventory.createItem(\"bnn\", \"banana\", \"Fruit\", 12, \"test\", \"test\");\n        tags = new ArrayList<>();\n        tags.add(new InventoryTag(\"bnn\", 1, 3, LocalDate.now(), \"f13\", 100));\n        inventory.addProducts(tags);\n        StockPanel panel = new StockPanel(inventory);\n        panel.setSize(500, 600);\n        JFrame frame = new JFrame();\n        frame.add(panel);\n        frame.pack();\n        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);\n        frame.setVisible(true);\n    }\n\n\n\n}\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/ui/StockPanel.java b/src/main/ui/StockPanel.java
+--- a/src/main/ui/StockPanel.java	(revision d69fc307f28b10808f93152e1c47b199b8ea83ee)
++++ b/src/main/ui/StockPanel.java	(date 1636615313984)
+@@ -6,14 +6,16 @@
+ import model.QuantityTag;
+ 
+ import javax.swing.*;
++import javax.swing.event.*;
+ import javax.swing.table.DefaultTableModel;
++import javax.swing.table.TableCellEditor;
+ import javax.swing.table.TableCellRenderer;
+ import javax.swing.tree.*;
+ import java.awt.*;
+-import java.awt.event.ActionEvent;
+-import java.awt.event.ActionListener;
++import java.awt.event.*;
+ import java.time.LocalDate;
+ import java.util.ArrayList;
++import java.util.EventObject;
+ import java.util.List;
+ 
+ //A panel that will display stock situation of the inventory
+@@ -22,23 +24,24 @@
+     private Inventory inventory;
+     private String[] columnNames;
+     private StockTree stockTree;
+-
++    private JTable jtable;
+ 
+ 
+ 
+ 
+ 
+     //represents a tree of data
+-    private class StockTree extends JTree implements TableCellRenderer {
++    private class StockTree extends JTree implements TableCellRenderer, TableCellEditor {
+         private DefaultMutableTreeNode root;
+         private DefaultTreeModel treeModel;
+ 
++        @SuppressWarnings({"checkstyle:MethodLength", "checkstyle:SuppressWarnings"})
+         private StockTree(Object[][] data) {
+             root = new DefaultMutableTreeNode();
+             for (Object[] obj: data) {
+-//                if (obj == null) {
+-//                    throw new IllegalArgumentException();
+-//                }
++                if (obj == null) {
++                    throw new IllegalArgumentException();
++                }
+                 DefaultMutableTreeNode itemNode = new DefaultMutableTreeNode(obj);
+                 root.add(itemNode);
+                 Object[] entry = (Object[]) itemNode.getUserObject();
+@@ -47,21 +50,38 @@
+ //                if (!inventory.containsCategory((String)entry[0])) {
+ //                    throw new IllegalArgumentException();
+ //                }
++                if (tags.size() <= 0) {
++                    throw new IllegalArgumentException("weird");
++                }
+                 for (QuantityTag tag: tags) {
+                     itemNode.add(new DefaultMutableTreeNode(tag));
+                 }
++//                if (itemNode.isLeaf()) {
++//                    throw new IllegalArgumentException();
++//                }
+             }
+             treeModel = new DefaultTreeModel(root);
++
+             setModel(treeModel);
+-//            addTreeSelectionListener(new TreeSelectionListener() {
+-//                @Override
+-//                public void valueChanged(TreeSelectionEvent e) {
+-//                    DefaultMutableTreeNode locationNode = (DefaultMutableTreeNode)
+-//                            e.getNewLeadSelectionPath().getLastPathComponent();
+-//
+-//                }
+-//            });
++            setRootVisible(false);
++            setCellRenderer(new DefaultTreeCellRenderer());
++            setCellEditor(new DefaultTreeCellEditor(this, (DefaultTreeCellRenderer)getCellRenderer()));
++
++            addTreeExpansionListener(new TreeExpansionListener() {
++                @Override
++                public void treeExpanded(TreeExpansionEvent event) {
++                    tableModel.fireTableDataChanged();
++                }
++
++                @Override
++                public void treeCollapsed(TreeExpansionEvent event) {
++                    tableModel.fireTableDataChanged();
++                }
++            });
+         }
++
++
++
+ 
+         public TreeModel getTreeModel() {
+             return treeModel;
+@@ -70,20 +90,24 @@
+ 
+         public Object getValueAt(int row, int column) {
+             TreePath path = getPathForRow(row);
++            if (path == null) {
++                return null;
++            }
+             DefaultMutableTreeNode child = (DefaultMutableTreeNode)path.getLastPathComponent();
+-            if (child.isLeaf()) {
+-                QuantityTag tag = (QuantityTag)child.getUserObject();
+-                if (column == 0) {
+-                    return tag.getLocation();
+-                }
+-                return tag.getQuantity();
+-            }
+-
+-            Object[] entry = (Object[])child.getUserObject();
+-            if (entry == null) {
+-                return null;
+-            }
+-            return entry[column];
++            return child;
++//            if (child.isLeaf()) {
++//                QuantityTag tag = (QuantityTag)child.getUserObject();
++//                if (column == 0) {
++//                    return tag.getLocation();
++//                }
++//                return tag.getQuantity();
++//            }
++////
++//            Object[] entry = (Object[])child.getUserObject();
++//            if (entry == null) {
++//                return null;
++//            }
++//            return entry[column];
+         }
+ 
+ //        @Override
+@@ -92,23 +116,108 @@
+ //            return this;
+ //        }
+ 
++        @SuppressWarnings({"checkstyle:MethodLength", "checkstyle:SuppressWarnings"})
+         @Override
+         public Component getTableCellRendererComponent(JTable table, Object value,
+                                                        boolean isSelected, boolean hasFocus, int row, int column) {
+-            return this;
+-        }
++            DefaultMutableTreeNode node = (DefaultMutableTreeNode) value;
++            String text = "";
++            Object[] entry = (Object[]) node.getUserObject();
++            Object object = entry[column];
++            if (object instanceof Double) {
++                text = "" + (Double) object;
++            } else if (object instanceof Integer) {
++                text = "" + (Integer) object;
++            } else {
++                text = (String) object;
++            }
++            DefaultTreeCellRenderer renderer = (DefaultTreeCellRenderer) getCellRenderer();
++            if (column == 0) {
++                renderer.setText(text);
++                if (isExpanded(row)) {
++                    renderer.setIcon(renderer.getDefaultOpenIcon());
++                } else {
++                    renderer.setIcon(renderer.getDefaultClosedIcon());
++                }
++            } else {
++                renderer.setIcon(null);
++            }
++
++            if (!isExpanded(row)) {
++                return renderer;
++            }
++//            } else if (node.getUserObject() instanceof QuantityTag) {
++//                    if (column == 0) {
++//                        text = ((QuantityTag) node.getUserObject()).getLocation();
++//                    } else if (column == 1) {
++//                        text = "" + ((QuantityTag) node.getUserObject()).getQuantity();
++//                    }
++//                    return new JLabel(text);
++//                }
++//                return new JLabel(text);
++            renderer.setPreferredSize(new Dimension(100, 400));
++            return renderer.getTreeCellRendererComponent(this, value, isSelected, true, false,
++                    row, hasFocus);
++        }
++
++        @Override
++        public Component getTableCellEditorComponent(JTable table, Object value,
++                                                     boolean isSelected, int row, int column) {
++            if (column != 0) {
++                return this.getCellEditor().getTreeCellEditorComponent(this, value, isSelected,
++                        false, true, row);
++            }
++            return this.getCellEditor().getTreeCellEditorComponent(this, value, isSelected,
++                        true, false, row);
++        }
++
++        @Override
++        public Object getCellEditorValue() {
++            return 0;
++        }
++
++        @Override
++        public boolean isCellEditable(EventObject anEvent) {
++            return false;
++        }
++
++        @Override
++        public boolean shouldSelectCell(EventObject anEvent) {
++            return false;
++        }
++
++        @Override
++        public boolean stopCellEditing() {
++            return false;
++        }
++
++        @Override
++        public void cancelCellEditing() {
++
++        }
++
++        @Override
++        public void addCellEditorListener(CellEditorListener l) {
++
++        }
++
++        @Override
++        public void removeCellEditorListener(CellEditorListener l) {
++
++        }
++
+     }
+ 
+     //represents a table model
+     //that will contain information of stock situation with buttons to search for quantities at different locations
+-    private class StockTableModel extends DefaultTableModel implements ActionListener {
++    private class StockTableModel extends DefaultTableModel {
+         Object[][] tableData;
+ 
+         private StockTableModel() {
+             tableData = inventory.getData();
+             stockTree = new StockTree(tableData);
+             //setDataVector(tableData, columnNames);
+-            setSize(new Dimension(500, 600));
++            setSize(new Dimension(200, 300));
+             //setDefaultRenderer(getColumnClass(0), renderer);
+         }
+ 
+@@ -135,46 +244,9 @@
+ 
+         @Override
+         public boolean isCellEditable(int rowIndex, int columnIndex) {
+-//            if (columnIndex == 2) {
+-//                return true;
+-//            }
+-            return super.isCellEditable(rowIndex, columnIndex);
++            return false;
+         }
+ 
+-
+-
+-//
+-//        //MODIFIES: this
+-//        //EFFECTS: modify this so that the panel displays the latest information of stocks
+-//        public void update(List<Item> items) {
+-//            for (Item item : items) {
+-//                int cellIndex = -1;
+-//                for (int j = 0; j < tableModel.getRowCount(); j++) {
+-//                    if (item.getId().equalsIgnoreCase((String) tableModel.getValueAt(j, 1))) {
+-//                        cellIndex = j;
+-//                        break;
+-//                    }
+-//                }
+-//                if (cellIndex != -1) {
+-//                    setValueAt(inventory.getQuantity(item.getId()), cellIndex, 1);
+-//                } else {
+-//                    addRow(item.convertToTableEntry());
+-//                }
+-//            }
+-//            fireTableDataChanged();
+-//        }
+-
+-//        //REQUIRES: code must be existing in the inventory
+-//        //MODIFIES: this
+-//        //EFFECTS: add a new row of stock information to the table and display it
+-//        public void addRow(Item item) {
+-//
+-////            fireTableDataChanged();
+-////            int quantity = inventory.getQuantity(code);
+-////            JButton button = new JButton("Search");
+-////            button.setActionCommand(code);
+-////            button.addActionListener(this);
+-//        }
+ 
+         //EFFECTS: return the name of the column
+         public String getColumnName(int col) {
+@@ -182,107 +254,46 @@
+         }
+ 
+ 
+-        @Override
+-        public void actionPerformed(ActionEvent e) {
+-//            JDialog dialog = new JDialog();
+-//            dialog.setLayout(new FlowLayout());
+-//            String selected = e.getActionCommand();
+-//            List<QuantityTag> tags = inventory.getQuantitiesAtLocations(selected);
+-//            Object[][] data = new Object[tags.size()][];
+-//            for (int i = 0; i < tags.size(); i++) {
+-//                QuantityTag tag = tags.get(i);
+-//                data[i] = new Object[]{
+-//                        tag.getLocation(), tag.getQuantity()
+-//                };
+-//            }
+-//            Object[] columnsForLocations = new Object[]{"Location", "Quantity"};
+-//            DefaultTableModel tableModel = new DefaultTableModel();
+-//            tableModel.setDataVector(data, columnsForLocations);
+-//            JScrollPane scrollPane = new JScrollPane(new JTable(tableModel));
+-//            scrollPane.setVisible(true);
+-//            scrollPane.setSize(500, 600);
+-//            dialog.add(scrollPane);
+-//            dialog.setSize(600, 700);
+-//            dialog.setVisible(true);
+-        }
+     }
+-
+-//
+-//    //A renderer than is responsible for rendering JButton in JTable
+-//    private class StockTreeTableRenderer extends JTable {
+-//
+-//        TableCellRenderer renderer;
+-//        public StockTreeTableRenderer(TableModel model) {
+-//            this.renderer = renderer;
+-//
+-//        }
+-
+-
+-
+-//        @Override
+-//        public Component getTableCellEditorComponent(
+-//                JTable table, Object value, boolean isSelected, int row, int column) {
+-//
+-//            if (column == 2 || value instanceof JButton) {
+-//                return (JButton)table.getValueAt(row, column);
+-//                //return buttons.get(row);
+-//            }
+-//            return new TextField();
+-//        }
+-//
+-//
+-//        @Override
+-//        public Object getCellEditorValue() {
+-//            return new JTextField();
+-//        }
+-//
+-//        @Override
+-//        public boolean isCellEditable(EventObject anEvent) {
+-//            return true;
+-//        }
+-//
+-//        @Override
+-//        public boolean shouldSelectCell(EventObject anEvent) {
+-//            return false;
+-//        }
+-//
+-//        @Override
+-//        public boolean stopCellEditing() {
+-//            return false;
+-//        }
+-//
+-//        @Override
+-//        public void cancelCellEditing() {
+-//
+-//        }
+-//
+-//        @Override
+-//        public void addCellEditorListener(CellEditorListener l) {
+-//
+-//        }
+-//
+-//        @Override
+-//        public void removeCellEditorListener(CellEditorListener l) {
+-//
+-//        }
+-//    }
+-
+ 
+     //EFFECTS: create new stock panel with given inventory
++    @SuppressWarnings({"checkstyle:MethodLength", "checkstyle:SuppressWarnings"})
+     public StockPanel(Inventory inventory) {
+         this.inventory = inventory;
+         columnNames = Inventory.getDataList();
+         tableModel = new StockTableModel();
+-        JTable jtable = new JTable(tableModel);
++        jtable = new JTable(tableModel);
+         jtable.setDefaultRenderer(jtable.getColumnClass(2), stockTree);
++        jtable.setDefaultEditor(jtable.getColumnClass(2), stockTree);
++
+ //        jtable.setDefaultEditor(jtable.getColumnClass(2), new JTextFiel);
+         //jtable.getColumnModel().getColumn(2).setCellRenderer(renderer);
+         //jtable.getColumn("Search").setCellEditor(renderer);
+         for (int i = 0; i < jtable.getColumnCount(); i++) {
+-            jtable.getColumnModel().getColumn(i).setPreferredWidth(300);
++            jtable.getColumnModel().getColumn(i).setPreferredWidth(100);
+         }
++
++        //Not my code
++        //https://stackoverflow.com/questions/14852719/double-click-listener-on-jtable-in-java
++        jtable.addMouseListener(new MouseAdapter() {
++            public void mousePressed(MouseEvent mouseEvent) {
++                JTable table = (JTable) mouseEvent.getSource();
++                Point point = mouseEvent.getPoint();
++                int row = table.rowAtPoint(point);
++                if (mouseEvent.getClickCount() == 2 && table.getSelectedRow() != -1) {
++                    if (!stockTree.isExpanded(row)) {
++                        stockTree.expandRow(row);
++                    } else {
++                        stockTree.collapseRow(row);
++                    }
++                    table.revalidate();
++                }
++            }
++        });
+         add(jtable);
+-        jtable.setSize(1000, 700);
++        jtable.setSize(1000, 1500);
++//        jtable.addMouseListener(new MouseAdapter() {
++//        })
+         setSize(1000, 1500);
+         setVisible(true);
+     }
+@@ -298,16 +309,19 @@
+     public static void main(String[] args) {
+         Inventory inventory = new Inventory();
+         inventory.createCategory("Fruit");
+-        inventory.createItem("app", "apple", "Fruit", 4, "test", "test");
++        inventory.createItem("APP", "apple", "Fruit", 4, "test", "test");
+         List<InventoryTag> tags = new ArrayList<>();
+-        tags.add(new InventoryTag("abc", 20, 30, LocalDate.now(), "f11", 100));
++        tags.add(new InventoryTag("APP", 20, 30, LocalDate.now(), "f11", 100));
+         inventory.addProducts(tags);
+ //        if (inventory.getData() == null) {
+ //            throw new IllegalArgumentException(
+-        inventory.createItem("bnn", "banana", "Fruit", 12, "test", "test");
++        inventory.createItem("BNN", "banana", "Fruit", 12, "test", "test");
+         tags = new ArrayList<>();
+-        tags.add(new InventoryTag("bnn", 1, 3, LocalDate.now(), "f13", 100));
++        tags.add(new InventoryTag("BNN", 1, 3, LocalDate.now(), "f13", 100));
+         inventory.addProducts(tags);
++        if (inventory.getQuantity("BNN") != 100) {
++            throw new RuntimeException("whatt");
++        }
+         StockPanel panel = new StockPanel(inventory);
+         panel.setSize(500, 600);
+         JFrame frame = new JFrame();
