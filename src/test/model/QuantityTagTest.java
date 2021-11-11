@@ -21,7 +21,7 @@ public class QuantityTagTest {
     @Test
     void testConstructor() {
         tag = new QuantityTag(itemCode, location, qty);
-        assertEquals(itemCode, tag.getItemCode());
+        assertEquals(itemCode, tag.getId());
         assertEquals(location, tag.getLocation());
         assertEquals(qty, tag.getQuantity());
         assertEquals("Item Code: " + itemCode + ", Location: " + location + ", Quantity: " + qty,

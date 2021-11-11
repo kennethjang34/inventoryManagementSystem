@@ -29,7 +29,7 @@ public class Account implements JsonConvertible {
         //EFFECTS: create a new account entry with the given tag.
         private AccountEntry(QuantityTag tag) {
             quantity = tag.getQuantity();
-            itemCode = tag.getItemCode().toUpperCase();
+            itemCode = tag.getId().toUpperCase();
             distribution = new HashMap<>();
             distribution.put(tag.getLocation(), tag.getQuantity());
         }
@@ -137,7 +137,7 @@ public class Account implements JsonConvertible {
             return;
         }
         for (QuantityTag tag : tags) {
-            String itemCode = tag.getItemCode();
+            String itemCode = tag.getId();
             if (getEntry(itemCode) == null) {
                 entries.add(new AccountEntry(tag));
             } else {

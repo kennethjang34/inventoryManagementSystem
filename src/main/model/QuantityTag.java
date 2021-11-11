@@ -3,14 +3,14 @@ package model;
 //represents a tag that is used for various purposes
 //such as removing products, recording an account for quantity change.
 public class QuantityTag {
-    private String itemCode;
+    private String id;
     private String location;
     private int quantity;
 
     //It is possible for quantity to be negative, but it shouldn't be
     //EFFECTS: create a new quantity tag with item code, assigned location, and quantity given.
     public QuantityTag(String itemCode, String location, int quantity) {
-        this.itemCode = itemCode.toUpperCase();
+        this.id = itemCode.toUpperCase();
         this.location = location.toUpperCase();
         this.quantity = quantity;
     }
@@ -22,8 +22,8 @@ public class QuantityTag {
     }
 
     //EFFECTS: return the item code
-    public String getItemCode() {
-        return itemCode;
+    public String getId() {
+        return id;
     }
 
     //EFFECTS: return quantity specified for this item
@@ -45,7 +45,7 @@ public class QuantityTag {
             return false;
         }
         QuantityTag tag = (QuantityTag)o;
-        if (tag.getItemCode().equalsIgnoreCase(itemCode) && tag.getLocation().equalsIgnoreCase(location)) {
+        if (tag.getId().equalsIgnoreCase(id) && tag.getLocation().equalsIgnoreCase(location)) {
             return true;
         }
         return false;
@@ -54,13 +54,13 @@ public class QuantityTag {
     //EFFECTS: return hash code of this
     @Override
     public int hashCode() {
-        return itemCode.hashCode();
+        return id.hashCode();
     }
 
     //EFFECTS: return a string description that contains all information of this
     @Override
     public String toString() {
-        String s = "Item Code: " + itemCode + ", Location: " + location + ", Quantity: " + quantity;
+        String s = "Item Code: " + id + ", Location: " + location + ", Quantity: " + quantity;
         return s;
     }
 }

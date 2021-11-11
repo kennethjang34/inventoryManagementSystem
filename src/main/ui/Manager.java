@@ -13,6 +13,7 @@ import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.util.*;
 
+/*
 
 //creates products based on the user's request and add it to inventory.
 //for each load, create an account for record.
@@ -151,10 +152,10 @@ public class Manager implements JsonConvertible {
             throw new NothingToUpdateWithException();
         }
         inventory.addProducts(listToAdd);
-        LinkedList<QuantityTag> receipt = inventory.removeProducts(listToRemove);
+        List<QuantityTag> receipt = inventory.removeStocks(listToRemove);
         LinkedList<QuantityTag> added = new LinkedList<>();
         for (InventoryTag tag: listToAdd) {
-            added.add(new QuantityTag(tag.getItemCode(),tag.getLocation(), tag.getQuantity()));
+            added.add(new QuantityTag(tag.getId(),tag.getLocation(), tag.getQuantity()));
         }
         updateLedger(added, receipt, description);
         listToAdd.clear();
@@ -165,7 +166,7 @@ public class Manager implements JsonConvertible {
 
     //MODIFIES: this
     //EFFECTS: add an account that contains information about the update of the inventory when it was called
-    private void updateLedger(List<QuantityTag> added, LinkedList<QuantityTag> removed, String description) {
+    private void updateLedger(List<QuantityTag> added, List<QuantityTag> removed, String description) {
         ledger.addAccount(added, removed, description, currentDate);
     }
 
@@ -245,7 +246,7 @@ public class Manager implements JsonConvertible {
     //If no such product has been found, return null.
     private String getLocationOfProduct(String itemCode, int sku) {
         itemCode = itemCode.toUpperCase();
-        ProductTag tag = inventory.findProduct(itemCode, sku);
+        ProductTag tag = inventory.getProduct(itemCode, sku);
         if (tag == null) {
             return null;
         }
@@ -337,7 +338,7 @@ public class Manager implements JsonConvertible {
         while (!option.equalsIgnoreCase("q")) {
             switch (option) {
                 case "code":
-                    System.out.println("The product code: " + currentProduct.getCategory() + currentProduct.getSku());
+                    System.out.println("The product code: " + currentProduct.getId() + currentProduct.getSku());
                     break;
                 case "dateG":
                     System.out.println("The date generated: " + currentProduct.getDateGenerated().toString());
@@ -415,9 +416,9 @@ public class Manager implements JsonConvertible {
     //EFFECTS: print the entries of the list of products to add
     private void printListToAdd() {
         for (InventoryTag tag: listToAdd) {
-            String itemCode = tag.getItemCode().toUpperCase();
+            String itemCode = tag.getId().toUpperCase();
             int qty = tag.getQuantity();
-            double price = tag.getPrice();
+            double price = tag.getUnitCost();
             LocalDate bestBeforeDate = tag.getBestBeforeDate();
             String location = tag.getLocation().toUpperCase();
             System.out.println(itemCode + " " + ", quantity: " + qty);
@@ -433,7 +434,7 @@ public class Manager implements JsonConvertible {
     //EFFECTS: print the entries of the list of products to remove
     private void printListToRemove() {
         for (QuantityTag tag: listToRemove) {
-            String itemCode = tag.getItemCode().toUpperCase();
+            String itemCode = tag.getId().toUpperCase();
             String location = tag.getLocation().toUpperCase();
             int qty = tag.getQuantity();
             System.out.println(itemCode + " ");
@@ -563,7 +564,7 @@ public class Manager implements JsonConvertible {
                     quantity = scanner.nextInt();
                     scanner.nextLine();
                 }
-                addToListToRemove(new QuantityTag(tag.getItemCode(), tag.getLocation(), quantity));
+                addToListToRemove(new QuantityTag(tag.getId(), tag.getLocation(), quantity));
                 System.out.println("Successfully added to the list for removal");
                 printTags(tags);
                 System.out.println("Choose the index. If you'd like to quit, please type q");
@@ -1005,3 +1006,5 @@ public class Manager implements JsonConvertible {
         }
     }
 }
+
+*/

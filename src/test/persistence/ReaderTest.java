@@ -58,7 +58,8 @@ public class ReaderTest {
             //writer is supposed to create the file on its own when there is no such file.
             fail();
         }
-        Product product = new Product("abc", 111111119, 20.1, LocalDate.now(),  LocalDate.now());
+        Product product = new Product("abc", "abc11119", 20.1, 30,
+                LocalDate.now(),  LocalDate.now(), "f11");
         writer.write(product);
         writer.close();
         Reader reader = new Reader(location);
@@ -72,7 +73,7 @@ public class ReaderTest {
             fail();
         }
         Product fromJson = new Product (jsonProduct);
-        assertEquals(product.getCategory(), fromJson.getCategory());
+        assertEquals(product.getId(), fromJson.getId());
         assertEquals(product.getSku(), fromJson.getSku());
         assertEquals(product.getBestBeforeDate(), fromJson.getBestBeforeDate());
         assertEquals(product.getDateGenerated(), fromJson.getDateGenerated());

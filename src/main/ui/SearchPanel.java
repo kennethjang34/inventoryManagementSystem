@@ -39,7 +39,7 @@ public class SearchPanel extends JPanel implements ActionListener {
             dl.add(createStockPanel(itemCode));
             dl.setVisible(true);
         } else {
-            int sku = Integer.parseInt(stringSku);
+            String sku = (stringSku);
             JDialog dl = new JDialog();
             dl.add(createProductPanel(itemCode, sku));
             dl.setVisible(true);
@@ -67,18 +67,17 @@ public class SearchPanel extends JPanel implements ActionListener {
 
     //EFFECTS: create a new panel that is used
     //to show the given product's information
-    private JPanel createProductPanel(String itemCode, int sku) {
+    private JPanel createProductPanel(String id, String sku) {
         JPanel panel = new JPanel();
-        ProductTag tag = inventory.findProduct(itemCode, sku);
-        if (tag == null) {
+        Product product = inventory.getProduct(sku);
+        if (product == null) {
             panel.add(new JLabel("There is no such product"));
             panel.setVisible(true);
             return panel;
         }
         panel.add(new JLabel("Product Code: "));
-        panel.add(new JLabel(itemCode + sku));
-        Product product = tag.getProduct();
-        String location = tag.getLocation();
+        panel.add(new JLabel(id + sku));
+        String location = product.getLocation();
         panel.add(new JLabel("Price: " + product.getPrice()));
         panel.add(new JLabel("Best-before Date: "
                 + (product.getBestBeforeDate() == null ? "N/A" : product.getBestBeforeDate())));

@@ -9,62 +9,69 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 public class ProductTest {
-    private String itemCode;
-    private int sku;
+    private String id;
+    private String sku;
     private LocalDate today;
     private LocalDate bestBeforeDate;
     private double cost;
+    private double price;
 
     @BeforeEach
     void runBefore() {
-        itemCode = "ABE";
-        sku = 111111111;
+        id = "ABE";
+        sku = "111111111";
         today = LocalDate.now();
         bestBeforeDate = LocalDate.of(2021, 11, 20);
         cost = 1005.20;
+        price = 2000;
     }
-
+    //test test
     @Test
     void testConstructor() {
-        Product product = new Product(itemCode, sku, cost, today, bestBeforeDate);
-        assertEquals(itemCode, product.getCategory());
+        Product product = new Product(id, sku, cost, price, today, bestBeforeDate, "a");
+        assertEquals(id, product.getId());
         assertEquals(sku, product.getSku());
         assertEquals(today, product.getDateGenerated());
         assertEquals(bestBeforeDate, product.getBestBeforeDate());
-        assertEquals(cost, product.getPrice());
-        Product product2 = new Product(itemCode, sku, cost, today, null);
-        assertEquals(itemCode, product2.getCategory());
+        assertEquals(cost, product.getCost());
+        Product product2 = new Product(id, sku, cost, price, today, null, "a");
+        assertEquals(id, product2.getId());
         assertEquals(sku, product2.getSku());
         assertEquals(today, product2.getDateGenerated());
-        assertEquals(cost, product2.getPrice());
+        assertEquals(cost, product2.getCost());
+        assertEquals(price, product2.getPrice());
         assertNull(product2.getBestBeforeDate());
     }
 
     @Test
     void testJsonConversion() {
-        Product product = new Product(itemCode, sku, cost, today, bestBeforeDate);
-        assertEquals(itemCode, product.getCategory());
+        Product product = new Product(id, sku, cost, price, today, bestBeforeDate, "a");
+        assertEquals(id, product.getId());
         assertEquals(sku, product.getSku());
         assertEquals(today, product.getDateGenerated());
         assertEquals(bestBeforeDate, product.getBestBeforeDate());
-        assertEquals(cost, product.getPrice());
+        assertEquals(price, product.getPrice());
+        assertEquals(cost, product.getCost());
         product = new Product(product.toJson());
-        assertEquals(itemCode, product.getCategory());
+        assertEquals(id, product.getId());
         assertEquals(sku, product.getSku());
         assertEquals(today, product.getDateGenerated());
         assertEquals(bestBeforeDate, product.getBestBeforeDate());
-        assertEquals(cost, product.getPrice());
-        Product product2 = new Product(itemCode, sku, cost, today, null);
-        assertEquals(itemCode, product2.getCategory());
+        assertEquals(cost, product.getCost());
+        assertEquals(price, product.getPrice());
+        Product product2 = new Product(id, sku, cost, price, today, null, "a");
+        assertEquals(id, product2.getId());
         assertEquals(sku, product2.getSku());
         assertEquals(today, product2.getDateGenerated());
-        assertEquals(cost, product2.getPrice());
+        assertEquals(cost, product2.getCost());
+        assertEquals(price, product2.getPrice());
         assertNull(product2.getBestBeforeDate());
         product2 = new Product(product2.toJson());
-        assertEquals(itemCode, product2.getCategory());
+        assertEquals(id, product2.getId());
         assertEquals(sku, product2.getSku());
         assertEquals(today, product2.getDateGenerated());
-        assertEquals(cost, product2.getPrice());
+        assertEquals(price, product2.getPrice());
+        assertEquals(cost, product2.getCost());
         assertNull(product2.getBestBeforeDate());
     }
 }
