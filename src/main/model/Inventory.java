@@ -316,5 +316,24 @@ public class Inventory implements JsonConvertible {
         }
         return getProductList(id).get(0);
     }
+
+    //EFFECTS: return column data for converting this to table
+    public static String[] getDataList() {
+        String[] columns = new String[]{
+                "Category", "ID", "Name", "Description", "Special Note", "Quantity", "Average Cost", "List Price"
+        };
+        return columns;
+    }
+
+    //EFFECTS: return data for converting this to table
+    public Object[][] getData() {
+        List<String> items = getListOfCodes();
+        Object[][] data = new Object[items.size()][];
+        for (int i = 0; i < data.length; i++) {
+            Item item = this.items.get(items.get(i));
+            data[i] = item.convertToTableEntry();
+        }
+        return data;
+    }
 }
 

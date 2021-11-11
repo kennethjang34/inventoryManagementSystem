@@ -283,45 +283,11 @@ public class InventoryPanel extends JPanel implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getActionCommand().equals(add)) {
-            JDialog dl = new JDialog();
-            dl.add(new AddPanel());
-            dl.setSize(600, 700);
-            dl.setVisible(true);
-            addListPanel.revalidate();
-        } else if (e.getActionCommand().equals(remove)) {
-            JDialog dl = new JDialog();
-            dl.add(new RemovePanel());
-            dl.setSize(600, 700);
-            dl.setVisible(true);
-            removeListPanel.revalidate();
-        } else if (e.getActionCommand().equals(update)) {
             inventory.addProducts(listToAdd);
+        } else {
             inventory.removeStocks(listToRemove);
-            DefaultTableModel tableModel = (DefaultTableModel)tableForNew.getModel();
-            tableModel.setRowCount(0);
-            tableModel = (DefaultTableModel)tableForRemoval.getModel();
-            tableModel.setRowCount(0);
-            tableForNew.revalidate();
-            tableForRemoval.revalidate();
-            List<String> codes = new ArrayList<>();
-            for (QuantityTag tag: listToRemove) {
-                String code = tag.getId();
-                if (!codes.contains(code)) {
-                    codes.add(code);
-                }
-            }
-
-            for (InventoryTag tag: listToAdd) {
-                String code = tag.getId();
-                if (!codes.contains(code)) {
-                    codes.add(code);
-                }
-            }
-            listToAdd.clear();
-            listToRemove.clear();
-            stockPanel.update(codes);
-            stockPanel.revalidate();
         }
+        stockPanel.revalidate();
     }
 
     //EFFECTS: create a new panel for adding new products to the inventory
