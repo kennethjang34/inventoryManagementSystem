@@ -1,4 +1,4 @@
-package ui;
+package ui.stockpanel;
 
 import model.Inventory;
 import model.InventoryTag;
@@ -12,6 +12,7 @@ import javax.swing.tree.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,8 +21,11 @@ import java.util.List;
 public class StockPanel extends JPanel {
     private StockTableModel tableModel;
     private Inventory inventory;
-    private String[] columnNames;
+    private Object[] columnNames;
     private StockTree stockTree;
+
+
+
 
 
 
@@ -178,7 +182,7 @@ public class StockPanel extends JPanel {
 
         //EFFECTS: return the name of the column
         public String getColumnName(int col) {
-            return columnNames[col];
+            return (String)columnNames[col];
         }
 
 

@@ -3,6 +3,7 @@ package ui;
 import model.Inventory;
 import model.InventoryTag;
 import model.QuantityTag;
+import ui.stockpanel.StockPanel;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;

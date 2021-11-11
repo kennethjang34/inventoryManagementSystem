@@ -132,6 +132,22 @@ public class Inventory implements JsonConvertible {
         return failed;
     }
 
+    //REQUIRES: tag needs to contain all necessary info for new products
+    //MODIFIES: this
+    //EFFECTS: will put new products in the inventory list using information in the tag
+    //If there is no such item to include this product, return false.
+    //if succeeded, return true
+    public boolean addProducts(InventoryTag tag) {
+        String id = tag.getId();
+        Item item = items.get(id);
+        if (item == null) {
+            return false;
+        } else {
+            item.addProducts(tag);
+            return true;
+        }
+    }
+
 
     //MODIFIES: this
     //EFFECTS: remove a product with its item code and SKU. if the product is removed, return true
@@ -284,6 +300,20 @@ public class Inventory implements JsonConvertible {
         return ((items.containsKey(id) ? items.get(id).getProducts() : Collections.emptyList()));
     }
 
+    //EFFECTS: return the list of products belonging to the given id at the specified location
+    //If there isn't any of those, return empty list.
+    public List<Product> getProductList(String id, String location) {
+        List<Product> products = null;
+        if (items.containsKey(id)) {
+            Item item = items.get(id);
+            products = item.getProducts(location);
+        }
+        if (products != null) {
+            return products;
+        }
+        return Collections.emptyList();
+    }
+
 
 
     //EFFECTS: return a list of item codes existing in the inventory.
@@ -318,9 +348,10 @@ public class Inventory implements JsonConvertible {
     }
 
     //EFFECTS: return column data for converting this to table
-    public static String[] getDataList() {
+    public static Object[] getDataList() {
         String[] columns = new String[]{
-                "Category", "ID", "Name", "Description", "Special Note", "Quantity", "Average Cost", "List Price"
+                "Category", "ID", "Name", "Description", "Special Note", "Quantity",
+                "Average Cost", "List Price", "OPTION"
         };
         return columns;
     }
@@ -335,5 +366,8 @@ public class Inventory implements JsonConvertible {
         }
         return data;
     }
+
+    //EFFECTS: return data for stocks at different locations that belong to the given id
+    //Object[0] ==
 }
 

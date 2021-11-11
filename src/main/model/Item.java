@@ -5,6 +5,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import persistence.JsonConvertible;
 
+import javax.swing.*;
 import java.time.LocalDate;
 import java.util.*;
 
@@ -326,7 +327,7 @@ public class Item implements  TableEntryConvertible, JsonConvertible {
     @Override
     public Object[] convertToTableEntry() {
         return new Object[]{
-                category, id, name, description, note, getQuantity(), averageCost, listPrice
+                category, id, name, description, note, getQuantity(), averageCost, listPrice, new JButton()
         };
     }
 
