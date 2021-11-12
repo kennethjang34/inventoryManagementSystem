@@ -367,6 +367,13 @@ public class Inventory implements JsonConvertible {
         return data;
     }
 
+    //EFFECTS: return data for the item with the given ID
+    public Object[] getData(String id) {
+        assert items.containsKey(id);
+        Item item = items.get(id);
+        return item.convertToTableEntry();
+    }
+
     //EFFECTS: return data for stocks at different locations that belong to the given id
     //Object[0] ==
 }

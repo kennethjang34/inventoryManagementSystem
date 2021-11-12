@@ -2,12 +2,15 @@ package ui.stockpanel;
 
 import model.Inventory;
 import model.InventoryTag;
+import model.Product;
 import model.QuantityTag;
 import ui.ClickableButtonTable;
 import ui.productpanel.ProductPanel;
 
 
 import javax.swing.*;
+import javax.swing.border.Border;
+import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -52,6 +55,11 @@ public class StockButtonTable extends ClickableButtonTable implements ActionList
                 @Override
                 public Class getColumnClass(int column) {
                     return getValueAt(0, column).getClass();
+                }
+
+                @Override
+                public String getColumnName(int columnIndex) {
+                    return (String)column[columnIndex];
                 }
             };
 
@@ -113,18 +121,7 @@ public class StockButtonTable extends ClickableButtonTable implements ActionList
     public StockButtonTable(Inventory inventory, ProductPanel productPanel) {
         this.inventory = inventory;
         this.productPanel = productPanel;
-        DefaultTableModel tableModel = new DefaultTableModel(inventory.getData(), Inventory.getDataList()) {
-            @Override
-            public boolean isCellEditable(int row, int column) {
-                return false;
-            }
-
-            @Override
-            public Class getColumnClass(int column) {
-                return getValueAt(0, column).getClass();
-            }
-        };
-        setModel(tableModel);
+        setModel(new StockButtonTableModel(inventory));
         for (int i = 0; i < getRowCount(); i++) {
             for (int j = 0; j < getColumnCount(); j++) {
                 if (getValueAt(i, j) instanceof JButton) {
@@ -133,8 +130,8 @@ public class StockButtonTable extends ClickableButtonTable implements ActionList
                 }
             }
         }
-        assert tableModel.getValueAt(1, 8) instanceof JButton
-                : tableModel.getValueAt(1, 8).getClass().toString();
+        assert getModel().getValueAt(1, 8) instanceof JButton
+                : getModel().getValueAt(1, 8).getClass().toString();
         setDefaultRenderer(JButton.class, this);
     }
 
@@ -144,7 +141,6 @@ public class StockButtonTable extends ClickableButtonTable implements ActionList
                                                    boolean hasFocus, int row, int column) {
         if (value instanceof JButton) {
             JButton button = (JButton)value;
-            //System.out.println("/.");
             button.setText("Location");
             String id = (String) getValueAt(row, 1);
             button.setActionCommand(id);
@@ -186,23 +182,30 @@ public class StockButtonTable extends ClickableButtonTable implements ActionList
         locationViewDialog.setVisible(true);
     }
 
+    public void setProductPanel(ProductPanel panel) {
+        productPanel = panel;
+    }
 
     public static void main(String[] args) {
         Inventory inventory = new Inventory();
         inventory.createCategory("Fruit");
         inventory.createItem("APP", "apple", "Fruit", 4, "test", "test");
         List<InventoryTag> tags = new ArrayList<>();
-        tags.add(new InventoryTag("APP", 20, 30, LocalDate.now(), "f11", 100));
+        tags.add(new InventoryTag("APP", 20, 30, LocalDate.now(), "f11", 1));
         inventory.addProducts(tags);
 //        if (inventory.getData() == null) {
 //            throw new IllegalArgumentException(
         inventory.createItem("BNN", "chicken", "Fruit", 12, "test", "test");
         tags = new ArrayList<>();
-        tags.add(new InventoryTag("BNN", 1, 3, LocalDate.now(), "f13", 100));
+        tags.add(new InventoryTag("BNN", 1, 3, LocalDate.now(), "f13", 1));
         inventory.addProducts(tags);
         JFrame frame = new JFrame();
+        frame.setLayout(new BorderLayout());
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        frame.add(new StockButtonTable(inventory, new ProductPanel(inventory)));
+        ProductPanel panel = new ProductPanel(inventory);
+        StockPanel stockPanel = new StockPanel(inventory, panel);
+        frame.add(stockPanel, BorderLayout.SOUTH);
+        frame.add(panel, BorderLayout.CENTER);
         frame.pack();
         frame.setVisible(true);
     }

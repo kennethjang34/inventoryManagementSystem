@@ -5,7 +5,6 @@ import model.InventoryTag;
 import ui.InventoryManagementSystemApplication;
 
 import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.time.LocalDate;
@@ -23,7 +22,7 @@ public class AddPanel extends JPanel implements ActionListener {
 
 
     //EFFECTS: create a new panel that will pop up if the user attempts to add new stocks
-    private AddPanel(Inventory inventory) {
+    public AddPanel(Inventory inventory, JButton button) {
         this.inventory = inventory;
         add(new JLabel("ID"));
         add(idField);
@@ -39,7 +38,7 @@ public class AddPanel extends JPanel implements ActionListener {
         add(locationField);
         add(new JLabel("Quantity: "));
         add(quantityField);
-        JButton button = new JButton("Register");
+        button.setText("Register");
         button.addActionListener(this);
         add(button);
         setSize(600, 700);
@@ -62,7 +61,7 @@ public class AddPanel extends JPanel implements ActionListener {
         String location = locationField.getText();
         int qty = Integer.parseInt(quantityField.getText());
         if (qty > 0) {
-            inventory.addProducts(new InventoryTag(id, cost, price, bestBeforeDate, location, qty));
+            inventory.addProducts(new InventoryTag(id, cost, price, LocalDate.now(), bestBeforeDate, location, qty));
         }
     }
 }

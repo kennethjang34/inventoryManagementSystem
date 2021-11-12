@@ -15,11 +15,6 @@ public abstract class ClickableButtonTable extends JTable implements TableCellRe
 
 
 
-//    @Override
-//    public boolean isCellEditable(int row, int column) {
-//        return false;
-//    }
-
 
     @Override
     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
