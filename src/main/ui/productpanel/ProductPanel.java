@@ -171,29 +171,29 @@ public class ProductPanel extends JPanel implements ActionListener {
         }
         table.repaint();
     }
-
-    public static void main(String[] args) {
-        Inventory inventory = new Inventory();
-        inventory.createCategory("Fruit");
-        inventory.createItem("APP", "apple", "Fruit", 4, "test", "test");
-        List<InventoryTag> tags = new ArrayList<>();
-        tags.add(new InventoryTag("APP", 20, 30, LocalDate.now(), "F13", 100));
-        inventory.addProducts(tags);
-        inventory.createItem("BNN", "banana", "Fruit", 12, "test", "test");
-        tags = new ArrayList<>();
-        tags.add(new InventoryTag("BNN", 1, 3, LocalDate.now(), "F13", 100));
-        inventory.addProducts(tags);
-        ProductPanel productPanel = new ProductPanel(inventory);
-        productPanel.addToList("APP", "F13");
-        assert productPanel.products.size() == 100;
-        JFrame frame = new JFrame();
-        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        frame.setSize(500, 600);
-        frame.add(productPanel);
-        productPanel.setPreferredSize(new Dimension(400, 500));
-        frame.pack();
-        frame.setVisible(true);
-
-    }
+//
+//    public static void main(String[] args) {
+//        Inventory inventory = new Inventory();
+//        inventory.createCategory("Fruit");
+//        inventory.createItem("APP", "apple", "Fruit", 4, "test", "test");
+//        List<InventoryTag> tags = new ArrayList<>();
+//        tags.add(new InventoryTag("APP", 20, 30, LocalDate.now(), "F13", 100));
+//        inventory.addProducts(tags);
+//        inventory.createItem("BNN", "banana", "Fruit", 12, "test", "test");
+//        tags = new ArrayList<>();
+//        tags.add(new InventoryTag("BNN", 1, 3, LocalDate.now(), "F13", 100));
+//        inventory.addProducts(tags);
+//        ProductPanel productPanel = new ProductPanel(inventory);
+//        productPanel.addToList("APP", "F13");
+//        assert productPanel.products.size() == 100;
+//        JFrame frame = new JFrame();
+//        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+//        frame.setSize(500, 600);
+//        frame.add(productPanel);
+//        productPanel.setPreferredSize(new Dimension(400, 500));
+//        frame.pack();
+//        frame.setVisible(true);
+//
+//    }
 
 }

@@ -374,7 +374,9 @@ public class Inventory implements JsonConvertible {
         return item.convertToTableEntry();
     }
 
-    //EFFECTS: return data for stocks at different locations that belong to the given id
-    //Object[0] ==
+    //EFFECTS: return true if this inventory contains an item with the given id
+    public boolean containsItem(String id) {
+        return items.containsKey(id);
+    }
 }
 

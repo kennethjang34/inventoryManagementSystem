@@ -182,31 +182,28 @@ public class StockButtonTable extends ClickableButtonTable implements ActionList
         locationViewDialog.setVisible(true);
     }
 
-    public void setProductPanel(ProductPanel panel) {
-        productPanel = panel;
-    }
-
-    public static void main(String[] args) {
-        Inventory inventory = new Inventory();
-        inventory.createCategory("Fruit");
-        inventory.createItem("APP", "apple", "Fruit", 4, "test", "test");
-        List<InventoryTag> tags = new ArrayList<>();
-        tags.add(new InventoryTag("APP", 20, 30, LocalDate.now(), "f11", 1));
-        inventory.addProducts(tags);
-//        if (inventory.getData() == null) {
-//            throw new IllegalArgumentException(
-        inventory.createItem("BNN", "chicken", "Fruit", 12, "test", "test");
-        tags = new ArrayList<>();
-        tags.add(new InventoryTag("BNN", 1, 3, LocalDate.now(), "f13", 1));
-        inventory.addProducts(tags);
-        JFrame frame = new JFrame();
-        frame.setLayout(new BorderLayout());
-        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        ProductPanel panel = new ProductPanel(inventory);
-        StockPanel stockPanel = new StockPanel(inventory, panel);
-        frame.add(stockPanel, BorderLayout.SOUTH);
-        frame.add(panel, BorderLayout.CENTER);
-        frame.pack();
-        frame.setVisible(true);
-    }
+//
+//    public static void main(String[] args) {
+//        Inventory inventory = new Inventory();
+//        inventory.createCategory("Fruit");
+//        inventory.createItem("APP", "apple", "Fruit", 4, "test", "test");
+//        List<InventoryTag> tags = new ArrayList<>();
+//        tags.add(new InventoryTag("APP", 20, 30, LocalDate.now(), "f11", 1));
+//        inventory.addProducts(tags);
+////        if (inventory.getData() == null) {
+////            throw new IllegalArgumentException(
+//        inventory.createItem("BNN", "chicken", "Fruit", 12, "test", "test");
+//        tags = new ArrayList<>();
+//        tags.add(new InventoryTag("BNN", 1, 3, LocalDate.now(), "f13", 1));
+//        inventory.addProducts(tags);
+//        JFrame frame = new JFrame();
+//        frame.setLayout(new BorderLayout());
+//        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+//        ProductPanel panel = new ProductPanel(inventory);
+//        StockPanel stockPanel = new StockPanel(inventory, panel);
+//        frame.add(stockPanel, BorderLayout.SOUTH);
+//        frame.add(panel, BorderLayout.CENTER);
+//        frame.pack();
+//        frame.setVisible(true);
+//    }
 }
