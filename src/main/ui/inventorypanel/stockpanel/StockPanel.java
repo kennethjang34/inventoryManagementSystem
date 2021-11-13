@@ -1,20 +1,9 @@
-package ui.stockpanel;
+package ui.inventorypanel.stockpanel;
 
 import model.*;
-import ui.productpanel.ProductPanel;
+import ui.inventorypanel.productpanel.ProductPanel;
 
 import javax.swing.*;
-import javax.swing.table.AbstractTableModel;
-import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableCellRenderer;
-import javax.swing.tree.*;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 
 //A panel that will display stock situation of the inventory
 public class StockPanel extends JPanel {

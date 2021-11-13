@@ -3,6 +3,7 @@ package ui;
 import model.Admin;
 import model.Inventory;
 import model.Ledger;
+import ui.inventorypanel.InventoryPanel;
 
 import javax.swing.*;
 import java.awt.*;

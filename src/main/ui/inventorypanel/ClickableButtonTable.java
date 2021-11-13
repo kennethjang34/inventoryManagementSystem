@@ -1,4 +1,4 @@
-package ui;
+package ui.inventorypanel;
 
 import javax.swing.*;
 import javax.swing.table.TableCellRenderer;
@@ -21,12 +21,12 @@ public abstract class ClickableButtonTable extends JTable implements TableCellRe
                                                             boolean hasFocus, int row, int column) {
         if (value instanceof JButton) {
             JButton button = (JButton) value;
+            ((JButton) value).setBackground(Color.BLACK);
             return  button;
         } else if (value instanceof String || value instanceof Double || value instanceof Integer) {
             return this;
         }
-        assert value == null;
-        return this;
+        throw new RuntimeException(value.toString());
     }
 
 

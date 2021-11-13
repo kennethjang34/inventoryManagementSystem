@@ -26,6 +26,10 @@ public class CategoryGenerator extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String name = categoryField.getText();
+                if (name.equals("")) {
+                    JOptionPane.showMessageDialog(null, "Category name cannot be empty");
+                    return;
+                }
                 categoryField.removeAll();
                 if (inventory.createCategory(name)) {
                     JOptionPane.showMessageDialog(null, "New Category: "

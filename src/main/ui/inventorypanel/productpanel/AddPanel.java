@@ -1,4 +1,4 @@
-package ui.productpanel;
+package ui.inventorypanel.productpanel;
 
 import model.Inventory;
 import model.InventoryTag;

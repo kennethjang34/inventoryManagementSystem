@@ -35,20 +35,36 @@ public class ItemGenerator extends JPanel {
         fieldPanel.add(new JLabel("NOTE: "));
         fieldPanel.add(note);
         button.addActionListener(new ActionListener() {
+
+
             @Override
             public void actionPerformed(ActionEvent e) {
                 String id = idField.getText();
                 String category = categoryField.getText();
+                if (id.equals("")) {
+                    JOptionPane.showMessageDialog(null,
+                            "Every item needs ID");
+                    //clearFields();
+                } else if (category.equals("")) {
+                    JOptionPane.showMessageDialog(null,
+                            "Every item needs category");
+                    //clearFields();
+                }
                 if (inventory.containsItem(id)) {
                     JOptionPane.showMessageDialog(null,
                             "There is already an item with id: " + id);
+                    clearFields();
                 } else if (!inventory.containsCategory(category)) {
                     JOptionPane.showMessageDialog(null,
                             "There is no such category. " + category);
+                    //categoryField.removeAll();
                 } else {
-                    inventory.createItem(id, nameField.getName(), category,
+                    inventory.createItem(id, nameField.getText(), category,
                             Integer.parseInt(priceField.getText()), description.getText(), note.getText()
                     );
+                    clearFields();
+                    JOptionPane.showMessageDialog(null,
+                            "Item: " + id + " has been successfully created");
                 }
             }
         });
@@ -61,5 +77,14 @@ public class ItemGenerator extends JPanel {
         gc.gridx = 1;
         gc.gridy = 1;
         add(button, gc);
+    }
+
+    public void clearFields() {
+        idField.removeAll();
+        categoryField.removeAll();
+        description.removeAll();
+        note.removeAll();
+        priceField.removeAll();
+        nameField.removeAll();
     }
 }

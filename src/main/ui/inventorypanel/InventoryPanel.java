@@ -1,8 +1,10 @@
-package ui;
+package ui.inventorypanel;
 
 import model.Inventory;
-import ui.productpanel.ProductPanel;
-import ui.stockpanel.StockPanel;
+import ui.CategoryGenerator;
+import ui.ItemGenerator;
+import ui.inventorypanel.productpanel.ProductPanel;
+import ui.inventorypanel.stockpanel.StockPanel;
 
 import javax.swing.*;
 import java.awt.*;

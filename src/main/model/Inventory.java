@@ -109,7 +109,9 @@ public class Inventory implements JsonConvertible {
         if (items.containsKey(id)) {
             return false;
         }
-        items.put(id, new Item(id, name, categories.get(category).getName(), listPrice, description, note));
+        Item item = new Item(id, name, category, listPrice, description, note);
+        items.put(id, item);
+        categories.get(category).addItem(item);
         return true;
     }
 
@@ -348,10 +350,14 @@ public class Inventory implements JsonConvertible {
     }
 
     //EFFECTS: return column data for converting this to table
-    public static Object[] getDataList() {
+    public String[] getDataList() {
+        if (!items.isEmpty()) {
+            return getItemList().get(0).getColumnNames();
+        }
+
         String[] columns = new String[]{
                 "Category", "ID", "Name", "Description", "Special Note", "Quantity",
-                "Average Cost", "List Price", "OPTION"
+                "Average Cost", "List Price"
         };
         return columns;
     }

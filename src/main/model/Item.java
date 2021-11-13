@@ -316,8 +316,8 @@ public class Item implements  TableEntryConvertible, JsonConvertible {
 
     //EFFECTS: return an array of column names for table entry
     @Override
-    public Object[] getColumnNames() {
-        Object[] columns = new Object[]{
+    public String[] getColumnNames() {
+        String[] columns = new String[]{
                 "Category", "ID", "Name", "Description", "Special Note", "Quantity", "Average Cost", "List Price"
         };
         return columns;
@@ -331,6 +331,8 @@ public class Item implements  TableEntryConvertible, JsonConvertible {
         };
     }
 
+
+    //EFFECTS: return a JSONObject of this
     @Override
     public JSONObject toJson() {
         JSONObject json = new JSONObject();

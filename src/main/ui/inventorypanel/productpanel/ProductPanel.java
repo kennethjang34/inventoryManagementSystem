@@ -1,11 +1,9 @@
-package ui.productpanel;
+package ui.inventorypanel.productpanel;
 
 import model.Inventory;
-import model.InventoryTag;
 import model.Product;
-import model.QuantityTag;
-import ui.ClickableButtonTable;
-import ui.stockpanel.StockButtonTable;
+import ui.inventorypanel.productpanel.AddPanel;
+import ui.inventorypanel.stockpanel.StockButtonTable;
 
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
@@ -13,9 +11,10 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
-import java.sql.Array;
-import java.time.LocalDate;
+import java.awt.event.MouseListener;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public class ProductPanel extends JPanel implements ActionListener {
@@ -25,8 +24,16 @@ public class ProductPanel extends JPanel implements ActionListener {
     StockButtonTable stockTable;
     private static String add = "ADD";
     private static String remove = "remove";
+    //Order: based on best-before date from nearest to farthest
+    private static final int BEST_BEFORE_DATE_NF = 0;
+    //Order: based on best-before date from farthest to nearest
+    private static final int BEST_BEFORE_DATE_FN = 1;
+    //Order: alphabetical order, from A to Z
+    private static final int ALPHABETICAL_AZ = 2;
+    //Order: alphabetical order, from Z to A
+    private static final int ALPHABETICAL_ZA = 3;
 
-    private class ProductTable extends ClickableButtonTable {
+    private class ProductTable extends JTable implements MouseListener {
 
         String[] columnNames;
         AbstractTableModel tableModel;
@@ -81,6 +88,65 @@ public class ProductPanel extends JPanel implements ActionListener {
             setModel(tableModel);
         }
 
+        //MODIFIES: this
+        //EFFECTS: sort the table based on the best before date (closest to best before date to farthest)
+        public void sortByBestBeforeDateInOrder() {
+            Collections.sort(products, new Comparator<Product>() {
+                @Override
+                public int compare(Product o1, Product o2) {
+                    return (o1.getBestBeforeDate().isBefore(o2.getBestBeforeDate()) ? -1 : 1);
+                }
+            });
+            tableModel.fireTableDataChanged();
+        }
+
+
+        //REQUIRES: Order must be one of those defined in the interface provided by this
+        //MODIFIES: this
+        //EFFECTS: sort the table based on the specified order
+        @SuppressWarnings({"checkstyle:MethodLength", "checkstyle:SuppressWarnings"})
+        public void sortProducts(int order) {
+            switch (order) {
+                case 0:
+                    Collections.sort(products, new Comparator<Product>() {
+                        @Override
+                        public int compare(Product o1, Product o2) {
+                            return (o1.getBestBeforeDate().isBefore(o2.getBestBeforeDate()) ? -1 : 1);
+                        }
+                    });
+                    break;
+                case 1:
+                    Collections.sort(products, new Comparator<Product>() {
+                        @Override
+                        public int compare(Product o1, Product o2) {
+                            return (o1.getBestBeforeDate().isBefore(o2.getBestBeforeDate()) ? 1 : -1);
+                        }
+                    });
+                    break;
+                case 2:
+                    Collections.sort(products, new Comparator<Product>() {
+                        @Override
+                        public int compare(Product o1, Product o2) {
+                            return (o1.getId().compareToIgnoreCase(o2.getId()) < 0 ? -1 : 1);
+                        }
+                    });
+                    break;
+                case 3:
+                    Collections.sort(products, new Comparator<Product>() {
+                        @Override
+                        public int compare(Product o1, Product o2) {
+                            return (o1.getId().compareToIgnoreCase(o2.getId()) < 0 ? 1 : -1);
+                        }
+                    });
+                    break;
+            }
+            tableModel.fireTableDataChanged();
+        }
+
+
+
+
+
         //EFFECTS: return column names
         public String[] getColumnNames() {
             return columnNames;
@@ -92,6 +158,26 @@ public class ProductPanel extends JPanel implements ActionListener {
                 //stub
             }
         }
+
+        @Override
+        public void mousePressed(MouseEvent e) {
+
+        }
+
+        @Override
+        public void mouseReleased(MouseEvent e) {
+
+        }
+
+        @Override
+        public void mouseEntered(MouseEvent e) {
+
+        }
+
+        @Override
+        public void mouseExited(MouseEvent e) {
+
+        }
     }
 
     public void setStockTable(StockButtonTable stockTable) {
@@ -99,6 +185,7 @@ public class ProductPanel extends JPanel implements ActionListener {
     }
 
 
+    @SuppressWarnings({"checkstyle:MethodLength", "checkstyle:SuppressWarnings"})
     public ProductPanel(Inventory inventory) {
         //this.stockTable = stockTable;
         setLayout(new BorderLayout());
@@ -117,12 +204,31 @@ public class ProductPanel extends JPanel implements ActionListener {
         removeButton.setActionCommand(remove);
         removeButton.addActionListener(this);
         buttonPanel.add(removeButton);
+        JButton sortButton = new JButton("sortByBestBeforeDate");
+        sortButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                table.sortByBestBeforeDateInOrder();
+            }
+        });
+        buttonPanel.add(sortButton);
         add(buttonPanel, BorderLayout.SOUTH);
     }
 
 
     public void addToList(String id, String location) {
         List<Product> toBeAdded = inventory.getProductList(id, location);
+        for (Product product: toBeAdded) {
+            if (!products.contains(product)) {
+                products.add(product);
+            }
+        }
+        ((AbstractTableModel)table.getModel()).fireTableDataChanged();
+        table.repaint();
+    }
+
+    public void addToList(String id) {
+        List<Product> toBeAdded = inventory.getProductList(id);
         for (Product product: toBeAdded) {
             if (!products.contains(product)) {
                 products.add(product);
@@ -144,7 +250,13 @@ public class ProductPanel extends JPanel implements ActionListener {
         if (e.getActionCommand().equalsIgnoreCase(add)) {
             JDialog dialog = new JDialog();
             JButton button = new JButton();
-            button.addActionListener(e1 -> dialog.setVisible(false));
+            button.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    dialog.setVisible(false);
+                    ((AbstractTableModel)stockTable.getModel()).fireTableDataChanged();
+                }
+            });
             AddPanel addPanel = new AddPanel(inventory, button);
             //JDialog dialog = optionPane.createDialog(null, "Add new products");
             dialog.setLayout(new FlowLayout());
@@ -170,6 +282,7 @@ public class ProductPanel extends JPanel implements ActionListener {
             }
         }
         table.repaint();
+        stockTable.repaint();
     }
 //
 //    public static void main(String[] args) {
