@@ -1,6 +1,7 @@
 package ui;
 
 import model.Inventory;
+import ui.inventorypanel.stockpanel.StockSearchPanel;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -11,14 +12,16 @@ public class CategoryGenerator extends JPanel {
     private JLabel categoryLabel = new JLabel("Category name: ");
     private JButton button = new JButton("create");
     private Inventory inventory;
+    private StockSearchPanel searchPanel;
 //    private JTextField itemField = new JTextField(10);
 //    private JLabel itemLabel = new JLabel("Item name: ");
 //    private JLabel
 //    private JButton itemButton = new JButton("create");
 //    private Inventory inventory;
 
-    public CategoryGenerator(Inventory inventory) {
+    public CategoryGenerator(Inventory inventory, StockSearchPanel searchPanel) {
         this.inventory = inventory;
+        this.searchPanel = searchPanel;
         add(categoryLabel);
         add(categoryField);
         add(button);
@@ -32,6 +35,7 @@ public class CategoryGenerator extends JPanel {
                 }
                 categoryField.removeAll();
                 if (inventory.createCategory(name)) {
+                    searchPanel.addCategory(name);
                     JOptionPane.showMessageDialog(null, "New Category: "
                             + name + " has been successfully created");
                 } else {

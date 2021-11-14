@@ -24,13 +24,13 @@ public class InventoryPanel extends JPanel {
         this.inventory = inventory;
         productPanel = new ProductPanel(inventory);
         stockPanel = new StockPanel(inventory, productPanel);
-        JPanel typeCreator = new JPanel();
-        typeCreator.add(new CategoryGenerator(inventory));
-        typeCreator.add(new ItemGenerator(inventory));
+//        JPanel typeCreator = new JPanel();
+//        typeCreator.add(new CategoryGenerator(inventory, stockSearchPanel));
+//        typeCreator.add(new ItemGenerator(inventory, stockSearchPanel));
         setLayout(new BorderLayout());
-        add(typeCreator, BorderLayout.NORTH);
-        add(productPanel, BorderLayout.CENTER);
-        add(stockPanel, BorderLayout.SOUTH);
+        //add(typeCreator, BorderLayout.NORTH);
+        add(productPanel, BorderLayout.NORTH);
+        add(stockPanel, BorderLayout.CENTER);
     }
 
 

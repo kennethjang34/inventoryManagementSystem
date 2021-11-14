@@ -12,6 +12,8 @@ public class StockButtonTableModel extends AbstractTableModel {
     private String[] columnNames;
     private ActionListener actionListener;
     private HashMap<String, JButton> buttonHashMap;
+    private String category = null;
+    private String item = null;
 
     public StockButtonTableModel(Inventory inventory, ActionListener actionListener) {
         buttonHashMap = new HashMap<>();
@@ -37,28 +39,71 @@ public class StockButtonTableModel extends AbstractTableModel {
 
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
-        assert inventory.getListOfCodes().size() > 0;
-        String id = inventory.getListOfCodes().get(rowIndex);
-        if (!getColumnName(columnIndex).equalsIgnoreCase("BUTTON")) {
-            Object[] data = inventory.getData(id);
-            assert data[columnIndex] != null : getColumnName(columnIndex);
-            return data[columnIndex];
-        } else {
-            if (buttonHashMap.containsKey(id)) {
-                assert buttonHashMap.get(id) != null : "hashmap";
-                return buttonHashMap.get(id);
+        if (category == null && item == null) {
+            assert inventory.getIDs().size() > 0;
+            String id = inventory.getIDs().get(rowIndex);
+            if (!getColumnName(columnIndex).equalsIgnoreCase("BUTTON")) {
+                Object[] data = inventory.getData(id);
+                assert data[columnIndex] != null : getColumnName(columnIndex);
+                return data[columnIndex];
             } else {
-                JButton button = new JButton();
-                button.addActionListener(actionListener);
-                buttonHashMap.put(id, button);
-                return button;
+                if (buttonHashMap.containsKey(id)) {
+                    assert buttonHashMap.get(id) != null : "hashmap";
+                    return buttonHashMap.get(id);
+                } else {
+                    JButton button = new JButton();
+                    button.addActionListener(actionListener);
+                    buttonHashMap.put(id, button);
+                    return button;
+                }
+            }
+        } else if (item == null) {
+            String id = inventory.getIDs(category).get(rowIndex);
+            if (!getColumnName(columnIndex).equalsIgnoreCase("BUTTON")) {
+                Object[] data = inventory.getData(id);
+                assert data[columnIndex] != null : getColumnName(columnIndex);
+                return data[columnIndex];
+            } else {
+                if (buttonHashMap.containsKey(id)) {
+                    assert buttonHashMap.get(id) != null : "hashmap";
+                    return buttonHashMap.get(id);
+                } else {
+                    JButton button = new JButton();
+                    button.addActionListener(actionListener);
+                    buttonHashMap.put(id, button);
+                    return button;
+                }
+            }
+        } else {
+            String id = item;
+            //String id = inventory.getIDs(category).get(rowIndex);
+            if (!getColumnName(columnIndex).equalsIgnoreCase("BUTTON")) {
+                Object[] data = inventory.getData(id);
+                assert data[columnIndex] != null : getColumnName(columnIndex);
+                return data[columnIndex];
+            } else {
+                if (buttonHashMap.containsKey(id)) {
+                    assert buttonHashMap.get(id) != null : "hashmap";
+                    return buttonHashMap.get(id);
+                } else {
+                    JButton button = new JButton();
+                    button.addActionListener(actionListener);
+                    buttonHashMap.put(id, button);
+                    return button;
+                }
             }
         }
     }
 
     @Override
     public int getRowCount() {
-        return inventory.getListOfCodes().size();
+        if (category == null && item == null) {
+            return inventory.getIDs().size();
+        } else if (item != null) {
+            return 1;
+        } else {
+            return inventory.getIDs(category).size();
+        }
     }
 
     @Override
@@ -71,5 +116,16 @@ public class StockButtonTableModel extends AbstractTableModel {
 
         assert getValueAt(0, column).getClass() != null : "class";
         return getValueAt(0, column).getClass();
+    }
+
+    public void setCategory(String category) {
+        item = null;
+        this.category = category;
+        fireTableDataChanged();
+    }
+
+    public void setItem(String item) {
+        this.item = item;
+        fireTableDataChanged();
     }
 }

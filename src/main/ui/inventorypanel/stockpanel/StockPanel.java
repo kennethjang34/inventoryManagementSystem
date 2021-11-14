@@ -1,30 +1,68 @@
 package ui.inventorypanel.stockpanel;
 
 import model.*;
+import ui.CategoryGenerator;
+import ui.ItemGenerator;
 import ui.inventorypanel.productpanel.ProductPanel;
 
 import javax.swing.*;
+import java.awt.*;
 
 //A panel that will display stock situation of the inventory
 public class StockPanel extends JPanel {
     private Inventory inventory;
     private Object[] columnNames;
+    private StockButtonTable stockButtonTable;
+    StockSearchPanel searchPanel;
 
-
-    //EFFECTS: create new stock panel with given inventory
-    public StockPanel(Inventory inventory) {
-        JTable table = new StockButtonTable(inventory, null);
-        add(table);
-    }
+//    //EFFECTS: create new stock panel with given inventory
+//    public StockPanel(Inventory inventory) {
+//        searchPanel = new StockSearchPanel(inventory, this);
+//        JTable table = new StockButtonTable(inventory, null);
+//        add(table);
+//    }
 
 
 
     //EFFECTS: create new stock panel with given inventory and link it to the given product panel
     public StockPanel(Inventory inventory, ProductPanel productPanel) {
-        StockButtonTable table = new StockButtonTable(inventory, productPanel);
-        productPanel.setStockTable(table);
-        add(table);
+        this.inventory = inventory;
+        setLayout(new BorderLayout());
+        searchPanel = new StockSearchPanel(inventory, this);
+        JPanel typeCreator = new JPanel();
+        typeCreator.add(new CategoryGenerator(inventory, searchPanel));
+        typeCreator.add(new ItemGenerator(inventory, searchPanel));
+        stockButtonTable = new StockButtonTable(inventory, productPanel);
+        productPanel.setStockTable(stockButtonTable);
+        add(typeCreator, BorderLayout.NORTH);
+        add(searchPanel, BorderLayout.CENTER);
+        add(stockButtonTable, BorderLayout.SOUTH);
     }
+
+
+    //MODIFIES: this
+    //EFFECTS: if there exists such a category name, display all the items belonging to the category
+    //Otherwise, do nothing
+    public void displayItems(String categoryName) {
+        stockButtonTable.setCategory(categoryName);
+    }
+
+    //MODIFIES: this
+    //EFFECTS: display all items in the inventory
+    public void displayAllItems() {
+        stockButtonTable.setCategory(null);
+    }
+
+    //MODIFIES: this
+    //EFFECTS: display the item with the given id.
+    //if there is no item with the specified id, display no item
+    public void displayItem(String id) {
+        stockButtonTable.setItem(id);
+    }
+
+
+
+
 //
 //    public static void main(String[] args) {
 //        Inventory inventory = new Inventory();

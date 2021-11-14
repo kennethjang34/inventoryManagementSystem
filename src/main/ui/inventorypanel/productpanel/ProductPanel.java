@@ -43,7 +43,7 @@ public class ProductPanel extends JPanel implements ActionListener {
         private ProductTable(List<Product> products) {
             this.products = products;
             columnNames = new String[]{
-                    "ID", "SKU", "COST", "PRICE", "BEST-BEFORE DATE", "DATE GENERATED"
+                    "ID", "SKU", "COST", "PRICE", "BEST-BEFORE DATE", "DATE GENERATED", "LOCATION"
             };
             tableModel = new AbstractTableModel() {
 
@@ -80,6 +80,8 @@ public class ProductPanel extends JPanel implements ActionListener {
                             return product.getBestBeforeDate();
                         case "DATE GENERATED":
                             return product.getDateGenerated();
+                        case "LOCATION":
+                            return product.getLocation();
                     }
 
                     return null;
@@ -94,6 +96,11 @@ public class ProductPanel extends JPanel implements ActionListener {
             Collections.sort(products, new Comparator<Product>() {
                 @Override
                 public int compare(Product o1, Product o2) {
+                    if (o1.getBestBeforeDate() == null) {
+                        return 1;
+                    } else if (o2.getBestBeforeDate() == null) {
+                        return -1;
+                    }
                     return (o1.getBestBeforeDate().isBefore(o2.getBestBeforeDate()) ? -1 : 1);
                 }
             });
@@ -193,7 +200,7 @@ public class ProductPanel extends JPanel implements ActionListener {
         this.inventory = inventory;
         table = new ProductTable(products);
         JScrollPane scrollPane = new JScrollPane(table);
-        scrollPane.setPreferredSize(new Dimension(700, 600));
+        scrollPane.setPreferredSize(new Dimension(500, 300));
         add(scrollPane, BorderLayout.CENTER);
         JButton addButton = new JButton(add);
         addButton.setActionCommand(add);

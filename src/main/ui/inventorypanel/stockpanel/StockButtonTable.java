@@ -21,6 +21,8 @@ public class StockButtonTable extends JTable implements ActionListener, TableCel
     private String[] columnName;
     private StockLocationButtonTable locationButtonTable;
 
+
+
     private class StockLocationButtonTable extends JTable implements ActionListener, TableCellRenderer {
         private List<QuantityTag> tags;
         private String id;
@@ -176,12 +178,12 @@ public class StockButtonTable extends JTable implements ActionListener, TableCel
     @Override
     public void mouseClicked(MouseEvent e) {
         if (e.getSource() instanceof StockLocationButtonTable) {
-            int column = columnAtPoint(e.getPoint());
+            int column = locationButtonTable.columnAtPoint(e.getPoint());
             if (locationButtonTable.getColumnClass(column).equals(JButton.class)) {
-                JButton button = (JButton) locationButtonTable.getValueAt(getSelectedRow(), column);
+                JButton button = (JButton) locationButtonTable.getValueAt(locationButtonTable.getSelectedRow(), column);
                 button.doClick();
             } else if (e.getClickCount() == 2 && getSelectedRow() != -1) {
-                QuantityTag tag = locationButtonTable.getTags().get(getSelectedRow());
+                QuantityTag tag = locationButtonTable.getTags().get(locationButtonTable.getSelectedRow());
                 productPanel.addToList(tag.getId(), tag.getLocation());
             }
         } else {
@@ -239,28 +241,17 @@ public class StockButtonTable extends JTable implements ActionListener, TableCel
         locationViewDialog.setVisible(true);
     }
 
-//
-//    public static void main(String[] args) {
-//        Inventory inventory = new Inventory();
-//        inventory.createCategory("Fruit");
-//        inventory.createItem("APP", "apple", "Fruit", 4, "test", "test");
-//        List<InventoryTag> tags = new ArrayList<>();
-//        tags.add(new InventoryTag("APP", 20, 30, LocalDate.now(), "f11", 1));
-//        inventory.addProducts(tags);
-////        if (inventory.getData() == null) {
-////            throw new IllegalArgumentException(
-//        inventory.createItem("BNN", "chicken", "Fruit", 12, "test", "test");
-//        tags = new ArrayList<>();
-//        tags.add(new InventoryTag("BNN", 1, 3, LocalDate.now(), "f13", 1));
-//        inventory.addProducts(tags);
-//        JFrame frame = new JFrame();
-//        frame.setLayout(new BorderLayout());
-//        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-//        ProductPanel panel = new ProductPanel(inventory);
-//        StockPanel stockPanel = new StockPanel(inventory, panel);
-//        frame.add(stockPanel, BorderLayout.SOUTH);
-//        frame.add(panel, BorderLayout.CENTER);
-//        frame.pack();
-//        frame.setVisible(true);
-//    }
+    //MODIFIES: this
+    //EFFECTS: change the current category of the model of this
+    public void setCategory(String category) {
+        ((StockButtonTableModel)getModel()).setCategory(category);
+    }
+
+    //MODIFIES: this
+    //EFFECTS: change the current item selected of the model of this
+    public void setItem(String id) {
+        ((StockButtonTableModel)getModel()).setItem(id);
+    }
+
+
 }

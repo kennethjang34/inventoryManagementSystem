@@ -54,7 +54,7 @@ public class InventoryTest {
         inventory = new Inventory();
         assertEquals(0, inventory.getTotalQuantity());
         assertEquals(0, inventory.getTotalQuantity());
-        assertEquals(0, inventory.getListOfCodes().size());
+        assertEquals(0, inventory.getIDs().size());
         assertEquals(0, inventory.getProductList("PIZ").size());
 
     }
@@ -174,9 +174,9 @@ public class InventoryTest {
 
     @Test
     void testGetListOfCodes() {
-        assertEquals(6, inventory.getListOfCodes().size());
+        assertEquals(6, inventory.getIDs().size());
         inventory.addProducts(tags);
-        List<String> list = inventory.getListOfCodes();
+        List<String> list = inventory.getIDs();
         assertEquals(6, list.size());
         assertTrue(list.contains("AAA"));
         assertTrue(list.contains("BNN"));

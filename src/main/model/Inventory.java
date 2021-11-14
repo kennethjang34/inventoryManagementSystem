@@ -58,6 +58,10 @@ public class Inventory implements JsonConvertible {
     public List<QuantityTag> getQuantitiesAtLocations(String id) {
         if (!items.containsKey(id)) {
             return Collections.emptyList();
+        } else if (items.get(id).getQuantity() == 0) {
+            List<QuantityTag> list = new ArrayList<>();
+            list.add(new QuantityTag(id, "N/A", 0));
+            return list;
         }
         return items.get(id).getQuantities();
     }
@@ -261,11 +265,62 @@ public class Inventory implements JsonConvertible {
 
 
 
-
+    //EFFECTS: return the category name of the given item
+    //return null if there is no such item with the given id
+    public String getCategory(String id) {
+        if (items.containsKey(id)) {
+            return items.get(id).getCategory();
+        }
+        return null;
+    }
 
     //EFFECTS: return a list of entries of item hashmap
-    private List<Item> getItemList() {
+    public List<Item> getItemList() {
         return new ArrayList<>(items.values());
+    }
+
+
+    //EFFECTS: return a list of item ids of the given category
+    public List<String> getIDs(String categoryName) {
+        Category category = categories.get(categoryName);
+        if (category == null) {
+            return Collections.emptyList();
+        }
+        return category.getItemIDs();
+    }
+
+    //EFFECTS: return a list of item codes existing in the inventory.
+    public List<String> getIDs() {
+        return (items.keySet().size() == 0 ? Collections.emptyList() : new ArrayList<>(items.keySet()));
+    }
+
+    //EFFECTS: return a list of items that belong to the given category
+    public List<Item> getItemList(String categoryName) {
+        Category category = categories.get(categoryName);
+        if (category == null) {
+            return Collections.emptyList();
+        }
+        List<String> ids = category.getItemIDs();
+        List<Item> inTheCategory = new ArrayList<>();
+        for (String id: ids) {
+            inTheCategory.add(items.get(id));
+        }
+        return inTheCategory;
+    }
+
+    //EFFECTS: return a String array of categories
+    public String[] getCategoryNames() {
+        List<Category> categoryList = getCategories();
+        String[] names = new String[categoryList.size()];
+        for (int i = 0; i < names.length; i++) {
+            names[i] = categoryList.get(0).getName();
+        }
+        return names;
+    }
+
+    //EFFECTS: return a list of categories
+    public List<Category> getCategories() {
+        return new ArrayList<>(categories.values());
     }
 
 
@@ -318,10 +373,7 @@ public class Inventory implements JsonConvertible {
 
 
 
-    //EFFECTS: return a list of item codes existing in the inventory.
-    public List<String> getListOfCodes() {
-        return (items.keySet().size() == 0 ? Collections.emptyList() : new ArrayList<>(items.keySet()));
-    }
+
 
 //    //EFFECTS: convert this to JSONObject and return it.
 //    @Override
@@ -364,7 +416,7 @@ public class Inventory implements JsonConvertible {
 
     //EFFECTS: return data for converting this to table
     public Object[][] getData() {
-        List<String> items = getListOfCodes();
+        List<String> items = getIDs();
         Object[][] data = new Object[items.size()][];
         for (int i = 0; i < data.length; i++) {
             Item item = this.items.get(items.get(i));

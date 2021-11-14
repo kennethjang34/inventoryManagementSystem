@@ -1,6 +1,5 @@
 package model;
 
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -42,7 +41,7 @@ public class CategoryTest {
         category = new Category(name);
         assertEquals(name, category.getName());
         assertEquals(0, category.getTotalQuantity());
-        assertEquals(0, category.getItems().size());
+        assertEquals(0, category.getItemIDs().size());
         assertFalse(category.contains("chicken"));
     }
 
@@ -54,7 +53,7 @@ public class CategoryTest {
         }
         assertEquals(name, category.getName());
         assertEquals(4, category.getNumberOfItems());
-        assertEquals(4, category.getItems().size());
+        assertEquals(4, category.getItemIDs().size());
         assertTrue(category.contains("APP54656"));
         assertTrue(category.contains("BNN599A"));
         assertTrue(category.contains("CHIADFS"));

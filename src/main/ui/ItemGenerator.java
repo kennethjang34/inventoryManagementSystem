@@ -2,6 +2,7 @@ package ui;
 
 import javafx.geometry.HorizontalDirection;
 import model.Inventory;
+import ui.inventorypanel.stockpanel.StockSearchPanel;
 
 import javax.swing.*;
 import java.awt.*;
@@ -10,6 +11,7 @@ import java.awt.event.ActionListener;
 
 public class ItemGenerator extends JPanel {
     private Inventory inventory;
+    private StockSearchPanel searchPanel;
     private JTextField idField = new JTextField(10);
     private JTextField nameField = new JTextField(10);
     private JTextField categoryField = new JTextField(10);
@@ -18,8 +20,10 @@ public class ItemGenerator extends JPanel {
     private JTextField note = new JTextField(10);
     private JButton button = new JButton("Create");
 
-    public ItemGenerator(Inventory inventory) {
+    public ItemGenerator(Inventory inventory, StockSearchPanel searchPanel) {
         this.inventory = inventory;
+        this.searchPanel = searchPanel;
+
         JPanel fieldPanel = new JPanel();
         fieldPanel.setLayout(new GridLayout(6, 2));
         fieldPanel.add(new JLabel("ID: "));
@@ -63,6 +67,7 @@ public class ItemGenerator extends JPanel {
                             Integer.parseInt(priceField.getText()), description.getText(), note.getText()
                     );
                     clearFields();
+                    searchPanel.addItem(id);
                     JOptionPane.showMessageDialog(null,
                             "Item: " + id + " has been successfully created");
                 }

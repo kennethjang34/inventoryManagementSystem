@@ -46,7 +46,7 @@ public class Category implements JsonConvertible {
     }
 
     //EFFECTS: return the list of items belonging to this category
-    public List<String> getItems() {
+    public List<String> getItemIDs() {
         List<String> ids = new ArrayList<>();
         ids.addAll(items);
         return ids;
