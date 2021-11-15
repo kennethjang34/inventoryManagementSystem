@@ -2,15 +2,23 @@ package ui;
 
 import model.Admin;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.time.LocalDate;
 
 
 //A panel to prompt the user to log in/register a new login account/retrieve password
 public class LoginPanel extends JPanel implements ActionListener {
     private String description;
+    private BufferedImage image;
+    private ImageIcon ii;
+    private String imagePath = "./data/seol.gif";
     private final JTextField idField = new JTextField(10);
     private final JPasswordField pwField = new JPasswordField(10);
     private final JLabel idLabel = new JLabel("ID");
@@ -110,9 +118,12 @@ public class LoginPanel extends JPanel implements ActionListener {
 
 
 
-
-
-
+//
+//    @Override
+//    public void paintComponent(Graphics g) {
+//        super.paintComponent(g);
+//        g.draw(ii, 0, 0, null);
+//    }
 
 
 
@@ -131,15 +142,25 @@ public class LoginPanel extends JPanel implements ActionListener {
 
     //EFFECTS: create a new panel that is used to process user login attempt/register a new account/retrieve password
     public LoginPanel(Admin admin, InventoryManagementSystemApplication application) {
+        try {
+            image = ImageIO.read(new File(imagePath));
+        } catch (IOException e) {
+            //
+        }
+        ii = new ImageIcon(imagePath);
+        //ii.paintIcon(this, ii.getImage().getGraphics(), 0, 0);
         this.admin = admin;
         this.application = application;
-        description = "Welcome to Inventory Management System application. " + "\n this application helps you "
-                + "control/check quantities in stocks of different products in your warehouse.\n"
-                + "To start the application, please login.\n"
-                + "if you create a new login account, a new empty inventory will be created";
+        description = "Welcome to Inventory Management System application.";
+//        description = "Welcome to Inventory Management System application. " + "\n this application helps you "
+//                + "control/check quantities in stocks of different products in your warehouse.\n"
+//                + "To start the application, please login.\n"
+//                + "if you create a new login account, a new empty inventory will be created";
         pwField.setActionCommand(login);
         pwField.addActionListener(this);
-        add(new JLabel(description));
+        JLabel descriptionLabel = new JLabel(description);
+        descriptionLabel.setIcon(ii);
+        add(descriptionLabel);
         add(idLabel);
         add(idField);
         add(pwLabel);
@@ -190,7 +211,7 @@ public class LoginPanel extends JPanel implements ActionListener {
     //MODIFIES: this
     //EFFECTS: display a message that the current login attempt is not successful.
     private void displayLoginFail() {
-        JOptionPane.showMessageDialog(null,"Login failed");
+        JOptionPane.showMessageDialog(null, "Login failed");
     }
 
 //    public static void main(String[] args) {

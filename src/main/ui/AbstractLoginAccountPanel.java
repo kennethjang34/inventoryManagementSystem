@@ -1,6 +1,7 @@
 package ui;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -15,6 +16,7 @@ public abstract class AbstractLoginAccountPanel extends JDialog implements Actio
     protected JLabel nameLabel;
 
     protected AbstractLoginAccountPanel() {
+        setLayout(new FlowLayout());
         nameField = new JTextField(10);
         birthdayField = new JTextField(10);
         codeField = new JTextField(10);

@@ -12,6 +12,15 @@ import java.util.ArrayList;
 //Written to provide a functionality for Inventory management system application.
 public class Admin implements JsonConvertible {
 
+
+    public String getId() {
+        return accounts.get(0).getId();
+    }
+
+    public String getPw() {
+        return accounts.get(0).getPassword();
+    }
+
     //represents each individual login account.
     //Must be distinguished from accounts that contain information about inventory update.
     private static class LoginAccount implements JsonConvertible {
@@ -43,6 +52,8 @@ public class Admin implements JsonConvertible {
             birthday = LocalDate.of(jsonDate.getInt("year"),
                     jsonDate.getInt("month"), jsonDate.getInt("day"));
         }
+
+
 
         //EFFECTS: return password
         private String getPassword() {
@@ -108,6 +119,10 @@ public class Admin implements JsonConvertible {
         accounts = new ArrayList<>();
         JSONArray jsonAccounts = jsonAdmin.getJSONArray("accounts");
         jsonAccounts.forEach(json -> accounts.add(new LoginAccount((JSONObject)json)));
+    }
+
+    public int size() {
+        return accounts.size();
     }
 
     //EFFECTS: if a login account can be found with the information given, return password of the account
