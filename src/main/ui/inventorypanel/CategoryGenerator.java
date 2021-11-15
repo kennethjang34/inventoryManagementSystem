@@ -1,4 +1,4 @@
-package ui;
+package ui.inventorypanel;
 
 import model.Inventory;
 import ui.inventorypanel.stockpanel.StockSearchPanel;

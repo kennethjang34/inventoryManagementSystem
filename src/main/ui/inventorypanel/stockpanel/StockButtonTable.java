@@ -177,23 +177,25 @@ public class StockButtonTable extends JTable implements ActionListener, TableCel
     //EFFECTS: when double-clicked, create a new dialog that shows stocks based on locations
     @Override
     public void mouseClicked(MouseEvent e) {
-        if (e.getSource() instanceof StockLocationButtonTable) {
-            int column = locationButtonTable.columnAtPoint(e.getPoint());
-            if (locationButtonTable.getColumnClass(column).equals(JButton.class)) {
-                JButton button = (JButton) locationButtonTable.getValueAt(locationButtonTable.getSelectedRow(), column);
-                button.doClick();
-            } else if (e.getClickCount() == 2 && getSelectedRow() != -1) {
-                QuantityTag tag = locationButtonTable.getTags().get(locationButtonTable.getSelectedRow());
-                productPanel.addToList(tag.getId(), tag.getLocation());
-            }
-        } else {
-            //JDialog locationViewDialog;
-            int column = columnAtPoint(e.getPoint());
-            if (getColumnName(column).equalsIgnoreCase("BUTTON")) {
-                JButton button = (JButton) getValueAt(getSelectedRow(), column);
-                button.doClick();
-            } else if (e.getClickCount() == 2 && getSelectedRow() != -1) {
-                String id = (String) getValueAt(getSelectedRow(), 1);
+        if (e.getButton() == MouseEvent.BUTTON1) {
+            if (e.getSource() instanceof StockLocationButtonTable) {
+                int column = locationButtonTable.columnAtPoint(e.getPoint());
+                if (locationButtonTable.getColumnClass(column).equals(JButton.class)) {
+                    JButton button = (JButton) locationButtonTable.getValueAt(locationButtonTable.getSelectedRow(),
+                            column);
+                    button.doClick();
+                } else if (e.getClickCount() == 2 && getSelectedRow() != -1) {
+                    QuantityTag tag = locationButtonTable.getTags().get(locationButtonTable.getSelectedRow());
+                    productPanel.addToList(tag.getId(), tag.getLocation());
+                }
+            } else {
+                //JDialog locationViewDialog;
+                int column = columnAtPoint(e.getPoint());
+                if (getColumnName(column).equalsIgnoreCase("BUTTON")) {
+                    JButton button = (JButton) getValueAt(getSelectedRow(), column);
+                    button.doClick();
+                } else if (e.getClickCount() == 2 && getSelectedRow() != -1) {
+                    String id = (String) getValueAt(getSelectedRow(), 1);
 //
 //            locationViewDialog = new JDialog();
 //            locationViewDialog.setLayout(new FlowLayout());
@@ -201,8 +203,11 @@ public class StockButtonTable extends JTable implements ActionListener, TableCel
 //            List<QuantityTag> tags = inventory.getQuantitiesAtLocations(id);
 //            locationViewDialog.add(new StockLocationButtonTable(tags));
 //            locationViewDialog.setVisible(true);
-                productPanel.addToList(id);
+                    productPanel.addToList(id);
+                }
             }
+        } else {
+            //stub for secondary click
         }
     }
 

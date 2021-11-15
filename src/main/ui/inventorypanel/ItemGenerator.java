@@ -1,4 +1,4 @@
-package ui;
+package ui.inventorypanel;
 
 import javafx.geometry.HorizontalDirection;
 import model.Inventory;

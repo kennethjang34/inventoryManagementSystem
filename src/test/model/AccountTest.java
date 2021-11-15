@@ -1,5 +1,6 @@
 package model;
 
+import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -13,118 +14,98 @@ public class AccountTest {
     int code = 111111111;
     LocalDate currentDate = LocalDate.now();
     LocalDate today = LocalDate.now();
-    ArrayList<QuantityTag> tags;
+    ArrayList<InventoryTag> tags;
     Account account;
-
+    double price = 100;
+    double cost = 200;
+    int quantity = 100;
+    String location = "T";
     @BeforeEach
     void runBeforeEach() {
         tags = new ArrayList<>();
-        QuantityTag tag = new QuantityTag("SAD", "T", 250);
+        InventoryTag tag = new InventoryTag("SAD",  cost, price, currentDate, null, location, quantity) ;
         tags.add(tag);
-        tag = new QuantityTag("ADS", "e0", 666);
+        tag = new InventoryTag("ADS", cost, price, currentDate, null, location, quantity);
         tags.add(tag);
-        tag = new QuantityTag("STR", "f11", 1);
+        tag = new InventoryTag("STR", cost, price, currentDate, null, location, quantity);
         tags.add(tag);
-        tag = new QuantityTag("bnn", "f00", 10);
+        tag = new InventoryTag("BNN", cost, price, currentDate, null, location, 10);
         tags.add(tag);
     }
 
     @Test
     void testConstructor() {
-        account = new Account(code++, "constructorTest", currentDate, tags, null);
-        assertEquals(250 + 666 + 1 + 10, account.getTotalQuantity());
-        assertEquals(code - 1, account.getCode());
-        assertEquals(666, account.getQuantity("ads"));
+        account = new Account(code++, "constructorTest", currentDate, tags.get(0));
+        assertEquals(code - 1, Integer.parseInt(account.getCode()));
         assertEquals(currentDate, account.getDate());
         assertEquals("constructorTest", account.getDescription());
-        tags.add(new QuantityTag("Bnn", "f24", 20));
-        account = new Account(code++, "ConstructionTest", currentDate, tags, null);
-        assertEquals(30, account.getQuantity("bnn"));
-        assertEquals(20, account.getQuantityAtLocation("bnn", "f24"));
-        assertEquals(2, account.getLocations("bnn").size());
-        assertEquals("F00", account.getLocations("bnn").get(0));
-        assertEquals("F24", account.getLocations("bnn").get(1));
+        InventoryTag tag = tags.get(0);
+        assertEquals(tag.getId(), account.getID());
+        assertEquals(tag.getLocation(), account.getLocation());
+        assertEquals(tag.getQuantity(), account.getQuantity());
+        assertEquals(tag.getDateGenerated(), account.getDate());
+        assertEquals(tag.getUnitCost(), account.getAverageCost());
+        assertEquals(tag.getUnitPrice(), account.getAveragePrice());
+        //account = new Account(code++, "ConstructionTest", currentDate, tags, null);
     }
 
     @Test
-    void testConstructorWithSameCodeSameQty() {
-        tags.add(new QuantityTag("SAD", "T", 150));
-        account = new Account(code++, "constructorTest", currentDate, tags, null);
-        assertEquals(250 + 666 + 1 + 10 + 150, account.getTotalQuantity());
-        assertEquals(code - 1, account.getCode());
-        assertEquals(400, account.getQuantity("sad"));
-    }
-
-    @Test
-    void testConstructorWithRemovedList() {
+    void testConstructorWithNegativeQty() {
         //tag for removed products
-        QuantityTag tag = new QuantityTag("chi", "z99", -50);
-        ArrayList<QuantityTag> removed = new ArrayList<>();
-        removed.add(tag);
-        account = new Account(code++, "testTotalQtyWithRemoved", today, tags, removed);
-        assertEquals(250 + 666 + 1 + 10 + 50, account.getTotalQuantity());
-        assertEquals(code - 1, account.getCode());
-        assertEquals(666, account.getQuantity("ads"));
+
+        InventoryTag tag = tags.get(0);
+        tag.setQuantity(-tag.getQuantity());
+        account = new Account(code++, "testTotalQtyWithRemoved", today, tag);
+        assertEquals(code - 1, Integer.parseInt(account.getCode()));
         assertEquals(currentDate, account.getDate());
         assertEquals("testTotalQtyWithRemoved", account.getDescription());
-        tags.add(new QuantityTag("Bnn", "f24", 20));
-        assertEquals(1, account.getLocations("chi").size());
-        assertEquals("Z99", account.getLocations("chi").get(0));
-        assertEquals(-50, account.getQuantity("chi"));
-    }
-
-
-    @Test
-    void testGetQtyAtLocation() {
-        tags.add(new QuantityTag("ADS", "e12", 30));
-        account = new Account(code++, "testGetQtyAtLocation", currentDate, tags, null);
-        assertEquals(30, account.getQuantityAtLocation("ads", "e12"));
-        assertEquals(0, account.getQuantityAtLocation("ads", "e"));
-        assertEquals(0, account.getQuantityAtLocation("ads", "e50"));
-        assertEquals(0, account.getQuantityAtLocation("ascd", "e50"));
-        assertEquals(666, account.getQuantityAtLocation("ADS", "e0"));
-    }
-
-
-    @Test
-    void testGetQuantitiesInfo() {
-        QuantityTag tag = new QuantityTag("chi", "z99", -50);
-        ArrayList<QuantityTag> removed = new ArrayList<>();
-        removed.add(tag);
-        account = new Account(code++, "testTotalQtyWithRemoved", today, tags, removed);
-        List<String> info = account.getQuantitiesInfo();
-        assertEquals(10, info.size());
-        assertEquals("ADS: 666", info.get(2));
-        assertEquals("\tE0: 666", info.get(3));
+        assertEquals(tag.getId(), account.getID());
+        assertEquals(tag.getLocation(), account.getLocation());
+        assertEquals(-quantity, account.getQuantity());
+        assertEquals(tag.getDateGenerated(), account.getDate());
     }
 
 
 
 
+//    @Test
+//    void testGetQuantitiesInfo() {
+//        QuantityTag tag = new QuantityTag("chi", "z99", -50);
+//        ArrayList<QuantityTag> removed = new ArrayList<>();
+//        removed.add(tag);
+//        account = new Account(code++, "testTotalQtyWithRemoved", today, tags, removed);
+////        List<String> info = account.getQuantitiesInfo();
+////        assertEquals(10, info.size());
+////        assertEquals("ADS: 666", info.get(2));
+////        assertEquals("\tE0: 666", info.get(3));
+//    }
 
-    @Test
-    void testGetItemCodes() {
-        account = new Account(code++, "itemCodesTest", currentDate, tags, null);
-        assertEquals(4, account.getItemCodes().size());
-        List<String> codes = account.getItemCodes();
-        for (int i = 0; i < codes.size(); i++) {
-            assertEquals(tags.get(i).getId(), codes.get(i));
-        }
-    }
+
+
+
+//
+//    @Test
+//    void testGetItemCodes() {
+//        account = new Account(code++, "itemCodesTest", currentDate, tags, null);
+////        assertEquals(4, account.getItemCodes().size());
+////        List<String> codes = account.getItemCodes();
+////        for (int i = 0; i < codes.size(); i++) {
+////            assertEquals(tags.get(i).getId(), codes.get(i));
+////        }
+//    }
 
     @Test
     void testToJson() {
-        account = new Account(code++, "itemCodesTest", currentDate, tags, null);
-        assertEquals(4, account.getItemCodes().size());
-        List<String> codes = account.getItemCodes();
-        for (int i = 0; i < codes.size(); i++) {
-            assertEquals(tags.get(i).getId(), codes.get(i));
-        }
-        account = new Account(account.toJson());
-        assertEquals(4, account.getItemCodes().size());
-        for (int i = 0; i < codes.size(); i++) {
-            assertEquals(tags.get(i).getId(), codes.get(i));
-        }
+        account = new Account(code++, "JSONTEST", currentDate, tags.get(0));
+        JSONObject jsonObject = account.toJson();
+        Account fromJson = new Account(jsonObject);
+        assertEquals(account.getCode(), fromJson.getCode());
+        assertEquals(account.getDate(), fromJson.getDate());
+        assertEquals("JSONTEST", fromJson.getDescription());
+        assertEquals(account.getID(), fromJson.getID());
+        assertEquals(account.getLocation(), fromJson.getLocation());
+        assertEquals(account.getQuantity(), fromJson.getQuantity());
+        assertEquals(account.getDate(), fromJson.getDate());
     }
 
 }

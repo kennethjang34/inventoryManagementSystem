@@ -1,8 +1,9 @@
 package ui.inventorypanel.productpanel;
 
 import model.Inventory;
+import model.InventoryTag;
 import model.Product;
-import ui.inventorypanel.productpanel.AddPanel;
+import ui.InventoryManagementSystemApplication;
 import ui.inventorypanel.stockpanel.StockButtonTable;
 
 import javax.swing.*;
@@ -12,6 +13,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -22,6 +24,7 @@ public class ProductPanel extends JPanel implements ActionListener {
     private Inventory inventory;
     private ProductTable table;
     StockButtonTable stockTable;
+    InventoryManagementSystemApplication application;
     private static String add = "ADD";
     private static String remove = "remove";
     //Order: based on best-before date from nearest to farthest
@@ -193,8 +196,9 @@ public class ProductPanel extends JPanel implements ActionListener {
 
 
     @SuppressWarnings({"checkstyle:MethodLength", "checkstyle:SuppressWarnings"})
-    public ProductPanel(Inventory inventory) {
+    public ProductPanel(Inventory inventory, InventoryManagementSystemApplication application) {
         //this.stockTable = stockTable;
+        this.application = application;
         setLayout(new BorderLayout());
         products = new ArrayList<>();
         this.inventory = inventory;
@@ -264,7 +268,7 @@ public class ProductPanel extends JPanel implements ActionListener {
                     ((AbstractTableModel)stockTable.getModel()).fireTableDataChanged();
                 }
             });
-            AddPanel addPanel = new AddPanel(inventory, button);
+            AddPanel addPanel = new AddPanel(inventory, button, application);
             //JDialog dialog = optionPane.createDialog(null, "Add new products");
             dialog.setLayout(new FlowLayout());
             dialog.add(addPanel);
@@ -283,6 +287,8 @@ public class ProductPanel extends JPanel implements ActionListener {
                 for (Product product: toBeRemoved) {
                     inventory.removeProduct(product.getSku());
                 }
+                application.addAccount(createRemovedTags(toBeRemoved),
+                        convertToString(getListOfIDs(toBeRemoved)), LocalDate.now());
                 ((AbstractTableModel)table.getModel()).fireTableDataChanged();
                 ((AbstractTableModel)stockTable.getModel()).fireTableDataChanged();
                 JOptionPane.showMessageDialog(null, "Successfully removed");
@@ -291,29 +297,34 @@ public class ProductPanel extends JPanel implements ActionListener {
         table.repaint();
         stockTable.repaint();
     }
-//
-//    public static void main(String[] args) {
-//        Inventory inventory = new Inventory();
-//        inventory.createCategory("Fruit");
-//        inventory.createItem("APP", "apple", "Fruit", 4, "test", "test");
-//        List<InventoryTag> tags = new ArrayList<>();
-//        tags.add(new InventoryTag("APP", 20, 30, LocalDate.now(), "F13", 100));
-//        inventory.addProducts(tags);
-//        inventory.createItem("BNN", "banana", "Fruit", 12, "test", "test");
-//        tags = new ArrayList<>();
-//        tags.add(new InventoryTag("BNN", 1, 3, LocalDate.now(), "F13", 100));
-//        inventory.addProducts(tags);
-//        ProductPanel productPanel = new ProductPanel(inventory);
-//        productPanel.addToList("APP", "F13");
-//        assert productPanel.products.size() == 100;
-//        JFrame frame = new JFrame();
-//        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-//        frame.setSize(500, 600);
-//        frame.add(productPanel);
-//        productPanel.setPreferredSize(new Dimension(400, 500));
-//        frame.pack();
-//        frame.setVisible(true);
-//
-//    }
+
+
+    //EFFECTS: return a list of quantity tags that contain how many products of a certain item have been removed
+    public List<InventoryTag> createRemovedTags(List<Product> products) {
+        return InventoryTag.createTagsForRemoved(products);
+    }
+
+    //EFFECTS: return a list of item ids whose products have been removed/added
+    public List<String> getListOfIDs(List<Product> products) {
+        List<String> ids = new ArrayList<>();
+        for (Product product: products) {
+            if (!ids.contains(product.getId())) {
+                ids.add(product.getId());
+            }
+        }
+        return ids;
+    }
+
+    //EFFECTS: convert a list into a big chunk of string
+    public String convertToString(List<? extends Object> objects) {
+        String s = "";
+        for (Object obj: objects) {
+            s += obj.toString();
+        }
+        return s;
+    }
+
+
+
 
 }

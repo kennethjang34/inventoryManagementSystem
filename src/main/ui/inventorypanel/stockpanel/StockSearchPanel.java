@@ -103,6 +103,7 @@ public class StockSearchPanel extends JPanel implements ActionListener {
 
     //MODIFIES: this
     //EFFECTS: initialize both category and item text field.
+    @SuppressWarnings({"checkstyle:MethodLength", "checkstyle:SuppressWarnings"})
     public void initializeTextFields() {
         categoryField = new JTextField("Type category name");
         itemField = new JTextField("Type item ID");
@@ -134,6 +135,7 @@ public class StockSearchPanel extends JPanel implements ActionListener {
                     itemField.removeAll();
                 } else {
                     itemBox.setSelectedIndex(index);
+                    itemField.setVisible(false);
                 }
                 //hide the text field again and find the specified element in the comboBox
             }
@@ -146,6 +148,7 @@ public class StockSearchPanel extends JPanel implements ActionListener {
     //MODIFIES: this
     //EFFECTS: for each stock search filter, update the search panel properly
     //If type manually option is chosen, show text fields
+    @SuppressWarnings({"checkstyle:MethodLength", "checkstyle:SuppressWarnings"})
     @Override
     public void actionPerformed(ActionEvent e) {
         JComboBox comboBox = (JComboBox)e.getSource();

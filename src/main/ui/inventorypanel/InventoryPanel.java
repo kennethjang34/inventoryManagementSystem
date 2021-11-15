@@ -1,8 +1,7 @@
 package ui.inventorypanel;
 
 import model.Inventory;
-import ui.CategoryGenerator;
-import ui.ItemGenerator;
+import ui.InventoryManagementSystemApplication;
 import ui.inventorypanel.productpanel.ProductPanel;
 import ui.inventorypanel.stockpanel.StockPanel;
 
@@ -11,6 +10,7 @@ import java.awt.*;
 
 public class InventoryPanel extends JPanel {
     private final Inventory inventory;
+    private final InventoryManagementSystemApplication application;
     //private final SearchPanel searchPanel;
     private StockPanel stockPanel;
     private ProductPanel productPanel;
@@ -20,10 +20,12 @@ public class InventoryPanel extends JPanel {
     private String update = "update";
     private String search = "search";
 
-    public InventoryPanel(Inventory inventory) {
+    public InventoryPanel(Inventory inventory, InventoryManagementSystemApplication application) {
+        this.application = application;
         this.inventory = inventory;
-        productPanel = new ProductPanel(inventory);
-        stockPanel = new StockPanel(inventory, productPanel);
+
+        productPanel = new ProductPanel(inventory, application);
+        stockPanel = new StockPanel(inventory, productPanel, application);
 //        JPanel typeCreator = new JPanel();
 //        typeCreator.add(new CategoryGenerator(inventory, stockSearchPanel));
 //        typeCreator.add(new ItemGenerator(inventory, stockSearchPanel));

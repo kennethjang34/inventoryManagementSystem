@@ -1,6 +1,10 @@
 package model;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 //tag used to add products to the inventory as opposed to Quantity tags, which are used to remove products
 public class InventoryTag {
@@ -35,6 +39,73 @@ public class InventoryTag {
         this.location = location;
         this.bestBeforeDate = null;
         this.dateGenerated = dateGenerated;
+    }
+
+    public static List<InventoryTag> createTagsForRemoved(List<Product> products) {
+        List<InventoryTag> tags = new ArrayList<>();
+        Map<String, List<Product>> productLists = createIdMap(products);
+        for (Map.Entry<String, List<Product>> entry: productLists.entrySet()) {
+            String id = entry.getKey();
+            Map<String, List<Product>> productsWithLocation = createLocationMap(entry.getValue());
+            for (Map.Entry<String, List<Product>> location: productsWithLocation.entrySet()) {
+                double cost = calculateAverageCost(location.getValue());
+                double price = calculateAveragePrice(location.getValue());
+                int qty = -location.getValue().size();
+                assert location.getValue().size() > 0;
+                LocalDate dateGenerated = location.getValue().get(0).getDateGenerated();
+                tags.add(new InventoryTag(id, cost, price,
+                        dateGenerated, null, location.getKey(), qty));
+
+            }
+        }
+        return tags;
+    }
+
+    private static double calculateAveragePrice(List<Product> products) {
+        double sum = 0;
+        for (Product product: products) {
+            sum += product.getPrice();
+        }
+        return sum / products.size();
+    }
+
+    private static double calculateAverageCost(List<Product> products) {
+        double sum = 0;
+        for (Product product: products) {
+            sum += product.getCost();
+        }
+        return sum / products.size();
+    }
+
+    private static Map<String, List<Product>> createLocationMap(List<Product> products) {
+        Map<String, List<Product>> locationMap = new HashMap<>();
+        for (Product product: products) {
+            List<Product> list;
+            if (!locationMap.containsKey(product.getLocation())) {
+                list = new ArrayList<>();
+                list.add(product);
+                locationMap.put(product.getLocation(), list);
+            } else {
+                list = locationMap.get(product.getLocation());
+                list.add(product);
+            }
+        }
+        return locationMap;
+    }
+
+    private static Map<String, List<Product>> createIdMap(List<Product> products) {
+        Map<String, List<Product>> productLists = new HashMap<>();
+        for (Product product: products) {
+            if (!productLists.containsKey(product.getId())) {
+                List<Product> newList = new ArrayList<>();
+                newList.add(product);
+                productLists.put(product.getId(), newList);
+            } else {
+                List<Product> existing = productLists.get(product.getId());
+                existing.add(product);
+            }
+        }
+        return productLists;
     }
 
     //EFFECTS: return the date generated
@@ -88,9 +159,7 @@ public class InventoryTag {
     //MODIFIES: this
     //EFFECTS: set the quantity to the given number
     public void setQuantity(int qty) {
-        if (qty < 0) {
-            throw new IllegalArgumentException("Quantity cannot be negative");
-        }
+
         quantity = qty;
     }
 

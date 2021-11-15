@@ -10,6 +10,7 @@ import java.awt.event.ActionListener;
 import java.time.LocalDate;
 
 public class AddPanel extends JPanel implements ActionListener {
+    private InventoryManagementSystemApplication application;
     Inventory inventory;
     //JTextField codeField = new JTextField(10);
     JTextField costField = new JTextField(10);
@@ -22,7 +23,8 @@ public class AddPanel extends JPanel implements ActionListener {
 
 
     //EFFECTS: create a new panel that will pop up if the user attempts to add new stocks
-    public AddPanel(Inventory inventory, JButton button) {
+    public AddPanel(Inventory inventory, JButton button, InventoryManagementSystemApplication application) {
+        this.application = application;
         this.inventory = inventory;
         add(new JLabel("ID"));
         add(idField);
@@ -61,7 +63,10 @@ public class AddPanel extends JPanel implements ActionListener {
         String location = locationField.getText();
         int qty = Integer.parseInt(quantityField.getText());
         if (qty > 0) {
-            inventory.addProducts(new InventoryTag(id, cost, price, LocalDate.now(), bestBeforeDate, location, qty));
+            InventoryTag tag = new InventoryTag(id, cost, price, LocalDate.now(), bestBeforeDate, location, qty);
+            if (inventory.addProducts(tag)) {
+                application.addAccount(tag, id, LocalDate.now());
+            }
         }
     }
 }

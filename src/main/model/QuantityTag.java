@@ -6,6 +6,8 @@ public class QuantityTag {
     private String id;
     private String location;
     private int quantity;
+    private double averageCost;
+    private double averagePrice;
 
     //It is possible for quantity to be negative, but it shouldn't be
     //EFFECTS: create a new quantity tag with item code, assigned location, and quantity given.
@@ -15,6 +17,17 @@ public class QuantityTag {
         this.quantity = quantity;
     }
 
+    //MODIFIES: this
+    //EFFECTS: set average price
+    public void setAveragePrice(double price) {
+        averagePrice = price;
+    }
+
+    //MODIFIES: this
+    //EFFECTS; set average cost
+    public void setAverageCost(double cost) {
+        averageCost = cost;
+    }
 
     //EFFECTS: return the assigned location
     public String getLocation() {

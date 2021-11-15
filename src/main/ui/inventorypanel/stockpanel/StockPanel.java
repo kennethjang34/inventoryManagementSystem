@@ -1,8 +1,9 @@
 package ui.inventorypanel.stockpanel;
 
 import model.*;
-import ui.CategoryGenerator;
-import ui.ItemGenerator;
+import ui.inventorypanel.CategoryGenerator;
+import ui.InventoryManagementSystemApplication;
+import ui.inventorypanel.ItemGenerator;
 import ui.inventorypanel.productpanel.ProductPanel;
 
 import javax.swing.*;
@@ -13,8 +14,8 @@ public class StockPanel extends JPanel {
     private Inventory inventory;
     private Object[] columnNames;
     private StockButtonTable stockButtonTable;
-    StockSearchPanel searchPanel;
-
+    private StockSearchPanel searchPanel;
+    private InventoryManagementSystemApplication application;
 //    //EFFECTS: create new stock panel with given inventory
 //    public StockPanel(Inventory inventory) {
 //        searchPanel = new StockSearchPanel(inventory, this);
@@ -25,7 +26,9 @@ public class StockPanel extends JPanel {
 
 
     //EFFECTS: create new stock panel with given inventory and link it to the given product panel
-    public StockPanel(Inventory inventory, ProductPanel productPanel) {
+    public StockPanel(Inventory inventory, ProductPanel productPanel,
+                      InventoryManagementSystemApplication application) {
+        this.application = application;
         this.inventory = inventory;
         setLayout(new BorderLayout());
         searchPanel = new StockSearchPanel(inventory, this);
