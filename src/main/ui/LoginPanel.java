@@ -7,18 +7,20 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.time.LocalDate;
 
 
 //A panel to prompt the user to log in/register a new login account/retrieve password
 public class LoginPanel extends JPanel implements ActionListener {
     private String description;
-    private BufferedImage image;
-    private ImageIcon ii;
-    private String imagePath = "./data/seol.gif";
+    private Image image;
+    private final String imagePath = "./data/seol.gif";
+
+    private URL imageUrl;
     private final JTextField idField = new JTextField(10);
     private final JPasswordField pwField = new JPasswordField(10);
     private final JLabel idLabel = new JLabel("ID");
@@ -113,16 +115,33 @@ public class LoginPanel extends JPanel implements ActionListener {
 
 
 
-
-
-
-
-
-//
 //    @Override
 //    public void paintComponent(Graphics g) {
+////        imagePath = "/data/seol.gif";
+////        System.out.println(new File(imagePath).exists());
+////        if (image == null) {
+////            try {
+////                image = ImageIO.read(new File(imagePath));
+////                if (getWidth() != 0 && getHeight() != 0) {
+////                    //image = image.getScaledInstance(getWidth(), getHeight(), Image.SCALE_SMOOTH);
+////                }
+//////                image = image.getScaledInstance((int)getPreferredSize().getWidth(),
+//////                        (int)getPreferredSize().getHeight(), Image.SCALE_SMOOTH);
+////            } catch (IOException e) {
+////                e.printStackTrace();
+////            }
+////            //image = new ImageIcon(Image.class.getResource(imagePath)).getImage();
+////            if (image == null) {
+////                throw new RuntimeException();
+////            }
+////        }
+//
+//
+//        //ii = new ImageIcon(image.getScaledInstance(width, height, Image.SCALE_SMOOTH));
+//        //ii.paintIcon(this, g, 0, 0);
+//
 //        super.paintComponent(g);
-//        g.draw(ii, 0, 0, null);
+////        g.drawImage(image, 0, 0, this);
 //    }
 
 
@@ -141,16 +160,34 @@ public class LoginPanel extends JPanel implements ActionListener {
 
 
     //EFFECTS: create a new panel that is used to process user login attempt/register a new account/retrieve password
+    @SuppressWarnings({"checkstyle:MethodLength", "checkstyle:SuppressWarnings"})
     public LoginPanel(Admin admin, InventoryManagementSystemApplication application) {
-        try {
-            image = ImageIO.read(new File(imagePath));
-        } catch (IOException e) {
-            //
-        }
-        ii = new ImageIcon(imagePath);
-        //ii.paintIcon(this, ii.getImage().getGraphics(), 0, 0);
-        this.admin = admin;
+//        JDialog dialog = new JDialog();
+//        dialog.setLayout(new FlowLayout());
+//        JLabel descriptionLabel = new JLabel();
+//        descriptionLabel.setLayout(new BorderLayout());
+//        descriptionLabel.add()
+
+
         this.application = application;
+//        try {
+//            image = ImageIO.read(new File(imagePath));
+//
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//        ImageIcon ii = new ImageIcon(image);
+//        image = ii.getImage();
+//        JDialog dialog = new JDialog();
+//        dialog.setLayout(new FlowLayout());
+//        JLabel descriptionLabel = new JLabel();
+//        descriptionLabel.setLayout(new BorderLayout());
+//        descriptionLabel.setIcon(ii);
+//        descriptionLabel.add(new JLabel(description), BorderLayout.CENTER);
+//        dialog.add(descriptionLabel);
+//        dialog.setSize(500, 600);
+//        dialog.setVisible(true);
+        this.admin = admin;
         description = "Welcome to Inventory Management System application.";
 //        description = "Welcome to Inventory Management System application. " + "\n this application helps you "
 //                + "control/check quantities in stocks of different products in your warehouse.\n"
@@ -158,14 +195,14 @@ public class LoginPanel extends JPanel implements ActionListener {
 //                + "if you create a new login account, a new empty inventory will be created";
         pwField.setActionCommand(login);
         pwField.addActionListener(this);
-        JLabel descriptionLabel = new JLabel(description);
-        descriptionLabel.setIcon(ii);
-        add(descriptionLabel);
+//        JLabel descriptionLabel = new JLabel(description);
+//        add(descriptionLabel);
         add(idLabel);
         add(idField);
         add(pwLabel);
         add(pwField);
         add(new JLabel("To retrieve password, "));
+
         JButton retrieveButton = new JButton("press here");
         retrieveButton.addActionListener(this);
         retrieveButton.setActionCommand(retrieve);
@@ -175,6 +212,8 @@ public class LoginPanel extends JPanel implements ActionListener {
         createButton.addActionListener(this);
         createButton.setActionCommand(create);
         add(createButton);
+        setPreferredSize(new Dimension(400, 500));
+
     }
 
 

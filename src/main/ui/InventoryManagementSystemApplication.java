@@ -8,10 +8,13 @@ import persistence.Writer;
 import ui.inventorypanel.InventoryPanel;
 import ui.ledgerpanel.LedgerPanel;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.time.LocalDate;
@@ -19,7 +22,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class InventoryManagementSystemApplication extends JFrame implements JsonConvertible {
+    private Image image;
+    private ImageIcon ii;
+    private String imagePath = "./data/seol.gif";
     private static final String fileLocation = "./data/inventory_management_system.json";
+    private String description = "WELCOMEEEEEE!";
     public static final int WIDTH = 1100;
     public static final int HEIGHT = 850;
 //    private List<JPanel> panels;
@@ -46,6 +53,29 @@ public class InventoryManagementSystemApplication extends JFrame implements Json
         } catch (IOException e) {
             admin = new Admin();
         }
+
+        try {
+            image = ImageIO.read(new File(imagePath));
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        ii = new ImageIcon(image);
+        image = ii.getImage();
+        JDialog dialog = new JDialog();
+        dialog.setLayout(new BorderLayout());
+        JLabel descriptionLabel = new JLabel();
+        descriptionLabel.setLayout(new FlowLayout());
+        descriptionLabel.setIcon(ii);
+        for (int i = 0; i < 100; i++) {
+            JLabel label = new JLabel(description);
+            label.setForeground(Color.CYAN);
+            descriptionLabel.add(label);
+        }
+        dialog.add(descriptionLabel, BorderLayout.CENTER);
+        dialog.setSize(500, 600);
+
+
         ledger = new Ledger();
         inventory = new Inventory();
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -67,21 +97,39 @@ public class InventoryManagementSystemApplication extends JFrame implements Json
         cardLayout.addLayoutComponent(tabbedPane, "ControlPanel");
         cardLayout.addLayoutComponent(loginPanel, "LoginPanel");
         tabbedPane.setBounds(50, 50, 200, 200);
+        setSize(100, 200);
         mainPanel = new JPanel();
         mainPanel.setLayout(cardLayout);
         mainPanel.add(tabbedPane, "ControlPanel");
         mainPanel.add(loginPanel, "LoginPanel");
         cardLayout.show(mainPanel, "LoginPanel");
-        mainPanel.setVisible(true);
         add(mainPanel);
         setJMenuBar(menuBar);
         setPreferredSize(new Dimension(1500, 2000));
         pack();
         setVisible(true);
+        dialog.setVisible(true);
     }
 
     @SuppressWarnings({"checkstyle:MethodLength", "checkstyle:SuppressWarnings"})
     InventoryManagementSystemApplication(JSONObject jsonObject) {
+        try {
+            image = ImageIO.read(new File(imagePath));
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        ii = new ImageIcon(image);
+        image = ii.getImage();
+        JDialog dialog = new JDialog();
+        dialog.setLayout(new FlowLayout());
+        JLabel descriptionLabel = new JLabel();
+        descriptionLabel.setLayout(new BorderLayout());
+        descriptionLabel.setIcon(ii);
+        descriptionLabel.add(new JLabel(description), BorderLayout.CENTER);
+        dialog.add(descriptionLabel);
+        dialog.setSize(500, 600);
+
         admin = new Admin(jsonObject.getJSONObject("admin"));
         ledger = new Ledger(jsonObject.getJSONObject("ledger"));
         inventory = new Inventory(jsonObject.getJSONObject("inventory"));
@@ -105,11 +153,10 @@ public class InventoryManagementSystemApplication extends JFrame implements Json
         mainPanel.add(tabbedPane);
         mainPanel.add(loginPanel);
         cardLayout.show(mainPanel, "LoginPanel");
-        mainPanel.setVisible(true);
         add(mainPanel);
-        setPreferredSize(new Dimension(1500, 2000));
         pack();
         setVisible(true);
+        dialog.setVisible(true);
     }
 
 
