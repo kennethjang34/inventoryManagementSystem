@@ -37,6 +37,8 @@ public class StockButtonTableModel extends AbstractTableModel {
         return columnNames[col];
     }
 
+
+    @SuppressWarnings({"checkstyle:MethodLength", "checkstyle:SuppressWarnings"})
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
         if (category == null && item == null) {
