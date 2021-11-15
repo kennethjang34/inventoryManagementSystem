@@ -20,6 +20,7 @@ public class ItemGenerator extends JPanel {
     private JTextField note = new JTextField(10);
     private JButton button = new JButton("Create");
 
+    @SuppressWarnings({"checkstyle:MethodLength", "checkstyle:SuppressWarnings"})
     public ItemGenerator(Inventory inventory, StockSearchPanel searchPanel) {
         this.inventory = inventory;
         this.searchPanel = searchPanel;

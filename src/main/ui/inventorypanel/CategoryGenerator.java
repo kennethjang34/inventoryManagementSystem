@@ -19,6 +19,7 @@ public class CategoryGenerator extends JPanel {
 //    private JButton itemButton = new JButton("create");
 //    private Inventory inventory;
 
+    @SuppressWarnings({"checkstyle:MethodLength", "checkstyle:SuppressWarnings"})
     public CategoryGenerator(Inventory inventory, StockSearchPanel searchPanel) {
         this.inventory = inventory;
         this.searchPanel = searchPanel;
