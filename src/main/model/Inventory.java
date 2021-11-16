@@ -279,6 +279,21 @@ public class Inventory implements JsonConvertible {
         return new ArrayList<>(items.values());
     }
 
+    //EFFECTS: return a list of items that belong to the given category
+    public List<Item> getItemList(String categoryName) {
+        Category category = categories.get(categoryName);
+        if (category == null) {
+            return Collections.emptyList();
+        }
+        List<String> ids = category.getItemIDs();
+        List<Item> inTheCategory = new ArrayList<>();
+        for (String id: ids) {
+            inTheCategory.add(items.get(id));
+        }
+        return inTheCategory;
+    }
+
+
 
     //EFFECTS: return a list of item ids of the given category
     public List<String> getIDs(String categoryName) {
@@ -294,19 +309,6 @@ public class Inventory implements JsonConvertible {
         return (items.keySet().size() == 0 ? Collections.emptyList() : new ArrayList<>(items.keySet()));
     }
 
-    //EFFECTS: return a list of items that belong to the given category
-    public List<Item> getItemList(String categoryName) {
-        Category category = categories.get(categoryName);
-        if (category == null) {
-            return Collections.emptyList();
-        }
-        List<String> ids = category.getItemIDs();
-        List<Item> inTheCategory = new ArrayList<>();
-        for (String id: ids) {
-            inTheCategory.add(items.get(id));
-        }
-        return inTheCategory;
-    }
 
     //EFFECTS: return a String array of categories
     public String[] getCategoryNames() {
