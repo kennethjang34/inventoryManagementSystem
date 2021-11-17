@@ -104,7 +104,8 @@ public class StockButtonTableModel extends AbstractTableModel {
         } else if (item != null) {
             return 1;
         } else {
-            return inventory.getIDs(category).size();
+            int size = inventory.getIDs(category).size();
+            return size;
         }
     }
 

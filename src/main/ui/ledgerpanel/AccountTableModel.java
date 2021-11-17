@@ -42,6 +42,7 @@ public class AccountTableModel extends AbstractTableModel {
         }
         periodStart = start;
         periodEnd = end;
+        fireTableDataChanged();
     }
 
 

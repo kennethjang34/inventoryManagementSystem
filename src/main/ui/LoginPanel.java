@@ -2,14 +2,10 @@ package ui;
 
 import model.Admin;
 
-import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
-import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.time.LocalDate;
 
@@ -19,16 +15,19 @@ public class LoginPanel extends JPanel implements ActionListener {
     private String description;
     private Image image;
     private final String imagePath = "./data/seol.gif";
-
+    private int purpose;
     private URL imageUrl;
     private final JTextField idField = new JTextField(10);
     private final JPasswordField pwField = new JPasswordField(10);
     private final JLabel idLabel = new JLabel("ID");
     private final JLabel pwLabel = new JLabel("PW");
     private final InventoryManagementSystemApplication application;
-    private static final String login = "login";
-    private static final String create = "create";
-    private static final String retrieve = "retrieve";
+    public static final String LOGIN = "login";
+    public static final String CREATE = "create";
+    public static final String RETRIEVE = "retrieve";
+    public static final int CANCEL = -1;
+    public static final int SAVE = 0;
+    public static final int LOAD = 1;
     private Admin admin;
     private RegisterPanel registerPanel = new RegisterPanel();
     private RetrievePanel retrievePanel = new RetrievePanel();
@@ -76,6 +75,16 @@ public class LoginPanel extends JPanel implements ActionListener {
             this.setVisible(false);
 
         }
+    }
+
+    //REQUIRES:
+    //MODIFIES: this
+    //EFFECTS: set the purpose of this login attempt
+    public void setPurpose(int purpose) {
+        if (purpose != SAVE && purpose != LOAD) {
+            throw new IllegalArgumentException("The given purpose is not valid");
+        }
+        this.purpose = purpose;
     }
 
 
@@ -193,7 +202,7 @@ public class LoginPanel extends JPanel implements ActionListener {
 //                + "control/check quantities in stocks of different products in your warehouse.\n"
 //                + "To start the application, please login.\n"
 //                + "if you create a new login account, a new empty inventory will be created";
-        pwField.setActionCommand(login);
+        pwField.setActionCommand(LOGIN);
         pwField.addActionListener(this);
 //        JLabel descriptionLabel = new JLabel(description);
 //        add(descriptionLabel);
@@ -205,13 +214,21 @@ public class LoginPanel extends JPanel implements ActionListener {
 
         JButton retrieveButton = new JButton("press here");
         retrieveButton.addActionListener(this);
-        retrieveButton.setActionCommand(retrieve);
+        retrieveButton.setActionCommand(RETRIEVE);
         add(retrieveButton);
         add(new JLabel("To create a new login account, "));
         JButton createButton = new JButton("press here");
         createButton.addActionListener(this);
-        createButton.setActionCommand(create);
+        createButton.setActionCommand(CREATE);
         add(createButton);
+        JButton cancelButton = new JButton("Cancel");
+        cancelButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                application.dataChangeHandler(CANCEL);
+            }
+        });
+        add(cancelButton);
         setPreferredSize(new Dimension(400, 500));
 
     }
@@ -226,19 +243,19 @@ public class LoginPanel extends JPanel implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         String actionCommand = e.getActionCommand();
-        if (actionCommand.equals(login)) {
+        if (actionCommand.equals(LOGIN)) {
             String id = idField.getText();
             char[] pw = pwField.getPassword();
             if (!admin.checkLoginAccount(id, String.valueOf(pw))) {
                 displayLoginFail();
             } else {
-                application.switchToControlPanel();
+                application.dataChangeHandler(purpose);
             }
-        } else if (actionCommand.equals(create)) {
+        } else if (actionCommand.equals(CREATE)) {
             registerPanel.setSize(600, 400);
             registerPanel.setVisible(true);
             //JOptionPane.showMessageDialog(this, registerPanel);
-        } else if (actionCommand.equals(retrieve)) {
+        } else if (actionCommand.equals(RETRIEVE)) {
             retrievePanel.setSize(600, 400);
             retrievePanel.setVisible(true);
             //JOptionPane.showMessageDialog(this, retrievePanel);

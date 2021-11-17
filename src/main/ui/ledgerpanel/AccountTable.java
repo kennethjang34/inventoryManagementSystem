@@ -94,4 +94,9 @@ public class AccountTable extends JTable implements TableCellRenderer, MouseList
         LocalDate date = LocalDate.parse(selectedDate);
         tableModel.setPeriod(date, date);
     }
+
+    public void displayAll() {
+        tableModel.setPeriod(null, null);
+        repaint();
+    }
 }

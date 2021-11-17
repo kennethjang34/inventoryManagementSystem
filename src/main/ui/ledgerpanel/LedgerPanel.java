@@ -111,4 +111,8 @@ public class LedgerPanel extends JPanel implements ActionListener {
     public List<Account> getAccountsOnDisplay() {
         return selectedAccountTable.getAccountsOndisplay();
     }
+
+    public void displayAll() {
+        accountTable.displayAll();
+    }
 }

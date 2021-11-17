@@ -510,7 +510,7 @@ public class InventoryTest {
 
     @Test
     void testGetCategoryOfItem() {
-        assertEquals("FOOD", inventory.getCategory(tags.get(0).getId()));
+        assertEquals("FOOD", inventory.getCategoryOf(tags.get(0).getId()));
     }
 
     @Test

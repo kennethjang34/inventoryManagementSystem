@@ -62,7 +62,9 @@ public class Item implements  TableEntryConvertible, JsonConvertible {
                 productList.add(product);
                 products.put(product.getSku(), product);
             }
-            stocks.put(productList.get(0).getLocation(), productList);
+            if (productList.size() != 0) {
+                stocks.put(productList.get(0).getLocation(), productList);
+            }
         }
     }
 

@@ -50,6 +50,11 @@ public class Inventory implements JsonConvertible {
             categories.put(category.getName(), category);
         }
 
+        for (Item item: items.values()) {
+            Category category = categories.get(item.getCategory());
+            category.addItem(item);
+        }
+
     }
 
 
@@ -267,11 +272,17 @@ public class Inventory implements JsonConvertible {
 
     //EFFECTS: return the category name of the given item
     //return null if there is no such item with the given id
-    public String getCategory(String id) {
+    public String getCategoryOf(String id) {
         if (items.containsKey(id)) {
             return items.get(id).getCategory();
         }
         return null;
+    }
+
+
+
+    public Category getCategory(String category) {
+        return categories.get(category);
     }
 
     //EFFECTS: return a list of entries of item hashmap
@@ -315,7 +326,7 @@ public class Inventory implements JsonConvertible {
         List<Category> categoryList = getCategories();
         String[] names = new String[categoryList.size()];
         for (int i = 0; i < names.length; i++) {
-            names[i] = categoryList.get(0).getName();
+            names[i] = categoryList.get(i).getName();
         }
         return names;
     }

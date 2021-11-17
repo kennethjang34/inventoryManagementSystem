@@ -65,7 +65,7 @@ public class ItemGenerator extends JPanel {
                     //categoryField.removeAll();
                 } else {
                     inventory.createItem(id, nameField.getText(), category,
-                            Integer.parseInt(priceField.getText()), description.getText(), note.getText()
+                            Double.parseDouble(priceField.getText()), description.getText(), note.getText()
                     );
                     clearFields();
                     searchPanel.addItem(id);

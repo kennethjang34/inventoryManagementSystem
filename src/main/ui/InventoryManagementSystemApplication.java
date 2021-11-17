@@ -13,27 +13,25 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 
 public class InventoryManagementSystemApplication extends JFrame implements JsonConvertible {
     private Image image;
-    private ImageIcon ii;
     private String imagePath = "./data/seol.gif";
     private static final String fileLocation = "./data/inventory_management_system.json";
     private String description = "WELCOMEEEEEE!";
     public static final int WIDTH = 1100;
     public static final int HEIGHT = 850;
+    private boolean login;
 //    private List<JPanel> panels;
     //tabbed pane is only for application panels. Login panel won't have any tabs on it
     private CardLayout cardLayout;
     private JTabbedPane tabbedPane;
-    private JPanel loginPanel;
+    private LoginPanel loginPanel;
     private InventoryPanel inventoryPanel;
     private LedgerPanel ledgerPanel;
     private AdminPanel adminPanel;
@@ -44,8 +42,8 @@ public class InventoryManagementSystemApplication extends JFrame implements Json
     private JPanel mainPanel;
 
 
-    @SuppressWarnings({"checkstyle:MethodLength", "checkstyle:SuppressWarnings"})
     InventoryManagementSystemApplication() {
+        login = false;
         try {
             Reader reader = new Reader(fileLocation);
             JSONObject jsonObject = reader.read();
@@ -53,14 +51,142 @@ public class InventoryManagementSystemApplication extends JFrame implements Json
         } catch (IOException e) {
             admin = new Admin();
         }
+//        try {
+//            image = ImageIO.read(new File(imagePath));
+//
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//        ii = new ImageIcon(image);
+//        image = ii.getImage();
+//        JDialog dialog = new JDialog();
+//        dialog.setLayout(new BorderLayout());
+//        JLabel descriptionLabel = new JLabel();
+//        descriptionLabel.setLayout(new FlowLayout());
+//        descriptionLabel.setIcon(ii);
+//        for (int i = 0; i < 100; i++) {
+//            JLabel label = new JLabel(description);
+//            label.setForeground(Color.CYAN);
+//            descriptionLabel.add(label);
+//        }
+//        dialog.add(descriptionLabel, BorderLayout.CENTER);
+//        dialog.setSize(500, 600);
 
+        ledger = new Ledger();
+        inventory = new Inventory();
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+//        cardLayout = new CardLayout();
+//        tabbedPane = new JTabbedPane();
+//        inventoryPanel = new InventoryPanel(inventory, this);
+//        ledgerPanel = new LedgerPanel(ledger);
+//        adminPanel = new AdminPanel(admin);
+//        loginPanel = new LoginPanel(admin, this);
+//        tabbedPane.addTab("Inventory", inventoryPanel);
+//        tabbedPane.addTab("Ledger", ledgerPanel);
+//        tabbedPane.addTab("Admin", adminPanel);
+//        menuBar = createMenuBar();
+//        cardLayout.addLayoutComponent(tabbedPane, "ControlPanel");
+//        cardLayout.addLayoutComponent(loginPanel, "LoginPanel");
+//        tabbedPane.setBounds(50, 50, 200, 200);
+//        setSize(100, 200);
+        createMainPanel();
+//        mainPanel.setLayout(cardLayout);
+//        mainPanel.add(tabbedPane, "ControlPanel");
+//        mainPanel.add(loginPanel, "LoginPanel");
+//        cardLayout.show(mainPanel, "LoginPanel");
+        add(mainPanel);
+        setJMenuBar(menuBar);
+        setPreferredSize(new Dimension(1500, 2000));
+        pack();
+        setVisible(true);
+        displayWelcomingDialog();
+    }
+
+
+    //MODIFIES: this
+    //EFFECTS: set up the main panel(control panel) for the application and return it
+    public void createMainPanel() {
+        mainPanel = new JPanel();
+        cardLayout = new CardLayout();
+        tabbedPane = new JTabbedPane();
+        inventoryPanel = new InventoryPanel(inventory, this);
+        ledgerPanel = new LedgerPanel(ledger);
+        adminPanel = new AdminPanel(admin);
+        if (loginPanel == null) {
+            loginPanel = new LoginPanel(admin, this);
+        }
+        tabbedPane.addTab("Inventory", inventoryPanel);
+        tabbedPane.addTab("Ledger", ledgerPanel);
+        tabbedPane.addTab("Admin", adminPanel);
+        menuBar = createMenuBar();
+        cardLayout.addLayoutComponent(tabbedPane, "ControlPanel");
+        cardLayout.addLayoutComponent(loginPanel, "LoginPanel");
+        tabbedPane.setBounds(50, 50, 200, 200);
+        mainPanel.setLayout(cardLayout);
+        mainPanel.add(tabbedPane, "ControlPanel");
+        mainPanel.add(loginPanel, "LoginPanel");
+        cardLayout.show(mainPanel, "ControlPanel");
+    }
+
+//    InventoryManagementSystemApplication(JSONObject jsonObject) {
+//        try {
+//            image = ImageIO.read(new File(imagePath));
+//
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//        ii = new ImageIcon(image);
+//        image = ii.getImage();
+//        JDialog dialog = new JDialog();
+//        dialog.setLayout(new FlowLayout());
+//        JLabel descriptionLabel = new JLabel();
+//        descriptionLabel.setLayout(new BorderLayout());
+//        descriptionLabel.setIcon(ii);
+//        descriptionLabel.add(new JLabel(description), BorderLayout.CENTER);
+//        dialog.add(descriptionLabel);
+//        dialog.setSize(500, 600);
+//
+//        admin = new Admin(jsonObject.getJSONObject("admin"));
+//        ledger = new Ledger(jsonObject.getJSONObject("ledger"));
+//        inventory = new Inventory(jsonObject.getJSONObject("inventory"));
+//        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+//        cardLayout = new CardLayout();
+//        tabbedPane = new JTabbedPane();
+//        inventoryPanel = new InventoryPanel(inventory, this);
+//        ledgerPanel = new LedgerPanel(ledger);
+//        adminPanel = new AdminPanel(admin);
+//        loginPanel = new LoginPanel(admin, this);
+//        tabbedPane.addTab("Inventory", inventoryPanel);
+//        tabbedPane.addTab("Ledger", ledgerPanel);
+//        tabbedPane.addTab("Admin", adminPanel);
+////        tabbedPane.set
+//        menuBar = createMenuBar();
+//        cardLayout.addLayoutComponent(tabbedPane, "ControlPanel");
+//        cardLayout.addLayoutComponent(loginPanel, "LoginPanel");
+//        tabbedPane.setBounds(50, 50, 200, 200);
+//        mainPanel = new JPanel();
+//        mainPanel.setLayout(cardLayout);
+//        mainPanel.add(tabbedPane);
+//        mainPanel.add(loginPanel);
+//        cardLayout.show(mainPanel, "LoginPanel");
+//        add(mainPanel);
+//        pack();
+//        setVisible(true);
+//        dialog.setVisible(true);
+//    }
+
+
+    //MODIFIES: this
+    //EFFECTS: create a new dialog that welcomes the user with my dog's photo
+    //and display it
+    public void displayWelcomingDialog() {
         try {
             image = ImageIO.read(new File(imagePath));
 
         } catch (IOException e) {
             e.printStackTrace();
         }
-        ii = new ImageIcon(image);
+        ImageIcon ii = new ImageIcon(image);
         image = ii.getImage();
         JDialog dialog = new JDialog();
         dialog.setLayout(new BorderLayout());
@@ -74,115 +200,42 @@ public class InventoryManagementSystemApplication extends JFrame implements Json
         }
         dialog.add(descriptionLabel, BorderLayout.CENTER);
         dialog.setSize(500, 600);
-
-
-        ledger = new Ledger();
-        inventory = new Inventory();
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        cardLayout = new CardLayout();
-        tabbedPane = new JTabbedPane();
-        inventoryPanel = new InventoryPanel(inventory, this);
-        ledgerPanel = new LedgerPanel(ledger);
-        adminPanel = new AdminPanel(admin);
-        loginPanel = new LoginPanel(admin, this);
-//        panels.add(ledgerPanel);
-//        panels.add(adminPanel);
-//        panels.add(ledgerPanel);
-//        panels.add(loginPanel);
-        tabbedPane.addTab("Inventory", inventoryPanel);
-        tabbedPane.addTab("Ledger", ledgerPanel);
-        tabbedPane.addTab("Admin", adminPanel);
-//        tabbedPane.set
-        menuBar = createMenuBar();
-        cardLayout.addLayoutComponent(tabbedPane, "ControlPanel");
-        cardLayout.addLayoutComponent(loginPanel, "LoginPanel");
-        tabbedPane.setBounds(50, 50, 200, 200);
-        setSize(100, 200);
-        mainPanel = new JPanel();
-        mainPanel.setLayout(cardLayout);
-        mainPanel.add(tabbedPane, "ControlPanel");
-        mainPanel.add(loginPanel, "LoginPanel");
-        cardLayout.show(mainPanel, "LoginPanel");
-        add(mainPanel);
-        setJMenuBar(menuBar);
-        setPreferredSize(new Dimension(1500, 2000));
-        pack();
-        setVisible(true);
         dialog.setVisible(true);
     }
-
-    @SuppressWarnings({"checkstyle:MethodLength", "checkstyle:SuppressWarnings"})
-    InventoryManagementSystemApplication(JSONObject jsonObject) {
-        try {
-            image = ImageIO.read(new File(imagePath));
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        ii = new ImageIcon(image);
-        image = ii.getImage();
-        JDialog dialog = new JDialog();
-        dialog.setLayout(new FlowLayout());
-        JLabel descriptionLabel = new JLabel();
-        descriptionLabel.setLayout(new BorderLayout());
-        descriptionLabel.setIcon(ii);
-        descriptionLabel.add(new JLabel(description), BorderLayout.CENTER);
-        dialog.add(descriptionLabel);
-        dialog.setSize(500, 600);
-
-        admin = new Admin(jsonObject.getJSONObject("admin"));
-        ledger = new Ledger(jsonObject.getJSONObject("ledger"));
-        inventory = new Inventory(jsonObject.getJSONObject("inventory"));
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        cardLayout = new CardLayout();
-        tabbedPane = new JTabbedPane();
-        inventoryPanel = new InventoryPanel(inventory, this);
-        ledgerPanel = new LedgerPanel(ledger);
-        adminPanel = new AdminPanel(admin);
-        loginPanel = new LoginPanel(admin, this);
-        tabbedPane.addTab("Inventory", inventoryPanel);
-        tabbedPane.addTab("Ledger", ledgerPanel);
-        tabbedPane.addTab("Admin", adminPanel);
-//        tabbedPane.set
-        menuBar = createMenuBar();
-        cardLayout.addLayoutComponent(tabbedPane, "ControlPanel");
-        cardLayout.addLayoutComponent(loginPanel, "LoginPanel");
-        tabbedPane.setBounds(50, 50, 200, 200);
-        mainPanel = new JPanel();
-        mainPanel.setLayout(cardLayout);
-        mainPanel.add(tabbedPane);
-        mainPanel.add(loginPanel);
-        cardLayout.show(mainPanel, "LoginPanel");
-        add(mainPanel);
-        pack();
-        setVisible(true);
-        dialog.setVisible(true);
-    }
-
 
 
 
     //MODIFIES: this
-    //EFFECTS: switch to the inventory panel.
+    //EFFECTS: set login true
     public void switchToControlPanel() {
         cardLayout.show(mainPanel, "ControlPanel");
     }
 
+
+
     //MODIFIES: this
     //EFFECTS: switch to the login panel.
     public void switchToLoginPanel() {
-        cardLayout.show(this, "LoginPanel");
+//        login = false;
+//        updateDisplay();
+        cardLayout.show(mainPanel, "LoginPanel");
     }
 
 
-    //EFFECTS: if there exists the id and password entered by the user, switch to the application panel.
-    //Otherwise, display error
-    public void loginActionPerformed(ActionEvent e) {
-
+    //MODIFIES: this
+    //EFFECTS: update the current display according to login status
+    public void updateDisplay() {
+        if (login == true) {
+            switchToControlPanel();
+        } else {
+            switchToLoginPanel();
+        }
     }
+
 
     //EFFECTS: save the status of the program
     public void save() {
+        //switchToLoginPanel();
         try {
             Writer writer = new Writer(fileLocation);
             writer.write(this);
@@ -193,38 +246,18 @@ public class InventoryManagementSystemApplication extends JFrame implements Json
     }
 
     //EFFECTS: load the status of the program
-    @SuppressWarnings({"checkstyle:MethodLength", "checkstyle:SuppressWarnings"})
     public void load() {
         try {
             Reader reader = new Reader(fileLocation);
             JSONObject jsonObject = reader.read();
             setVisible(false);
             getContentPane().removeAll();
-            repaint();
-            revalidate();
+            //repaint();
             admin = new Admin(jsonObject.getJSONObject("admin"));
             ledger = new Ledger(jsonObject.getJSONObject("ledger"));
             inventory = new Inventory(jsonObject.getJSONObject("inventory"));
-            setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            cardLayout = new CardLayout();
-            tabbedPane = new JTabbedPane();
-            inventoryPanel = new InventoryPanel(inventory, this);
-            ledgerPanel = new LedgerPanel(ledger);
-            adminPanel = new AdminPanel(admin);
-            loginPanel = new LoginPanel(admin, this);
-            tabbedPane.addTab("Inventory", inventoryPanel);
-            tabbedPane.addTab("Ledger", ledgerPanel);
-            tabbedPane.addTab("Admin", adminPanel);
-            menuBar = createMenuBar();
-            cardLayout.addLayoutComponent(tabbedPane, "ControlPanel");
-            cardLayout.addLayoutComponent(loginPanel, "LoginPanel");
-            tabbedPane.setBounds(50, 50, 200, 200);
-            mainPanel = new JPanel();
-            mainPanel.setLayout(new BorderLayout());
-            mainPanel.setLayout(cardLayout);
-            mainPanel.add(tabbedPane);
-            mainPanel.add(loginPanel);
-            mainPanel.setVisible(true);
+            createMainPanel();
+            //cardLayout.show(mainPanel, "LoginPanel");
             add(mainPanel);
             setPreferredSize(new Dimension(1500, 2000));
             pack();
@@ -243,32 +276,21 @@ public class InventoryManagementSystemApplication extends JFrame implements Json
 
     //MODIFIES: this
     //EFFECTS: creates a new menu bar that has 'load', 'save' menus
-    @SuppressWarnings({"checkstyle:MethodLength", "checkstyle:SuppressWarnings"})
     private JMenuBar createMenuBar() {
         JMenuBar menuBar = new JMenuBar();
         JMenu file = new JMenu("File");
         JMenuItem save = new JMenuItem("Save");
         JMenuItem load = new JMenuItem("Load");
         JMenuItem quit = new JMenuItem("Quit");
-        save.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                save();
-            }
+        save.addActionListener(e -> {
+            loginPanel.setPurpose(LoginPanel.SAVE);
+            switchToLoginPanel();
         });
-        load.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                load();
-            }
+        load.addActionListener(e -> {
+            loginPanel.setPurpose(LoginPanel.LOAD);
+            switchToLoginPanel();
         });
-        quit.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                System.exit(0);
-            }
-        });
-
+        quit.addActionListener(e -> System.exit(0));
         file.add(save);
         file.add(load);
         file.add(quit);
@@ -322,6 +344,8 @@ public class InventoryManagementSystemApplication extends JFrame implements Json
         new InventoryManagementSystemApplication();
     }
 
+
+    //EFFECTS: convert data of this to JSONObject and return it
     @Override
     public JSONObject toJson() {
         JSONObject json = new JSONObject();
@@ -331,5 +355,22 @@ public class InventoryManagementSystemApplication extends JFrame implements Json
         return json;
     }
 
+    //MODIFIES: this
+    //EFFECTS: based on whether the login attempt succeeds or not, or whether the user has cancelled the requiest,
+    //save/load data or go back to the control panel
+    public void dataChangeHandler(int result) {
+        if (result == LoginPanel.CANCEL) {
+            switchToControlPanel();
+        } else {
+            if (result == LoginPanel.LOAD) {
+                load();
+                switchToControlPanel();
+            } else if (result == LoginPanel.SAVE) {
+                save();
+                JOptionPane.showMessageDialog(this, "System saved");
+                switchToControlPanel();
+            }
+        }
+    }
 }
 

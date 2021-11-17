@@ -23,7 +23,6 @@ public class InventoryPanel extends JPanel {
     public InventoryPanel(Inventory inventory, InventoryManagementSystemApplication application) {
         this.application = application;
         this.inventory = inventory;
-
         productPanel = new ProductPanel(inventory, application);
         stockPanel = new StockPanel(inventory, productPanel, application);
 //        JPanel typeCreator = new JPanel();
