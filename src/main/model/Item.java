@@ -57,8 +57,7 @@ public class Item implements  TableEntryConvertible, JsonConvertible {
             JSONArray jsonList = (JSONArray) obj;
             List<Product> productList = new ArrayList<>();
             for (Object toBeJson: jsonList) {
-                JSONObject jsonObject = (JSONObject)toBeJson;
-                Product product = new Product(jsonObject);
+                Product product = new Product((JSONObject)toBeJson);
                 productList.add(product);
                 products.put(product.getSku(), product);
             }
