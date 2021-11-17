@@ -26,10 +26,6 @@ public interface JsonConvertible {
         return jsons;
     }
 
-    //EFFECTS: return a list form of maps
-    public static <K, V> List<V> convertToList(Map<K, V> map) {
-        return new ArrayList<>(map.values());
-    }
 
     //EFFECTS: convert to JSONObject and return it
     JSONObject toJson();

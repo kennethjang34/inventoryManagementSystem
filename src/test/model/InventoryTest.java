@@ -222,7 +222,7 @@ public class InventoryTest {
         inventory.addProducts(tags);
         List<Product> products = inventory.getProductList(tags.get(0).getId(), tags.get(0).getLocation());
         assertEquals(products.size(), tags.get(0).getQuantity());
-        assertEquals(0, inventory.getProductList(tags.get(0).getId(), "qerwqrweewqr"));
+        assertEquals(0, inventory.getProductList(tags.get(0).getId(), "qerwqrweewqr").size());
     }
 
     @Test
@@ -231,6 +231,8 @@ public class InventoryTest {
          assertTrue(inventory.removeStock(new QuantityTag("AAA",
                 "F11", basicQty/2)));
          assertEquals(basicQty/2, inventory.getQuantity("AAA"));
+         assertFalse(inventory.removeStock(new QuantityTag("no such item",
+                 "z22", basicQty)));
     }
 
     @Test
@@ -239,6 +241,8 @@ public class InventoryTest {
         assertTrue(inventory.removeStock("AAA",
                 "F11", basicQty/2));
         assertEquals(basicQty/2, inventory.getQuantity("AAA"));
+        assertFalse(inventory.removeStock("no such stock",
+                "f11", basicQty));
     }
 
 
@@ -343,7 +347,7 @@ public class InventoryTest {
         assertEquals(basicQty, products.size());
 
         assertEquals(0, inventory.getProductList("ZZZ").size());
-
+        assertEquals(0, inventory.getProductList("zZZ", "F!123").size());
     }
 
 
@@ -502,6 +506,16 @@ public class InventoryTest {
         assertFalse(inventory.containsCategory("adsasd"));
         assertTrue(inventory.containsItem("AAA"));
         assertFalse(inventory.containsItem("ewewewew"));
+    }
+
+    @Test
+    void testGetCategoryOfItem() {
+        assertEquals("FOOD", inventory.getCategory(tags.get(0).getId()));
+    }
+
+    @Test
+    void testGetIDs() {
+        assertEquals(0, inventory.getIDs("adsfadfsd").size());
     }
 
 
