@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -15,7 +16,7 @@ public class InventoryTest {
     private LinkedList<InventoryTag> tags;
     private static LocalDate today = LocalDate.now();
     private static final LocalDate bestBeforeDate = LocalDate.of(2021, 10, 20);
-    private static int basicQty = 3;
+    private static int basicQty = 4;
     private static double cost = 3;
     private static double price = 5;
     private static Category category = new Category("FOOD");
@@ -25,7 +26,7 @@ public class InventoryTest {
     @BeforeEach
     void runBeforeEveryTest() {
         inventory = new Inventory();
-        basicQty = 3;
+        basicQty = 4;
         tags = new LinkedList<>();
         tags.add(new InventoryTag("AAA", cost, price, bestBeforeDate, "F11", basicQty));
         tags.add(new InventoryTag("BNN", cost, price, bestBeforeDate, "F12", basicQty));
@@ -63,6 +64,7 @@ public class InventoryTest {
     void testAddCategory() {
         assertTrue(inventory.createCategory("Fruit"));
         assertTrue(inventory.containsCategory("Fruit"));
+        assertFalse(inventory.createCategory("Fruit"));
     }
 
     @Test
@@ -77,24 +79,23 @@ public class InventoryTest {
                 price, description, note));
         assertTrue(inventory.createItem("MGO", "mgo", category.getName(),
                 price, description, note));
+
+        assertFalse(inventory.createItem("MGO", "Duplicate",
+                category.getName(), price, description, note));
+        assertFalse(inventory.createItem("QQQWRW", "NO such category",
+                ".?AEw", price, description, note));
     }
 
 
-//    LinkedList<ProductTag> createInventoryTag(String code, double cost, int qty, String location) {
-//        LinkedList<ProductTag> products = new LinkedList<>();
-//        for (int i = 0; i < qty; i++) {
-//            ProductTag tag = new ProductTag(new Product(code, sku++, cost, today, bestBeforeDate), location);
-//            products.add(tag);
-//        }
-//        return products;
-//    }
-
-
-
-
-
-
-
+    @Test
+    void testAddProducts() {
+        inventory.addProducts(tags.get(0));
+        assertEquals(basicQty, inventory.getQuantity("AAA"));
+        assertEquals("AAA", tags.get(0).getId());
+        assertEquals(1, inventory.findLocations("AAA").size());
+        assertEquals("F11",
+                inventory.findLocations(tags.get(0).getId()).get(0).getLocation());
+    }
 
     @Test
     void testCurrentDate() {
@@ -104,6 +105,8 @@ public class InventoryTest {
         assertEquals(LocalDate.of(2022, 11, 11),
                 inventory.getCurrentDate());
     }
+
+
 
     @Test
     void testAddProduct() {
@@ -118,6 +121,35 @@ public class InventoryTest {
         assertEquals(basicQty, products.size());
     }
 
+
+    @Test
+    void testGetItemListWithCategory() {
+        inventory.addProducts(tags);
+        List<Item> items = inventory.getItemList(category.getName());
+        for (InventoryTag tag: tags) {
+            boolean found = false;
+            for (Item item: items) {
+                if (item.getId().equals(tag.getId())) {
+                    found = true;
+                    break;
+                }
+            }
+            if (found == false) {
+                fail();
+            }
+
+        }
+        assertEquals(0, inventory.getItemList
+                ("No Category").size());
+    }
+
+    @Test
+    void testGetCategoryNames() {
+        assertEquals(1, inventory.getCategoryNames().length);
+        inventory.createCategory("Chicken");
+        assertEquals(2, inventory.getCategoryNames().length);
+        assertEquals("Chicken", inventory.getCategoryNames()[1]);
+    }
 
 
 
@@ -187,6 +219,21 @@ public class InventoryTest {
 
 
 
+    @Test
+    void testRemoveProductsWithQuantityTag() {
+        inventory.addProducts(tags);
+         assertTrue(inventory.removeStock(new QuantityTag("AAA",
+                "F11", basicQty/2)));
+         assertEquals(basicQty/2, inventory.getQuantity("AAA"));
+    }
+
+    @Test
+    void testRemoveWithStrings() {
+        inventory.addProducts(tags);
+        assertTrue(inventory.removeStock("AAA",
+                "F11", basicQty/2));
+        assertEquals(basicQty/2, inventory.getQuantity("AAA"));
+    }
 
 
 
@@ -197,7 +244,7 @@ public class InventoryTest {
     //tags.add(new InventoryTag("CHI", price, bestBeforeDate, "F13", basicQty));
     //tags.add(new InventoryTag("MGO", price, bestBeforeDate, "F14", basicQty));
     @Test
-    void testRemoveProducts() {
+    void testRemoveProductsWithListOfTags() {
         inventory.addProducts(tags);
         List<QuantityTag> toBeRemoved = new LinkedList<>();
         toBeRemoved.add(new QuantityTag("AAA", "F11", basicQty/2));
@@ -209,7 +256,7 @@ public class InventoryTest {
         int removedQty = removedTag.getQuantity();
         assertEquals("AAA", removedItemCode);
         assertEquals("F11", removedLocation);
-        assertEquals(1, removedQty);
+        assertEquals(2, removedQty);
     }
 
     @Test
@@ -256,7 +303,7 @@ public class InventoryTest {
             assertNull(inventory.getProduct(product.getSku()));
             assertEquals(qty - 1, inventory.getQuantity("ASR"));
         }
-
+        assertFalse(inventory.removeProduct("fadskasfddfasj;"));
 
         assertEquals(0, inventory.getQuantity("AAA"));
     }
@@ -363,14 +410,23 @@ public class InventoryTest {
 
     @Test
     void testGetQtysAtDiffLocations() {
+        tags = new LinkedList<>();
         tags.add(new InventoryTag("CHI", cost, price, bestBeforeDate, "F50", basicQty));
         tags.add(new InventoryTag("CHI", cost, price, bestBeforeDate, "T", basicQty * 2));
         inventory.addProducts(tags);
         List<QuantityTag> list = inventory.getQuantitiesAtLocations("CHI");
-        assertEquals(basicQty * 2, list.get(2).getQuantity());
+        assertEquals(basicQty * 2, list.get(1).getQuantity());
         assertEquals(basicQty, list.get(0).getQuantity());
-        assertEquals(basicQty, list.get(1).getQuantity());
+        assertEquals(basicQty * 2, list.get(1).getQuantity());
         assertEquals(0, inventory.getQuantitiesAtLocations("ZZZ").size());
+        List<QuantityTag> naExpected;
+        naExpected = inventory.getQuantitiesAtLocations("BNN");
+        assertEquals(1, naExpected.size());
+        QuantityTag tag = naExpected.get(0);
+        assertEquals("BNN", tag.getId());
+        assertEquals("N/A", tag.getLocation());
+        assertEquals(0, tag.getQuantity());
+
     }
 
     @Test
@@ -393,4 +449,40 @@ public class InventoryTest {
                 inventory.findLocations(tags.get(0).getId()).get(0).getLocation());
         assertEquals(basicQty, products.size());
     }
+
+
+    @Test
+    void testGetDataList() {
+        String[] columns = new String[]{
+                "Category", "ID", "Name", "Description", "Special Note", "Quantity",
+                "Average Cost", "List Price"
+        };
+        String[] dataList = inventory.getDataList();
+        for (int i = 0; i < columns.length; i++) {
+            columns[i].equals(dataList[i]);
+        }
+    }
+
+    @Test
+    void testGetIds() {
+        inventory.createCategory("new");
+        List<String> ids = inventory.getIDs("FOOD");
+        assertEquals(6, inventory.getIDs().size());
+        assertEquals(6, ids.size());
+        assertTrue(ids.contains(tags.get(0).getId()));
+        assertTrue(ids.contains(tags.get(1).getId()));
+        assertTrue(ids.contains(tags.get(2).getId()));
+        assertTrue(ids.contains(tags.get(3).getId()));
+        ids = inventory.getIDs("new");
+        assertEquals(0, ids.size());
+    }
+
+    @Test
+    void testContains() {
+        assertTrue(inventory.containsCategory("FOOD"));
+        assertFalse(inventory.containsCategory("adsasd"));
+        assertTrue(inventory.containsItem("AAA"));
+        assertFalse(inventory.containsItem("ewewewew"));
+    }
+
 }

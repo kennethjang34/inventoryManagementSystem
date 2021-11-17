@@ -2,7 +2,6 @@ package ui;
 
 import model.Inventory;
 import model.Product;
-import model.ProductTag;
 import model.QuantityTag;
 
 import javax.swing.*;

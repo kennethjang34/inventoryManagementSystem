@@ -76,20 +76,20 @@ public class Category implements JsonConvertible {
     }
 
 
-    //EFFECTS: return true if the two objects are the same or it has the same name field or it itself is the name
-    @Override
-    public boolean equals(Object o) {
-        if (!(o instanceof Category)) {
-            if (o instanceof String) {
-                return o.equals(getName());
-            }
-            return false;
-        }
-        if (((Category) o).getName().equals(getName())) {
-            return true;
-        }
-        return false;
-    }
+//    //EFFECTS: return true if the two objects are the same or it has the same name field or it itself is the name
+//    @Override
+//    public boolean equals(Object o) {
+//        if (!(o instanceof Category)) {
+//            if (o instanceof String) {
+//                return o.equals(getName());
+//            }
+//            return false;
+//        }
+//        if (((Category) o).getName().equals(getName())) {
+//            return true;
+//        }
+//        return false;
+//    }
 
     //EFFECTS: return JSONObject containing data of this
     @Override

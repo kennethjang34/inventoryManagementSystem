@@ -17,18 +17,6 @@ public class QuantityTag {
         this.quantity = quantity;
     }
 
-    //MODIFIES: this
-    //EFFECTS: set average price
-    public void setAveragePrice(double price) {
-        averagePrice = price;
-    }
-
-    //MODIFIES: this
-    //EFFECTS; set average cost
-    public void setAverageCost(double cost) {
-        averageCost = cost;
-    }
-
     //EFFECTS: return the assigned location
     public String getLocation() {
         return location;
@@ -44,31 +32,8 @@ public class QuantityTag {
         return quantity;
     }
 
-    //REQUIRES: quantity must be non-negative
-    //MODIFIES: this
-    //EFFECTS: change the quantity to the given value
-    public void setQuantity(int qty) {
-        quantity = qty;
-    }
 
-    //return true if the given objet is equal to this. Otherwise, return false.
-    @Override
-    public boolean equals(Object o) {
-        if (!(o instanceof QuantityTag)) {
-            return false;
-        }
-        QuantityTag tag = (QuantityTag)o;
-        if (tag.getId().equalsIgnoreCase(id) && tag.getLocation().equalsIgnoreCase(location)) {
-            return true;
-        }
-        return false;
-    }
 
-    //EFFECTS: return hash code of this
-    @Override
-    public int hashCode() {
-        return id.hashCode();
-    }
 
     //EFFECTS: return a string description that contains all information of this
     @Override

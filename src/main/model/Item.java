@@ -148,23 +148,6 @@ public class Item implements  TableEntryConvertible, JsonConvertible {
     }
 
 
-    //REQUIRES: for each tag, there must be enough stock for removal.
-    //MODIFIES: this
-    //EFFECTS:remove as many products as specified by the quantity tags.
-    //return  tags skipped because there was not enough stock
-    public List<QuantityTag> removeStocks(List<QuantityTag> tags) {
-        List<QuantityTag> failed = new ArrayList<>();
-        for (QuantityTag tag: tags) {
-            if (!removeStocks(tag.getLocation(), tag.getQuantity())) {
-                failed.add(tag);
-            }
-        }
-        if (failed.size() == 0) {
-            return Collections.emptyList();
-        }
-        return failed;
-    }
-
     //REQUIRES: there must be enough stock for removal
     //MODIFIES: this
     //EFFECTS:remove as many products as specified. If succeeded, return true
@@ -204,11 +187,6 @@ public class Item implements  TableEntryConvertible, JsonConvertible {
         this.category = category;
     }
 
-
-
-
-    //Inventory tag contains following info
-    //
 
     //REQUIRES: the tag must have id of this
     //MODIFIES: this
@@ -263,30 +241,6 @@ public class Item implements  TableEntryConvertible, JsonConvertible {
         }
     }
 
-    //MODIFIES: this
-    //EFFECTS: add products to this with the given info without best before date
-    public void addProducts(String id, double cost, double price, LocalDate dateGenerated,
-                            String location, int qty) {
-        List<Product> toBeAdded = new ArrayList<>();
-        int originalQty = getQuantity();
-        for (int i = 0; i < qty; i++) {
-            Product product = new Product(id, createSku(), cost, price,
-                    dateGenerated, null, location);
-            toBeAdded.add(product);
-            products.put(product.getSku(), product);
-        }
-        List<Product> existing = stocks.get(location);
-        if (existing == null) {
-            stocks.put(location, toBeAdded);
-        } else {
-            existing.addAll(toBeAdded);
-        }
-        if (originalQty != 0) {
-            averageCost = (averageCost * originalQty + cost * qty) / (originalQty + qty);
-        } else {
-            averageCost = cost;
-        }
-    }
 
     //EFFECTS: return a list of products belonging to this item
     public List<Product> getProducts() {
@@ -312,16 +266,6 @@ public class Item implements  TableEntryConvertible, JsonConvertible {
         return tags;
     }
 
-
-
-    //EFFECTS: return an array of column names for table entry
-    @Override
-    public String[] getColumnNames() {
-        String[] columns = new String[]{
-                "Category", "ID", "Name", "Description", "Special Note", "Quantity", "Average Cost", "List Price"
-        };
-        return columns;
-    }
 
     //EFFECTS: return an array of info segments for table entry
     @Override

@@ -13,13 +13,6 @@ import java.util.ArrayList;
 public class Admin implements JsonConvertible {
 
 
-    public String getId() {
-        return accounts.get(0).getId();
-    }
-
-    public String getPw() {
-        return accounts.get(0).getPassword();
-    }
 
     //represents each individual login account.
     //Must be distinguished from accounts that contain information about inventory update.
@@ -121,9 +114,6 @@ public class Admin implements JsonConvertible {
         jsonAccounts.forEach(json -> accounts.add(new LoginAccount((JSONObject)json)));
     }
 
-    public int size() {
-        return accounts.size();
-    }
 
     //EFFECTS: if a login account can be found with the information given, return password of the account
     //return null otherwise.

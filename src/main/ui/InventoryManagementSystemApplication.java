@@ -203,7 +203,6 @@ public class InventoryManagementSystemApplication extends JFrame implements Json
             repaint();
             revalidate();
             admin = new Admin(jsonObject.getJSONObject("admin"));
-            assert admin.size() == 1;
             ledger = new Ledger(jsonObject.getJSONObject("ledger"));
             inventory = new Inventory(jsonObject.getJSONObject("inventory"));
             setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

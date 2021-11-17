@@ -55,7 +55,7 @@ public class LedgerTest {
         ledger.addAccount(tags.get(0),"nothing", LocalDate.now());
         assertEquals(1, ledger.getSize());
         assertEquals(1, ledger.getAccountLists().size());
-        assertEquals(111111, ledger.getAccount(111111).getCode());
+        assertEquals("111111", ledger.getAccount(111111).getCode());
         assertEquals(1, ledger.getAccounts(TODAY).size());
         assertEquals(ledger.getAccount(111111), ledger.getAccounts(TODAY).get(0));
         Account account = ledger.getAccounts(currentDate).get(0);
@@ -115,16 +115,16 @@ public class LedgerTest {
         assertEquals(1, ledger.getAccountLists().size());
         assertEquals(ledger.getAccount(111111), ledger.getAccountLists().get(0).get(0));
         assertEquals(1, ledger.getAccounts(TODAY).size());
-        assertEquals(111111, ledger.getAccounts(TODAY).get(0).getCode());
+        assertEquals("" + 111111, ledger.getAccounts(TODAY).get(0).getCode());
 //        assertEquals(null,
 //                ledger.addAccount(new LinkedList<QuantityTag>(),
 //                        new LinkedList<>(),"test", LocalDate.now()));
         ledger = new Ledger(ledger.toJson());
         assertEquals(1, ledger.getSize());
         assertEquals(1, ledger.getAccountLists().size());
-        assertEquals(ledger.getAccount(111111), ledger.getAccountLists().get(0).get(0));
+        assertEquals(ledger.getAccount("111111"), ledger.getAccountLists().get(0).get(0));
         assertEquals(1, ledger.getAccounts(TODAY).size());
-        assertEquals(ledger.getAccount(111111), ledger.getAccounts(TODAY).get(0));
+        assertEquals(ledger.getAccount("111111"), ledger.getAccounts(TODAY).get(0));
     }
 
 

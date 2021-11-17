@@ -44,6 +44,20 @@ public class ProductTest {
     }
 
     @Test
+    void testSettingPrice() {
+        Product product = new Product(id, sku, cost, price, today, bestBeforeDate, "a");
+        product.setPrice(1000);
+        assertEquals(1000, product.getPrice());
+    }
+
+    @Test
+    void testSettingLocation() {
+        Product product = new Product(id, sku, cost, price, today, bestBeforeDate, "a");
+        product.setLocation("Testing Location");
+        assertEquals("Testing Location", product.getLocation());
+    }
+
+    @Test
     void testJsonConversion() {
         Product product = new Product(id, sku, cost, price, today, bestBeforeDate, "a");
         assertEquals(id, product.getId());

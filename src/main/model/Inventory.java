@@ -405,9 +405,7 @@ public class Inventory implements JsonConvertible {
 
     //EFFECTS: return column data for converting this to table
     public String[] getDataList() {
-        if (!items.isEmpty()) {
-            return getItemList().get(0).getColumnNames();
-        }
+
 
         String[] columns = new String[]{
                 "Category", "ID", "Name", "Description", "Special Note", "Quantity",
@@ -416,16 +414,16 @@ public class Inventory implements JsonConvertible {
         return columns;
     }
 
-    //EFFECTS: return data for converting this to table
-    public Object[][] getData() {
-        List<String> items = getIDs();
-        Object[][] data = new Object[items.size()][];
-        for (int i = 0; i < data.length; i++) {
-            Item item = this.items.get(items.get(i));
-            data[i] = item.convertToTableEntry();
-        }
-        return data;
-    }
+//    //EFFECTS: return data for converting this to table
+//    public Object[][] getData() {
+//        List<String> items = getIDs();
+//        Object[][] data = new Object[items.size()][];
+//        for (int i = 0; i < data.length; i++) {
+//            Item item = this.items.get(items.get(i));
+//            data[i] = item.convertToTableEntry();
+//        }
+//        return data;
+//    }
 
     //EFFECTS: return data for the item with the given ID
     public Object[] getData(String id) {

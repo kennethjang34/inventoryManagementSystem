@@ -98,55 +98,41 @@ public class Ledger implements JsonConvertible {
         return accounts.get(date.toString());
     }
 
-    //EFFECTS: return a list of accounts that were generated on the specified date.
-    //If there isn't any, return null.
-    public List<Account> getAccounts(String date) {
-        return accounts.get(date);
-    }
-
-
-    //EFFECTS: return the map of date and account lists
-    public Map<String, List<Account>> getAccountsMap() {
-        return accounts;
-    }
-
-
-
+//    //EFFECTS: return a list of accounts that were generated on the specified date.
+//    //If there isn't any, return null.
+//    public List<Account> getAccounts(String date) {
+//        return accounts.get(date);
+//    }
+//
+//
+//    //EFFECTS: return the map of date and account lists
+//    public Map<String, List<Account>> getAccountsMap() {
+//        return accounts;
+//    }
 
 
 
-    //MODIFIES: this
-    //EFFECTS: create and add an account to this. return the created account
-    public Account addAccount(List<QuantityTag> added, List<QuantityTag> removed, String description, LocalDate date) {
-        if (added.size() == 0 && removed.size() == 0) {
-            return null;
-        }
-        Account account = new Account(nextAccountNumber++, description, date, added, removed);
-        List<Account> accountList = accounts.get(date.toString());
-        if (accountList == null) {
-            accountList = new ArrayList<>();
-        }
-        accountList.add(account);
-        accounts.putIfAbsent(date.toString(), accountList);
-        return account;
-    }
 
 
-    //MODIFIES: this
-    //EFFECTS: create and add an account to this. return the created account
-    public Account addAccount(List<QuantityTag> added, String description, LocalDate date) {
-        if (added.size() == 0) {
-            return null;
-        }
-        Account account = new Account(nextAccountNumber++, description, date, added);
-        List<Account> accountList = accounts.get(date.toString());
-        if (accountList == null) {
-            accountList = new ArrayList<>();
-        }
-        accountList.add(account);
-        accounts.putIfAbsent(date.toString(), accountList);
-        return account;
-    }
+
+//    //MODIFIES: this
+//    //EFFECTS: create and add an account to this. return the created account
+//    public Account addAccount(List<QuantityTag> added,
+//    List<QuantityTag> removed, String description, LocalDate date) {
+//        if (added.size() == 0 && removed.size() == 0) {
+//            return null;
+//        }
+//        Account account = new Account(nextAccountNumber++, description, date, added, removed);
+//        List<Account> accountList = accounts.get(date.toString());
+//        if (accountList == null) {
+//            accountList = new ArrayList<>();
+//        }
+//        accountList.add(account);
+//        accounts.putIfAbsent(date.toString(), accountList);
+//        return account;
+//    }
+
+
 
     //MODIFIES: this
     //EFFECTS: create and aa a new account to this, return the created account
@@ -161,12 +147,6 @@ public class Ledger implements JsonConvertible {
         accountList.add(account);
         accounts.putIfAbsent(date.toString(), accountList);
         return account;
-    }
-
-    //MODIFIES: this
-    //EFFECTS: create and aa a new account to this, return the created account
-    public Account addAccount(QuantityTag tag, String description, LocalDate date) {
-        return null;
     }
 
 

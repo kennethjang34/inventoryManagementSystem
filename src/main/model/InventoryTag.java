@@ -164,24 +164,24 @@ public class InventoryTag {
     }
 
 
-    //EFFECTS: return true if the given object is equal to this
-    @Override
-    public boolean equals(Object o) {
-        if (!(o instanceof InventoryTag)) {
-            return false;
-        }
-        InventoryTag tag = (InventoryTag)o;
-        if (tag.getId().equalsIgnoreCase(id) && tag.getLocation().equalsIgnoreCase(location)
-                 && tag.getUnitCost() == unitCost) {
-            if (bestBeforeDate == null && tag.getBestBeforeDate() == null) {
-                return true;
-            } else if (bestBeforeDate != null && tag.getBestBeforeDate() != null) {
-                return bestBeforeDate.equals(tag.getBestBeforeDate());
-            }
-            return false;
-        }
-        return false;
-    }
+//    //EFFECTS: return true if the given object is equal to this
+//    @Override
+//    public boolean equals(Object o) {
+//        if (!(o instanceof InventoryTag)) {
+//            return false;
+//        }
+//        InventoryTag tag = (InventoryTag)o;
+//        if (tag.getId().equalsIgnoreCase(id) && tag.getLocation().equalsIgnoreCase(location)
+//                 && tag.getUnitCost() == unitCost) {
+//            if (bestBeforeDate == null && tag.getBestBeforeDate() == null) {
+//                return true;
+//            } else if (bestBeforeDate != null && tag.getBestBeforeDate() != null) {
+//                return bestBeforeDate.equals(tag.getBestBeforeDate());
+//            }
+//            return false;
+//        }
+//        return false;
+//    }
 
     //EFFECTS: return the hashcode of this
     @Override
