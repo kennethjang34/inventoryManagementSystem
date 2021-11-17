@@ -192,7 +192,7 @@ public class Ledger implements JsonConvertible {
         List<String> codes = new ArrayList<>();
         List<List<Account>> accountsLists = new ArrayList<>(accounts.values());
         for (int i = 0; i < accountsLists.size(); i++) {
-            for (int j = 0; j < accountsLists.get(i).size(); i++) {
+            for (int j = 0; j < accountsLists.get(i).size(); j++) {
                 codes.add(accountsLists.get(i).get(j).getCode());
             }
         }

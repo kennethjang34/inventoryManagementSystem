@@ -182,10 +182,10 @@ public class InventoryTag {
 //        }
 //        return false;
 //    }
-
-    //EFFECTS: return the hashcode of this
-    @Override
-    public int hashCode() {
-        return id.hashCode();
-    }
+//
+//    //EFFECTS: return the hashcode of this
+//    @Override
+//    public int hashCode() {
+//        return id.hashCode();
+//    }
 }

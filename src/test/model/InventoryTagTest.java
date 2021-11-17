@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 public class InventoryTagTest {
 
@@ -21,6 +22,12 @@ public class InventoryTagTest {
         assertEquals(100, tag.getUnitPrice());
         tag.setQuantity(1000);
         assertEquals(1000, tag.getQuantity());
+        try {
+            tag.setUnitPrice(-1);
+            fail();
+        } catch(IllegalArgumentException e) {
+
+        }
     }
 
 
@@ -31,24 +38,29 @@ public class InventoryTagTest {
                 20, 30, null, LocalDate.now(),"F11"));
         products.add(new Product("APP", "1511",
                 20, 30, null, LocalDate.now(),"F#"));
+        products.add(new Product("APP", "412",
+                20, 30, null, LocalDate.now(),"F11"));
         products.add(new Product("EEW", "123",
                 20, 30, null, LocalDate.now(),"F!!"));
         products.add(new Product("EEW", "324",
                 20, 30, null, LocalDate.now(),"F11"));
         List<InventoryTag> tags = InventoryTag.createTagsForRemoved(products);
         assertEquals(4, tags.size());
-        InventoryTag tag1 = tags.get(0);
-        InventoryTag tag2 = tags.get(1);
-        InventoryTag tag3 = tags.get(2);
-        InventoryTag tag4 = tags.get(3);
         for (int i = 0 ; i < tags.size(); i++) {
             InventoryTag tag = tags.get(i);
             Product product = products.get(i);
-            assertEquals(-1, tag.getQuantity());
-            assertEquals(product.getId(), tag.getId());
-            assertEquals(product.getLocation(), tag.getLocation());
-            assertEquals(product.getCost(), tag.getUnitCost());
-            assertEquals(product.getPrice(), tag.getUnitPrice());
+            if (tag.getId().equals("APP") && tag.getLocation().equalsIgnoreCase("F11")) {
+                assertEquals(-2, tag.getQuantity());
+            } else {
+                assertEquals(-1, tag.getQuantity());
+            }
+            if (i <= 1) {
+                assertEquals("APP", tag.getId());
+            } else {
+                assertEquals("EEW", tag.getId());
+            }
+//            assertEquals(product.getId(), tag.getId());
+
         }
     }
 }

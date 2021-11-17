@@ -217,7 +217,13 @@ public class InventoryTest {
     }
 
 
-
+    @Test
+    void testGetProducts() {
+        inventory.addProducts(tags);
+        List<Product> products = inventory.getProductList(tags.get(0).getId(), tags.get(0).getLocation());
+        assertEquals(products.size(), tags.get(0).getQuantity());
+        assertEquals(0, inventory.getProductList(tags.get(0).getId(), "qerwqrweewqr"));
+    }
 
     @Test
     void testRemoveProductsWithQuantityTag() {
@@ -464,6 +470,19 @@ public class InventoryTest {
     }
 
     @Test
+    void testGetData() {
+        inventory.addProducts(tags);
+        List<Item> items = inventory.getItemList();
+        for (Item item: items) {
+            Object[] data = item.convertToTableEntry();
+            Object[] dataFromInventory = inventory.getData(item.getId());
+            for (int i = 0; i < data.length; i++) {
+                data[i].equals(dataFromInventory[i]);
+            }
+        }
+    }
+
+    @Test
     void testGetIds() {
         inventory.createCategory("new");
         List<String> ids = inventory.getIDs("FOOD");
@@ -484,5 +503,7 @@ public class InventoryTest {
         assertTrue(inventory.containsItem("AAA"));
         assertFalse(inventory.containsItem("ewewewew"));
     }
+
+
 
 }
