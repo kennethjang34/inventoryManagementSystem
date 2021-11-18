@@ -48,7 +48,6 @@ public class AddPanel extends JPanel implements ActionListener {
 
     //MODIFIES: this
     //EFFECTS: add a new Inventory tag and add it to the list to add
-    @SuppressWarnings({"checkstyle:MethodLength", "checkstyle:SuppressWarnings"})
     public void actionPerformed(ActionEvent e) {
         String id = idField.getText();
         double cost = Double.parseDouble(costField.getText());

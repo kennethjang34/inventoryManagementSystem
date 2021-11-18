@@ -5,7 +5,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public abstract class AbstractLoginAccountPanel extends JDialog implements ActionListener {
+public abstract class AbstractLoginAccountPanel extends JPanel implements ActionListener {
     protected JTextField nameField;
     protected JTextField birthdayField;
     protected JTextField codeField;

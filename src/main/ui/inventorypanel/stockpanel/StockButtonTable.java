@@ -130,18 +130,12 @@ public class StockButtonTable extends JTable implements ActionListener, TableCel
         }
         columnName[columnName.length - 1] = "BUTTON";
         setModel(new StockButtonTableModel(inventory, this));
-//        for (int i = 0; i < getRowCount(); i++) {
-//            for (int j = 0; j < getColumnCount(); j++) {
-//                if (getValueAt(i, j) instanceof JButton) {
-//                    JButton button = (JButton) getValueAt(i, j);
-//                    button.addActionListener(this);
-//                }
-//            }
-//        }
+
 
         assert getModel().getValueAt(1, 8) instanceof JButton
                 : getModel().getValueAt(1, 8).getClass().toString();
         setDefaultRenderer(JButton.class, this);
+//        setDefaultRenderer(String.class, this);
         addMouseListener(this);
     }
 
@@ -223,7 +217,7 @@ public class StockButtonTable extends JTable implements ActionListener, TableCel
 
     @Override
     public void mouseEntered(MouseEvent e) {
-
+        
     }
 
     @Override
@@ -232,7 +226,7 @@ public class StockButtonTable extends JTable implements ActionListener, TableCel
     }
 
     //MODIFIES: this
-    //EFFECTS: when double-clicked, create a new dialog that shows stocks based on locations
+    //EFFECTS: when the button is clicked, create a new dialog that shows stocks based on locations
     @Override
     public void actionPerformed(ActionEvent e) {
         String id = e.getActionCommand();
@@ -250,6 +244,7 @@ public class StockButtonTable extends JTable implements ActionListener, TableCel
     //EFFECTS: change the current category of the model of this
     public void setCategory(String category) {
         ((StockButtonTableModel)getModel()).setCategory(category);
+        //repaint();
     }
 
     //MODIFIES: this

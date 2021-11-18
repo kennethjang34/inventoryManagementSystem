@@ -7,14 +7,20 @@ import ui.inventorypanel.ItemGenerator;
 import ui.inventorypanel.productpanel.ProductPanel;
 
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import javax.swing.table.AbstractTableModel;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 //A panel that will display stock situation of the inventory
 public class StockPanel extends JPanel {
-    private Inventory inventory;
+//    private Inventory inventory;
     private Object[] columnNames;
     private StockButtonTable stockButtonTable;
     private StockSearchPanel searchPanel;
+    private JScrollPane tableScrollPane;
     private InventoryManagementSystemApplication application;
 //    //EFFECTS: create new stock panel with given inventory
 //    public StockPanel(Inventory inventory) {
@@ -29,17 +35,33 @@ public class StockPanel extends JPanel {
     public StockPanel(Inventory inventory, ProductPanel productPanel,
                       InventoryManagementSystemApplication application) {
         this.application = application;
-        this.inventory = inventory;
+//        this.inventory = inventory;
         setLayout(new BorderLayout());
+        stockButtonTable = new StockButtonTable(inventory, productPanel);
         searchPanel = new StockSearchPanel(inventory, this);
         JPanel typeCreator = new JPanel();
-        typeCreator.add(new CategoryGenerator(inventory, searchPanel));
-        typeCreator.add(new ItemGenerator(inventory, searchPanel));
-        stockButtonTable = new StockButtonTable(inventory, productPanel);
+        typeCreator.add(new CategoryGenerator(inventory, this));
+        typeCreator.add(new ItemGenerator(inventory, this));
         productPanel.setStockTable(stockButtonTable);
         add(typeCreator, BorderLayout.NORTH);
         add(searchPanel, BorderLayout.CENTER);
-        add(stockButtonTable, BorderLayout.SOUTH);
+        tableScrollPane =  new JScrollPane(stockButtonTable);
+//        tableScrollPane.getViewport().addChangeListener(new ChangeListener() {
+//            @Override
+//            public void stateChanged(ChangeEvent e) {
+//                StockPanel.this.tableScrollPane = new JScrollPane(stockButtonTable);
+//                tableScrollPane.setPreferredSize(new Dimension(500, 200));
+//                add(tableScrollPane);
+////                scrollPane.repaint();
+////                scrollPane.revalidate();
+////                stockButtonTable.repaint();
+//////                scrollPane.revalidate();
+////                scrollPane.getViewport().setScrollMode(JViewport.SIMPLE_SCROLL_MODE);
+//            }
+//        });
+        tableScrollPane.setPreferredSize(new Dimension(500, 200));
+        add(tableScrollPane, BorderLayout.SOUTH);
+//        add(stockButtonTable, BorderLayout.SOUTH);
     }
 
 
@@ -48,12 +70,17 @@ public class StockPanel extends JPanel {
     //Otherwise, do nothing
     public void displayItems(String categoryName) {
         stockButtonTable.setCategory(categoryName);
+        stockButtonTable.repaint();
+//        StockPanel.this.tableScrollPane = new JScrollPane(stockButtonTable);
+//        tableScrollPane.setPreferredSize(new Dimension(500, 200));
+//        add(tableScrollPane, BorderLayout.SOUTH);
     }
 
     //MODIFIES: this
     //EFFECTS: display all items in the inventory
     public void displayAllItems() {
         stockButtonTable.setCategory(null);
+        stockButtonTable.repaint();
     }
 
     //MODIFIES: this
@@ -61,8 +88,25 @@ public class StockPanel extends JPanel {
     //if there is no item with the specified id, display no item
     public void displayItem(String id) {
         stockButtonTable.setItem(id);
+        stockButtonTable.repaint();
     }
 
+
+    //MODIFIES: this
+    //EFFECTS: when a new item is added to this, update related fields accordingly
+    public void itemAddedUpdate(String id) {
+        searchPanel.addItem(id);
+        stockButtonTable.repaint();
+        //(AbstractTableModel)(stockButtonTable.getModel()).fi
+    }
+
+    ///MODIFIES: this
+    //EFFECTS: when a new category is added to this, udpate related fields accordingly
+    public void categoryAddedUpdate(String categoryName) {
+        searchPanel.addCategory(categoryName);
+        stockButtonTable.repaint();
+
+    }
 
 
 

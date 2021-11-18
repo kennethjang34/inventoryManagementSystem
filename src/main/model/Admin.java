@@ -12,11 +12,15 @@ import java.util.ArrayList;
 //Written to provide a functionality for Inventory management system application.
 public class Admin implements JsonConvertible {
 
+    public static final int ADMIN_ACCESS = -1;
+    public static final int INVENTORY_ACCESS = 1;
+
+
 
 
     //represents each individual login account.
     //Must be distinguished from accounts that contain information about inventory update.
-    private static class LoginAccount implements JsonConvertible {
+    public class LoginAccount implements JsonConvertible {
 
         //Once a login account is created, no data can be changed.
         private final String id;
@@ -24,15 +28,33 @@ public class Admin implements JsonConvertible {
         private final String name;
         private final LocalDate birthday;
         private final int personalCode;
+        private int accessPermission;
 
-        //EFFECTS: create a new account and return it.
+
+        //EFFECTS: create a new account that can access inventory and return it.
         private LoginAccount(String id, String password, String name, LocalDate birthDay, int personalCode) {
             this.id = id;
             this.pw = password;
             this.name = name;
             this.birthday = birthDay;
             this.personalCode = personalCode;
+            this.accessPermission = INVENTORY_ACCESS;
         }
+
+        //EFFECTS: create a new account that can access inventory and/or admin and return it.
+        private LoginAccount(String id, String password, String name, LocalDate birthDay,
+                             int personalCode, int accessPermission) {
+            if (accessPermission != ADMIN_ACCESS && accessPermission != INVENTORY_ACCESS) {
+                throw new IllegalArgumentException("Access permission level cannot be found");
+            }
+            this.id = id;
+            this.pw = password;
+            this.name = name;
+            this.birthday = birthDay;
+            this.personalCode = personalCode;
+            this.accessPermission = accessPermission;
+        }
+
 
         //REQUIRES: data in json format must contain all the fields of this class with matching name.
         //EFFECTS: create a new account with data in json format
@@ -42,6 +64,7 @@ public class Admin implements JsonConvertible {
             name = jsonLoginAccount.getString("name");
             personalCode = jsonLoginAccount.getInt("personalCode");
             JSONObject jsonDate = jsonLoginAccount.getJSONObject("birthday");
+            accessPermission = jsonLoginAccount.getInt("accessPermission");
             birthday = LocalDate.of(jsonDate.getInt("year"),
                     jsonDate.getInt("month"), jsonDate.getInt("day"));
         }
@@ -61,6 +84,11 @@ public class Admin implements JsonConvertible {
         //EFFECTS: return personal code
         private int getPersonalCode() {
             return personalCode;
+        }
+
+        //EFFECTS: return the access permision level
+        public int getAccessPermission() {
+            return accessPermission;
         }
 
 
@@ -92,7 +120,19 @@ public class Admin implements JsonConvertible {
             date.put("day", birthday.getDayOfMonth());
             json.put("birthday", date);
             json.put("personalCode", personalCode);
+            json.put("accessPermission", accessPermission);
             return json;
+        }
+
+        //MODIFIES: this
+        //EFFECTS: create a login account that can access the application
+        //return true if successful. false otherwise
+        public LoginAccount createLoginAccount(String id, String password, String name, LocalDate birthDay,
+                                       int personalCode, int accessPermission) {
+            if (!isAdminMember(this)) {
+                return null;
+            }
+            return (Admin.this.createLoginAccount(id, password, name, birthDay, personalCode, accessPermission));
         }
     }
 
@@ -134,10 +174,29 @@ public class Admin implements JsonConvertible {
         return pw;
     }
 
+//    //REQUIRES: the id must be already existing
+//    //MODIFIES: this
+//    //EFFECTS: set the current login account
+//    public void setLoginAccount(String id) {
+//        LoginAccount account = getLoginAccount(id);
+//
+//    }
+
+
+    //EFFECTS: return true if there is no account in this
+    //return false otherwise
+    public boolean isEmpty() {
+        return (accounts.size() == 0);
+    }
+
+//    public int getSize() {
+//        return accounts.size();
+//    }
+
 
     //EFFECTS: return login account matching id if there exists such an account (case-sensitive).
     //return null otherwise.
-    private LoginAccount getLoginAccount(String id) {
+    public LoginAccount getLoginAccount(String id) {
         for (LoginAccount account: accounts) {
             if (account.getId().equals(id)) {
                 return account;
@@ -156,18 +215,47 @@ public class Admin implements JsonConvertible {
         return false;
     }
 
+    //MODIFIES: this
+    //EFFECTS: if there is no login account at all, create a new account with the given information and return true
+    //EFFECTS: return fail if it fails
+    public LoginAccount createLoginAccount(String id, String password, String name,
+                                           LocalDate birthDay, int personalCode) {
+        if (accounts.size() != 0) {
+            return null;
+        }
+        accounts.add(new LoginAccount(id, password, name, birthDay, personalCode, ADMIN_ACCESS));
+        return accounts.get(0);
+    }
+
     //REQUIRES: personal code must be a positive integer. No existing login account can have the same id
     //if the id has the same alphabetical arrangement as one of the existing ids, but in different cases like
     //Apple and apple, they will be regarded different
     //MODIFIES: this
     //EFFECTS: create a new account with the given information.
-    public boolean createLoginAccount(String id, String password, String name, LocalDate birthDay, int personalCode) {
+    public LoginAccount createLoginAccount(String id, String password, String name, LocalDate birthDay,
+                                      int personalCode, int accessPermission) {
         if (getLoginAccount(id) != null) {
+            return null;
+        }
+        LoginAccount account = new LoginAccount(id, password, name, birthDay, personalCode, accessPermission);
+        accounts.add(account);
+        return account;
+    }
+
+
+
+    //EFFECTS: return true if this login account is an admin member
+    public boolean isAdminMember(LoginAccount account) {
+        if (account == null) {
             return false;
         }
-        accounts.add(new LoginAccount(id, password, name, birthDay, personalCode));
-        return true;
+        if (account.getAccessPermission() == ADMIN_ACCESS) {
+            return true;
+        }
+        return false;
     }
+
+
 
     //EFFECTS: convert this to JSONObject and return it.
     @Override
@@ -176,4 +264,6 @@ public class Admin implements JsonConvertible {
         json.put("accounts", convertToJsonArray(accounts));
         return json;
     }
+
+
 }

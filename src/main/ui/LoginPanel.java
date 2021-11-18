@@ -1,5 +1,6 @@
 package ui;
 
+import jdk.nashorn.internal.scripts.JO;
 import model.Admin;
 
 import javax.swing.*;
@@ -17,6 +18,7 @@ public class LoginPanel extends JPanel implements ActionListener {
     private final String imagePath = "./data/seol.gif";
     private int purpose;
     private URL imageUrl;
+    private Admin.LoginAccount account;
     private final JTextField idField = new JTextField(10);
     private final JPasswordField pwField = new JPasswordField(10);
     private final JLabel idLabel = new JLabel("ID");
@@ -28,6 +30,7 @@ public class LoginPanel extends JPanel implements ActionListener {
     public static final int CANCEL = -1;
     public static final int SAVE = 0;
     public static final int LOAD = 1;
+    public static final int ADMIN = 2;
     private Admin admin;
     private RegisterPanel registerPanel = new RegisterPanel();
     private RetrievePanel retrievePanel = new RetrievePanel();
@@ -66,14 +69,22 @@ public class LoginPanel extends JPanel implements ActionListener {
         //EFFECTS: create a new login account and register it in the system.
         @Override
         public void actionPerformed(ActionEvent e) {
-            int personalCode = Integer.parseInt(this.codeField.getText());
-            String birthdayText = birthdayField.getText();
-            LocalDate birthDay = InventoryManagementSystemApplication.convertToLocalDate(birthdayText);
-            admin.createLoginAccount(idField.getText(), String.valueOf(pwField.getPassword()),
-                    nameField.getText(), birthDay, personalCode);
-            JOptionPane.showMessageDialog(this, "a new account is successfully created");
-            this.setVisible(false);
-
+            if (account != null || (account == null && admin.isEmpty())) {
+                int personalCode = Integer.parseInt(this.codeField.getText());
+                String birthdayText = birthdayField.getText();
+                LocalDate birthDay = InventoryManagementSystemApplication.convertToLocalDate(birthdayText);
+                Admin.LoginAccount newAccount = admin.createLoginAccount(idField.getText(),
+                        String.valueOf(pwField.getPassword()),
+                        nameField.getText(), birthDay, personalCode);
+                if (account == null) {
+                    account = newAccount;
+                }
+                JOptionPane.showMessageDialog(null, "a new account is successfully created");
+                this.setVisible(false);
+            } else {
+                JOptionPane.showMessageDialog(null, "you are not allowed to create "
+                        + "a new login account in this system");
+            }
         }
     }
 
@@ -81,11 +92,12 @@ public class LoginPanel extends JPanel implements ActionListener {
     //MODIFIES: this
     //EFFECTS: set the purpose of this login attempt
     public void setPurpose(int purpose) {
-        if (purpose != SAVE && purpose != LOAD) {
+        if (purpose != SAVE && purpose != LOAD && purpose != ADMIN) {
             throw new IllegalArgumentException("The given purpose is not valid");
         }
         this.purpose = purpose;
     }
+
 
 
     //A small panel that will be displayed if the user presses retrieve button
@@ -249,19 +261,30 @@ public class LoginPanel extends JPanel implements ActionListener {
             if (!admin.checkLoginAccount(id, String.valueOf(pw))) {
                 displayLoginFail();
             } else {
-                application.dataChangeHandler(purpose);
+                if (purpose != ADMIN || admin.isAdminMember(admin.getLoginAccount(id))) {
+                    application.setLoginStatus(true);
+                    application.setLoginAccount(id);
+                    application.dataChangeHandler(purpose);
+                } else {
+                    displayAdminLoginFail();
+                }
             }
         } else if (actionCommand.equals(CREATE)) {
             registerPanel.setSize(600, 400);
             registerPanel.setVisible(true);
-            //JOptionPane.showMessageDialog(this, registerPanel);
+            JOptionPane.showMessageDialog(this, registerPanel);
         } else if (actionCommand.equals(RETRIEVE)) {
             retrievePanel.setSize(600, 400);
             retrievePanel.setVisible(true);
-            //JOptionPane.showMessageDialog(this, retrievePanel);
+            JOptionPane.showMessageDialog(this, retrievePanel);
         }
     }
 
+    //MODIFIES: this
+    //EFFECTS: display a message that the current admin login attempt is not successful
+    private void displayAdminLoginFail() {
+        JOptionPane.showMessageDialog(null, "You are not registered in admin");
+    }
 
 
     //MODIFIES: this

@@ -48,7 +48,7 @@ public class AdminTest {
         pw = "wings";
         name = "duck";
         birthDay = LocalDate.of(2021, 8, 4);
-        assertFalse(admin.createLoginAccount(id, pw, name, birthDay, personalNum++));
+//        assertEquals(admin.(id), admin.createLoginAccount(id, pw, name, birthDay, personalNum++));
         assertFalse(admin.checkLoginAccount(id, pw));
     }
 

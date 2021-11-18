@@ -317,7 +317,13 @@ public class Inventory implements JsonConvertible {
 
     //EFFECTS: return a list of item codes existing in the inventory.
     public List<String> getIDs() {
-        return (items.keySet().size() == 0 ? Collections.emptyList() : new ArrayList<>(items.keySet()));
+        if (items.keySet().size() == 0) {
+            return Collections.emptyList();
+        }
+        List<String> ids = new ArrayList<>();
+        ids.addAll(items.keySet());
+        return ids;
+//        return (items.keySet().size() == 0 ? Collections.emptyList() : new ArrayList<>(items.keySet()));
     }
 
 

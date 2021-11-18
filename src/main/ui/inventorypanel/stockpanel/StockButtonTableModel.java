@@ -63,7 +63,7 @@ public class StockButtonTableModel extends AbstractTableModel {
             String id = inventory.getIDs(category).get(rowIndex);
             if (!getColumnName(columnIndex).equalsIgnoreCase("BUTTON")) {
                 Object[] data = inventory.getData(id);
-                assert data[columnIndex] != null : getColumnName(columnIndex);
+//                assert data[columnIndex] != null : getColumnName(columnIndex);
                 return data[columnIndex];
             } else {
                 if (buttonHashMap.containsKey(id)) {
@@ -100,6 +100,7 @@ public class StockButtonTableModel extends AbstractTableModel {
     @Override
     public int getRowCount() {
         if (category == null && item == null) {
+
             return inventory.getIDs().size();
         } else if (item != null) {
             return 1;

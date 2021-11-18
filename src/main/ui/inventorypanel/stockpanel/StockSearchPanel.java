@@ -53,6 +53,7 @@ public class StockSearchPanel extends JPanel implements ActionListener {
         itemField.setVisible(false);
         itemBox.setEditable(false);
         categoryBox.setEditable(false);
+        stockPanel.displayAllItems();
     }
 
 
@@ -64,7 +65,6 @@ public class StockSearchPanel extends JPanel implements ActionListener {
         if (inventory.getCategoryNames().length == 0) {
             categoryModel = new DefaultComboBoxModel<>();
             categoryModel.addElement("No category");
-            return;
         } else {
             categoryModel.addElement(ALL);
             categoryModel.addElement(TYPE);
@@ -223,8 +223,17 @@ public class StockSearchPanel extends JPanel implements ActionListener {
     //EFFECTS: add a new category to the category combo box
     public void addCategory(String name) {
         DefaultComboBoxModel boxModel = (DefaultComboBoxModel)categoryBox.getModel();
-        if (boxModel.getIndexOf(name) == -1) {
+        //When box model size is 1, it implies the only content is "No category"
+        if (boxModel.getSize() == 1) {
+            categoryBox.setModel(new DefaultComboBoxModel());
+            categoryBox.addItem(ALL);
+            categoryBox.addItem(TYPE);
             categoryBox.addItem(name);
+            stockPanel.displayAllItems();
+            return;
+        } else if (boxModel.getIndexOf(name) == -1) {
+            categoryBox.addItem(name);
+            return;
         }
     }
 
@@ -232,10 +241,12 @@ public class StockSearchPanel extends JPanel implements ActionListener {
     //EFFECTS: add a new item to the item combo box if the currently selected category contains this new item
     //else do nothing
     public void addItem(String id) {
-        if (inventory.getCategoryOf(id).equalsIgnoreCase(selectedCategory)) {
+        if (inventory.getCategoryOf(id).equalsIgnoreCase(selectedCategory)
+                || selectedCategory.equals(ALL)) {
             DefaultComboBoxModel boxModel = (DefaultComboBoxModel)itemBox.getModel();
             if (boxModel.getIndexOf(id) == -1) {
                 itemBox.addItem(id);
+                stockPanel.displayAllItems();
             }
         }
     }

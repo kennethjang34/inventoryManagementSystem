@@ -7,6 +7,8 @@ import ui.InventoryManagementSystemApplication;
 import ui.inventorypanel.stockpanel.StockButtonTable;
 
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.table.AbstractTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -204,6 +206,13 @@ public class ProductPanel extends JPanel implements ActionListener {
         this.inventory = inventory;
         table = new ProductTable(products);
         JScrollPane scrollPane = new JScrollPane(table);
+        scrollPane.getViewport().addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(ChangeEvent e) {
+                table.repaint();
+                scrollPane.revalidate();
+            }
+        });
         scrollPane.setPreferredSize(new Dimension(500, 300));
         add(scrollPane, BorderLayout.CENTER);
         JButton addButton = new JButton(add);
@@ -235,7 +244,7 @@ public class ProductPanel extends JPanel implements ActionListener {
             }
         }
         ((AbstractTableModel)table.getModel()).fireTableDataChanged();
-        table.repaint();
+        //table.repaint();
     }
 
     public void addToList(String id) {
@@ -246,7 +255,7 @@ public class ProductPanel extends JPanel implements ActionListener {
             }
         }
         ((AbstractTableModel)table.getModel()).fireTableDataChanged();
-        table.repaint();
+        //table.repaint();
     }
 
 
@@ -294,7 +303,7 @@ public class ProductPanel extends JPanel implements ActionListener {
                 JOptionPane.showMessageDialog(null, "Successfully removed");
             }
         }
-        table.repaint();
+        //table.repaint();
         stockTable.repaint();
     }
 

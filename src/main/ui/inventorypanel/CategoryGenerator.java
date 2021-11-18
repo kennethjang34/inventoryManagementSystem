@@ -1,6 +1,7 @@
 package ui.inventorypanel;
 
 import model.Inventory;
+import ui.inventorypanel.stockpanel.StockPanel;
 import ui.inventorypanel.stockpanel.StockSearchPanel;
 
 import javax.swing.*;
@@ -20,7 +21,7 @@ public class CategoryGenerator extends JPanel {
 //    private Inventory inventory;
 
     @SuppressWarnings({"checkstyle:MethodLength", "checkstyle:SuppressWarnings"})
-    public CategoryGenerator(Inventory inventory, StockSearchPanel searchPanel) {
+    public CategoryGenerator(Inventory inventory, StockPanel stockPanel) {
         this.inventory = inventory;
         this.searchPanel = searchPanel;
         add(categoryLabel);
@@ -36,7 +37,7 @@ public class CategoryGenerator extends JPanel {
                 }
                 categoryField.removeAll();
                 if (inventory.createCategory(name)) {
-                    searchPanel.addCategory(name);
+                    stockPanel.categoryAddedUpdate(name);
                     JOptionPane.showMessageDialog(null, "New Category: "
                             + name + " has been successfully created");
                 } else {

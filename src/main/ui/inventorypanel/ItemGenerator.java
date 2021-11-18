@@ -1,8 +1,7 @@
 package ui.inventorypanel;
 
-import javafx.geometry.HorizontalDirection;
 import model.Inventory;
-import ui.inventorypanel.stockpanel.StockSearchPanel;
+import ui.inventorypanel.stockpanel.StockPanel;
 
 import javax.swing.*;
 import java.awt.*;
@@ -11,7 +10,7 @@ import java.awt.event.ActionListener;
 
 public class ItemGenerator extends JPanel {
     private Inventory inventory;
-    private StockSearchPanel searchPanel;
+    private StockPanel stockPanel;
     private JTextField idField = new JTextField(10);
     private JTextField nameField = new JTextField(10);
     private JTextField categoryField = new JTextField(10);
@@ -21,9 +20,10 @@ public class ItemGenerator extends JPanel {
     private JButton button = new JButton("Create");
 
     @SuppressWarnings({"checkstyle:MethodLength", "checkstyle:SuppressWarnings"})
-    public ItemGenerator(Inventory inventory, StockSearchPanel searchPanel) {
+    public ItemGenerator(Inventory inventory, StockPanel stockPanel) {
+        this.stockPanel = stockPanel;
         this.inventory = inventory;
-        this.searchPanel = searchPanel;
+        //this.searchPanel = searchPanel;
 
         JPanel fieldPanel = new JPanel();
         fieldPanel.setLayout(new GridLayout(6, 2));
@@ -64,16 +64,24 @@ public class ItemGenerator extends JPanel {
                             "There is no such category. " + category);
                     //categoryField.removeAll();
                 } else {
-                    inventory.createItem(id, nameField.getText(), category,
-                            Double.parseDouble(priceField.getText()), description.getText(), note.getText()
-                    );
+                    try {
+                        inventory.createItem(id, nameField.getText(), category,
+                                Double.parseDouble(priceField.getText()), description.getText(), note.getText()
+                        );
+                    } catch (NumberFormatException exception) {
+                        inventory.createItem(id, nameField.getText(), category,
+                                0, description.getText(), note.getText()
+                        );
+                    }
                     clearFields();
-                    searchPanel.addItem(id);
+                    //searchPanel.addItem(id);
+                    stockPanel.itemAddedUpdate(id);
                     JOptionPane.showMessageDialog(null,
                             "Item: " + id + " has been successfully created");
                 }
             }
         });
+        //button.addActionListener(stockPanel);
         setLayout(new GridBagLayout());
         GridBagConstraints gc = new GridBagConstraints();
         gc.fill = GridBagConstraints.HORIZONTAL;
