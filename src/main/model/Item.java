@@ -21,6 +21,7 @@ public class Item implements  TableEntryConvertible, JsonConvertible {
     private double averageCost;
     private double listPrice;
     private String note;
+
     //key: sku, value: product
     private LinkedHashMap<String, Product> products;
     //key: location, value: stock

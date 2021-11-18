@@ -11,6 +11,10 @@ public class AdminTest {
     private Admin admin;
     private LocalDate today;
     private int personalNum;
+    String id = "TestId";
+    String pw = "TestPw";
+    String name = "Tester";
+    LocalDate birthday = LocalDate.now();
 
     @BeforeEach
     void runBefore() {
@@ -22,6 +26,7 @@ public class AdminTest {
     @Test
     void testConstructor() {
         admin = new Admin();
+        assertTrue(admin.isEmpty());
         assertFalse(admin.checkLoginAccount("abc", "ddd"));
     }
 
@@ -132,5 +137,13 @@ public class AdminTest {
         assertFalse(admin.checkLoginAccount("italian", "Pig"));
         assertFalse(admin.checkLoginAccount("Italian", "pig"));
         assertFalse(admin.checkLoginAccount("ads", "Fas"));
+    }
+
+    @Test
+    void testIsAdmin() {
+        admin.createLoginAccount(id, pw, name, birthday, personalNum, true);
+        assertTrue(admin.isAdminMember(id));
+        admin.createLoginAccount("abcd", pw, name, birthday, personalNum, false);
+        assertFalse(admin.isAdminMember("abcd"));
     }
 }

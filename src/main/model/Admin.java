@@ -215,14 +215,16 @@ public class Admin implements JsonConvertible {
         return false;
     }
 
+    //Only for when the admin is first constructed and so there is no admin member
+    //REQUIRES: before calling this, the caller must ensure the user of the application is one of the admin members
     //MODIFIES: this
     //EFFECTS: if there is no login account at all, create a new account with the given information and return true
-    //EFFECTS: return fail if it fails
+    //return fail if it fails
     public LoginAccount createLoginAccount(String id, String password, String name,
                                            LocalDate birthDay, int personalCode) {
-        if (accounts.size() != 0) {
-            return null;
-        }
+//        if (accounts.size() != 0) {
+//            return null;
+//        }
         accounts.add(new LoginAccount(id, password, name, birthDay, personalCode, true));
         return accounts.get(0);
     }

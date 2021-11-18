@@ -10,18 +10,15 @@ import java.util.Map;
 //a sample application for using JSON package provided by UBC Computer science Faculty
 //for CPSC 210 Students (2021/10/19).
 
-
+//An interface that should be implemented by classes that are JSONObject convertible
 public interface JsonConvertible {
 
     //EFFECTS: convert JsonConvertible objects in the list into JSONObject and return newly built list
     default JSONArray convertToJsonArray(List<? extends JsonConvertible> list) {
         org.json.JSONArray jsons = new JSONArray();
         for (JsonConvertible convertable: list) {
-            if (convertable == null) {
-                jsons.put(JSONObject.NULL);
-            } else {
-                jsons.put(convertable.toJson());
-            }
+            jsons.put(convertable.toJson());
+
         }
         return jsons;
     }
