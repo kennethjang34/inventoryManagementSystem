@@ -14,13 +14,16 @@ import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
 
-public class InventoryManagementSystemApplication extends JFrame implements JsonConvertible {
+//An application that manages an inventory/warehouse
+public class InventoryManagementSystemApplication extends JFrame implements JsonConvertible, ActionListener {
     private Image image;
     private String imagePath = "./data/seol.gif";
     private static final String fileLocation = "./data/inventory_management_system.json";
@@ -28,7 +31,6 @@ public class InventoryManagementSystemApplication extends JFrame implements Json
     public static final int WIDTH = 1100;
     public static final int HEIGHT = 850;
     private boolean login;
-//    private List<JPanel> panels;
     //tabbed pane is only for application panels. Login panel won't have any tabs on it
     private CardLayout cardLayout;
     private JTabbedPane tabbedPane;
@@ -42,7 +44,7 @@ public class InventoryManagementSystemApplication extends JFrame implements Json
     private Inventory inventory;
     private JPanel mainPanel;
 
-
+    //EFFECTS: create a new application program
     InventoryManagementSystemApplication() {
         login = false;
         try {
@@ -284,14 +286,12 @@ public class InventoryManagementSystemApplication extends JFrame implements Json
             Admin.LoginAccount account = adminPanel.getLoginAccount();
             Reader reader = new Reader(fileLocation);
             JSONObject jsonObject = reader.read();
-            setVisible(false);
             getContentPane().removeAll();
             //repaint();
             admin = new Admin(jsonObject.getJSONObject("admin"));
             ledger = new Ledger(jsonObject.getJSONObject("ledger"));
             inventory = new Inventory(jsonObject.getJSONObject("inventory"));
             createMainPanel();
-            login = true;
             adminPanel.setLoginAccount(account);
             //cardLayout.show(mainPanel, "LoginPanel");
             add(mainPanel);
@@ -299,7 +299,6 @@ public class InventoryManagementSystemApplication extends JFrame implements Json
             pack();
             repaint();
             setVisible(true);
-
         } catch (IOException e) {
             JOptionPane.showMessageDialog(null,
                     "No existing data can be found. please create a new inventory manager");
@@ -316,30 +315,52 @@ public class InventoryManagementSystemApplication extends JFrame implements Json
         JMenuBar menuBar = new JMenuBar();
         JMenu file = new JMenu("File");
         JMenuItem save = new JMenuItem("Save");
+        save.setActionCommand("Save");
         JMenuItem load = new JMenuItem("Load");
+        load.setActionCommand("Load");
         JMenuItem quit = new JMenuItem("Quit");
-        save.addActionListener(e -> {
-            if (login == false) {
+        quit.setActionCommand("Quit");
+        JMenuItem logOut = new JMenuItem("Log out");
+        logOut.setActionCommand("LogOut");
+        save.addActionListener(this);
+        load.addActionListener(this);
+        quit.addActionListener(this);
+        logOut.addActionListener(this);
+        file.add(save);
+        file.add(load);
+        file.add(logOut);
+        file.add(quit);
+        menuBar.add(file);
+        return menuBar;
+    }
+
+    //MODIFIES: this
+    //EFFECTS: according to the menu selected, perform the requested behaviour
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        String command = e.getActionCommand();
+        if (command.equals("Quit")) {
+            System.exit(0);
+        }
+
+        if (command.equals("Save")) {
+            if (!login) {
                 loginPanel.setPurpose(LoginPanel.SAVE);
                 switchToLoginPanel();
             } else {
                 save();
             }
-        });
-        load.addActionListener(e -> {
-            if (login == false) {
+        } else if (command.equals("Load")) {
+            if (!login) {
                 loginPanel.setPurpose(LoginPanel.LOAD);
                 switchToLoginPanel();
             } else {
                 load();
             }
-        });
-        quit.addActionListener(e -> System.exit(0));
-        file.add(save);
-        file.add(load);
-        file.add(quit);
-        menuBar.add(file);
-        return menuBar;
+        } else if (command.equals("LogOut")) {
+            login = false;
+            adminPanel.setLoginAccount((String) null);
+        }
     }
 
 
@@ -363,15 +384,6 @@ public class InventoryManagementSystemApplication extends JFrame implements Json
         ledgerPanel.addAccount(stocks, description, date);
     }
 
-
-//
-//    //MODIFIES: this
-//    //EFFECTS: add a new account to the ledger
-//    public void addAccount(List<InventoryTag> tags, String description, LocalDate date) {
-//        //
-//    }
-
-
     //MODIFIES: this
     //EFFECTS: add a new account to the ledger
     public void addAccount(InventoryTag tag, String description, LocalDate date) {
@@ -390,11 +402,7 @@ public class InventoryManagementSystemApplication extends JFrame implements Json
         adminPanel.setLoginAccount(id);
     }
 
-//    //MODIFIES: this
-//    //EFFECTS: add a new account to the ledger
-//    public void addAccount(List<Product> products, String description, LocalDate date) {
-//
-//    }
+
 
     //MODIFIES: this
     //EFFECTS: set login status true

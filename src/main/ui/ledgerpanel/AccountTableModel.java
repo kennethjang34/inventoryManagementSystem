@@ -9,6 +9,7 @@ import java.awt.event.ActionListener;
 import java.time.LocalDate;
 import java.util.*;
 
+//represents a table model that displays accounts that occur on different dates
 public class AccountTableModel extends AbstractTableModel {
     Ledger ledger;
     List<LocalDate> dates;
@@ -58,12 +59,13 @@ public class AccountTableModel extends AbstractTableModel {
         fireTableDataChanged();
     }
 
-
+    //EFFECTS: return the number of columns
     @Override
     public String getColumnName(int col) {
         return columnNames[col];
     }
 
+    //EFFECTS: return the class of a particular column;
     @Override
     public Class getColumnClass(int col) {
         if (getColumnName(col).equalsIgnoreCase("BUTTON")) {
@@ -72,6 +74,7 @@ public class AccountTableModel extends AbstractTableModel {
         return String.class;
     }
 
+    //EFFECTS: return the number of rows
     @Override
     public int getRowCount() {
         if (periodStart == null && periodEnd == null) {
@@ -81,6 +84,7 @@ public class AccountTableModel extends AbstractTableModel {
         }
     }
 
+    //EFFECTS: return a list of dates between the two dates (inclusive)
     private List<LocalDate> datesInPeriod(LocalDate periodStart, LocalDate periodEnd) {
         List<LocalDate> period = new ArrayList<>();
         if (periodEnd == periodStart) {

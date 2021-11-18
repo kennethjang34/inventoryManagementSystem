@@ -7,8 +7,11 @@ import ui.InventoryManagementSystemApplication;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.time.LocalDate;
 
+//NOTE: planning to make AdminPanel extend Admin directly
+//A panel that lets the user deal with administrative jobs
 public class AdminPanel extends JPanel {
     private Admin admin;
     private InventoryManagementSystemApplication application;
@@ -20,7 +23,7 @@ public class AdminPanel extends JPanel {
     }
 
     //A small panel that will be displayed if the user presses register button to create a new account
-    private class RegisterPanel extends AbstractLoginAccountPanel {
+    private class RegisterPanel extends AbstractLoginAccountPanel implements ActionListener {
         private JButton registerButton;
         private JPasswordField pwField = new JPasswordField(10);
 
@@ -47,48 +50,42 @@ public class AdminPanel extends JPanel {
         //EFFECTS: create a new login account and register it in the system.
         @Override
         public void actionPerformed(ActionEvent e) {
+            Admin.LoginAccount newAccount = null;
+            int personalCode = Integer.parseInt(this.codeField.getText());
+            String birthdayText = birthdayField.getText();
+            LocalDate birthDay = InventoryManagementSystemApplication.convertToLocalDate(birthdayText);
+            //String id = idField.getText();
+            String pw = String.valueOf(pwField.getPassword());
+            //String name = nameField.getText();
             if (!admin.isEmpty()) {
                 if (admin.isAdminMember(currentAccount)) {
-                    int personalCode = Integer.parseInt(this.codeField.getText());
-                    String birthdayText = birthdayField.getText();
-                    LocalDate birthDay = InventoryManagementSystemApplication.convertToLocalDate(birthdayText);
-                    Admin.LoginAccount newAccount = admin.createLoginAccount(idField.getText(),
-                            String.valueOf(pwField.getPassword()),
-                            nameField.getText(), birthDay, personalCode, Admin.INVENTORY_ACCESS);
-                    if (newAccount == null) {
-                        displayFailedRegistration();
-                        return;
-                    }
-                    if (currentAccount == null) {
-                        currentAccount = newAccount;
-                    }
-                    application.save();
-                    application.setLoginStatus(true);
-                    JOptionPane.showMessageDialog(this, "a new account is successfully created");
+                    newAccount = admin.createLoginAccount(idField.getText(), pw, nameField.getText(),
+                             birthDay, personalCode, Admin.INVENTORY_ACCESS);
                 } else {
-                    JOptionPane.showMessageDialog(this, "you are not allowed to create "
-                            + "a new login account in this system");
+                    displayPermissionDenied();
+//                    JOptionPane.showMessageDialog(this, "you are not allowed to create "
+//                            + "a new login account in this system");
                 }
             } else {
-                int personalCode = Integer.parseInt(this.codeField.getText());
-                String birthdayText = birthdayField.getText();
-                LocalDate birthDay = InventoryManagementSystemApplication.convertToLocalDate(birthdayText);
-                Admin.LoginAccount newAccount = admin.createLoginAccount(idField.getText(),
-                        String.valueOf(pwField.getPassword()),
-                        nameField.getText(), birthDay, personalCode, Admin.ADMIN_ACCESS);
-                if (newAccount == null) {
-                    displayFailedRegistration();
-                    return;
-                }
-                if (currentAccount == null) {
-                    currentAccount = newAccount;
-                }
+                newAccount = admin.createLoginAccount(idField.getText(),
+                        pw, nameField.getText(), birthDay, personalCode, Admin.ADMIN_ACCESS);
+            }
+            if (newAccount != null) {
                 application.save();
                 application.setLoginStatus(true);
                 JOptionPane.showMessageDialog(this, "a new account is successfully created");
+                return;
             }
+            displayFailedRegistration();
         }
 
+        //EFFECTS: display an option pane that indicates the user doesn't
+        //have a permission to create a new login account
+        private void displayPermissionDenied() {
+            JOptionPane.showMessageDialog(null, "you are not allowed to create a new login account");
+        }
+
+        //EFFECTS: display an option pane that indicates the login account wasn't created
         private void displayFailedRegistration() {
             JOptionPane.showMessageDialog(null, "Creating a new account failed");
         }
@@ -113,11 +110,12 @@ public class AdminPanel extends JPanel {
     //MODIFIES: this
     //EFFECTS: set login account
     public void setLoginAccount(String id) {
-        assert admin.getLoginAccount(id) != null;
+        //assert admin.getLoginAccount(id) != null;
         currentAccount = admin.getLoginAccount(id);
         assert currentAccount != null : id;
     }
 
+    //EFFECTS: create a new admin panel with the given admin and application
     public AdminPanel(Admin admin, InventoryManagementSystemApplication application) {
         this.admin = admin;
         this.application = application;

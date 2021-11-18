@@ -8,7 +8,8 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public class ItemGenerator extends JPanel {
+//represents a panel that can generate items
+public class ItemGenerator extends JPanel implements ActionListener {
     private Inventory inventory;
     private StockPanel stockPanel;
     private JTextField idField = new JTextField(10);
@@ -19,13 +20,30 @@ public class ItemGenerator extends JPanel {
     private JTextField note = new JTextField(10);
     private JButton button = new JButton("Create");
 
-    @SuppressWarnings({"checkstyle:MethodLength", "checkstyle:SuppressWarnings"})
+    //EFFECTS: create a new panel that generates items
     public ItemGenerator(Inventory inventory, StockPanel stockPanel) {
         this.stockPanel = stockPanel;
         this.inventory = inventory;
         //this.searchPanel = searchPanel;
 
         JPanel fieldPanel = new JPanel();
+        initializeFieldPanel(fieldPanel);
+        button.addActionListener(this);
+        //button.addActionListener(stockPanel);
+        setLayout(new GridBagLayout());
+        GridBagConstraints gc = new GridBagConstraints();
+        gc.fill = GridBagConstraints.HORIZONTAL;
+        gc.gridx = 0;
+        gc.gridy = 0;
+        add(fieldPanel, gc);
+        gc.gridx = 1;
+        gc.gridy = 1;
+        add(button, gc);
+    }
+
+    //MODIFIES: this
+    //EFFECTS: initialize the field panel
+    private void initializeFieldPanel(JPanel fieldPanel) {
         fieldPanel.setLayout(new GridLayout(6, 2));
         fieldPanel.add(new JLabel("ID: "));
         fieldPanel.add(idField);
@@ -39,60 +57,10 @@ public class ItemGenerator extends JPanel {
         fieldPanel.add(description);
         fieldPanel.add(new JLabel("NOTE: "));
         fieldPanel.add(note);
-        button.addActionListener(new ActionListener() {
-
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                String id = idField.getText();
-                String category = categoryField.getText();
-                if (id.equals("")) {
-                    JOptionPane.showMessageDialog(null,
-                            "Every item needs ID");
-                    //clearFields();
-                } else if (category.equals("")) {
-                    JOptionPane.showMessageDialog(null,
-                            "Every item needs category");
-                    //clearFields();
-                }
-                if (inventory.containsItem(id)) {
-                    JOptionPane.showMessageDialog(null,
-                            "There is already an item with id: " + id);
-                    clearFields();
-                } else if (!inventory.containsCategory(category)) {
-                    JOptionPane.showMessageDialog(null,
-                            "There is no such category. " + category);
-                    //categoryField.removeAll();
-                } else {
-                    try {
-                        inventory.createItem(id, nameField.getText(), category,
-                                Double.parseDouble(priceField.getText()), description.getText(), note.getText()
-                        );
-                    } catch (NumberFormatException exception) {
-                        inventory.createItem(id, nameField.getText(), category,
-                                0, description.getText(), note.getText()
-                        );
-                    }
-                    clearFields();
-                    //searchPanel.addItem(id);
-                    stockPanel.itemAddedUpdate(id);
-                    JOptionPane.showMessageDialog(null,
-                            "Item: " + id + " has been successfully created");
-                }
-            }
-        });
-        //button.addActionListener(stockPanel);
-        setLayout(new GridBagLayout());
-        GridBagConstraints gc = new GridBagConstraints();
-        gc.fill = GridBagConstraints.HORIZONTAL;
-        gc.gridx = 0;
-        gc.gridy = 0;
-        add(fieldPanel, gc);
-        gc.gridx = 1;
-        gc.gridy = 1;
-        add(button, gc);
     }
 
+    //MODIFIES: this
+    //EFFECTS: clear all fields of field panel
     public void clearFields() {
         idField.removeAll();
         categoryField.removeAll();
@@ -100,5 +68,37 @@ public class ItemGenerator extends JPanel {
         note.removeAll();
         priceField.removeAll();
         nameField.removeAll();
+    }
+
+    //MODIFIES: this
+    //EFFECTS: when the button is pressed, attempt to create a new item
+    //If error happens, display proper error messages
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        String id = idField.getText();
+        String category = categoryField.getText();
+        double listPrice;
+        try {
+            listPrice = Double.parseDouble(priceField.getText());
+        } catch (NumberFormatException exception) {
+            listPrice = 0;
+        }
+        if (id.equals("") || inventory.containsItem(id)) {
+            JOptionPane.showMessageDialog(null,
+                    "ID is invalid or duplicate");
+        } else if (!inventory.containsCategory(category)) {
+            JOptionPane.showMessageDialog(null,
+                    "The given category: " + category + " is invalid");
+            //categoryField.removeAll();
+        } else {
+            inventory.createItem(id, nameField.getText(), category,
+                    listPrice, description.getText(), note.getText()
+            );
+            //searchPanel.addItem(id);
+            stockPanel.itemAddedUpdate(id);
+            JOptionPane.showMessageDialog(null,
+                    "Item: " + id + " has been successfully created");
+        }
+        clearFields();
     }
 }

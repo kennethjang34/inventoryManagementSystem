@@ -8,6 +8,7 @@ import java.awt.event.ActionListener;
 import java.time.LocalDate;
 import java.util.List;
 
+//represents a panel that provides options to filter stock change accounts based on the chosen category/item id
 public class FilterPanel extends JPanel implements ActionListener {
     private LedgerPanel ledgerPanel;
     private JComboBox dateBox;
@@ -19,7 +20,7 @@ public class FilterPanel extends JPanel implements ActionListener {
     private static final String ALL = "ALL";
     private static final String TYPE_MANUALLY = "TYPE_MANUALLY";
 
-
+    //EFFECTS: initialize a new filter panel
     public FilterPanel(LedgerPanel panel) {
         dateField = new JTextField("YYYY-MM-DD");
         codeField = new JTextField();
@@ -45,6 +46,8 @@ public class FilterPanel extends JPanel implements ActionListener {
         add(codeField);
     }
 
+    //MODIFIES: this
+    //EFFECTS: initialize the combo box for date selection
     public void initializeDateBox() {
         LocalDate[] dates = ledgerPanel.getDates();
         for (LocalDate date: dates) {
@@ -53,7 +56,8 @@ public class FilterPanel extends JPanel implements ActionListener {
         dateBox.addActionListener(this);
     }
 
-
+    //MODIFIES: this
+    //EFFECTS: initialize the combo box for code selection
     public void initializeCodeBox() {
         List<Account> accountsOnDisplay = ledgerPanel.getAccountsOnDisplay();
 
@@ -63,6 +67,8 @@ public class FilterPanel extends JPanel implements ActionListener {
         codeBox.addActionListener(this);
     }
 
+    //MODIFIES: this
+    //EFFECTS: update the combo box for code selection
     public void updateCodeBox() {
         DefaultComboBoxModel codeModel = new DefaultComboBoxModel();
         codeModel.addElement(ALL);
@@ -88,7 +94,9 @@ public class FilterPanel extends JPanel implements ActionListener {
     }
 
 
-
+    //MODIFIES: this
+    //EFFECTS: when date is chosen, update item box so that it only contains those that occur on the chosen date
+    //When a code is chosen, display the account with the code
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == dateBox) {
@@ -114,35 +122,17 @@ public class FilterPanel extends JPanel implements ActionListener {
         repaint();
     }
 
-
-    @SuppressWarnings({"checkstyle:MethodLength", "checkstyle:SuppressWarnings"})
+    //MODIFIES: this
+    //EFFECTS: initialize the text fields for searching
     public void initializeTextFields() {
-        dateField = new JTextField("YYYY-MM-DD");
-        dateField.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                String date = dateField.getText();
-                if (date.length() == 8) {
-                    int year = Integer.parseInt(date.substring(0, 4));
-                    int month = Integer.parseInt(date.substring(4, 6));
-                    int day = Integer.parseInt(date.substring(6, 8));
-                    date = year + "-" + month + "-" + day;
-                }
-                DefaultComboBoxModel dateModel = (DefaultComboBoxModel)dateBox.getModel();
-                int index = dateModel.getIndexOf(date);
-                if (index == -1) {
-                    JOptionPane.showMessageDialog(null, "No such date is recorded in ledger!");
-                    dateField.removeAll();
-                } else {
-                    dateBox.setSelectedIndex(index);
-                    dateField.removeAll();
-                    dateField.setVisible(false);
+        initializeDateField();
+        initializeCodeField();
 
-                }
-            }
-        });
+    }
 
-
+    //MODIFIES: this
+    //EFFECTS: initialize code field
+    private void initializeCodeField() {
         codeField = new JTextField("ACCOUNT CODE");
         codeField.addActionListener(new ActionListener() {
             @Override
@@ -162,7 +152,34 @@ public class FilterPanel extends JPanel implements ActionListener {
         });
     }
 
+    //MODIFIES: this
+    //EFFECTS: initialize date field
+    private void initializeDateField() {
+        dateField = new JTextField("YYYY-MM-DD");
+        dateField.addActionListener(e -> {
+            String date = dateField.getText();
+            if (date.length() == 8) {
+                int year = Integer.parseInt(date.substring(0, 4));
+                int month = Integer.parseInt(date.substring(4, 6));
+                int day = Integer.parseInt(date.substring(6, 8));
+                date = year + "-" + month + "-" + day;
+            }
+            DefaultComboBoxModel dateModel = (DefaultComboBoxModel)dateBox.getModel();
+            int index = dateModel.getIndexOf(date);
+            if (index == -1) {
+                JOptionPane.showMessageDialog(null, "No such date is recorded in ledger!");
+                dateField.removeAll();
+            } else {
+                dateBox.setSelectedIndex(index);
+                dateField.removeAll();
+                dateField.setVisible(false);
 
+            }
+        });
+    }
+
+    //MODIFIES: this
+    //EFFECTS: set visible the date text field so the user can search by typing the date
     private void promptDateTyping() {
         dateField.setVisible(true);
         repaint();
@@ -170,6 +187,8 @@ public class FilterPanel extends JPanel implements ActionListener {
         dateField.selectAll();
     }
 
+    //MODIFIES: this
+    //EFFECTS: set visible the code text field so the user can search by typing the code
     private void promptCodeTyping() {
         codeField.setVisible(true);
         repaint();

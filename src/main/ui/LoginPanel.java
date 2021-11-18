@@ -13,7 +13,6 @@ import java.time.LocalDate;
 
 //A panel to prompt the user to log in/register a new login account/retrieve password
 public class LoginPanel extends JPanel implements ActionListener {
-    private String description;
     private Image image;
     private final String imagePath = "./data/seol.gif";
     private int purpose;
@@ -39,10 +38,8 @@ public class LoginPanel extends JPanel implements ActionListener {
 
 
 
-
-
     //A small panel that will be displayed if the user presses register button to create a new account
-    private class RegisterPanel extends AbstractLoginAccountPanel {
+    private class RegisterPanel extends AbstractLoginAccountPanel implements ActionListener {
         private JButton registerButton;
         private JPasswordField pwField = new JPasswordField(10);
 
@@ -88,7 +85,6 @@ public class LoginPanel extends JPanel implements ActionListener {
         }
     }
 
-    //REQUIRES:
     //MODIFIES: this
     //EFFECTS: set the purpose of this login attempt
     public void setPurpose(int purpose) {
@@ -101,7 +97,7 @@ public class LoginPanel extends JPanel implements ActionListener {
 
 
     //A small panel that will be displayed if the user presses retrieve button
-    private class RetrievePanel extends AbstractLoginAccountPanel {
+    private class RetrievePanel extends AbstractLoginAccountPanel implements ActionListener {
         private JButton retrieveButton;
 
         //EFFECTS: create a new retrieve panel with empty text fields.
@@ -181,49 +177,21 @@ public class LoginPanel extends JPanel implements ActionListener {
 
 
     //EFFECTS: create a new panel that is used to process user login attempt/register a new account/retrieve password
-    @SuppressWarnings({"checkstyle:MethodLength", "checkstyle:SuppressWarnings"})
     public LoginPanel(Admin admin, InventoryManagementSystemApplication application) {
 //        JDialog dialog = new JDialog();
 //        dialog.setLayout(new FlowLayout());
 //        JLabel descriptionLabel = new JLabel();
 //        descriptionLabel.setLayout(new BorderLayout());
 //        descriptionLabel.add()
-
-
         this.application = application;
-//        try {
-//            image = ImageIO.read(new File(imagePath));
-//
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//        ImageIcon ii = new ImageIcon(image);
-//        image = ii.getImage();
-//        JDialog dialog = new JDialog();
-//        dialog.setLayout(new FlowLayout());
-//        JLabel descriptionLabel = new JLabel();
-//        descriptionLabel.setLayout(new BorderLayout());
-//        descriptionLabel.setIcon(ii);
-//        descriptionLabel.add(new JLabel(description), BorderLayout.CENTER);
-//        dialog.add(descriptionLabel);
-//        dialog.setSize(500, 600);
-//        dialog.setVisible(true);
         this.admin = admin;
-        description = "Welcome to Inventory Management System application.";
-//        description = "Welcome to Inventory Management System application. " + "\n this application helps you "
-//                + "control/check quantities in stocks of different products in your warehouse.\n"
-//                + "To start the application, please login.\n"
-//                + "if you create a new login account, a new empty inventory will be created";
         pwField.setActionCommand(LOGIN);
         pwField.addActionListener(this);
-//        JLabel descriptionLabel = new JLabel(description);
-//        add(descriptionLabel);
         add(idLabel);
         add(idField);
         add(pwLabel);
         add(pwField);
         add(new JLabel("To retrieve password, "));
-
         JButton retrieveButton = new JButton("press here");
         retrieveButton.addActionListener(this);
         retrieveButton.setActionCommand(RETRIEVE);
@@ -234,12 +202,7 @@ public class LoginPanel extends JPanel implements ActionListener {
         createButton.setActionCommand(CREATE);
         add(createButton);
         JButton cancelButton = new JButton("Cancel");
-        cancelButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                application.dataChangeHandler(CANCEL);
-            }
-        });
+        cancelButton.addActionListener(e -> application.dataChangeHandler(CANCEL));
         add(cancelButton);
         setPreferredSize(new Dimension(400, 500));
 
@@ -270,14 +233,33 @@ public class LoginPanel extends JPanel implements ActionListener {
                 }
             }
         } else if (actionCommand.equals(CREATE)) {
-            registerPanel.setSize(600, 400);
-            registerPanel.setVisible(true);
-            JOptionPane.showMessageDialog(this, registerPanel);
+            displayRegisterPanel();
         } else if (actionCommand.equals(RETRIEVE)) {
-            retrievePanel.setSize(600, 400);
-            retrievePanel.setVisible(true);
-            JOptionPane.showMessageDialog(this, retrievePanel);
+            displayRetrievePanel();
         }
+    }
+
+
+    //MODIFIES: this
+    //EFFECTS: display the retrieve panel of this
+    private void displayRetrievePanel() {
+        retrievePanel.setSize(600, 400);
+        JDialog dialog = new JDialog();
+        dialog.setLayout(new FlowLayout());
+        dialog.setSize(600, 400);
+        dialog.add(retrievePanel);
+        dialog.setVisible(true);
+    }
+
+    //MODIFIES: this
+    //EFFECTS: display the register panel of this
+    private void displayRegisterPanel() {
+        registerPanel.setSize(600, 400);
+        JDialog dialog = new JDialog();
+        dialog.setLayout(new FlowLayout());
+        dialog.setSize(600, 400);
+        dialog.add(registerPanel);
+        dialog.setVisible(true);
     }
 
     //MODIFIES: this

@@ -17,8 +17,8 @@ public class StockSearchPanel extends JPanel implements ActionListener {
     //Base option: ALL ids
     //Last option: Type Manually (if there is no such item with the id, show nothing). When selected, set field visible
     JComboBox itemBox;
-    JTextField categoryField;
-    JTextField itemField;
+    JTextField categoryField = new JTextField(10);
+    JTextField itemField = new JTextField(10);
     private String selectedCategory;
     private String selectedItem;
 //    private DefaultComboBoxModel<String> categoryModel;
@@ -30,7 +30,6 @@ public class StockSearchPanel extends JPanel implements ActionListener {
     //EFFECTS: create a new stock search panel that can modify the given stock panel based on filters chosen by the user
 
 
-    @SuppressWarnings({"checkstyle:MethodLength", "checkstyle:SuppressWarnings"})
     public StockSearchPanel(Inventory inventory, StockPanel stockPanel) {
         this.inventory = inventory;
         this.stockPanel = stockPanel;
@@ -98,44 +97,32 @@ public class StockSearchPanel extends JPanel implements ActionListener {
 
     //MODIFIES: this
     //EFFECTS: initialize both category and item text field.
-    @SuppressWarnings({"checkstyle:MethodLength", "checkstyle:SuppressWarnings"})
     public void initializeTextFields() {
-        categoryField = new JTextField(10);
-        itemField = new JTextField(10);
-
-        categoryField.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                DefaultComboBoxModel model = (DefaultComboBoxModel) categoryBox.getModel();
-                int index = model.getIndexOf(categoryField.getText());
-                if (index == -1) {
-                    JOptionPane.showMessageDialog(null, "There is no such category!");
-                    categoryField.removeAll();
-                } else {
-                    categoryBox.setSelectedIndex(index);
-                    categoryField.removeAll();
-                    categoryField.setVisible(false);
-                    //updateItemComboBox(categoryField.getText());
-                }
-                //hide the text field again and find the specified element in the comboBox
+        categoryField.addActionListener(e -> {
+            DefaultComboBoxModel model = (DefaultComboBoxModel) categoryBox.getModel();
+            int index = model.getIndexOf(categoryField.getText());
+            if (index == -1) {
+                JOptionPane.showMessageDialog(null, "There is no such category!");
+            } else {
+                categoryBox.setSelectedIndex(index);
+                categoryField.setVisible(false);
             }
+            categoryField.removeAll();
+
         });
 
-        itemField.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                DefaultComboBoxModel model = (DefaultComboBoxModel) itemBox.getModel();
-                int index = model.getIndexOf(itemField.getText());
-                if (index == -1) {
-                    JOptionPane.showMessageDialog(null, "There is no such item!");
-                    itemField.removeAll();
-                } else {
-                    itemBox.setSelectedIndex(index);
-                    itemField.setVisible(false);
-                    repaint();
-                }
-                //hide the text field again and find the specified element in the comboBox
+        itemField.addActionListener(e -> {
+            DefaultComboBoxModel model = (DefaultComboBoxModel) itemBox.getModel();
+            int index = model.getIndexOf(itemField.getText());
+            if (index == -1) {
+                JOptionPane.showMessageDialog(null, "There is no such item!");
+            } else {
+                itemBox.setSelectedIndex(index);
+                itemField.setVisible(false);
             }
+            itemField.removeAll();
+            repaint();
+            //hide the text field again and find the specified element in the comboBox
         });
     }
 
@@ -154,25 +141,20 @@ public class StockSearchPanel extends JPanel implements ActionListener {
             if (selectedCategory.equals(TYPE)) {
                 promptCategoryTyping();
                 return;
-            }
-            if (selectedCategory.equals(ALL)) {
+            } else if (selectedCategory.equals(ALL)) {
                 stockPanel.displayAllItems();
-                return;
+            } else {
+                updateItemComboBox(selectedCategory);
+                stockPanel.displayItems(selectedCategory);
             }
             categoryField.setVisible(false);
-            updateItemComboBox(selectedCategory);
-            stockPanel.displayItems(selectedCategory);
         } else {
             selectedItem = (String)itemBox.getSelectedItem();
             if (selectedItem.equals(TYPE)) {
                 promptItemTyping();
                 return;
             } else if (selectedItem.equals(ALL)) {
-                if (selectedCategory.equals(ALL)) {
-                    stockPanel.displayAllItems();
-                } else {
-                    stockPanel.displayItems(selectedCategory);
-                }
+                stockPanel.displayAllItems();
             } else {
                 stockPanel.displayItem(selectedItem);
             }

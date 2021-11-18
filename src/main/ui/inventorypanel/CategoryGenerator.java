@@ -20,30 +20,26 @@ public class CategoryGenerator extends JPanel {
 //    private JButton itemButton = new JButton("create");
 //    private Inventory inventory;
 
-    @SuppressWarnings({"checkstyle:MethodLength", "checkstyle:SuppressWarnings"})
     public CategoryGenerator(Inventory inventory, StockPanel stockPanel) {
         this.inventory = inventory;
         this.searchPanel = searchPanel;
         add(categoryLabel);
         add(categoryField);
         add(button);
-        button.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                String name = categoryField.getText();
-                if (name.equals("")) {
-                    JOptionPane.showMessageDialog(null, "Category name cannot be empty");
-                    return;
-                }
-                categoryField.removeAll();
-                if (inventory.createCategory(name)) {
-                    stockPanel.categoryAddedUpdate(name);
-                    JOptionPane.showMessageDialog(null, "New Category: "
-                            + name + " has been successfully created");
-                } else {
-                    JOptionPane.showMessageDialog(null, "The category with the name: "
-                            + name + " is already existing");
-                }
+        button.addActionListener(e -> {
+            String name = categoryField.getText();
+            if (name.equals("")) {
+                JOptionPane.showMessageDialog(null, "Category name cannot be empty");
+                return;
+            }
+            categoryField.removeAll();
+            if (inventory.createCategory(name)) {
+                stockPanel.categoryAddedUpdate(name);
+                JOptionPane.showMessageDialog(null, "New Category: "
+                        + name + " has been successfully created");
+            } else {
+                JOptionPane.showMessageDialog(null, "The category with the name: "
+                        + name + " is already existing");
             }
         });
     }

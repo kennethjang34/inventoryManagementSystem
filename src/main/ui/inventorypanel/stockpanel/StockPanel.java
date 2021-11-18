@@ -22,13 +22,6 @@ public class StockPanel extends JPanel {
     private StockSearchPanel searchPanel;
     private JScrollPane tableScrollPane;
     private InventoryManagementSystemApplication application;
-//    //EFFECTS: create new stock panel with given inventory
-//    public StockPanel(Inventory inventory) {
-//        searchPanel = new StockSearchPanel(inventory, this);
-//        JTable table = new StockButtonTable(inventory, null);
-//        add(table);
-//    }
-
 
 
     //EFFECTS: create new stock panel with given inventory and link it to the given product panel
@@ -46,19 +39,6 @@ public class StockPanel extends JPanel {
         add(typeCreator, BorderLayout.NORTH);
         add(searchPanel, BorderLayout.CENTER);
         tableScrollPane =  new JScrollPane(stockButtonTable);
-//        tableScrollPane.getViewport().addChangeListener(new ChangeListener() {
-//            @Override
-//            public void stateChanged(ChangeEvent e) {
-//                StockPanel.this.tableScrollPane = new JScrollPane(stockButtonTable);
-//                tableScrollPane.setPreferredSize(new Dimension(500, 200));
-//                add(tableScrollPane);
-////                scrollPane.repaint();
-////                scrollPane.revalidate();
-////                stockButtonTable.repaint();
-//////                scrollPane.revalidate();
-////                scrollPane.getViewport().setScrollMode(JViewport.SIMPLE_SCROLL_MODE);
-//            }
-//        });
         tableScrollPane.setPreferredSize(new Dimension(500, 200));
         add(tableScrollPane, BorderLayout.SOUTH);
 //        add(stockButtonTable, BorderLayout.SOUTH);
@@ -108,34 +88,5 @@ public class StockPanel extends JPanel {
 
     }
 
-
-
-//
-//    public static void main(String[] args) {
-//        Inventory inventory = new Inventory();
-//        inventory.createCategory("Fruit");
-//        inventory.createItem("APP", "apple", "Fruit", 4, "test", "test");
-//        List<InventoryTag> tags = new ArrayList<>();
-//        tags.add(new InventoryTag("APP", 20, 30, LocalDate.now(), "F13", 1));
-//        inventory.addProducts(tags);
-//        inventory.createItem("BNN", "banana", "Fruit", 12, "test", "test");
-//        tags = new ArrayList<>();
-//        tags.add(new InventoryTag("BNN", 1, 3, LocalDate.now(), "F13", 1));
-//        inventory.addProducts(tags);
-//        ProductPanel productPanel = new ProductPanel(inventory);
-//        StockPanel stockPanel = new StockPanel(inventory, productPanel);
-//
-//        stockPanel.setSize(500, 600);
-//        productPanel.setPreferredSize(new Dimension(300, 400));
-//        JFrame frame = new JFrame();
-//        frame.setLayout(new BorderLayout());
-//        frame.add(productPanel, BorderLayout.NORTH);
-//        frame.add(stockPanel, BorderLayout.SOUTH);
-//        frame.pack();
-//        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-//        frame.setVisible(true);
-//    }
-//
-//
 
 }

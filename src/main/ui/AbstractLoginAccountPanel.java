@@ -5,7 +5,8 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public abstract class AbstractLoginAccountPanel extends JPanel implements ActionListener {
+//represents an abstract panel that has neccessary fields for jobs related to login accounts
+public abstract class AbstractLoginAccountPanel extends JPanel {
     protected JTextField nameField;
     protected JTextField birthdayField;
     protected JTextField codeField;
@@ -15,6 +16,7 @@ public abstract class AbstractLoginAccountPanel extends JPanel implements Action
     protected JLabel codeLabel;
     protected JLabel nameLabel;
 
+    //MODIFIES: initialize the fields that are used for prompting user to enter the input
     protected AbstractLoginAccountPanel() {
         setLayout(new FlowLayout());
         nameField = new JTextField(10);
@@ -27,6 +29,6 @@ public abstract class AbstractLoginAccountPanel extends JPanel implements Action
         codeLabel = new JLabel("Personal Code: ");
     }
 
-    @Override
-    public abstract void actionPerformed(ActionEvent e);
+//    @Override
+//    public abstract void actionPerformed(ActionEvent e);
 }

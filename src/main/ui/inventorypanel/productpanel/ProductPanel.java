@@ -21,6 +21,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+//A panel that displays a list of individual products with buttons that can be used to add/remove products
 public class ProductPanel extends JPanel implements ActionListener {
     private List<Product> products;
     private Inventory inventory;
@@ -38,12 +39,15 @@ public class ProductPanel extends JPanel implements ActionListener {
     //Order: alphabetical order, from Z to A
     private static final int ALPHABETICAL_ZA = 3;
 
+    //represents a table where each entry contains information of each product
     private class ProductTable extends JTable implements MouseListener {
 
         String[] columnNames;
         AbstractTableModel tableModel;
         List<Product> products;
 
+
+        //EFFECTS: create a new empty table
         @SuppressWarnings({"checkstyle:MethodLength", "checkstyle:SuppressWarnings"})
         private ProductTable(List<Product> products) {
             this.products = products;
@@ -67,7 +71,6 @@ public class ProductPanel extends JPanel implements ActionListener {
                 public String getColumnName(int column) {
                     return columnNames[column];
                 }
-
 
                 @Override
                 public Object getValueAt(int row, int column) {
@@ -112,44 +115,26 @@ public class ProductPanel extends JPanel implements ActionListener {
             tableModel.fireTableDataChanged();
         }
 
-
         //REQUIRES: Order must be one of those defined in the interface provided by this
         //MODIFIES: this
         //EFFECTS: sort the table based on the specified order
-        @SuppressWarnings({"checkstyle:MethodLength", "checkstyle:SuppressWarnings"})
         public void sortProducts(int order) {
             switch (order) {
                 case 0:
-                    Collections.sort(products, new Comparator<Product>() {
-                        @Override
-                        public int compare(Product o1, Product o2) {
-                            return (o1.getBestBeforeDate().isBefore(o2.getBestBeforeDate()) ? -1 : 1);
-                        }
-                    });
+                    Collections.sort(products, (o1, o2) ->
+                            (o1.getBestBeforeDate().isBefore(o2.getBestBeforeDate()) ? -1 : 1));
                     break;
                 case 1:
-                    Collections.sort(products, new Comparator<Product>() {
-                        @Override
-                        public int compare(Product o1, Product o2) {
-                            return (o1.getBestBeforeDate().isBefore(o2.getBestBeforeDate()) ? 1 : -1);
-                        }
-                    });
+                    Collections.sort(products, (o1, o2) ->
+                            (o1.getBestBeforeDate().isBefore(o2.getBestBeforeDate()) ? 1 : -1));
                     break;
                 case 2:
-                    Collections.sort(products, new Comparator<Product>() {
-                        @Override
-                        public int compare(Product o1, Product o2) {
-                            return (o1.getId().compareToIgnoreCase(o2.getId()) < 0 ? -1 : 1);
-                        }
-                    });
+                    Collections.sort(products, (o1, o2) ->
+                            (o1.getId().compareToIgnoreCase(o2.getId()) < 0 ? -1 : 1));
                     break;
                 case 3:
-                    Collections.sort(products, new Comparator<Product>() {
-                        @Override
-                        public int compare(Product o1, Product o2) {
-                            return (o1.getId().compareToIgnoreCase(o2.getId()) < 0 ? 1 : -1);
-                        }
-                    });
+                    Collections.sort(products, (o1, o2) ->
+                            (o1.getId().compareToIgnoreCase(o2.getId()) < 0 ? 1 : -1));
                     break;
             }
             tableModel.fireTableDataChanged();
@@ -163,6 +148,7 @@ public class ProductPanel extends JPanel implements ActionListener {
         public String[] getColumnNames() {
             return columnNames;
         }
+
 
         @Override
         public void mouseClicked(MouseEvent e) {
@@ -192,6 +178,7 @@ public class ProductPanel extends JPanel implements ActionListener {
         }
     }
 
+    //Set stock table of this to the given stock table
     public void setStockTable(StockButtonTable stockTable) {
         this.stockTable = stockTable;
     }
@@ -236,6 +223,8 @@ public class ProductPanel extends JPanel implements ActionListener {
     }
 
 
+    //MODIFIES: this
+    //EFFECTS: add products of a specific item that is located at a particular position to the table
     public void addToList(String id, String location) {
         List<Product> toBeAdded = inventory.getProductList(id, location);
         for (Product product: toBeAdded) {
@@ -247,6 +236,8 @@ public class ProductPanel extends JPanel implements ActionListener {
         //table.repaint();
     }
 
+    //MODIFIES: this
+    //EFFECTS: add products of a specific item to the table
     public void addToList(String id) {
         List<Product> toBeAdded = inventory.getProductList(id);
         for (Product product: toBeAdded) {
@@ -263,19 +254,14 @@ public class ProductPanel extends JPanel implements ActionListener {
     //Action listener for add/remove buttons
     //EFFECTS: if the action command is "add", add new products
     //if the action command is "remove", remove the selected products;
-    @SuppressWarnings({"checkstyle:MethodLength", "checkstyle:SuppressWarnings"})
     @Override
     public void actionPerformed(ActionEvent e) {
-
         if (e.getActionCommand().equalsIgnoreCase(add)) {
             JDialog dialog = new JDialog();
             JButton button = new JButton();
-            button.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    dialog.setVisible(false);
-                    ((AbstractTableModel)stockTable.getModel()).fireTableDataChanged();
-                }
+            button.addActionListener(e1 -> {
+                dialog.setVisible(false);
+                ((AbstractTableModel)stockTable.getModel()).fireTableDataChanged();
             });
             AddPanel addPanel = new AddPanel(inventory, button, application);
             //JDialog dialog = optionPane.createDialog(null, "Add new products");
@@ -284,27 +270,34 @@ public class ProductPanel extends JPanel implements ActionListener {
             dialog.pack();
             dialog.setVisible(true);
         } else if (e.getActionCommand().equalsIgnoreCase(remove)) {
-            List<Product> toBeRemoved = new ArrayList<>();
-            int[] selectedRows = table.getSelectedRows();
-            for (Integer row: selectedRows) {
-                toBeRemoved.add(products.get(row));
-            }
-            int confirm = JOptionPane.showConfirmDialog(new ProductTable(toBeRemoved),
-                    "Do you intend to remove following products?");
-            if (confirm == JOptionPane.YES_OPTION) {
-                products.removeAll(toBeRemoved);
-                for (Product product: toBeRemoved) {
-                    inventory.removeProduct(product.getSku());
-                }
-                application.addAccount(createRemovedTags(toBeRemoved),
-                        convertToString(getListOfIDs(toBeRemoved)), LocalDate.now());
-                ((AbstractTableModel)table.getModel()).fireTableDataChanged();
-                ((AbstractTableModel)stockTable.getModel()).fireTableDataChanged();
-                JOptionPane.showMessageDialog(null, "Successfully removed");
-            }
+            removeProducts();
         }
         //table.repaint();
-        stockTable.repaint();
+    }
+
+    //MODIFIES: this
+    //EFFECTS: starts the process to remove products
+    //ask the user to confirm, and when confirmed, remove selected products from the table
+    // remove products inside the given list from the table
+    private void removeProducts() {
+        List<Product> toBeRemoved = new ArrayList<>();
+        int[] selectedRows = table.getSelectedRows();
+        for (Integer row: selectedRows) {
+            toBeRemoved.add(products.get(row));
+        }
+        int confirm = JOptionPane.showConfirmDialog(new ProductTable(toBeRemoved),
+                "Do you intend to remove following products?");
+        if (confirm == JOptionPane.YES_OPTION) {
+            products.removeAll(toBeRemoved);
+            for (Product product : toBeRemoved) {
+                inventory.removeProduct(product.getSku());
+            }
+            application.addAccount(createRemovedTags(toBeRemoved),
+                    convertToString(getListOfIDs(toBeRemoved)), LocalDate.now());
+            ((AbstractTableModel) table.getModel()).fireTableDataChanged();
+            ((AbstractTableModel) stockTable.getModel()).fireTableDataChanged();
+            JOptionPane.showMessageDialog(null, "Successfully removed");
+        }
     }
 
 

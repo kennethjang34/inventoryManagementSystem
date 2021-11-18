@@ -22,13 +22,14 @@ public class StockButtonTable extends JTable implements ActionListener, TableCel
     private StockLocationButtonTable locationButtonTable;
 
 
-
+    //represents a table that contains info about stocks at different locations
     private class StockLocationButtonTable extends JTable implements ActionListener, TableCellRenderer {
         private List<QuantityTag> tags;
         private String id;
         private Object[][] data;
         private String[] columnName;
 
+        //EFFECTS: create a new empty table for displaying locations of stocks
         @SuppressWarnings({"checkstyle:MethodLength", "checkstyle:SuppressWarnings"})
         public StockLocationButtonTable(List<QuantityTag> tags) {
             this.tags = tags;
@@ -119,7 +120,6 @@ public class StockButtonTable extends JTable implements ActionListener, TableCel
     }
 
     //EFFECTS: create a table displaying inventory condition
-    @SuppressWarnings({"checkstyle:MethodLength", "checkstyle:SuppressWarnings"})
     public StockButtonTable(Inventory inventory, ProductPanel productPanel) {
         this.inventory = inventory;
         this.productPanel = productPanel;
@@ -190,13 +190,6 @@ public class StockButtonTable extends JTable implements ActionListener, TableCel
                     button.doClick();
                 } else if (e.getClickCount() == 2 && getSelectedRow() != -1) {
                     String id = (String) getValueAt(getSelectedRow(), 1);
-//
-//            locationViewDialog = new JDialog();
-//            locationViewDialog.setLayout(new FlowLayout());
-//            //assert id.equalsIgnoreCase("app") : id;
-//            List<QuantityTag> tags = inventory.getQuantitiesAtLocations(id);
-//            locationViewDialog.add(new StockLocationButtonTable(tags));
-//            locationViewDialog.setVisible(true);
                     productPanel.addToList(id);
                 }
             }
@@ -217,7 +210,7 @@ public class StockButtonTable extends JTable implements ActionListener, TableCel
 
     @Override
     public void mouseEntered(MouseEvent e) {
-        
+
     }
 
     @Override

@@ -9,6 +9,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.time.LocalDate;
 
+//A panel that prompts the user to enter inputs for creating new products
 public class AddPanel extends JPanel implements ActionListener {
     private InventoryManagementSystemApplication application;
     Inventory inventory;
