@@ -57,6 +57,7 @@ public class InventoryTest {
         assertEquals(0, inventory.getTotalQuantity());
         assertEquals(0, inventory.getIDs().size());
         assertEquals(0, inventory.getProductList("PIZ").size());
+        assertNull(inventory.getOldestProduct("AAA"));
 
     }
 
@@ -95,6 +96,8 @@ public class InventoryTest {
         assertEquals(1, inventory.findLocations("AAA").size());
         assertEquals("F11",
                 inventory.findLocations(tags.get(0).getId()).get(0).getLocation());
+        assertFalse(inventory.addProducts(new InventoryTag("NonExistingItem", cost, price,
+                LocalDate.now(), LocalDate.now(), "eqwf", basicQty)));
     }
 
     @Test
@@ -148,7 +151,18 @@ public class InventoryTest {
         assertEquals(1, inventory.getCategoryNames().length);
         inventory.createCategory("Chicken");
         assertEquals(2, inventory.getCategoryNames().length);
-        assertEquals("Chicken", inventory.getCategoryNames()[1]);
+        assertEquals("FOOD", inventory.getCategoryNames()[1]);
+    }
+
+    @Test
+    void testGetCategory() {
+        Category category = inventory.getCategory("FOOD");
+        assertEquals(6, category.getItemIDs().size());
+    }
+
+    @Test
+    void testGetCategoryOfWithNonExistingItem() {
+        assertNull(inventory.getCategoryOf("nonExisting"));
     }
 
 
