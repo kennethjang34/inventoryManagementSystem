@@ -48,53 +48,12 @@ public class ProductPanel extends JPanel implements ActionListener {
 
 
         //EFFECTS: create a new empty table
-        @SuppressWarnings({"checkstyle:MethodLength", "checkstyle:SuppressWarnings"})
         private ProductTable(List<Product> products) {
             this.products = products;
             columnNames = new String[]{
                     "ID", "SKU", "COST", "PRICE", "BEST-BEFORE DATE", "DATE GENERATED", "LOCATION"
             };
-            tableModel = new AbstractTableModel() {
-
-                @Override
-                public int getRowCount() {
-                    return products.size();
-                }
-
-
-                @Override
-                public int getColumnCount() {
-                    return columnNames.length;
-                }
-
-                @Override
-                public String getColumnName(int column) {
-                    return columnNames[column];
-                }
-
-                @Override
-                public Object getValueAt(int row, int column) {
-                    Product product = products.get(row);
-                    switch (getColumnName(column)) {
-                        case "ID":
-                            return product.getId();
-                        case "SKU":
-                            return product.getSku();
-                        case "COST":
-                            return product.getCost();
-                        case "PRICE":
-                            return product.getPrice();
-                        case "BEST-BEFORE DATE":
-                            return product.getBestBeforeDate();
-                        case "DATE GENERATED":
-                            return product.getDateGenerated();
-                        case "LOCATION":
-                            return product.getLocation();
-                    }
-
-                    return null;
-                }
-            };
+            tableModel = new ProductTableModel(products, columnNames);
             setModel(tableModel);
         }
 
@@ -178,13 +137,12 @@ public class ProductPanel extends JPanel implements ActionListener {
         }
     }
 
-    //Set stock table of this to the given stock table
+    //EFFECTS: set stock table of this to the given stock table
     public void setStockTable(StockButtonTable stockTable) {
         this.stockTable = stockTable;
     }
 
-
-    @SuppressWarnings({"checkstyle:MethodLength", "checkstyle:SuppressWarnings"})
+    //EFFECTS: create a new product panel
     public ProductPanel(Inventory inventory, InventoryManagementSystemApplication application) {
         //this.stockTable = stockTable;
         this.application = application;
@@ -193,15 +151,35 @@ public class ProductPanel extends JPanel implements ActionListener {
         this.inventory = inventory;
         table = new ProductTable(products);
         JScrollPane scrollPane = new JScrollPane(table);
-        scrollPane.getViewport().addChangeListener(new ChangeListener() {
-            @Override
-            public void stateChanged(ChangeEvent e) {
-                table.repaint();
-                scrollPane.revalidate();
-            }
+        scrollPane.getViewport().addChangeListener(e -> {
+            table.repaint();
+            scrollPane.revalidate();
         });
         scrollPane.setPreferredSize(new Dimension(500, 300));
         add(scrollPane, BorderLayout.CENTER);
+//        JButton addButton = new JButton(add);
+//        addButton.setActionCommand(add);
+//        addButton.addActionListener(this);
+//        JPanel buttonPanel = new JPanel();
+//        buttonPanel.add(addButton);
+//        JButton removeButton = new JButton(remove);
+//        removeButton.setActionCommand(remove);
+//        removeButton.addActionListener(this);
+//        buttonPanel.add(removeButton);
+//        JButton sortButton = new JButton("sortByBestBeforeDate");
+//        sortButton.addActionListener(new ActionListener() {
+//            @Override
+//            public void actionPerformed(ActionEvent e) {
+//                table.sortByBestBeforeDateInOrder();
+//            }
+//        });
+//        buttonPanel.add(sortButton);
+        JPanel buttonPanel = createButtonPanel();
+        add(buttonPanel, BorderLayout.SOUTH);
+    }
+
+
+    public JPanel createButtonPanel() {
         JButton addButton = new JButton(add);
         addButton.setActionCommand(add);
         addButton.addActionListener(this);
@@ -219,7 +197,7 @@ public class ProductPanel extends JPanel implements ActionListener {
             }
         });
         buttonPanel.add(sortButton);
-        add(buttonPanel, BorderLayout.SOUTH);
+        return buttonPanel;
     }
 
 

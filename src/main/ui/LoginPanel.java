@@ -13,11 +13,8 @@ import java.time.LocalDate;
 
 //A panel to prompt the user to log in/register a new login account/retrieve password
 public class LoginPanel extends JPanel implements ActionListener {
-    private Image image;
-    private final String imagePath = "./data/seol.gif";
     private int purpose;
-    private URL imageUrl;
-    private Admin.LoginAccount account;
+    private boolean isAdmin = false;
     private final JTextField idField = new JTextField(10);
     private final JPasswordField pwField = new JPasswordField(10);
     private final JLabel idLabel = new JLabel("ID");
@@ -66,16 +63,14 @@ public class LoginPanel extends JPanel implements ActionListener {
         //EFFECTS: create a new login account and register it in the system.
         @Override
         public void actionPerformed(ActionEvent e) {
-            if (account != null || (account == null && admin.isEmpty())) {
+            if (isAdmin == true || (isAdmin == false && admin.isEmpty())) {
                 int personalCode = Integer.parseInt(this.codeField.getText());
                 String birthdayText = birthdayField.getText();
                 LocalDate birthDay = InventoryManagementSystemApplication.convertToLocalDate(birthdayText);
-                Admin.LoginAccount newAccount = admin.createLoginAccount(idField.getText(),
+                boolean successful = admin.createLoginAccount(idField.getText(),
                         String.valueOf(pwField.getPassword()),
-                        nameField.getText(), birthDay, personalCode);
-                if (account == null) {
-                    account = newAccount;
-                }
+                        nameField.getText(), birthDay, personalCode, !isAdmin);
+                isAdmin = true;
                 JOptionPane.showMessageDialog(null, "a new account is successfully created");
                 this.setVisible(false);
             } else {
@@ -224,7 +219,7 @@ public class LoginPanel extends JPanel implements ActionListener {
             if (!admin.checkLoginAccount(id, String.valueOf(pw))) {
                 displayLoginFail();
             } else {
-                if (purpose != ADMIN || admin.isAdminMember(admin.getLoginAccount(id))) {
+                if (purpose != ADMIN || admin.isAdminMember(id)) {
                     application.setLoginStatus(true);
                     application.setLoginAccount(id);
                     application.dataChangeHandler(purpose);

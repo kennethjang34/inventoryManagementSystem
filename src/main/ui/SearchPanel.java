@@ -9,11 +9,13 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
 
+//represents a panel that helps the user to search for a particualr item/product
 public class SearchPanel extends JPanel implements ActionListener {
     private final Inventory inventory;
     private final JTextField itemCodeField;
     private final JTextField skuField;
 
+    //create a new panel
     public SearchPanel(Inventory inventory) {
         this.inventory = inventory;
         itemCodeField = new JTextField(10);

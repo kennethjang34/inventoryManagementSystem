@@ -8,35 +8,42 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+//represents a table model for selected account table
 public class SelectedAccountTableModel extends AbstractTableModel {
     private List<Account> accountList;
     private LedgerPanel ledgerPanel;
 
+    //create a new table model
     public SelectedAccountTableModel(LedgerPanel panel) {
         ledgerPanel = panel;
         accountList = new ArrayList<>();
     }
 
+    //EFFECTS: return column names
     private String[] columnNames = new String[]{
             "Date", "Code", "ID", "Cost", "Price", "Location", "Qty", "description"
     };
 
+    //EFFECTS: return the row size
     @Override
     public int getRowCount() {
         return accountList.size();
     }
 
+    //EFFECTS: return the column size
     @Override
     public int getColumnCount() {
         return columnNames.length;
     }
 
 
+    //EFFECTS: return the column name
     @Override
     public String getColumnName(int col) {
         return columnNames[col];
     }
 
+    //EFFECTS: return the value at the specified cell
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
         Account account = accountList.get(rowIndex);
@@ -61,13 +68,10 @@ public class SelectedAccountTableModel extends AbstractTableModel {
         return "ERROR";
     }
 
-    public void addAccountsOf(LocalDate date) {
-        ledgerPanel.getAccountsOn(date);
-        accountList.addAll(ledgerPanel.getAccountsOn(date));
-    }
-
+    //MODIFIES: this
+    //EFFECTS: add the given accounts to this and fire table data changed event
     public void addAccounts(List<Account> newAccounts) {
-        for (Account account: newAccounts) {
+        for (Account account : newAccounts) {
             if (!accountList.contains(account)) {
                 accountList.add(account);
             }
@@ -75,6 +79,8 @@ public class SelectedAccountTableModel extends AbstractTableModel {
         fireTableDataChanged();
     }
 
+    //MODIFIES: this
+    //EFFECTS: remove the given account from this
     public boolean removeAccountFromList(Account account) {
         if (accountList.remove(account)) {
             return true;
@@ -82,13 +88,10 @@ public class SelectedAccountTableModel extends AbstractTableModel {
         return false;
     }
 
+    //EFFECTS: return the list of accounts inside this
     public List<Account> getAccountList() {
         return accountList;
     }
-
-//    public boolean removeAccount(Account account) {
-//        if (accountList.remove(account)) {
-//            ledgerPanel.removeAccountFromLedger(account);
-//        }
-//    }
 }
+
+

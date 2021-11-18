@@ -11,12 +11,13 @@ import java.awt.event.MouseListener;
 import java.time.LocalDate;
 import java.util.List;
 
-
+//represents a table that is composed of particular accounts selected by the user
 public class SelectedAccountTable extends JTable implements MouseListener, TableCellRenderer {
     private SelectedAccountTableModel tableModel;
     private Ledger ledger;
     private LedgerPanel ledgerPanel;
 
+    //EFFECTS: create a new table
     public SelectedAccountTable(Ledger ledger, LedgerPanel panel) {
         this.ledger = ledger;
         ledgerPanel = panel;
@@ -54,6 +55,7 @@ public class SelectedAccountTable extends JTable implements MouseListener, Table
 
     }
 
+    //EFFECTS: when value is string, return a JLabel containing the string
     @Override
     public Component getTableCellRendererComponent(JTable table, Object value,
                                                    boolean isSelected, boolean hasFocus, int row, int column) {
@@ -61,11 +63,9 @@ public class SelectedAccountTable extends JTable implements MouseListener, Table
 
     }
 
-    public List<Account> getAccountsOn(LocalDate date) {
-        List<Account> accountList = ledger.getAccounts(date);
-        return accountList;
-    }
 
+    //MODIFIES: this
+    //EFFECTS: add a list of accounts that were written on the given date to this
     public void addToList(LocalDate date) {
         tableModel.addAccounts(ledgerPanel.getAccountsOn(date));
 //        this.repaint();

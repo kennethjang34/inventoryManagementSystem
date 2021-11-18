@@ -27,9 +27,8 @@ public class StockSearchPanel extends JPanel implements ActionListener {
     private static final String TYPE = "TYPE ID";
     private static final String categoryCommand = "CATEGORY";
     private static final String itemCommand = "ITEM";
+
     //EFFECTS: create a new stock search panel that can modify the given stock panel based on filters chosen by the user
-
-
     public StockSearchPanel(Inventory inventory, StockPanel stockPanel) {
         this.inventory = inventory;
         this.stockPanel = stockPanel;
@@ -131,35 +130,47 @@ public class StockSearchPanel extends JPanel implements ActionListener {
 
     //MODIFIES: this
     //EFFECTS: for each stock search filter, update the search panel properly
-    //If type manually option is chosen, show text fields
-    @SuppressWarnings({"checkstyle:MethodLength", "checkstyle:SuppressWarnings"})
     @Override
     public void actionPerformed(ActionEvent e) {
         JComboBox comboBox = (JComboBox)e.getSource();
         if (comboBox.getActionCommand().equalsIgnoreCase(categoryCommand)) {
-            selectedCategory = (String) categoryBox.getSelectedItem();
-            if (selectedCategory.equals(TYPE)) {
-                promptCategoryTyping();
-                return;
-            } else if (selectedCategory.equals(ALL)) {
-                stockPanel.displayAllItems();
-            } else {
-                updateItemComboBox(selectedCategory);
-                stockPanel.displayItems(selectedCategory);
-            }
-            categoryField.setVisible(false);
+            handleCategorySelectedEvent();
         } else {
-            selectedItem = (String)itemBox.getSelectedItem();
-            if (selectedItem.equals(TYPE)) {
-                promptItemTyping();
-                return;
-            } else if (selectedItem.equals(ALL)) {
-                stockPanel.displayAllItems();
-            } else {
-                stockPanel.displayItem(selectedItem);
-            }
-            itemField.setVisible(false);
+            handleIdSelectedEvent();
         }
+    }
+
+    //MODIFIES: this
+    //EFFECTS: handle the request job by the user for category by displaying the corresponding component on this
+    //If type manually option is chosen, show text fields
+    private void handleCategorySelectedEvent() {
+        selectedCategory = (String) categoryBox.getSelectedItem();
+        if (selectedCategory.equals(TYPE)) {
+            promptCategoryTyping();
+            return;
+        } else if (selectedCategory.equals(ALL)) {
+            stockPanel.displayAllItems();
+        } else {
+            updateItemComboBox(selectedCategory);
+            stockPanel.displayItems(selectedCategory);
+        }
+        categoryField.setVisible(false);
+    }
+
+    //MODIFIES: this
+    //EFFECTS: handle the request job by the user by displaying the corresponding component on this
+    //If type manually option is chosen, show text fields
+    private void handleIdSelectedEvent() {
+        selectedItem = (String)itemBox.getSelectedItem();
+        if (selectedItem.equals(TYPE)) {
+            promptItemTyping();
+            return;
+        } else if (selectedItem.equals(ALL)) {
+            stockPanel.displayAllItems();
+        } else {
+            stockPanel.displayItem(selectedItem);
+        }
+        itemField.setVisible(false);
     }
 
     //MODIFIES: this

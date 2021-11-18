@@ -6,6 +6,7 @@ import persistence.JsonConvertible;
 
 import java.util.*;
 
+//represents a category where similar items belong
 public class Category implements JsonConvertible {
     private final String name;
     private int quantity;

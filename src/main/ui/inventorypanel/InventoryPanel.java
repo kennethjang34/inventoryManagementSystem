@@ -8,6 +8,7 @@ import ui.inventorypanel.stockpanel.StockPanel;
 import javax.swing.*;
 import java.awt.*;
 
+//represents a panel that contains stock panel and product panel to display current inventory conditions
 public class InventoryPanel extends JPanel {
     private final Inventory inventory;
     private final InventoryManagementSystemApplication application;

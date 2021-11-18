@@ -8,7 +8,7 @@ import persistence.JsonConvertible;
 import java.time.LocalDate;
 import java.util.*;
 
-
+//represents an inventory containing information of stocks of different items
 public class Inventory implements JsonConvertible {
 
     //hashmap with key and value being id of the item and item object respectively

@@ -15,12 +15,13 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.time.LocalDate;
 
+//represents a table that displays several accounts sorted by the date it was written
 public class AccountTable extends JTable implements TableCellRenderer, MouseListener, ActionListener {
     private Ledger ledger;
     private LedgerPanel ledgerPanel;
     private AccountTableModel tableModel;
 
-
+    //EFFECTS: create a new panel
     public AccountTable(Ledger ledger, LedgerPanel panel) {
         this.ledger = ledger;
         this.ledgerPanel = panel;
@@ -32,6 +33,9 @@ public class AccountTable extends JTable implements TableCellRenderer, MouseList
         //setTableHeader(new JTableHeader());
     }
 
+    //MODIFIES: this
+    //EFFECTS: when mouse is double-clicked or the button is clicked,
+    // add the accounts that occurred on the selected date to the selected account table
     @Override
     public void mouseClicked(MouseEvent e) {
         int column = columnAtPoint(e.getPoint());
@@ -66,6 +70,7 @@ public class AccountTable extends JTable implements TableCellRenderer, MouseList
 
     }
 
+    //EFFECTS: when the given value is a button, return it with text "ACCOUNTS" on it
     @Override
     public Component getTableCellRendererComponent(JTable table, Object value,
                                                    boolean isSelected, boolean hasFocus, int row, int column) {
@@ -78,6 +83,8 @@ public class AccountTable extends JTable implements TableCellRenderer, MouseList
         return new JLabel((String)value);
     }
 
+    //MODIFIES: this
+    //EFFECTS: add accounts that happened on the selected date to the selected account table
     @Override
     public void actionPerformed(ActionEvent e) {
         JButton button = (JButton) e.getSource();
@@ -86,15 +93,21 @@ public class AccountTable extends JTable implements TableCellRenderer, MouseList
         ledgerPanel.addToSelected(date);
     }
 
+    //MODIFIES: this
+    //EFFECTS: update the table according to the ledger
     public void update() {
         tableModel.update();
     }
 
+    //MODIFIES: this
+    //EFFECTS: display only the requested accounts
     public void display(String selectedDate) {
         LocalDate date = LocalDate.parse(selectedDate);
         tableModel.setPeriod(date, date);
     }
 
+    //MODIFIES: this
+    //EFFECTS: display all accounts
     public void displayAll() {
         tableModel.setPeriod(null, null);
         repaint();

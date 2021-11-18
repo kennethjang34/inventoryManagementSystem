@@ -104,6 +104,7 @@ public class AccountTableModel extends AbstractTableModel {
         }
     }
 
+    //EFFECTS: return the column size
     @Override
     public int getColumnCount() {
         return columnNames.length;

@@ -176,6 +176,7 @@ public class Ledger implements JsonConvertible {
         return json;
     }
 
+    //EFFECTS: return a list of IDs of items processed on the selected date
     public List<String> getIDs(LocalDate selectedDate) {
         List<Account> accountList = accounts.get(selectedDate.toString());
         if (accountList == null) {
@@ -188,6 +189,7 @@ public class Ledger implements JsonConvertible {
         return ids;
     }
 
+    //EFFECTS: return a list of account codes recorded in this
     public List<String> getCodes() {
         List<String> codes = new ArrayList<>();
         List<List<Account>> accountsLists = new ArrayList<>(accounts.values());

@@ -283,16 +283,17 @@ public class InventoryManagementSystemApplication extends JFrame implements Json
     //EFFECTS: load the status of the program
     public void load() {
         try {
-            Admin.LoginAccount account = adminPanel.getLoginAccount();
+//            Admin.LoginAccount account = adminPanel.getLoginAccount();
             Reader reader = new Reader(fileLocation);
             JSONObject jsonObject = reader.read();
             getContentPane().removeAll();
             //repaint();
-            admin = new Admin(jsonObject.getJSONObject("admin"));
+            //Admin is always up to date
+            //admin = new Admin(jsonObject.getJSONObject("admin"));
             ledger = new Ledger(jsonObject.getJSONObject("ledger"));
             inventory = new Inventory(jsonObject.getJSONObject("inventory"));
             createMainPanel();
-            adminPanel.setLoginAccount(account);
+            //adminPanel.setLoginAccount(account);
             //cardLayout.show(mainPanel, "LoginPanel");
             add(mainPanel);
             setPreferredSize(new Dimension(1500, 2000));
@@ -390,11 +391,11 @@ public class InventoryManagementSystemApplication extends JFrame implements Json
         ledgerPanel.addAccount(tag, description, date);
     }
 
-    //MODIFIES: this
-    //EFFECTS: after succeeding login, set the current to the accont
-    public void setLoginAccount(Admin.LoginAccount account) {
-        adminPanel.setLoginAccount(account);
-    }
+//    //MODIFIES: this
+//    //EFFECTS: after succeeding login, set the current to the accont
+//    public void setLoginAccount(Admin.LoginAccount account) {
+//        adminPanel.setLoginAccount(account);
+//    }
 
     //MODIFIES: this
     //EFFECTS: after succeeding login, set the current to the account
@@ -405,9 +406,10 @@ public class InventoryManagementSystemApplication extends JFrame implements Json
 
 
     //MODIFIES: this
-    //EFFECTS: set login status true
+    //EFFECTS: set login status true and save the current state
     public void setLoginStatus(boolean value) {
         login = value;
+        save();
     }
 
     public static void main(String[] args) {

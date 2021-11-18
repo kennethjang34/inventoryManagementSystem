@@ -20,7 +20,7 @@ public class Admin implements JsonConvertible {
 
     //represents each individual login account.
     //Must be distinguished from accounts that contain information about inventory update.
-    public class LoginAccount implements JsonConvertible {
+    private class LoginAccount implements JsonConvertible {
 
         //Once a login account is created, no data can be changed.
         private final String id;
@@ -28,31 +28,31 @@ public class Admin implements JsonConvertible {
         private final String name;
         private final LocalDate birthday;
         private final int personalCode;
-        private int accessPermission;
+        private boolean isAdmin;
 
 
-        //EFFECTS: create a new account that can access inventory and return it.
-        private LoginAccount(String id, String password, String name, LocalDate birthDay, int personalCode) {
-            this.id = id;
-            this.pw = password;
-            this.name = name;
-            this.birthday = birthDay;
-            this.personalCode = personalCode;
-            this.accessPermission = INVENTORY_ACCESS;
-        }
+//        //EFFECTS: create a new account that can access inventory and return it.
+//        private LoginAccount(String id, String password, String name, LocalDate birthDay, int personalCode) {
+//            this.id = id;
+//            this.pw = password;
+//            this.name = name;
+//            this.birthday = birthDay;
+//            this.personalCode = personalCode;
+//            this.accessPermission = INVENTORY_ACCESS;
+//        }
 
         //EFFECTS: create a new account that can access inventory and/or admin and return it.
         private LoginAccount(String id, String password, String name, LocalDate birthDay,
-                             int personalCode, int accessPermission) {
-            if (accessPermission != ADMIN_ACCESS && accessPermission != INVENTORY_ACCESS) {
-                throw new IllegalArgumentException("Access permission level cannot be found");
-            }
+                             int personalCode, boolean isAdmin) {
+//            if (accessPermission != ADMIN_ACCESS && accessPermission != INVENTORY_ACCESS) {
+//                throw new IllegalArgumentException("Access permission level cannot be found");
+//            }
             this.id = id;
             this.pw = password;
             this.name = name;
             this.birthday = birthDay;
             this.personalCode = personalCode;
-            this.accessPermission = accessPermission;
+            this.isAdmin = isAdmin;
         }
 
 
@@ -64,7 +64,7 @@ public class Admin implements JsonConvertible {
             name = jsonLoginAccount.getString("name");
             personalCode = jsonLoginAccount.getInt("personalCode");
             JSONObject jsonDate = jsonLoginAccount.getJSONObject("birthday");
-            accessPermission = jsonLoginAccount.getInt("accessPermission");
+            isAdmin = jsonLoginAccount.getBoolean("isAdmin");
             birthday = LocalDate.of(jsonDate.getInt("year"),
                     jsonDate.getInt("month"), jsonDate.getInt("day"));
         }
@@ -87,8 +87,8 @@ public class Admin implements JsonConvertible {
         }
 
         //EFFECTS: return the access permision level
-        public int getAccessPermission() {
-            return accessPermission;
+        private boolean isAdmin() {
+            return isAdmin;
         }
 
 
@@ -120,20 +120,20 @@ public class Admin implements JsonConvertible {
             date.put("day", birthday.getDayOfMonth());
             json.put("birthday", date);
             json.put("personalCode", personalCode);
-            json.put("accessPermission", accessPermission);
+            json.put("isAdmin", isAdmin);
             return json;
         }
 
-        //MODIFIES: this
-        //EFFECTS: create a login account that can access the application
-        //return true if successful. false otherwise
-        public LoginAccount createLoginAccount(String id, String password, String name, LocalDate birthDay,
-                                       int personalCode, int accessPermission) {
-            if (!isAdminMember(this)) {
-                return null;
-            }
-            return (Admin.this.createLoginAccount(id, password, name, birthDay, personalCode, accessPermission));
-        }
+//        //MODIFIES: this
+//        //EFFECTS: create a login account that can access the application
+//        //return true if successful. false otherwise
+//        public LoginAccount createLoginAccount(String id, String password, String name, LocalDate birthDay,
+//                                       int personalCode, boolean isAdmin) {
+//            if (!isAdminMember(this)) {
+//                return null;
+//            }
+//            return (Admin.this.createLoginAccount(id, password, name, birthDay, personalCode, isAdmin));
+//        }
     }
 
     //list of login accounts. there is no limit on number of accounts but once an account is added,
@@ -223,7 +223,7 @@ public class Admin implements JsonConvertible {
         if (accounts.size() != 0) {
             return null;
         }
-        accounts.add(new LoginAccount(id, password, name, birthDay, personalCode, ADMIN_ACCESS));
+        accounts.add(new LoginAccount(id, password, name, birthDay, personalCode, true));
         return accounts.get(0);
     }
 
@@ -232,24 +232,24 @@ public class Admin implements JsonConvertible {
     //Apple and apple, they will be regarded different
     //MODIFIES: this
     //EFFECTS: create a new account with the given information.
-    public LoginAccount createLoginAccount(String id, String password, String name, LocalDate birthDay,
-                                      int personalCode, int accessPermission) {
+    public boolean createLoginAccount(String id, String password, String name, LocalDate birthDay,
+                                      int personalCode, boolean isAdmin) {
         if (getLoginAccount(id) != null) {
-            return null;
+            return false;
         }
-        LoginAccount account = new LoginAccount(id, password, name, birthDay, personalCode, accessPermission);
+        LoginAccount account = new LoginAccount(id, password, name, birthDay, personalCode, isAdmin);
         accounts.add(account);
-        return account;
+        return true;
     }
 
 
 
     //EFFECTS: return true if this login account is an admin member
-    public boolean isAdminMember(LoginAccount account) {
-        if (account == null) {
+    public boolean isAdminMember(String id) {
+        if (getLoginAccount(id) == null) {
             return false;
         }
-        if (account.getAccessPermission() == ADMIN_ACCESS) {
+        if (getLoginAccount(id).isAdmin()) {
             return true;
         }
         return false;

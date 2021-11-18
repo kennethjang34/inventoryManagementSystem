@@ -11,12 +11,14 @@ import java.awt.event.ActionListener;
 import java.time.LocalDate;
 import java.util.List;
 
+//represents a panel that contains information of ledger
 public class LedgerPanel extends JPanel implements ActionListener {
     private final Ledger ledger;
     private AccountTable accountTable;
     private SelectedAccountTable selectedAccountTable;
     private FilterPanel filterPanel;
 
+    //create a new panel that has info about the given ledger
     public LedgerPanel(Ledger ledger) {
         this.ledger = ledger;
         accountTable = new AccountTable(ledger, this);
@@ -29,16 +31,20 @@ public class LedgerPanel extends JPanel implements ActionListener {
         setSize(new Dimension(600, 900));
     }
 
+    //ToBeDetermined
     public void actionPerformed(ActionEvent e) {
     }
 
-
+    //EFFECTS: return a list of accounts that were written on the given date
     public List<Account> getAccountsOn(LocalDate date) {
         return ledger.getAccounts(date);
     }
 
 
 
+    //MODIFIES: this
+    //EFFECTS: add a list of new accounts to this with the given list of stock change information, description,
+    //and date
     public void addAccount(List<InventoryTag> stocks, String description, LocalDate date) {
         for (InventoryTag tag: stocks) {
             ledger.addAccount(tag, description, date);
@@ -48,6 +54,9 @@ public class LedgerPanel extends JPanel implements ActionListener {
 
     }
 
+    //MODIFIES: this
+    //EFFECTS: add a new account to this with a piece of  stock change information, description,
+    //and date
     public void addAccount(InventoryTag tag, String description, LocalDate date) {
         Account account = ledger.addAccount(tag, description, date);
 //        assert account != null;
@@ -87,31 +96,21 @@ public class LedgerPanel extends JPanel implements ActionListener {
             return account.getDate().toString();
         }
         return null;
-
     }
 
-    public static void main(String[] args) {
-        Ledger ledger = new Ledger();
-        LedgerPanel panel = new LedgerPanel(ledger);
-        InventoryTag tag = new InventoryTag("apple", 1, 2, LocalDate.now(), "f11", 100);
-        panel.addAccount(tag, "testing", LocalDate.now());
-        assert ledger.getAccounts(LocalDate.now()).size() == 1;
-        //panel.accountTable.repaint();
-        System.out.println(panel.accountTable.getRowCount());
-        JFrame frame = new JFrame();
-        frame.add(panel);
-        frame.setSize(300, 400);
-        frame.setVisible(true);
-    }
-
+    //MODIFIES: this
+    //EFFECTS: display accounts written on the selected date
     public void displayAccountsOn(String selectedDate) {
         accountTable.display(selectedDate);
     }
 
+    //EFFECTS: return a list of accounts that are added to the selected account table
     public List<Account> getAccountsOnDisplay() {
         return selectedAccountTable.getAccountsOndisplay();
     }
 
+    //MODIFIES: this
+    //EFFECTS: display all accounts
     public void displayAll() {
         accountTable.displayAll();
     }
