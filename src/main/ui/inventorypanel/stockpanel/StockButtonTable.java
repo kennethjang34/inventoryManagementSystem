@@ -27,16 +27,14 @@ public class StockButtonTable extends JTable implements ActionListener, TableCel
         private List<QuantityTag> tags;
         private String id;
         private Object[][] data;
-        private String[] columnName;
+        private String[] columnName = new String[]{
+                "Location", "Quantity", "BUTTON"
+        };
 
         //EFFECTS: create a new empty table for displaying locations of stocks
-        @SuppressWarnings({"checkstyle:MethodLength", "checkstyle:SuppressWarnings"})
         public StockLocationButtonTable(List<QuantityTag> tags) {
             this.tags = tags;
             data = new Object[tags.size()][];
-            columnName = new String[]{
-                    "Location", "Quantity", "BUTTON"
-            };
 
             for (int i = 0; i < tags.size(); i++) {
                 QuantityTag tag = tags.get(i);
@@ -44,7 +42,29 @@ public class StockButtonTable extends JTable implements ActionListener, TableCel
                         tag.getLocation(), tag.getQuantity(), new JButton()
                 };
             }
-            DefaultTableModel tableModel = new DefaultTableModel(data, columnName) {
+            DefaultTableModel tableModel = createLocationTableModel();
+            setModel(tableModel);
+            setDefaultRenderer(JButton.class, this);
+            for (int i = 0; i < getRowCount(); i++) {
+                for (int j = 0; j < getColumnCount(); j++) {
+                    if (getValueAt(i, j) instanceof JButton) {
+                        JButton button = (JButton) getValueAt(i, j);
+                        button.addActionListener(this);
+                    }
+                }
+            }
+            id = tags.get(0).getId();
+            addMouseListener(StockButtonTable.this);
+        }
+
+        //EFFECTS: return tags
+        private List<QuantityTag> getTags() {
+            return tags;
+        }
+
+        //EFFECTS: create a table model and return it
+        private DefaultTableModel createLocationTableModel() {
+            return new DefaultTableModel(data, columnName) {
                 @Override
                 public boolean isCellEditable(int row, int column) {
                     return false;
@@ -60,26 +80,9 @@ public class StockButtonTable extends JTable implements ActionListener, TableCel
                     return columnName[columnIndex];
                 }
             };
-
-
-            setDefaultRenderer(JButton.class, this);
-            setModel(tableModel);
-            for (int i = 0; i < getRowCount(); i++) {
-                for (int j = 0; j < getColumnCount(); j++) {
-                    if (getValueAt(i, j) instanceof JButton) {
-                        JButton button = (JButton) getValueAt(i, j);
-                        button.addActionListener(this);
-                    }
-                }
-            }
-            id = tags.get(0).getId();
-            addMouseListener(StockButtonTable.this);
         }
 
-        private List<QuantityTag> getTags() {
-            return tags;
-        }
-
+        //EFFECTS: return the component to be drawn in each cell
         @Override
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
                                                        boolean hasFocus, int row, int column) {
@@ -92,8 +95,7 @@ public class StockButtonTable extends JTable implements ActionListener, TableCel
             } else if (value instanceof String || value instanceof Double || value instanceof Integer) {
                 return this;
             }
-
-            throw new RuntimeException("Value inside JTable is invalid");
+            return null;
         }
 
 //
@@ -112,6 +114,8 @@ public class StockButtonTable extends JTable implements ActionListener, TableCel
 //            }
 //        }
 
+        //MODIFIES: this
+        //EFFECTS: add products of a particular stock to the product panel
         @Override
         public void actionPerformed(ActionEvent e) {
             String location = e.getActionCommand();
@@ -135,16 +139,18 @@ public class StockButtonTable extends JTable implements ActionListener, TableCel
         assert getModel().getValueAt(1, 8) instanceof JButton
                 : getModel().getValueAt(1, 8).getClass().toString();
         setDefaultRenderer(JButton.class, this);
+        setDefaultRenderer(String.class, this);
 //        setDefaultRenderer(String.class, this);
         addMouseListener(this);
+        setVisible(true);
     }
 
-
-    @Override
-    public Class getColumnClass(int column) {
-        return getValueAt(0, column).getClass();
-    }
-//
+//    //EFFECTS: return the column class
+//    @Override
+//    public Class getColumnClass(int column) {
+//        return getValueAt(0, column).getClass();
+//    }
+////
 //    @Override
 //    public String getColumnName(int col) {
 //        return columnName[col];
@@ -162,7 +168,7 @@ public class StockButtonTable extends JTable implements ActionListener, TableCel
             button.setActionCommand(id);
             return button;
         } else if (value instanceof String || value instanceof Double || value instanceof Integer) {
-            return this;
+            return new JLabel((String)value);
         }
         return null;
     }
@@ -237,7 +243,7 @@ public class StockButtonTable extends JTable implements ActionListener, TableCel
     //EFFECTS: change the current category of the model of this
     public void setCategory(String category) {
         ((StockButtonTableModel)getModel()).setCategory(category);
-        //repaint();
+
     }
 
     //MODIFIES: this

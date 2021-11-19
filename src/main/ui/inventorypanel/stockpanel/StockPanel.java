@@ -36,12 +36,30 @@ public class StockPanel extends JPanel {
         typeCreator.add(new CategoryGenerator(inventory, this));
         typeCreator.add(new ItemGenerator(inventory, this));
         productPanel.setStockTable(stockButtonTable);
+//        add(typeCreator);
+//        add(searchPanel);
+//        add(typeCreator, BorderLayout.NORTH);
+//        add(searchPanel, BorderLayout.CENTER);
+//        searchPanel.setPreferredSize(new Dimension(400, 200));
+//        stockButtonTable.setPreferredSize(new Dimension(400, 400));
+
+
+
+        tableScrollPane =  new JScrollPane(stockButtonTable);
+        tableScrollPane.setSize(400, 400);
+        //tableScrollPane.setPreferredSize(new Dimension(500, 600));
+        //tableScrollPane.setPreferredSize(new Dimension(500, 200));
         add(typeCreator, BorderLayout.NORTH);
         add(searchPanel, BorderLayout.CENTER);
-        tableScrollPane =  new JScrollPane(stockButtonTable);
-        tableScrollPane.setPreferredSize(new Dimension(500, 200));
         add(tableScrollPane, BorderLayout.SOUTH);
+        //add(tableScrollPane);
+//        setPreferredSize(new Dimension(500, 600));
+        //add(new JPanel(), BorderLayout.SOUTH);
 //        add(stockButtonTable, BorderLayout.SOUTH);
+//        setSize(500, 600);
+//        repaint();
+//        revalidate();
+//        setPreferredSize(new Dimension(500, 300));
     }
 
 
@@ -60,7 +78,7 @@ public class StockPanel extends JPanel {
     //EFFECTS: display all items in the inventory
     public void displayAllItems() {
         stockButtonTable.setCategory(null);
-        stockButtonTable.repaint();
+        ((StockButtonTableModel)(stockButtonTable.getModel())).fireTableDataChanged();
     }
 
     //MODIFIES: this
@@ -68,7 +86,6 @@ public class StockPanel extends JPanel {
     //if there is no item with the specified id, display no item
     public void displayItem(String id) {
         stockButtonTable.setItem(id);
-        stockButtonTable.repaint();
     }
 
 
@@ -77,7 +94,6 @@ public class StockPanel extends JPanel {
     public void itemAddedUpdate(String id) {
         searchPanel.addItem(id);
         stockButtonTable.repaint();
-        //(AbstractTableModel)(stockButtonTable.getModel()).fi
     }
 
     ///MODIFIES: this
@@ -85,7 +101,6 @@ public class StockPanel extends JPanel {
     public void categoryAddedUpdate(String categoryName) {
         searchPanel.addCategory(categoryName);
         stockButtonTable.repaint();
-
     }
 
 

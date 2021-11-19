@@ -29,10 +29,10 @@ public class InventoryPanel extends JPanel {
 //        JPanel typeCreator = new JPanel();
 //        typeCreator.add(new CategoryGenerator(inventory, stockSearchPanel));
 //        typeCreator.add(new ItemGenerator(inventory, stockSearchPanel));
+        setPreferredSize(new Dimension(600, 900));
         setLayout(new BorderLayout());
-        //add(typeCreator, BorderLayout.NORTH);
-        add(productPanel, BorderLayout.NORTH);
-        add(stockPanel, BorderLayout.CENTER);
+        add(productPanel, BorderLayout.CENTER);
+        add(stockPanel, BorderLayout.SOUTH);
     }
 
 

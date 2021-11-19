@@ -3,6 +3,7 @@ package ui.inventorypanel.stockpanel;
 import model.Inventory;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
@@ -33,7 +34,6 @@ public class StockSearchPanel extends JPanel implements ActionListener {
         this.inventory = inventory;
         this.stockPanel = stockPanel;
         add(new JLabel("Category"));
-        add(new JLabel("ID"));
         categoryBox = new JComboBox();
         itemBox = new JComboBox();
         initializeCategoryBox();
@@ -45,12 +45,14 @@ public class StockSearchPanel extends JPanel implements ActionListener {
         itemBox.addActionListener(this);
         add(categoryBox);
         add(categoryField);
+        add(new JLabel("ID"));
         add(itemBox);
         add(itemField);
         categoryField.setVisible(false);
         itemField.setVisible(false);
         itemBox.setEditable(false);
         categoryBox.setEditable(false);
+//        setPreferredSize(new Dimension(400, 300));
         stockPanel.displayAllItems();
     }
 
@@ -82,7 +84,6 @@ public class StockSearchPanel extends JPanel implements ActionListener {
                 || inventory.getItemList(selectedCategory).size() == 0) {
             itemModel = new DefaultComboBoxModel<>();
             itemModel.addElement("No item");
-            return;
         } else {
             itemModel = new DefaultComboBoxModel();
             itemModel.addElement(ALL);
@@ -234,7 +235,7 @@ public class StockSearchPanel extends JPanel implements ActionListener {
     //EFFECTS: add a new item to the item combo box if the currently selected category contains this new item
     //else do nothing
     public void addItem(String id) {
-        if (inventory.getCategoryOf(id).equalsIgnoreCase(selectedCategory)
+        if (inventory.getCategoryOf(id).equals(selectedCategory)
                 || selectedCategory.equals(ALL)) {
             DefaultComboBoxModel boxModel = (DefaultComboBoxModel)itemBox.getModel();
             if (boxModel.getIndexOf(id) == -1) {

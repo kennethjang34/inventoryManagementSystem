@@ -11,8 +11,6 @@ import ui.ledgerpanel.LedgerPanel;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -98,6 +96,7 @@ public class InventoryManagementSystemApplication extends JFrame implements Json
 //        mainPanel.add(loginPanel, "LoginPanel");
 //        cardLayout.show(mainPanel, "LoginPanel");
         add(mainPanel);
+        menuBar = createMenuBar();
         setJMenuBar(menuBar);
         setPreferredSize(new Dimension(1500, 2000));
         pack();
@@ -112,15 +111,12 @@ public class InventoryManagementSystemApplication extends JFrame implements Json
         tabbedPane.addTab("Inventory", inventoryPanel);
         tabbedPane.addTab("Ledger", ledgerPanel);
         tabbedPane.addTab("Admin", adminPanel);
-        tabbedPane.addChangeListener(new ChangeListener() {
-            @Override
-            public void stateChanged(ChangeEvent e) {
-                JTabbedPane pane = (JTabbedPane) e.getSource();
-                if (pane.getSelectedIndex() == 2) {
-                    if (login == false && !admin.isEmpty()) {
-                        loginPanel.setPurpose(loginPanel.ADMIN);
-                        switchToLoginPanel();
-                    }
+        tabbedPane.addChangeListener(e -> {
+            JTabbedPane pane = (JTabbedPane) e.getSource();
+            if (pane.getSelectedIndex() == 2) {
+                if (login == false && !admin.isEmpty()) {
+                    loginPanel.setPurpose(loginPanel.ADMIN);
+                    switchToLoginPanel();
                 }
             }
         });
@@ -133,6 +129,8 @@ public class InventoryManagementSystemApplication extends JFrame implements Json
         cardLayout = new CardLayout();
         //tabbedPane = new JTabbedPane();
         inventoryPanel = new InventoryPanel(inventory, this);
+
+        //inventoryPanel = new InventoryPanel(inventory, this);
         ledgerPanel = new LedgerPanel(ledger);
         adminPanel = new AdminPanel(admin, this);
         if (loginPanel == null) {
@@ -153,9 +151,9 @@ public class InventoryManagementSystemApplication extends JFrame implements Json
 //            }
 //        });
         createTabbedPane();
-        menuBar = createMenuBar();
         cardLayout.addLayoutComponent(tabbedPane, "ControlPanel");
         cardLayout.addLayoutComponent(loginPanel, "LoginPanel");
+        //tabbedPane.setPreferredSize(new Dimension(400, 500));
         tabbedPane.setBounds(50, 50, 200, 200);
         mainPanel.setLayout(cardLayout);
         mainPanel.add(tabbedPane, "ControlPanel");
@@ -257,17 +255,6 @@ public class InventoryManagementSystemApplication extends JFrame implements Json
     }
 
 
-//    //MODIFIES: this
-//    //EFFECTS: update the current display according to login status
-//    public void updateDisplay() {
-//        if (login == true) {
-//            switchToControlPanel();
-//        } else {
-//            switchToLoginPanel();
-//        }
-//    }
-
-
     //EFFECTS: save the status of the program
     public void save() {
         //switchToLoginPanel();
@@ -287,16 +274,19 @@ public class InventoryManagementSystemApplication extends JFrame implements Json
             Reader reader = new Reader(fileLocation);
             JSONObject jsonObject = reader.read();
             getContentPane().removeAll();
-            //repaint();
+            setVisible(false);
+            repaint();
             //Admin is always up to date
             //admin = new Admin(jsonObject.getJSONObject("admin"));
-            ledger = new Ledger(jsonObject.getJSONObject("ledger"));
             inventory = new Inventory(jsonObject.getJSONObject("inventory"));
+            ledger = new Ledger(jsonObject.getJSONObject("ledger"));
             createMainPanel();
             //adminPanel.setLoginAccount(account);
             //cardLayout.show(mainPanel, "LoginPanel");
             add(mainPanel);
-            setPreferredSize(new Dimension(1500, 2000));
+            //setPreferredSize(new Dimension(1500, 2000));
+            menuBar = createMenuBar();
+            setJMenuBar(menuBar);
             pack();
             repaint();
             setVisible(true);
@@ -409,7 +399,6 @@ public class InventoryManagementSystemApplication extends JFrame implements Json
     //EFFECTS: set login status true and save the current state
     public void setLoginStatus(boolean value) {
         login = value;
-        save();
     }
 
     public static void main(String[] args) {
@@ -442,7 +431,7 @@ public class InventoryManagementSystemApplication extends JFrame implements Json
                 JOptionPane.showMessageDialog(this, "System saved");
                 switchToControlPanel();
             } else if (result == LoginPanel.ADMIN) {
-                //
+                switchToControlPanel();
             }
         }
     }
