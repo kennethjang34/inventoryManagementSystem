@@ -5,6 +5,7 @@ import model.Product;
 import javax.swing.table.AbstractTableModel;
 import java.util.List;
 
+//represents a table model that has products' info in its cells
 public class ProductTableModel extends AbstractTableModel {
     String[] columnNames;
     List<Product> products;

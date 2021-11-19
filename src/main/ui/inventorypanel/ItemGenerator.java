@@ -75,8 +75,8 @@ public class ItemGenerator extends JPanel implements ActionListener {
     //If error happens, display proper error messages
     @Override
     public void actionPerformed(ActionEvent e) {
-        String id = idField.getText();
-        String category = categoryField.getText();
+        String id = idField.getText().toUpperCase();
+        String category = categoryField.getText().toUpperCase();
         double listPrice;
         try {
             listPrice = Double.parseDouble(priceField.getText());

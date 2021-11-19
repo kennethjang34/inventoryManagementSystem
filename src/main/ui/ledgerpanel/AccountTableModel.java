@@ -84,6 +84,7 @@ public class AccountTableModel extends AbstractTableModel {
         }
     }
 
+    //buggy
     //EFFECTS: return a list of dates between the two dates (inclusive)
     private List<LocalDate> datesInPeriod(LocalDate periodStart, LocalDate periodEnd) {
         List<LocalDate> period = new ArrayList<>();
@@ -110,36 +111,44 @@ public class AccountTableModel extends AbstractTableModel {
         return columnNames.length;
     }
 
-    @SuppressWarnings({"checkstyle:MethodLength", "checkstyle:SuppressWarnings"})
+
+    //MODIFIES: this
+    //EFFECTS: create a new button and return it
+    public JButton createButton(LocalDate date) {
+        JButton button = new JButton();
+        button.setText("Accounts");
+        button.setActionCommand(date.toString());
+        button.addActionListener(buttonActionListener);
+        return button;
+    }
+
+
+    //EFFECTS: return the value at the specified cell
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
-        if (periodEnd != null || periodStart != null) {
-            currentPeriod = datesInPeriod(periodStart, periodEnd);
-        }
+        currentPeriod = datesInPeriod(periodStart, periodEnd);
         LocalDate date = dates.get(rowIndex);
         if (getColumnName(columnIndex).equalsIgnoreCase("BUTTON")) {
             if (buttonMap.containsKey(date)) {
                 return buttonMap.get(date);
             } else {
-                JButton button = new JButton();
-                button.setText("Accounts");
-                button.setActionCommand(date.toString());
-                button.addActionListener(buttonActionListener);
+                JButton button = createButton(date);
+                buttonMap.put(date, button);
                 return button;
             }
-        } else {
-            if (getColumnName(columnIndex).equalsIgnoreCase("Date")) {
-                return date.toString();
-            } else if (getColumnName(columnIndex).equalsIgnoreCase("IDs")) {
-                List<String> ids = ledger.getIDs(date);
-                String s = "";
-                for (String id : ids) {
-                    s += id + " ";
-                }
-                return s;
-            }
-            return null;
         }
+        String s = "";
+        if (getColumnName(columnIndex).equalsIgnoreCase("Date")) {
+            return date.toString();
+        } else if (getColumnName(columnIndex).equalsIgnoreCase("IDs")) {
+            List<String> ids = ledger.getIDs(date);
+            s = "";
+            for (String id : ids) {
+                s += id + " ";
+            }
+        }
+        return s;
+
 
     }
 }

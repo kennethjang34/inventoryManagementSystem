@@ -6,8 +6,10 @@ import ui.inventorypanel.productpanel.ProductPanel;
 
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
+import javax.swing.text.DefaultHighlighter;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -15,12 +17,12 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.List;
 
+//represents table with stocks as cells and buttons for checking locations
 public class StockButtonTable extends JTable implements ActionListener, TableCellRenderer, MouseListener {
     private Inventory inventory;
     private ProductPanel productPanel;
     private String[] columnName;
     private StockLocationButtonTable locationButtonTable;
-
 
     //represents a table that contains info about stocks at different locations
     private class StockLocationButtonTable extends JTable implements ActionListener, TableCellRenderer {
@@ -31,11 +33,11 @@ public class StockButtonTable extends JTable implements ActionListener, TableCel
                 "Location", "Quantity", "BUTTON"
         };
 
+
         //EFFECTS: create a new empty table for displaying locations of stocks
         public StockLocationButtonTable(List<QuantityTag> tags) {
             this.tags = tags;
             data = new Object[tags.size()][];
-
             for (int i = 0; i < tags.size(); i++) {
                 QuantityTag tag = tags.get(i);
                 data[i] = new Object[]{
@@ -45,6 +47,7 @@ public class StockButtonTable extends JTable implements ActionListener, TableCel
             DefaultTableModel tableModel = createLocationTableModel();
             setModel(tableModel);
             setDefaultRenderer(JButton.class, this);
+            setUpTableDesign();
             for (int i = 0; i < getRowCount(); i++) {
                 for (int j = 0; j < getColumnCount(); j++) {
                     if (getValueAt(i, j) instanceof JButton) {
@@ -55,6 +58,17 @@ public class StockButtonTable extends JTable implements ActionListener, TableCel
             }
             id = tags.get(0).getId();
             addMouseListener(StockButtonTable.this);
+        }
+
+        //MODIFIES: this
+        //EFFECTS: set up the basic design and layout for this
+        private void setUpTableDesign() {
+            alignCellsCenter(this);
+            alignHeaderCenter(this);
+            getTableHeader().setBackground(Color.BLACK);
+            getTableHeader().setForeground(Color.WHITE);
+            setGridColor(Color.BLACK);
+            setShowGrid(true);
         }
 
         //EFFECTS: return tags
@@ -93,7 +107,16 @@ public class StockButtonTable extends JTable implements ActionListener, TableCel
                 button.setActionCommand(location);
                 return button;
             } else if (value instanceof String || value instanceof Double || value instanceof Integer) {
-                return this;
+                JLabel label = new JLabel(String.valueOf(value));
+                DefaultTableCellRenderer renderer = (DefaultTableCellRenderer) getDefaultRenderer(String.class);
+                Component component = renderer.getTableCellRendererComponent(table, value,
+                        isSelected, hasFocus, row, column);
+                component.setForeground(Color.WHITE);
+                return component;
+//                if (component instanceof JTextField) {
+//                    JTextField textField = (JTextField)component;
+//                    textField.setFont(new Font("arial", ))
+//                }
             }
             return null;
         }
@@ -134,10 +157,13 @@ public class StockButtonTable extends JTable implements ActionListener, TableCel
         }
         columnName[columnName.length - 1] = "BUTTON";
         setModel(new StockButtonTableModel(inventory, this));
-
-
-        assert getModel().getValueAt(1, 8) instanceof JButton
-                : getModel().getValueAt(1, 8).getClass().toString();
+        setUpTableDesign();
+//        alignCellsCenter(this);
+//        alignHeaderCenter(this);
+//        getTableHeader().setBackground(Color.LIGHT_GRAY);
+        //getTableHeader().setForeground(Color.WHITE);
+//        setGridColor(Color.BLACK);
+//        setShowGrid(true);
         setDefaultRenderer(JButton.class, this);
         //setDefaultRenderer(String.class, this);
         setRowSelectionAllowed(true);
@@ -205,6 +231,8 @@ public class StockButtonTable extends JTable implements ActionListener, TableCel
         }
     }
 
+
+    //toBeDetermined
     @Override
     public void mousePressed(MouseEvent e) {
 
@@ -235,8 +263,10 @@ public class StockButtonTable extends JTable implements ActionListener, TableCel
         locationViewDialog.setLayout(new FlowLayout());
         List<QuantityTag> tags = inventory.getQuantitiesAtLocations(id);
         locationButtonTable = new StockLocationButtonTable(tags);
-        locationViewDialog.add(locationButtonTable);
-        locationViewDialog.setSize(500, 600);
+        JScrollPane scrollPane = new JScrollPane(locationButtonTable);
+        locationViewDialog.add(scrollPane);
+//        locationViewDialog.setSize(500, 600);
+        locationViewDialog.pack();
         locationViewDialog.setVisible(true);
     }
 
@@ -244,7 +274,6 @@ public class StockButtonTable extends JTable implements ActionListener, TableCel
     //EFFECTS: change the current category of the model of this
     public void setCategory(String category) {
         ((StockButtonTableModel)getModel()).setCategory(category);
-
     }
 
     //MODIFIES: this
@@ -253,5 +282,31 @@ public class StockButtonTable extends JTable implements ActionListener, TableCel
         ((StockButtonTableModel)getModel()).setItem(id);
     }
 
+    //MODIFIES: this
+    //EFFECTS: align the table cells at the center
+    public static void alignCellsCenter(JTable table) {
+        DefaultTableCellRenderer renderer = (DefaultTableCellRenderer) table.getDefaultRenderer(String.class);
+        renderer.setHorizontalAlignment(SwingConstants.CENTER);
+
+    }
+
+    //MODIFIES: this
+    //EFFECTS: align the table header at the center
+    public static void alignHeaderCenter(JTable table) {
+        DefaultTableCellRenderer renderer = (DefaultTableCellRenderer) table.getTableHeader().getDefaultRenderer();
+        renderer.setHorizontalAlignment(SwingConstants.CENTER);
+
+    }
+
+    //MODIFIES: this
+    //EFFECTS: set up the basic design/layout of this
+    private void setUpTableDesign() {
+        alignCellsCenter(this);
+        alignHeaderCenter(this);
+        getTableHeader().setBackground(Color.BLACK);
+        getTableHeader().setForeground(Color.WHITE);
+        setGridColor(Color.BLACK);
+        setShowGrid(true);
+    }
 
 }

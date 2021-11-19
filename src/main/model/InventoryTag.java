@@ -41,6 +41,8 @@ public class InventoryTag {
         this.dateGenerated = dateGenerated;
     }
 
+    //EFFECTS: create a list of inventory tags that contains information about
+    //What kinds of products have been removed from where based on the list of products removed
     public static List<InventoryTag> createTagsForRemoved(List<Product> products) {
         List<InventoryTag> tags = new ArrayList<>();
         Map<String, List<Product>> productLists = createIdMap(products);
@@ -61,6 +63,7 @@ public class InventoryTag {
         return tags;
     }
 
+    //EFFECTS: calculate and return the average price of the list of products
     private static double calculateAveragePrice(List<Product> products) {
         double sum = 0;
         for (Product product: products) {
@@ -69,6 +72,7 @@ public class InventoryTag {
         return sum / products.size();
     }
 
+    //EFFECTS: calculate and return the average cost of the list of products
     private static double calculateAverageCost(List<Product> products) {
         double sum = 0;
         for (Product product: products) {
@@ -77,6 +81,8 @@ public class InventoryTag {
         return sum / products.size();
     }
 
+    //EFFECTS: create and return a map that have strings indicating locations as keys and list of products
+    //as values that were located at the location
     private static Map<String, List<Product>> createLocationMap(List<Product> products) {
         Map<String, List<Product>> locationMap = new HashMap<>();
         for (Product product: products) {
@@ -93,6 +99,8 @@ public class InventoryTag {
         return locationMap;
     }
 
+    //EFFECTS: create and return a map that have strings indicating IDs of products as keys and list of products
+    //as values that belong to that ID
     private static Map<String, List<Product>> createIdMap(List<Product> products) {
         Map<String, List<Product>> productLists = new HashMap<>();
         for (Product product: products) {
@@ -108,6 +116,7 @@ public class InventoryTag {
         return productLists;
     }
 
+
     //EFFECTS: return the date generated
     public LocalDate getDateGenerated() {
         return dateGenerated;
@@ -116,7 +125,8 @@ public class InventoryTag {
     //MODIFIES: this
     //EFFECTS: change the unit price of this product
 
-
+    //MODIFIES: this
+    //EFFECTS: set the unit price of this
     public void setUnitPrice(double unitPrice) {
         if (unitPrice < 0) {
             throw new IllegalArgumentException("Unit price cannot be negative");
@@ -163,29 +173,4 @@ public class InventoryTag {
         quantity = qty;
     }
 
-
-//    //EFFECTS: return true if the given object is equal to this
-//    @Override
-//    public boolean equals(Object o) {
-//        if (!(o instanceof InventoryTag)) {
-//            return false;
-//        }
-//        InventoryTag tag = (InventoryTag)o;
-//        if (tag.getId().equalsIgnoreCase(id) && tag.getLocation().equalsIgnoreCase(location)
-//                 && tag.getUnitCost() == unitCost) {
-//            if (bestBeforeDate == null && tag.getBestBeforeDate() == null) {
-//                return true;
-//            } else if (bestBeforeDate != null && tag.getBestBeforeDate() != null) {
-//                return bestBeforeDate.equals(tag.getBestBeforeDate());
-//            }
-//            return false;
-//        }
-//        return false;
-//    }
-//
-//    //EFFECTS: return the hashcode of this
-//    @Override
-//    public int hashCode() {
-//        return id.hashCode();
-//    }
 }

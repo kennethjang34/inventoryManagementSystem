@@ -1,12 +1,9 @@
 package ui.ledgerpanel;
 
-import javafx.scene.control.TableCell;
 import model.Ledger;
-import model.QuantityTag;
-import ui.inventorypanel.stockpanel.StockButtonTable;
+
 
 import javax.swing.*;
-import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellRenderer;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -50,6 +47,7 @@ public class AccountTable extends JTable implements TableCellRenderer, MouseList
     }
 
 
+    //toBeDetermined
     @Override
     public void mousePressed(MouseEvent e) {
 

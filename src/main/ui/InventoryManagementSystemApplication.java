@@ -299,6 +299,25 @@ public class InventoryManagementSystemApplication extends JFrame implements Json
         }
     }
 
+
+    //MODIFIES: this
+    //EFFECTS: turn into the empty program after log-out
+    public void openNewFile() {
+
+        getContentPane().removeAll();
+        setVisible(false);
+        repaint();
+        inventory = new Inventory();
+        ledger = new Ledger();
+        createMainPanel();
+        add(mainPanel);
+        menuBar = createMenuBar();
+        setJMenuBar(menuBar);
+        pack();
+        repaint();
+        setVisible(true);
+    }
+
     //MODIFIES: this
     //EFFECTS: creates a new menu bar that has 'load', 'save' menus
     private JMenuBar createMenuBar() {
@@ -348,8 +367,7 @@ public class InventoryManagementSystemApplication extends JFrame implements Json
                 load();
             }
         } else if (command.equals("LogOut")) {
-            login = false;
-            adminPanel.setLoginAccount(null);
+            setLoginStatus(false);
         }
     }
 
@@ -397,6 +415,12 @@ public class InventoryManagementSystemApplication extends JFrame implements Json
     //MODIFIES: this
     //EFFECTS: set login status true and save the current state
     public void setLoginStatus(boolean value) {
+        if (login == true && value == false) {
+            adminPanel.setLoginAccount(null);
+            login = false;
+            openNewFile();
+            return;
+        }
         login = value;
     }
 

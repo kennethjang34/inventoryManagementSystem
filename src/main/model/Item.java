@@ -42,6 +42,7 @@ public class Item implements  TableEntryConvertible, JsonConvertible {
     }
 
     //REQUIRES: json must be in a valid JSONObject format containing all necessary info for item class
+    //EFFECTS: create a new item based on the given json data
     public Item(JSONObject json) {
         count = json.getInt("count");
         id = json.getString("id");
@@ -68,19 +69,6 @@ public class Item implements  TableEntryConvertible, JsonConvertible {
         }
     }
 
-//    //REQUIRES:ID, name must be composed of digits or English letters
-//    //EFFECTS: create a new item containing as many products as specified
-//    public Item(String id, String name, String category, double listPrice,
-//                String description, String note, List<Inventory> tags) {
-//        this.id = id;
-//        this.name = name;
-//        this.category = category;
-//        this.listPrice = listPrice;
-//        this.description = description;
-//        this.note = note;
-//        quantity = qty;
-//        averageCost = cost / qty;
-//    }
 
     //EFFECTS: return the id
     public String getId() {

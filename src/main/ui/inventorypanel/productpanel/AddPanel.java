@@ -50,18 +50,21 @@ public class AddPanel extends JPanel implements ActionListener {
     //MODIFIES: this
     //EFFECTS: add a new Inventory tag and add it to the list to add
     public void actionPerformed(ActionEvent e) {
-        String id = idField.getText();
-        double cost = Double.parseDouble(costField.getText());
+        String id = idField.getText().toUpperCase();
+        double cost = costField.getText().length() == 0 ? 0 : Double.parseDouble(costField.getText());
+        double price = priceField.getText().length() == 0 ? 0 : Double.parseDouble(priceField.getText());
         LocalDate bestBeforeDate;
-        double price = Double.parseDouble(priceField.getText());
         String stringBBD = bbdField.getText();
         if (stringBBD.isEmpty()) {
             bestBeforeDate = null;
         } else {
             bestBeforeDate = InventoryManagementSystemApplication.convertToLocalDate(stringBBD);
         }
-        String location = locationField.getText();
-        int qty = Integer.parseInt(quantityField.getText());
+        String location = locationField.getText().toUpperCase();
+        if (location.isEmpty()) {
+            location = "NOT SPECIFIED";
+        }
+        int qty = quantityField.getText().isEmpty() ? 0 : Integer.parseInt(quantityField.getText());
         if (qty > 0) {
             InventoryTag tag = new InventoryTag(id, cost, price, LocalDate.now(), bestBeforeDate, location, qty);
             if (inventory.addProducts(tag)) {
@@ -69,4 +72,5 @@ public class AddPanel extends JPanel implements ActionListener {
             }
         }
     }
+
 }

@@ -1,6 +1,7 @@
 package ui.inventorypanel.stockpanel;
 
 import model.Inventory;
+import org.omg.CORBA.NO_IMPLEMENT;
 
 import javax.swing.*;
 import java.awt.*;
@@ -73,26 +74,36 @@ public class StockSearchPanel extends JPanel implements ActionListener {
             for (String name: inventory.getCategoryNames()) {
                 categoryModel.addElement(name);
             }
+            selectedCategory = ALL;
         }
         categoryBox.setModel(categoryModel);
     }
 
+    //Will be deprecated
     //MODIFIES: this
     //EFFECTS: initialize item combo box with all categories inside the inventory.
     //If there is no category at all, display "No category"
     public void initializeItemBox() {
-        DefaultComboBoxModel itemModel;
-        if (inventory.getItemList().size() == 0 || selectedCategory == null
-                || inventory.getItemList(selectedCategory).size() == 0) {
-            itemModel = new DefaultComboBoxModel<>();
-            itemModel.addElement(NO_ITEM);
-        } else {
-            itemModel = new DefaultComboBoxModel();
-            itemModel.addElement(ALL);
-            itemModel.addElement(TYPE);
-            for (String name: inventory.getIDs()) {
-                itemModel.addElement(name);
+        DefaultComboBoxModel itemModel = new DefaultComboBoxModel<>();
+        if (selectedCategory != null) {
+            if (inventory.getItemList().size() != 0) {
+                if (selectedCategory.equals(ALL)) {
+                    itemModel.addElement(ALL);
+                    itemModel.addElement(TYPE);
+                    for (String name: inventory.getIDs()) {
+                        itemModel.addElement(name);
+                    }
+                } else if (inventory.getIDs(selectedCategory).size() != 0) {
+                    itemModel.addElement(ALL);
+                    itemModel.addElement(TYPE);
+                    for (String name: inventory.getIDs(selectedCategory)) {
+                        itemModel.addElement(name);
+                    }
+                }
             }
+        }
+        if (itemModel.getSize() == 0) {
+            itemModel.addElement(NO_ITEM);
         }
         itemBox.setModel(itemModel);
     }

@@ -23,6 +23,7 @@ public class Category implements JsonConvertible {
     }
 
     //REQUIRES: the data must be in valid JSONObject form
+    //EFFECTS: create a new categoryt form this json data
     public Category(JSONObject json) {
         name = json.getString("name");
         quantity = json.getInt("quantity");

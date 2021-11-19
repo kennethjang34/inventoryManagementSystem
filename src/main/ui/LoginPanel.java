@@ -85,6 +85,8 @@ public class LoginPanel extends JPanel implements ActionListener {
             }
         }
 
+        //MODIFIES: this
+        //EFFECTS: set the window containing this to the given one
         public void setWindow(Window window) {
             this.window = window;
         }

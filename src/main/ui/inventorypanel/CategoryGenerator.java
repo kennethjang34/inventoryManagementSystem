@@ -29,6 +29,7 @@ public class CategoryGenerator extends JPanel {
         add(button);
         button.addActionListener(e -> {
             String name = categoryField.getText();
+            name = name.toUpperCase();
             if (name.equals("")) {
                 JOptionPane.showMessageDialog(null, "Category name cannot be empty");
                 return;

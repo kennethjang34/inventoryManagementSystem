@@ -7,9 +7,8 @@ import ui.InventoryManagementSystemApplication;
 import ui.inventorypanel.stockpanel.StockButtonTable;
 
 import javax.swing.*;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.DefaultTableCellRenderer;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -23,13 +22,6 @@ import java.util.List;
 
 //A panel that displays a list of individual products with buttons that can be used to add/remove products
 public class ProductPanel extends JPanel implements ActionListener {
-    private List<Product> products;
-    private Inventory inventory;
-    private ProductTable table;
-    StockButtonTable stockTable;
-    InventoryManagementSystemApplication application;
-    private static String add = "ADD";
-    private static String remove = "remove";
     //Order: based on best-before date from nearest to farthest
     private static final int BEST_BEFORE_DATE_NF = 0;
     //Order: based on best-before date from farthest to nearest
@@ -38,13 +30,23 @@ public class ProductPanel extends JPanel implements ActionListener {
     private static final int ALPHABETICAL_AZ = 2;
     //Order: alphabetical order, from Z to A
     private static final int ALPHABETICAL_ZA = 3;
+    private static String add = "ADD";
+    private static String remove = "remove";
+
+    private List<Product> products;
+    private Inventory inventory;
+    private ProductTable table;
+    private StockButtonTable stockTable;
+    private InventoryManagementSystemApplication application;
+    private int order = BEST_BEFORE_DATE_NF;
 
     //represents a table where each entry contains information of each product
     private class ProductTable extends JTable implements MouseListener {
-
         String[] columnNames;
         AbstractTableModel tableModel;
         List<Product> products;
+
+
 
 
         //EFFECTS: create a new empty table
@@ -55,43 +57,75 @@ public class ProductPanel extends JPanel implements ActionListener {
             };
             tableModel = new ProductTableModel(products, columnNames);
             setModel(tableModel);
+            setUpTableDesign();
         }
 
         //MODIFIES: this
-        //EFFECTS: sort the table based on the best before date (closest to best before date to farthest)
-        public void sortByBestBeforeDateInOrder() {
-            Collections.sort(products, new Comparator<Product>() {
-                @Override
-                public int compare(Product o1, Product o2) {
-                    if (o1.getBestBeforeDate() == null) {
-                        return 1;
-                    } else if (o2.getBestBeforeDate() == null) {
-                        return -1;
-                    }
-                    return (o1.getBestBeforeDate().isBefore(o2.getBestBeforeDate()) ? -1 : 1);
-                }
-            });
-            tableModel.fireTableDataChanged();
+        //EFFECTS: set up the basic design and layout of this
+        private void setUpTableDesign() {
+            alignCellsCenter();
+            alignHeaderCenter();
+            getTableHeader().setBackground(Color.LIGHT_GRAY);
+            //getTableHeader().setForeground(Color.WHITE);
+            setGridColor(Color.BLACK);
+            setShowGrid(true);
         }
+
+        //MODIFIES: this
+        //EFFECTS: align cells of this to the center
+        private void alignCellsCenter() {
+            DefaultTableCellRenderer renderer = (DefaultTableCellRenderer)getDefaultRenderer(String.class);
+            renderer.setHorizontalAlignment(SwingConstants.CENTER);
+        }
+
+        //MODIFIES: this
+        //EFFECTS: align the this header at the center
+        private void alignHeaderCenter() {
+            DefaultTableCellRenderer renderer = (DefaultTableCellRenderer) getTableHeader().getDefaultRenderer();
+            renderer.setHorizontalAlignment(SwingConstants.CENTER);
+        }
+
+
+
+//        //MODIFIES: this
+//        //EFFECTS: sort the table based on the best before date (closest to best before date to farthest)
+//        public void sortByBestBeforeDateInOrder() {
+//            Collections.sort(products, new Comparator<Product>() {
+//                @Override
+//                public int compare(Product o1, Product o2) {
+//                    if (o1.getBestBeforeDate() == null) {
+//                        return 1;
+//                    } else if (o2.getBestBeforeDate() == null) {
+//                        return -1;
+//                    }
+//                    return (o1.getBestBeforeDate().isBefore(o2.getBestBeforeDate()) ? -1 : 1);
+//                }
+//            });
+//            tableModel.fireTableDataChanged();
+//        }
 
         //REQUIRES: Order must be one of those defined in the interface provided by this
         //MODIFIES: this
         //EFFECTS: sort the table based on the specified order
-        public void sortProducts(int order) {
+        public void sortProducts() {
             switch (order) {
-                case 0:
-                    Collections.sort(products, (o1, o2) ->
-                            (o1.getBestBeforeDate().isBefore(o2.getBestBeforeDate()) ? -1 : 1));
+                case BEST_BEFORE_DATE_NF:
+                    Collections.sort(products, ((o1, o2) -> {
+                        if (o1 == null) {
+                            return 1;
+                        }
+                        return (o1.getBestBeforeDate().isBefore(o2.getBestBeforeDate()) ? -1 : 1);
+                    }));
                     break;
-                case 1:
+                case BEST_BEFORE_DATE_FN:
                     Collections.sort(products, (o1, o2) ->
                             (o1.getBestBeforeDate().isBefore(o2.getBestBeforeDate()) ? 1 : -1));
                     break;
-                case 2:
+                case ALPHABETICAL_AZ:
                     Collections.sort(products, (o1, o2) ->
                             (o1.getId().compareToIgnoreCase(o2.getId()) < 0 ? -1 : 1));
                     break;
-                case 3:
+                case ALPHABETICAL_ZA:
                     Collections.sort(products, (o1, o2) ->
                             (o1.getId().compareToIgnoreCase(o2.getId()) < 0 ? 1 : -1));
                     break;
@@ -100,8 +134,15 @@ public class ProductPanel extends JPanel implements ActionListener {
         }
 
 
-
-
+        //MODIFIES: this
+        //EFFECTS: set the order to match the given option
+        //if the given option doesn't exist, throw Illegal argume t exception
+        public void setOrder(int option) {
+            if (option > ALPHABETICAL_ZA || option < BEST_BEFORE_DATE_NF) {
+                throw new IllegalArgumentException("No order option matches the given input");
+            }
+            order = option;
+        }
 
         //EFFECTS: return column names
         public String[] getColumnNames() {
@@ -109,6 +150,7 @@ public class ProductPanel extends JPanel implements ActionListener {
         }
 
 
+        //ToBeDetermined
         @Override
         public void mouseClicked(MouseEvent e) {
             if (e.getClickCount() == 2 && getSelectedRow() != -1) {
@@ -178,7 +220,7 @@ public class ProductPanel extends JPanel implements ActionListener {
         add(buttonPanel, BorderLayout.SOUTH);
     }
 
-
+    //EFFECTS: create a new panel that contains functional buttons: add, remove, sort
     public JPanel createButtonPanel() {
         JButton addButton = new JButton(add);
         addButton.setActionCommand(add);
@@ -189,16 +231,32 @@ public class ProductPanel extends JPanel implements ActionListener {
         removeButton.setActionCommand(remove);
         removeButton.addActionListener(this);
         buttonPanel.add(removeButton);
-        JButton sortButton = new JButton("sortByBestBeforeDate");
-        sortButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                table.sortByBestBeforeDateInOrder();
-            }
-        });
+        JComboBox sortingOptionBox = createSortingOrderComboBox();
+        buttonPanel.add(sortingOptionBox);
+        JButton sortButton = new JButton("SORT");
+        sortButton.addActionListener(e -> table.sortProducts());
         buttonPanel.add(sortButton);
         return buttonPanel;
     }
+
+
+    //EFFECTS: create a new combo box so the user can specify the order basis
+    public JComboBox createSortingOrderComboBox() {
+        JComboBox comboBox = new JComboBox();
+        //each option's index corresponds to their integer values defined in this
+        comboBox.addItem("Best-before date from nearest");
+        comboBox.addItem("Best-before date from farthest");
+        comboBox.addItem("Alphabetical from A");
+        comboBox.addItem("Alphabetical from Z");
+        comboBox.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                order = comboBox.getSelectedIndex();
+            }
+        });
+        return comboBox;
+    }
+
 
 
     //MODIFIES: this

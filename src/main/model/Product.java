@@ -113,19 +113,6 @@ public class Product implements JsonConvertible {
     }
 
 
-//
-//    //EFFECTS: return an array of column names for table entry
-//    @Override
-//    public Object[] getColumnNames() {
-//        return new Object[0];
-//    }
-//
-//    //EFFECTS: return an array of info segments for table entry
-//    @Override
-//    public Object[] convertToTableEntry() {
-//        return new Object[0];
-//    }
-
 
     //EFFECTS: convert this to JSONObject and return it.
     @Override
