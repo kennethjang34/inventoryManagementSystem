@@ -139,7 +139,8 @@ public class StockButtonTable extends JTable implements ActionListener, TableCel
         assert getModel().getValueAt(1, 8) instanceof JButton
                 : getModel().getValueAt(1, 8).getClass().toString();
         setDefaultRenderer(JButton.class, this);
-        setDefaultRenderer(String.class, this);
+        //setDefaultRenderer(String.class, this);
+        setRowSelectionAllowed(true);
 //        setDefaultRenderer(String.class, this);
         addMouseListener(this);
         setVisible(true);

@@ -28,6 +28,8 @@ public class StockSearchPanel extends JPanel implements ActionListener {
     private static final String TYPE = "TYPE ID";
     private static final String categoryCommand = "CATEGORY";
     private static final String itemCommand = "ITEM";
+    private static final String NO_ITEM = "No Item";
+    private static final String NO_CATEGORY = "No Category";
 
     //EFFECTS: create a new stock search panel that can modify the given stock panel based on filters chosen by the user
     public StockSearchPanel(Inventory inventory, StockPanel stockPanel) {
@@ -64,7 +66,7 @@ public class StockSearchPanel extends JPanel implements ActionListener {
         DefaultComboBoxModel categoryModel = new DefaultComboBoxModel();
         if (inventory.getCategoryNames().length == 0) {
             categoryModel = new DefaultComboBoxModel<>();
-            categoryModel.addElement("No category");
+            categoryModel.addElement(NO_CATEGORY);
         } else {
             categoryModel.addElement(ALL);
             categoryModel.addElement(TYPE);
@@ -83,7 +85,7 @@ public class StockSearchPanel extends JPanel implements ActionListener {
         if (inventory.getItemList().size() == 0 || selectedCategory == null
                 || inventory.getItemList(selectedCategory).size() == 0) {
             itemModel = new DefaultComboBoxModel<>();
-            itemModel.addElement("No item");
+            itemModel.addElement(NO_ITEM);
         } else {
             itemModel = new DefaultComboBoxModel();
             itemModel.addElement(ALL);
@@ -217,12 +219,12 @@ public class StockSearchPanel extends JPanel implements ActionListener {
     //EFFECTS: add a new category to the category combo box
     public void addCategory(String name) {
         DefaultComboBoxModel boxModel = (DefaultComboBoxModel)categoryBox.getModel();
-        //When box model size is 1, it implies the only content is "No category"
-        if (boxModel.getSize() == 1) {
+        if (boxModel.getIndexOf(NO_CATEGORY) != -1) {
             categoryBox.setModel(new DefaultComboBoxModel());
             categoryBox.addItem(ALL);
             categoryBox.addItem(TYPE);
             categoryBox.addItem(name);
+            handleCategorySelectedEvent();
             stockPanel.displayAllItems();
             return;
         } else if (boxModel.getIndexOf(name) == -1) {
@@ -237,6 +239,9 @@ public class StockSearchPanel extends JPanel implements ActionListener {
     public void addItem(String id) {
         if (inventory.getCategoryOf(id).equals(selectedCategory)
                 || selectedCategory.equals(ALL)) {
+            if (itemBox.getItemAt(0).equals(NO_ITEM)) {
+                updateItemComboBox(selectedCategory);
+            }
             DefaultComboBoxModel boxModel = (DefaultComboBoxModel)itemBox.getModel();
             if (boxModel.getIndexOf(id) == -1) {
                 itemBox.addItem(id);

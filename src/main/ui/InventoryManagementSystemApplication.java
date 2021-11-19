@@ -293,7 +293,6 @@ public class InventoryManagementSystemApplication extends JFrame implements Json
         } catch (IOException e) {
             JOptionPane.showMessageDialog(null,
                     "No existing data can be found. please create a new inventory manager");
-            System.out.println("Please create a login account first");
         } catch (IllegalArgumentException e) {
             JOptionPane.showMessageDialog(null,
                     "Data for manager is in wrong format. please create a new inventory manager");
@@ -350,7 +349,7 @@ public class InventoryManagementSystemApplication extends JFrame implements Json
             }
         } else if (command.equals("LogOut")) {
             login = false;
-            adminPanel.setLoginAccount((String) null);
+            adminPanel.setLoginAccount(null);
         }
     }
 

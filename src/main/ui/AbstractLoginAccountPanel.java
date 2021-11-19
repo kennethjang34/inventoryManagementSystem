@@ -29,6 +29,8 @@ public abstract class AbstractLoginAccountPanel extends JPanel {
         codeLabel = new JLabel("Personal Code: ");
     }
 
+
+
 //    @Override
 //    public abstract void actionPerformed(ActionEvent e);
 }

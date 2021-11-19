@@ -39,7 +39,7 @@ public class LoginPanel extends JPanel implements ActionListener {
     private class RegisterPanel extends AbstractLoginAccountPanel implements ActionListener {
         private JButton registerButton;
         private JPasswordField pwField = new JPasswordField(10);
-
+        private Window window;
 
         //EFFECTS: create a new register panel with empty text fields.
         private RegisterPanel() {
@@ -70,13 +70,23 @@ public class LoginPanel extends JPanel implements ActionListener {
                 boolean successful = admin.createLoginAccount(idField.getText(),
                         String.valueOf(pwField.getPassword()),
                         nameField.getText(), birthDay, personalCode, !isAdmin);
+                if (!successful) {
+                    JOptionPane.showMessageDialog(null, "you are not allowed to create "
+                            + "a new login account in this system");
+                }
                 isAdmin = true;
                 JOptionPane.showMessageDialog(null, "a new account is successfully created");
-                this.setVisible(false);
+                window.setVisible(false);
+                application.dataChangeHandler(purpose);
+                application.setLoginStatus(true);
             } else {
                 JOptionPane.showMessageDialog(null, "you are not allowed to create "
                         + "a new login account in this system");
             }
+        }
+
+        public void setWindow(Window window) {
+            this.window = window;
         }
     }
 
@@ -94,6 +104,7 @@ public class LoginPanel extends JPanel implements ActionListener {
     //A small panel that will be displayed if the user presses retrieve button
     private class RetrievePanel extends AbstractLoginAccountPanel implements ActionListener {
         private JButton retrieveButton;
+        private Window window;
 
         //EFFECTS: create a new retrieve panel with empty text fields.
         private RetrievePanel() {
@@ -122,6 +133,12 @@ public class LoginPanel extends JPanel implements ActionListener {
                 JOptionPane.showMessageDialog(null, "Given info is not correct");
             }
             setVisible(false);
+        }
+
+        //MODIFIES: this
+        //EFFECTS: set the parent window
+        public void setWindow(Window window) {
+            this.window = window;
         }
     }
 
@@ -239,7 +256,8 @@ public class LoginPanel extends JPanel implements ActionListener {
     //EFFECTS: display the retrieve panel of this
     private void displayRetrievePanel() {
         retrievePanel.setSize(600, 400);
-        JDialog dialog = new JDialog();
+        JDialog dialog = new JDialog(application, true);
+        retrievePanel.setWindow(dialog);
         dialog.setLayout(new FlowLayout());
         dialog.setSize(600, 400);
         dialog.add(retrievePanel);
@@ -250,10 +268,11 @@ public class LoginPanel extends JPanel implements ActionListener {
     //EFFECTS: display the register panel of this
     private void displayRegisterPanel() {
         registerPanel.setSize(600, 400);
-        JDialog dialog = new JDialog();
+        JDialog dialog = new JDialog(application, true);
         dialog.setLayout(new FlowLayout());
         dialog.setSize(600, 400);
         dialog.add(registerPanel);
+        registerPanel.setWindow(dialog);
         dialog.setVisible(true);
     }
 
@@ -267,7 +286,7 @@ public class LoginPanel extends JPanel implements ActionListener {
     //MODIFIES: this
     //EFFECTS: display a message that the current login attempt is not successful.
     private void displayLoginFail() {
-        JOptionPane.showMessageDialog(null, "Login failed");
+        JOptionPane.showMessageDialog(this, "Login failed");
     }
 
 //    public static void main(String[] args) {

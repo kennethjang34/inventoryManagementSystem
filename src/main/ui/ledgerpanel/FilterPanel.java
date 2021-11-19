@@ -41,7 +41,7 @@ public class FilterPanel extends JPanel implements ActionListener {
         codeBox.setVisible(false);
         add(dateBox);
         add(dateField);
-        add(new JLabel("Code"));
+        //add(new JLabel("Code"));
         add(codeBox);
         add(codeField);
     }
