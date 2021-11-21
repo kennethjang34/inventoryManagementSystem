@@ -20,7 +20,7 @@ public class AddPanel extends JPanel implements ActionListener {
     JTextField idField = new JTextField(10);
     JTextField locationField = new JTextField(10);
     JTextField quantityField = new JTextField(10);
-
+    JTextField description = new JTextField(10);
 
 
     //EFFECTS: create a new panel that will pop up if the user attempts to add new stocks
@@ -41,6 +41,8 @@ public class AddPanel extends JPanel implements ActionListener {
         add(locationField);
         add(new JLabel("Quantity: "));
         add(quantityField);
+        add(new JLabel("Description: "));
+        add(description);
         button.setText("Register");
         button.addActionListener(this);
         add(button);
@@ -68,7 +70,7 @@ public class AddPanel extends JPanel implements ActionListener {
         if (qty > 0) {
             InventoryTag tag = new InventoryTag(id, cost, price, LocalDate.now(), bestBeforeDate, location, qty);
             if (inventory.addProducts(tag)) {
-                application.addAccount(tag, id, LocalDate.now());
+                application.addAccount(tag, description.getText(), LocalDate.now());
             }
         }
     }

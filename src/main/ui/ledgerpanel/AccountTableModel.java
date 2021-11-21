@@ -2,6 +2,7 @@ package ui.ledgerpanel;
 
 import model.Account;
 import model.Ledger;
+import model.Observer;
 
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
@@ -10,7 +11,7 @@ import java.time.LocalDate;
 import java.util.*;
 
 //represents a table model that displays accounts that occur on different dates
-public class AccountTableModel extends AbstractTableModel {
+public class AccountTableModel extends AbstractTableModel implements Observer {
     Ledger ledger;
     List<LocalDate> dates;
     LocalDate periodStart;
@@ -27,19 +28,21 @@ public class AccountTableModel extends AbstractTableModel {
     public AccountTableModel(Ledger ledger, ActionListener buttonActionListener) {
         this.buttonActionListener = buttonActionListener;
         this.ledger = ledger;
+        ledger.registerObserver(this);
         buttonMap = new HashMap<>();
         dates = new ArrayList<>();
         List<String> dateInfo = Arrays.asList(ledger.getDates());
         for (String s: dateInfo) {
             dates.add(LocalDate.parse(s));
         }
-
     }
 
     //REQUIRES: the period start date must be before or the same as end date
     public void setPeriod(LocalDate start, LocalDate end) {
-        if (end.isBefore(start)) {
-            throw new RuntimeException("Period start date must be after or the same as end date");
+        if (start != null && end != null) {
+            if (end.isBefore(start)) {
+                throw new RuntimeException("Period start date must be after or the same as end date");
+            }
         }
         periodStart = start;
         periodEnd = end;
@@ -48,10 +51,16 @@ public class AccountTableModel extends AbstractTableModel {
 
 
 
-
+    @Override
+    //MODIFIES: this
     //EFFECTS: update this table model up to date when a new date is added
     public void update() {
         List<String> datesInfo = Arrays.asList(ledger.getDates());
+        //Update only when dates have been added/removed
+        //this table model doesn't store values belonging to the dates
+        if (datesInfo.size() == dates.size()) {
+            return;
+        }
         dates = new ArrayList<>();
         for (String dateInfo: datesInfo) {
             dates.add(LocalDate.parse(dateInfo));
@@ -78,7 +87,7 @@ public class AccountTableModel extends AbstractTableModel {
     @Override
     public int getRowCount() {
         if (periodStart == null && periodEnd == null) {
-            return dates.size();
+            return ledger.getDates().length;
         } else {
             return datesInPeriod(periodStart, periodEnd).size();
         }

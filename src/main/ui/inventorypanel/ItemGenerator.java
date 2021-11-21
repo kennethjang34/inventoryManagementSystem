@@ -89,13 +89,11 @@ public class ItemGenerator extends JPanel implements ActionListener {
         } else if (!inventory.containsCategory(category)) {
             JOptionPane.showMessageDialog(null,
                     "The given category: " + category + " is invalid");
-            //categoryField.removeAll();
         } else {
             inventory.createItem(id, nameField.getText(), category,
                     listPrice, description.getText(), note.getText()
             );
-            //searchPanel.addItem(id);
-            stockPanel.itemAddedUpdate(id);
+//            stockPanel.itemAddedUpdate(id);
             JOptionPane.showMessageDialog(null,
                     "Item: " + id + " has been successfully created");
         }

@@ -9,7 +9,7 @@ import java.time.LocalDate;
 import java.util.*;
 
 //represents an inventory containing information of stocks of different items
-public class Inventory implements JsonConvertible {
+public class Inventory extends Subject implements JsonConvertible {
 
     //hashmap with key and value being id of the item and item object respectively
     private final Map<String, Item> items;
@@ -30,6 +30,14 @@ public class Inventory implements JsonConvertible {
         categories = new HashMap<>();
         quantity = 0;
         currentDate = LocalDate.now();
+    }
+
+
+    @Override
+    public void notifyObservers() {
+        for (Observer observer: observers) {
+            observer.update();
+        }
     }
 
 
@@ -82,6 +90,7 @@ public class Inventory implements JsonConvertible {
     //EFFECTS: set the current Date
     public void setCurrentDate(LocalDate currentDate) {
         this.currentDate = currentDate;
+        notifyObservers();
     }
 
 
@@ -92,6 +101,7 @@ public class Inventory implements JsonConvertible {
             return false;
         }
         categories.put(name, new Category(name));
+        notifyObservers();
         return true;
     }
 
@@ -121,6 +131,7 @@ public class Inventory implements JsonConvertible {
         Item item = new Item(id, name, category, listPrice, description, note);
         items.put(id, item);
         categories.get(category).addItem(item);
+        notifyObservers();
         return true;
     }
 
@@ -140,6 +151,9 @@ public class Inventory implements JsonConvertible {
                 item.addProducts(tag);
             }
         }
+        if (failed.size() != tags.size()) {
+            notifyObservers();
+        }
         return failed;
     }
 
@@ -155,6 +169,7 @@ public class Inventory implements JsonConvertible {
             return false;
         } else {
             item.addProducts(tag);
+            notifyObservers();
             return true;
         }
     }
@@ -168,6 +183,7 @@ public class Inventory implements JsonConvertible {
         for (Item item: getItemList()) {
             if (item.contains(sku)) {
                 item.removeProduct(sku);
+                notifyObservers();
                 return true;
             }
         }
@@ -214,7 +230,11 @@ public class Inventory implements JsonConvertible {
         if (item == null) {
             return false;
         }
-        return item.removeStocks(tag.getLocation(), tag.getQuantity());
+        if (item.removeStocks(tag.getLocation(), tag.getQuantity())) {
+            notifyObservers();
+            return true;
+        }
+        return false;
     }
 
 
@@ -226,7 +246,11 @@ public class Inventory implements JsonConvertible {
         if (item == null) {
             return false;
         }
-        return item.removeStocks(location, qty);
+        if (item.removeStocks(location, qty) == true) {
+            item.removeStocks(location, qty);
+            return true;
+        }
+        return false;
     }
 
     //MODIFIES: this
@@ -246,6 +270,7 @@ public class Inventory implements JsonConvertible {
         if (succeeded.size() == 0) {
             return Collections.emptyList();
         }
+        notifyObservers();
         return succeeded;
     }
 
@@ -422,7 +447,6 @@ public class Inventory implements JsonConvertible {
 
     //EFFECTS: return column data for converting this to table
     public String[] getDataList() {
-
 
         String[] columns = new String[]{
                 "Category", "ID", "Name", "Description", "Special Note", "Quantity",

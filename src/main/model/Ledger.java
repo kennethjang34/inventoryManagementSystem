@@ -8,7 +8,7 @@ import java.time.LocalDate;
 import java.util.*;
 
 //represents a ledger that contains several transaction accounts
-public class Ledger implements JsonConvertible {
+public class Ledger extends Subject implements JsonConvertible {
     //key: LocalDate.toString(), value: list of accounts that occurred that day
     private Map<String, List<Account>> accounts;
     //private ArrayList<Account> accounts;
@@ -21,6 +21,13 @@ public class Ledger implements JsonConvertible {
         codeSize = 6;
         accounts = new LinkedHashMap<>();
         nextAccountNumber = ((int)Math.pow(10, codeSize) - 1) / 9;
+    }
+
+    @Override
+    public void notifyObservers() {
+        for (Observer observer: observers) {
+            observer.update();
+        }
     }
 
     //EFFECTS:create a new empty ledger with the given code size
@@ -139,13 +146,13 @@ public class Ledger implements JsonConvertible {
     public Account addAccount(InventoryTag tag, String description, LocalDate date) {
         Account account = new Account(nextAccountNumber++, description, date, tag.getId(), tag.getLocation(),
                 tag.getUnitCost(), tag.getUnitPrice(), tag.getQuantity());
-
         List<Account> accountList = accounts.get(date.toString());
         if (accountList == null) {
             accountList = new ArrayList<>();
         }
         accountList.add(account);
         accounts.putIfAbsent(date.toString(), accountList);
+        notifyObservers();
         return account;
     }
 

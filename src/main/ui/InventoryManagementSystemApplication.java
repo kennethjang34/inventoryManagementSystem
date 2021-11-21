@@ -389,7 +389,9 @@ public class InventoryManagementSystemApplication extends JFrame implements Json
     //MODIFIES: this
     //EFFECTS: add a new account to the ledger
     public void addAccount(List<InventoryTag> stocks, String description, LocalDate date) {
-        ledgerPanel.addAccount(stocks, description, date);
+        for (InventoryTag tag: stocks) {
+            ledger.addAccount(tag, description, date);
+        }
     }
 
     //MODIFIES: this

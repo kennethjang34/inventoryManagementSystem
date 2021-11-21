@@ -1,6 +1,7 @@
 package ui.ledgerpanel;
 
 import model.Ledger;
+import model.Observer;
 
 
 import javax.swing.*;
@@ -13,7 +14,7 @@ import java.awt.event.MouseListener;
 import java.time.LocalDate;
 
 //represents a table that displays several accounts sorted by the date it was written
-public class AccountTable extends JTable implements TableCellRenderer, MouseListener, ActionListener {
+public class AccountTable extends JTable implements TableCellRenderer, MouseListener, ActionListener, Observer {
     private Ledger ledger;
     private LedgerPanel ledgerPanel;
     private AccountTableModel tableModel;
@@ -23,6 +24,7 @@ public class AccountTable extends JTable implements TableCellRenderer, MouseList
         this.ledger = ledger;
         this.ledgerPanel = panel;
         tableModel = new AccountTableModel(ledger, this);
+        ledger.registerObserver(this);
         setModel(tableModel);
         setDefaultRenderer(JButton.class, this);
         setDefaultRenderer(String.class, this);
@@ -91,10 +93,12 @@ public class AccountTable extends JTable implements TableCellRenderer, MouseList
         ledgerPanel.addToSelected(date);
     }
 
+    @Override
     //MODIFIES: this
     //EFFECTS: update the table according to the ledger
     public void update() {
-        tableModel.update();
+        repaint();
+//        tableModel.update();
     }
 
     //MODIFIES: this

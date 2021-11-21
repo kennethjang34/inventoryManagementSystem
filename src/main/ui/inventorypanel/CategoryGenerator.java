@@ -2,11 +2,8 @@ package ui.inventorypanel;
 
 import model.Inventory;
 import ui.inventorypanel.stockpanel.StockPanel;
-import ui.inventorypanel.stockpanel.StockSearchPanel;
 
 import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 //represents a panel that makes it possible to create a new category as requested by the user
 public class CategoryGenerator extends JPanel {
@@ -36,7 +33,7 @@ public class CategoryGenerator extends JPanel {
             }
             categoryField.removeAll();
             if (inventory.createCategory(name)) {
-                stockPanel.categoryAddedUpdate(name);
+                //stockPanel.categoryAddedUpdate(name);
                 JOptionPane.showMessageDialog(null, "New Category: "
                         + name + " has been successfully created");
             } else {

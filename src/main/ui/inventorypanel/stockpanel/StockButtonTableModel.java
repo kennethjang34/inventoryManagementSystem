@@ -1,6 +1,7 @@
 package ui.inventorypanel.stockpanel;
 
 import model.Inventory;
+import model.Observer;
 
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
@@ -8,16 +9,18 @@ import java.awt.event.ActionListener;
 import java.util.HashMap;
 
 //represents a table model that displays stock conditions
-public class StockButtonTableModel extends AbstractTableModel {
+public class StockButtonTableModel extends AbstractTableModel implements Observer {
     private Inventory inventory;
     private String[] columnNames;
     private ActionListener actionListener;
     private HashMap<String, JButton> buttonHashMap;
+    private StockSearchTool searchTool;
     private String category = null;
     private String item = null;
 
     //EFFECTS: create a new table model
-    public StockButtonTableModel(Inventory inventory, ActionListener actionListener) {
+    public StockButtonTableModel(Inventory inventory, StockSearchTool searchTool, ActionListener actionListener) {
+        this.searchTool = searchTool;
         buttonHashMap = new HashMap<>();
         this.inventory = inventory;
         this.actionListener = actionListener;
@@ -40,7 +43,6 @@ public class StockButtonTableModel extends AbstractTableModel {
     public String getColumnName(int col) {
         return columnNames[col];
     }
-
 
     //EFFECTS: return a value at a particular table cell
     @Override
@@ -80,7 +82,6 @@ public class StockButtonTableModel extends AbstractTableModel {
     @Override
     public int getRowCount() {
         if (category == null && item == null) {
-
             return inventory.getIDs().size();
         } else if (item != null) {
             return 1;
@@ -116,6 +117,27 @@ public class StockButtonTableModel extends AbstractTableModel {
     //EFFECTS: set the item of this
     public void setItem(String item) {
         this.item = item;
+        fireTableDataChanged();
+    }
+
+
+    //Updated only by the application
+    //MODIFIES: this
+    //EFFECTS: update this. selected category/item
+    @Override
+    public void update() {
+        String selectedCategory = searchTool.getSelectedCategory();
+        if (selectedCategory.equals(StockSearchTool.ALL)) {
+            category = null;
+        } else if (!selectedCategory.equals(StockSearchTool.TYPE)) {
+            category = searchTool.getSelectedCategory();
+        }
+        String selectedID = searchTool.getSelectedID();
+        if (selectedID.equals(StockSearchTool.ALL)) {
+            item = null;
+        } else if (!selectedID.equals(StockSearchTool.TYPE)) {
+            item = searchTool.getSelectedCategory();
+        }
         fireTableDataChanged();
     }
 }

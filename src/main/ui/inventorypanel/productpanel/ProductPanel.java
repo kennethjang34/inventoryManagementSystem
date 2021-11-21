@@ -1,7 +1,9 @@
 package ui.inventorypanel.productpanel;
 
+import jdk.nashorn.internal.scripts.JO;
 import model.Inventory;
 import model.InventoryTag;
+import model.Observer;
 import model.Product;
 import ui.InventoryManagementSystemApplication;
 import ui.inventorypanel.stockpanel.StockButtonTable;
@@ -21,7 +23,7 @@ import java.util.Comparator;
 import java.util.List;
 
 //A panel that displays a list of individual products with buttons that can be used to add/remove products
-public class ProductPanel extends JPanel implements ActionListener {
+public class ProductPanel extends JPanel implements ActionListener, Observer {
     //Order: based on best-before date from nearest to farthest
     private static final int BEST_BEFORE_DATE_NF = 0;
     //Order: based on best-before date from farthest to nearest
@@ -248,12 +250,7 @@ public class ProductPanel extends JPanel implements ActionListener {
         comboBox.addItem("Best-before date from farthest");
         comboBox.addItem("Alphabetical from A");
         comboBox.addItem("Alphabetical from Z");
-        comboBox.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                order = comboBox.getSelectedIndex();
-            }
-        });
+        comboBox.addActionListener(e -> order = comboBox.getSelectedIndex());
         return comboBox;
     }
 
@@ -321,17 +318,18 @@ public class ProductPanel extends JPanel implements ActionListener {
         for (Integer row: selectedRows) {
             toBeRemoved.add(products.get(row));
         }
-        int confirm = JOptionPane.showConfirmDialog(new ProductTable(toBeRemoved),
-                "Do you intend to remove following products?");
-        if (confirm == JOptionPane.YES_OPTION) {
+        String description = JOptionPane.showInputDialog("Enter description below"
+                + "\n\n if you'd like to cancel the removal, press cancel button");
+        if (description == null) {
+            JOptionPane.showMessageDialog(this, "The removal has been canceled");
+        } else {
             products.removeAll(toBeRemoved);
             for (Product product : toBeRemoved) {
                 inventory.removeProduct(product.getSku());
             }
             application.addAccount(createRemovedTags(toBeRemoved),
-                    convertToString(getListOfIDs(toBeRemoved)), LocalDate.now());
+                     description, LocalDate.now());
             ((AbstractTableModel) table.getModel()).fireTableDataChanged();
-            ((AbstractTableModel) stockTable.getModel()).fireTableDataChanged();
             JOptionPane.showMessageDialog(null, "Successfully removed");
         }
     }
@@ -360,6 +358,14 @@ public class ProductPanel extends JPanel implements ActionListener {
             s += obj.toString();
         }
         return s;
+    }
+
+
+    //MODIFIES: this
+    //EFFECTS: update this so it shows the latest data
+    @Override
+    public void update() {
+        //
     }
 
 

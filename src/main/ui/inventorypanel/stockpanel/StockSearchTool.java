@@ -1,16 +1,16 @@
 package ui.inventorypanel.stockpanel;
 
 import model.Inventory;
-import org.omg.CORBA.NO_IMPLEMENT;
+import model.Observer;
+import model.Subject;
 
 import javax.swing.*;
-import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
 
-public class StockSearchPanel extends JPanel implements ActionListener {
-    StockPanel stockPanel;
+public class StockSearchTool extends Subject implements ActionListener, Observer {
+//    StockPanel stockPanel;
     Inventory inventory;
     //Base option: ALL Categories
     //Last option: Type Manually (if there is no such category, show nothing). When selected, set field visible
@@ -23,47 +23,45 @@ public class StockSearchPanel extends JPanel implements ActionListener {
     JTextField itemField = new JTextField(10);
     private String selectedCategory;
     private String selectedItem;
-//    private DefaultComboBoxModel<String> categoryModel;
-//    private DefaultComboBoxModel<String> itemModel;
-    private static final String ALL = "ALL";
-    private static final String TYPE = "TYPE ID";
+    private JPanel panel;
+    public static final String ALL = "ALL";
+    public static final String TYPE = "TYPE ID";
     private static final String categoryCommand = "CATEGORY";
     private static final String itemCommand = "ITEM";
     private static final String NO_ITEM = "No Item";
     private static final String NO_CATEGORY = "No Category";
 
     //EFFECTS: create a new stock search panel that can modify the given stock panel based on filters chosen by the user
-    public StockSearchPanel(Inventory inventory, StockPanel stockPanel) {
+    public StockSearchTool(Inventory inventory) {
+        panel = new JPanel();
         this.inventory = inventory;
-        this.stockPanel = stockPanel;
-        add(new JLabel("Category"));
+        inventory.registerObserver(this);
+        panel.add(new JLabel("Category"));
         categoryBox = new JComboBox();
         itemBox = new JComboBox();
-        initializeCategoryBox();
+        updateCategoryBox();
         initializeItemBox();
         initializeTextFields();
         categoryBox.setActionCommand("Category");
         itemBox.setActionCommand("Item");
         categoryBox.addActionListener(this);
         itemBox.addActionListener(this);
-        add(categoryBox);
-        add(categoryField);
-        add(new JLabel("ID"));
-        add(itemBox);
-        add(itemField);
+        panel.add(categoryBox);
+        panel.add(categoryField);
+        panel.add(new JLabel("ID"));
+        panel.add(itemBox);
+        panel.add(itemField);
         categoryField.setVisible(false);
         itemField.setVisible(false);
         itemBox.setEditable(false);
         categoryBox.setEditable(false);
-//        setPreferredSize(new Dimension(400, 300));
-        stockPanel.displayAllItems();
     }
 
 
     //MODIFIES: this
     //EFFECTS: initialize category combo box with all categories inside the inventory.
     //If there is no category at all, display "No category"
-    public void initializeCategoryBox() {
+    public void updateCategoryBox() {
         DefaultComboBoxModel categoryModel = new DefaultComboBoxModel();
         if (inventory.getCategoryNames().length == 0) {
             categoryModel = new DefaultComboBoxModel<>();
@@ -121,7 +119,6 @@ public class StockSearchPanel extends JPanel implements ActionListener {
                 categoryField.setVisible(false);
             }
             categoryField.removeAll();
-
         });
 
         itemField.addActionListener(e -> {
@@ -134,7 +131,7 @@ public class StockSearchPanel extends JPanel implements ActionListener {
                 itemField.setVisible(false);
             }
             itemField.removeAll();
-            repaint();
+            panel.repaint();
             //hide the text field again and find the specified element in the comboBox
         });
     }
@@ -163,10 +160,10 @@ public class StockSearchPanel extends JPanel implements ActionListener {
             promptCategoryTyping();
             return;
         } else if (selectedCategory.equals(ALL)) {
-            stockPanel.displayAllItems();
+            notifyObservers();
         } else {
-            updateItemComboBox(selectedCategory);
-            stockPanel.displayItems(selectedCategory);
+            updateItemComboBox();
+            notifyObservers();
         }
         categoryField.setVisible(false);
     }
@@ -180,32 +177,43 @@ public class StockSearchPanel extends JPanel implements ActionListener {
             promptItemTyping();
             return;
         } else if (selectedItem.equals(ALL)) {
-            stockPanel.displayAllItems();
+            notifyObservers();
         } else {
-            stockPanel.displayItem(selectedItem);
+            notifyObservers();
         }
         itemField.setVisible(false);
+    }
+
+
+    //EFFECTS: return the selected item of item combo box
+    public String getSelectedID() {
+        return (String)itemBox.getSelectedItem();
+    }
+
+    //EFFECTS: return the selected item of category combo box
+    public String getSelectedCategory() {
+        return (String)categoryBox.getSelectedItem();
     }
 
     //MODIFIES: this
     //EFFECTS: set category text field visible so that the user can type a category name
     public void promptCategoryTyping() {
         categoryField.setVisible(true);
-        repaint();
-        revalidate();
+        panel.repaint();
+        panel.revalidate();
     }
 
     //MODIFIES: this
     //EFFECTS: set item text field visible so that the user can type a item id
     public void promptItemTyping() {
         itemField.setVisible(true);
-        repaint();
-        revalidate();
+        panel.repaint();
+        panel.revalidate();
     }
 
     //MODIFIES: this
     //EFFECTS: update the item combo box so that it matches the current selected category
-    private void updateItemComboBox(String selectedCategory) {
+    private void updateItemComboBox() {
         DefaultComboBoxModel itemModel;
         itemModel = new DefaultComboBoxModel();
         itemModel.addElement(ALL);
@@ -223,7 +231,7 @@ public class StockSearchPanel extends JPanel implements ActionListener {
         }
         itemBox.setModel(itemModel);
         itemBox.setSelectedIndex(0);
-        repaint();
+        panel.repaint();
     }
 
     //MODIFIES: this
@@ -236,7 +244,7 @@ public class StockSearchPanel extends JPanel implements ActionListener {
             categoryBox.addItem(TYPE);
             categoryBox.addItem(name);
             handleCategorySelectedEvent();
-            stockPanel.displayAllItems();
+            notifyObservers();
             return;
         } else if (boxModel.getIndexOf(name) == -1) {
             categoryBox.addItem(name);
@@ -251,13 +259,33 @@ public class StockSearchPanel extends JPanel implements ActionListener {
         if (inventory.getCategoryOf(id).equals(selectedCategory)
                 || selectedCategory.equals(ALL)) {
             if (itemBox.getItemAt(0).equals(NO_ITEM)) {
-                updateItemComboBox(selectedCategory);
+                updateItemComboBox();
             }
             DefaultComboBoxModel boxModel = (DefaultComboBoxModel)itemBox.getModel();
             if (boxModel.getIndexOf(id) == -1) {
                 itemBox.addItem(id);
-                stockPanel.displayAllItems();
+                notifyObservers();
             }
         }
+    }
+
+    //MODIFIES: this
+    //EFFECTS: update category box, item box
+    @Override
+    public void update() {
+        updateCategoryBox();
+        updateItemComboBox();
+    }
+
+    @Override
+    public void notifyObservers() {
+        for (Observer observer: observers) {
+            observer.update();
+        }
+    }
+
+    //EFFECTS: return the panel displaying this
+    public JPanel getPanel() {
+        return panel;
     }
 }

@@ -1,6 +1,7 @@
 package ui.inventorypanel;
 
 import model.Inventory;
+import model.Observer;
 import ui.InventoryManagementSystemApplication;
 import ui.inventorypanel.productpanel.ProductPanel;
 import ui.inventorypanel.stockpanel.StockPanel;
@@ -9,9 +10,8 @@ import javax.swing.*;
 import java.awt.*;
 
 //represents a panel that contains stock panel and product panel to display current inventory conditions
-public class InventoryPanel extends JPanel {
-    private final Inventory inventory;
-    private final InventoryManagementSystemApplication application;
+public class InventoryPanel extends JPanel implements Observer {
+    //private final Inventory inventory;
     //private final SearchPanel searchPanel;
     private StockPanel stockPanel;
     private ProductPanel productPanel;
@@ -22,10 +22,9 @@ public class InventoryPanel extends JPanel {
 
     //EFFECTS: create a new inventory making a new stock panel and product panel
     public InventoryPanel(Inventory inventory, InventoryManagementSystemApplication application) {
-        this.application = application;
-        this.inventory = inventory;
+        //this.inventory = inventory;
         productPanel = new ProductPanel(inventory, application);
-        stockPanel = new StockPanel(inventory, productPanel, application);
+        stockPanel = new StockPanel(inventory, productPanel);
 //        JPanel typeCreator = new JPanel();
 //        typeCreator.add(new CategoryGenerator(inventory, stockSearchPanel));
 //        typeCreator.add(new ItemGenerator(inventory, stockSearchPanel));
@@ -37,15 +36,9 @@ public class InventoryPanel extends JPanel {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
+    @Override
+    public void update() {
+        stockPanel.update();
+        productPanel.update();
+    }
 }
