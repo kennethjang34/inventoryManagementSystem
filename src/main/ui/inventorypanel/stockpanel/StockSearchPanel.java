@@ -3,13 +3,14 @@ package ui.inventorypanel.stockpanel;
 import model.Inventory;
 import model.Observer;
 import model.Subject;
+import ui.SubjectPanel;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
 
-public class StockSearchTool extends Subject implements ActionListener, Observer {
+public class StockSearchPanel extends SubjectPanel implements ActionListener, Observer {
 //    StockPanel stockPanel;
     Inventory inventory;
     //Base option: ALL Categories
@@ -23,7 +24,6 @@ public class StockSearchTool extends Subject implements ActionListener, Observer
     JTextField itemField = new JTextField(10);
     private String selectedCategory;
     private String selectedItem;
-    private JPanel panel;
     public static final String ALL = "ALL";
     public static final String TYPE = "TYPE ID";
     private static final String categoryCommand = "CATEGORY";
@@ -32,11 +32,10 @@ public class StockSearchTool extends Subject implements ActionListener, Observer
     private static final String NO_CATEGORY = "No Category";
 
     //EFFECTS: create a new stock search panel that can modify the given stock panel based on filters chosen by the user
-    public StockSearchTool(Inventory inventory) {
-        panel = new JPanel();
+    public StockSearchPanel(Inventory inventory) {
         this.inventory = inventory;
         inventory.registerObserver(this);
-        panel.add(new JLabel("Category"));
+        add(new JLabel("Category"));
         categoryBox = new JComboBox();
         itemBox = new JComboBox();
         updateCategoryBox();
@@ -46,11 +45,11 @@ public class StockSearchTool extends Subject implements ActionListener, Observer
         itemBox.setActionCommand("Item");
         categoryBox.addActionListener(this);
         itemBox.addActionListener(this);
-        panel.add(categoryBox);
-        panel.add(categoryField);
-        panel.add(new JLabel("ID"));
-        panel.add(itemBox);
-        panel.add(itemField);
+        add(categoryBox);
+        add(categoryField);
+        add(new JLabel("ID"));
+        add(itemBox);
+        add(itemField);
         categoryField.setVisible(false);
         itemField.setVisible(false);
         itemBox.setEditable(false);
@@ -131,7 +130,7 @@ public class StockSearchTool extends Subject implements ActionListener, Observer
                 itemField.setVisible(false);
             }
             itemField.removeAll();
-            panel.repaint();
+            repaint();
             //hide the text field again and find the specified element in the comboBox
         });
     }
@@ -199,16 +198,16 @@ public class StockSearchTool extends Subject implements ActionListener, Observer
     //EFFECTS: set category text field visible so that the user can type a category name
     public void promptCategoryTyping() {
         categoryField.setVisible(true);
-        panel.repaint();
-        panel.revalidate();
+        repaint();
+        revalidate();
     }
 
     //MODIFIES: this
     //EFFECTS: set item text field visible so that the user can type a item id
     public void promptItemTyping() {
         itemField.setVisible(true);
-        panel.repaint();
-        panel.revalidate();
+        repaint();
+        revalidate();
     }
 
     //MODIFIES: this
@@ -231,7 +230,7 @@ public class StockSearchTool extends Subject implements ActionListener, Observer
         }
         itemBox.setModel(itemModel);
         itemBox.setSelectedIndex(0);
-        panel.repaint();
+        repaint();
     }
 
     //MODIFIES: this
@@ -284,8 +283,4 @@ public class StockSearchTool extends Subject implements ActionListener, Observer
         }
     }
 
-    //EFFECTS: return the panel displaying this
-    public JPanel getPanel() {
-        return panel;
-    }
 }

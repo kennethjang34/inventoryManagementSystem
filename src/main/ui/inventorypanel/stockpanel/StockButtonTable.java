@@ -9,9 +9,7 @@ import ui.inventorypanel.productpanel.ProductPanel;
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
-import javax.swing.text.DefaultHighlighter;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -26,16 +24,13 @@ public class StockButtonTable extends JTable implements ActionListener, TableCel
     private String[] columnName;
     private String category;
     private String id;
-    private StockSearchTool searchTool;
 
 //    private StockLocationButtonTable locationButtonTable;
 
 
     //EFFECTS: create a table displaying inventory condition
-    public StockButtonTable(Inventory inventory, StockSearchTool searchTool, ProductPanel productPanel) {
+    public StockButtonTable(Inventory inventory, StockSearchPanel searchTool, ProductPanel productPanel) {
         this.inventory = inventory;
-        this.searchTool = searchTool;
-        searchTool.registerObserver(this);
         this.productPanel = productPanel;
         inventory.registerObserver(this);
         String[] dataList = inventory.getDataList();

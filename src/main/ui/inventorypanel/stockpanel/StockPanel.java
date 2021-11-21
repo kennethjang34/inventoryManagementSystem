@@ -11,17 +11,15 @@ import java.awt.*;
 //A panel that will display stock situation of the inventory
 public class StockPanel extends JPanel implements Observer {
     private StockButtonTable stockButtonTable;
-    private StockSearchTool searchTool;
-    private JPanel searchPanel;
+    private StockSearchPanel stockSearchPanel;
     private JScrollPane tableScrollPane;
 
 
     //EFFECTS: create new stock panel with given inventory and link it to the given product panel
     public StockPanel(Inventory inventory, ProductPanel productPanel) {
         setLayout(new BorderLayout());
-        searchTool = new StockSearchTool(inventory);
-        stockButtonTable = new StockButtonTable(inventory, searchTool, productPanel);
-        searchPanel = searchTool.getPanel();
+        stockSearchPanel = new StockSearchPanel(inventory);
+        stockButtonTable = new StockButtonTable(inventory, stockSearchPanel, productPanel);
         JPanel typeCreator = new JPanel();
         typeCreator.add(new CategoryGenerator(inventory, this));
         typeCreator.add(new ItemGenerator(inventory, this));
@@ -29,7 +27,7 @@ public class StockPanel extends JPanel implements Observer {
         tableScrollPane =  new JScrollPane(stockButtonTable);
         tableScrollPane.setSize(400, 400);
         add(typeCreator, BorderLayout.NORTH);
-        add(searchPanel, BorderLayout.CENTER);
+        add(stockSearchPanel, BorderLayout.CENTER);
         add(tableScrollPane, BorderLayout.SOUTH);
     }
 
@@ -63,7 +61,7 @@ public class StockPanel extends JPanel implements Observer {
     //MODIFIES: this
     //EFFECTS: when a new item is added to this, update related fields accordingly
     public void itemAddedUpdate(String id) {
-        searchTool.update();
+        stockSearchPanel.update();
         stockButtonTable.repaint();
     }
 
@@ -71,7 +69,7 @@ public class StockPanel extends JPanel implements Observer {
     //EFFECTS: when a new category is added to this, udpate related fields accordingly
     public void categoryAddedUpdate(String categoryName) {
         //searchPanel.addCategory(categoryName);
-        searchTool.update();
+        stockSearchPanel.update();
         stockButtonTable.repaint();
     }
 

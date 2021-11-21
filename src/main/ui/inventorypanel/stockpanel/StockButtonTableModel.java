@@ -14,13 +14,14 @@ public class StockButtonTableModel extends AbstractTableModel implements Observe
     private String[] columnNames;
     private ActionListener actionListener;
     private HashMap<String, JButton> buttonHashMap;
-    private StockSearchTool searchTool;
+    private StockSearchPanel searchTool;
     private String category = null;
     private String item = null;
 
     //EFFECTS: create a new table model
-    public StockButtonTableModel(Inventory inventory, StockSearchTool searchTool, ActionListener actionListener) {
+    public StockButtonTableModel(Inventory inventory, StockSearchPanel searchTool, ActionListener actionListener) {
         this.searchTool = searchTool;
+        searchTool.registerObserver(this);
         buttonHashMap = new HashMap<>();
         this.inventory = inventory;
         this.actionListener = actionListener;
@@ -91,7 +92,7 @@ public class StockButtonTableModel extends AbstractTableModel implements Observe
         }
     }
 
-    //EFFECTS: return the number of colummns of the table
+    //EFFECTS: return the number of columns of the table
     @Override
     public int getColumnCount() {
         return columnNames.length;
@@ -127,16 +128,16 @@ public class StockButtonTableModel extends AbstractTableModel implements Observe
     @Override
     public void update() {
         String selectedCategory = searchTool.getSelectedCategory();
-        if (selectedCategory.equals(StockSearchTool.ALL)) {
+        if (selectedCategory.equals(StockSearchPanel.ALL)) {
             category = null;
-        } else if (!selectedCategory.equals(StockSearchTool.TYPE)) {
+        } else if (!selectedCategory.equals(StockSearchPanel.TYPE)) {
             category = searchTool.getSelectedCategory();
         }
         String selectedID = searchTool.getSelectedID();
-        if (selectedID.equals(StockSearchTool.ALL)) {
+        if (selectedID.equals(StockSearchPanel.ALL)) {
             item = null;
-        } else if (!selectedID.equals(StockSearchTool.TYPE)) {
-            item = searchTool.getSelectedCategory();
+        } else if (!selectedID.equals(StockSearchPanel.TYPE)) {
+            item = searchTool.getSelectedID();
         }
         fireTableDataChanged();
     }
