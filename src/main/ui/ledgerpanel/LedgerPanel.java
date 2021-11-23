@@ -1,9 +1,6 @@
 package ui.ledgerpanel;
 
-import model.Account;
-import model.InventoryTag;
-import model.Ledger;
-import model.Observer;
+import model.*;
 
 import javax.swing.*;
 import java.awt.*;
@@ -50,7 +47,7 @@ public class LedgerPanel extends JPanel implements ActionListener {
         for (InventoryTag tag: stocks) {
             ledger.addAccount(tag, description, date);
         }
-        accountTable.update();
+        accountTable.update(ApplicationConstantValue.ACCOUNT);
         accountTable.repaint();
 
     }
@@ -61,7 +58,7 @@ public class LedgerPanel extends JPanel implements ActionListener {
     public void addAccount(InventoryTag tag, String description, LocalDate date) {
         Account account = ledger.addAccount(tag, description, date);
         filterPanel.addDate(date.toString());
-        accountTable.update();
+        accountTable.update(ApplicationConstantValue.ACCOUNT);
         accountTable.repaint();
     }
 

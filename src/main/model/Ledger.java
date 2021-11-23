@@ -23,12 +23,6 @@ public class Ledger extends Subject implements JsonConvertible {
         nextAccountNumber = ((int)Math.pow(10, codeSize) - 1) / 9;
     }
 
-    @Override
-    public void notifyObservers() {
-        for (Observer observer: observers) {
-            observer.update();
-        }
-    }
 
     //EFFECTS:create a new empty ledger with the given code size
     public Ledger(int accountNumberSize) {
@@ -104,40 +98,6 @@ public class Ledger extends Subject implements JsonConvertible {
     public List<Account> getAccounts(LocalDate date) {
         return accounts.get(date.toString());
     }
-
-//    //EFFECTS: return a list of accounts that were generated on the specified date.
-//    //If there isn't any, return null.
-//    public List<Account> getAccounts(String date) {
-//        return accounts.get(date);
-//    }
-//
-//
-//    //EFFECTS: return the map of date and account lists
-//    public Map<String, List<Account>> getAccountsMap() {
-//        return accounts;
-//    }
-
-
-
-
-
-
-//    //MODIFIES: this
-//    //EFFECTS: create and add an account to this. return the created account
-//    public Account addAccount(List<QuantityTag> added,
-//    List<QuantityTag> removed, String description, LocalDate date) {
-//        if (added.size() == 0 && removed.size() == 0) {
-//            return null;
-//        }
-//        Account account = new Account(nextAccountNumber++, description, date, added, removed);
-//        List<Account> accountList = accounts.get(date.toString());
-//        if (accountList == null) {
-//            accountList = new ArrayList<>();
-//        }
-//        accountList.add(account);
-//        accounts.putIfAbsent(date.toString(), accountList);
-//        return account;
-//    }
 
 
 

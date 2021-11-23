@@ -14,7 +14,6 @@ public class Inventory extends Subject implements JsonConvertible {
     //hashmap with key and value being id of the item and item object respectively
     private final Map<String, Item> items;
     private Map<String, Category> categories;
-
     private int quantity;
     private LocalDate currentDate;
 
@@ -32,13 +31,6 @@ public class Inventory extends Subject implements JsonConvertible {
         currentDate = LocalDate.now();
     }
 
-
-    @Override
-    public void notifyObservers() {
-        for (Observer observer: observers) {
-            observer.update();
-        }
-    }
 
 
     //REQUIRES: the data in JSON format must contain all necessary information
@@ -101,6 +93,7 @@ public class Inventory extends Subject implements JsonConvertible {
             return false;
         }
         categories.put(name, new Category(name));
+        setChanged(ApplicationConstantValue.CATEGORY);
         notifyObservers();
         EventLog.getInstance().logEvent(new Event("new category " + name + " is created"));
         return true;
@@ -132,8 +125,9 @@ public class Inventory extends Subject implements JsonConvertible {
         Item item = new Item(id, name, category, listPrice, description, note);
         items.put(id, item);
         categories.get(category).addItem(item);
+        setChanged(ApplicationConstantValue.ITEM);
         notifyObservers();
-        EventLog.getInstance().logEvent(new Event("new item with ID" + name
+        EventLog.getInstance().logEvent(new Event("new item with ID: " + name
                 + " and name " + name + " is created in category " + category));
         return true;
     }
@@ -155,6 +149,7 @@ public class Inventory extends Subject implements JsonConvertible {
             }
         }
         if (failed.size() != tags.size()) {
+            setChanged(ApplicationConstantValue.STOCK);
             notifyObservers();
         }
         return failed;
@@ -172,6 +167,7 @@ public class Inventory extends Subject implements JsonConvertible {
             return false;
         } else {
             item.addProducts(tag);
+            setChanged(ApplicationConstantValue.STOCK);
             notifyObservers();
             return true;
         }
@@ -186,6 +182,7 @@ public class Inventory extends Subject implements JsonConvertible {
         for (Item item: getItemList()) {
             if (item.contains(sku)) {
                 item.removeProduct(sku);
+                setChanged(ApplicationConstantValue.STOCK);
                 notifyObservers();
                 return true;
             }
@@ -205,6 +202,7 @@ public class Inventory extends Subject implements JsonConvertible {
             return false;
         }
         if (item.removeStocks(tag.getLocation(), tag.getQuantity())) {
+            setChanged(ApplicationConstantValue.STOCK);
             notifyObservers();
             return true;
         }
@@ -222,6 +220,8 @@ public class Inventory extends Subject implements JsonConvertible {
         }
         if (item.removeStocks(location, qty) == true) {
             item.removeStocks(location, qty);
+            setChanged(ApplicationConstantValue.STOCK);
+            notifyAll();
             return true;
         }
         return false;
@@ -244,6 +244,7 @@ public class Inventory extends Subject implements JsonConvertible {
         if (succeeded.size() == 0) {
             return Collections.emptyList();
         }
+        setChanged(ApplicationConstantValue.STOCK);
         notifyObservers();
         return succeeded;
     }
@@ -441,6 +442,16 @@ public class Inventory extends Subject implements JsonConvertible {
     //EFFECTS: return true if this inventory contains an item with the given id
     public boolean containsItem(String id) {
         return items.containsKey(id);
+    }
+
+    //EFFECTS: return list price of the item with the given id
+    //If there isn't any such item, throw an error
+    public double getListPrice(String id) {
+        Item item = items.get(id);
+        if (item == null) {
+            throw new IllegalArgumentException("There is no such item with the id");
+        }
+        return item.getListPrice();
     }
 }
 

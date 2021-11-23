@@ -1,8 +1,6 @@
 package ui.inventorypanel.stockpanel;
 
-import model.Inventory;
-import model.Observer;
-import model.QuantityTag;
+import model.*;
 import ui.inventorypanel.productpanel.ProductPanel;
 
 
@@ -164,9 +162,11 @@ public class StockButtonTable extends JTable implements ActionListener, TableCel
     //MODIFIES: this
     //EFFECTS: update this with the latest info
     @Override
-    public void update() {
-        ((AbstractTableModel)getModel()).fireTableDataChanged();
-        //repaint();
+    public void update(int arg) {
+        if (arg == ApplicationConstantValue.STOCK || arg == ApplicationConstantValue.ITEM
+                || arg == ApplicationConstantValue.CATEGORY) {
+            ((AbstractTableModel) getModel()).fireTableDataChanged();
+        }
     }
 
 }

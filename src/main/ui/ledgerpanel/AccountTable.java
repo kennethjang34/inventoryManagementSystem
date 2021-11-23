@@ -96,7 +96,7 @@ public class AccountTable extends JTable implements TableCellRenderer, MouseList
     @Override
     //MODIFIES: this
     //EFFECTS: update the table according to the ledger
-    public void update() {
+    public void update(int arg) {
         repaint();
 //        tableModel.update();
     }

@@ -225,13 +225,6 @@ public class FilterPanel extends SubjectPanel implements ActionListener {
 //        return panel;
 //    }
 
-    @Override
-    public void notifyObservers() {
-        for (Observer observer: observers) {
-            observer.update();
-        }
-    }
-
 
 //    @Override
 //    public void notifyObservers() {

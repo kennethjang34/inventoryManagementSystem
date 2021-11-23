@@ -1,5 +1,6 @@
 package ui.inventorypanel.stockpanel;
 
+import model.ApplicationConstantValue;
 import model.Inventory;
 import model.Observer;
 import model.Subject;
@@ -13,10 +14,11 @@ import java.util.List;
 public class StockSearchPanel extends SubjectPanel implements ActionListener, Observer {
 //    StockPanel stockPanel;
     Inventory inventory;
+    int selectedOption;
+
     //Base option: ALL Categories
     //Last option: Type Manually (if there is no such category, show nothing). When selected, set field visible
     JComboBox categoryBox;
-
     //Base option: ALL ids
     //Last option: Type Manually (if there is no such item with the id, show nothing). When selected, set field visible
     JComboBox itemBox;
@@ -155,6 +157,7 @@ public class StockSearchPanel extends SubjectPanel implements ActionListener, Ob
     //If type manually option is chosen, show text fields
     private void handleCategorySelectedEvent() {
         selectedCategory = (String) categoryBox.getSelectedItem();
+        setChanged(ApplicationConstantValue.CATEGORY);
         if (selectedCategory.equals(TYPE)) {
             promptCategoryTyping();
             return;
@@ -172,6 +175,7 @@ public class StockSearchPanel extends SubjectPanel implements ActionListener, Ob
     //If type manually option is chosen, show text fields
     private void handleIdSelectedEvent() {
         selectedItem = (String)itemBox.getSelectedItem();
+        setChanged(ApplicationConstantValue.ITEM);
         if (selectedItem.equals(TYPE)) {
             promptItemTyping();
             return;
@@ -233,54 +237,51 @@ public class StockSearchPanel extends SubjectPanel implements ActionListener, Ob
         repaint();
     }
 
-    //MODIFIES: this
-    //EFFECTS: add a new category to the category combo box
-    public void addCategory(String name) {
-        DefaultComboBoxModel boxModel = (DefaultComboBoxModel)categoryBox.getModel();
-        if (boxModel.getIndexOf(NO_CATEGORY) != -1) {
-            categoryBox.setModel(new DefaultComboBoxModel());
-            categoryBox.addItem(ALL);
-            categoryBox.addItem(TYPE);
-            categoryBox.addItem(name);
-            handleCategorySelectedEvent();
-            notifyObservers();
-            return;
-        } else if (boxModel.getIndexOf(name) == -1) {
-            categoryBox.addItem(name);
-            return;
-        }
-    }
+//    //MODIFIES: this
+//    //EFFECTS: add a new category to the category combo box
+//    public void addCategory(String name) {
+//        DefaultComboBoxModel boxModel = (DefaultComboBoxModel)categoryBox.getModel();
+//        if (boxModel.getIndexOf(NO_CATEGORY) != -1) {
+//            categoryBox.setModel(new DefaultComboBoxModel());
+//            categoryBox.addItem(ALL);
+//            categoryBox.addItem(TYPE);
+//            categoryBox.addItem(name);
+//            handleCategorySelectedEvent();
+//            notifyObservers();
+//            return;
+//        } else if (boxModel.getIndexOf(name) == -1) {
+//            categoryBox.addItem(name);
+//            return;
+//        }
+//    }
 
-    //MODIFIES: this
-    //EFFECTS: add a new item to the item combo box if the currently selected category contains this new item
-    //else do nothing
-    public void addItem(String id) {
-        if (inventory.getCategoryOf(id).equals(selectedCategory)
-                || selectedCategory.equals(ALL)) {
-            if (itemBox.getItemAt(0).equals(NO_ITEM)) {
-                updateItemComboBox();
-            }
-            DefaultComboBoxModel boxModel = (DefaultComboBoxModel)itemBox.getModel();
-            if (boxModel.getIndexOf(id) == -1) {
-                itemBox.addItem(id);
-                notifyObservers();
-            }
-        }
-    }
+//    //MODIFIES: this
+//    //EFFECTS: add a new item to the item combo box if the currently selected category contains this new item
+//    //else do nothing
+//    public void addItem(String id) {
+//        if (inventory.getCategoryOf(id).equals(selectedCategory)
+//                || selectedCategory.equals(ALL)) {
+//            if (itemBox.getItemAt(0).equals(NO_ITEM)) {
+//                updateItemComboBox();
+//            }
+//            DefaultComboBoxModel boxModel = (DefaultComboBoxModel)itemBox.getModel();
+//            if (boxModel.getIndexOf(id) == -1) {
+//                itemBox.addItem(id);
+//                notifyObservers();
+//            }
+//        }
+//    }
 
     //MODIFIES: this
     //EFFECTS: update category box, item box
     @Override
-    public void update() {
-        updateCategoryBox();
-        updateItemComboBox();
-    }
-
-    @Override
-    public void notifyObservers() {
-        for (Observer observer: observers) {
-            observer.update();
+    public void update(int arg) {
+        if (arg == ApplicationConstantValue.CATEGORY) {
+            updateCategoryBox();
+        } else if (arg == ApplicationConstantValue.ITEM) {
+            updateItemComboBox();
         }
     }
+
 
 }

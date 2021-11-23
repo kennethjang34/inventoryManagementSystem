@@ -1,5 +1,6 @@
 package ui.inventorypanel;
 
+import model.ApplicationConstantValue;
 import model.Inventory;
 import model.Observer;
 import ui.InventoryManagementSystemApplication;
@@ -37,8 +38,8 @@ public class InventoryPanel extends JPanel implements Observer {
 
 
     @Override
-    public void update() {
-        stockPanel.update();
-        productPanel.update();
+    public void update(int arg) {
+        stockPanel.repaint();
+        productPanel.repaint();
     }
 }

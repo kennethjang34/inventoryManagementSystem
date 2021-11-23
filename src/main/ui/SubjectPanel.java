@@ -6,8 +6,9 @@ import javax.swing.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class SubjectPanel extends JPanel {
-    protected List<Observer> observers;
+public class SubjectPanel extends JPanel {
+    private List<Observer> observers;
+    private int changed;
 
     public SubjectPanel() {
         observers = new ArrayList<>();
@@ -17,7 +18,15 @@ public abstract class SubjectPanel extends JPanel {
         observers.add(observer);
     }
 
-    public abstract void notifyObservers();
+    public void notifyObservers() {
+        for (Observer observer: observers) {
+            observer.update(changed);
+        }
+    }
+
+    public void setChanged(int changed) {
+        this.changed = changed;
+    }
 
 
 }

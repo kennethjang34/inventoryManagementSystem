@@ -54,13 +54,13 @@ As a user, I want to check the changes in stocks of products that happened on a 
 Mon Nov 22 19:26:19 PST 2021
 new category FRUIT is created
 Mon Nov 22 19:26:30 PST 2021
-new item with IDAPPLE and name APPLE is created in category FRUIT
+new item with ID: APPLE and name APPLE is created in category FRUIT
 Mon Nov 22 19:26:44 PST 2021
 100 new products belonging to ID: APP added at F123
 Mon Nov 22 19:26:52 PST 2021
 new category MEAT is created
 Mon Nov 22 19:27:03 PST 2021
-new item with IDPORK and name PORK is created in category MEAT
+new item with ID: PORK and name PORK is created in category MEAT
 Mon Nov 22 19:27:32 PST 2021
 100 new products belonging to ID: PRK added at NOT SPECIFIED
 Mon Nov 22 19:27:38 PST 2021
@@ -77,3 +77,6 @@ Mon Nov 22 19:27:57 PST 2021
 Product with SKU: PRK96 removed
 
 Process finished with exit code 0
+
+
+##Phase 4:Task 3

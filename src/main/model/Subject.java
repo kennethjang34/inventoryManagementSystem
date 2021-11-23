@@ -5,9 +5,10 @@ import java.util.List;
 
 
 //represents an abstract subject that is observed by observers
-public abstract class Subject {
+public class Subject {
     //list of observers that get notified of change of this
     protected List<Observer> observers;
+    protected int changed = -1;
 
     //EFFECTS: create a new subject with an empty observer list
     public Subject() {
@@ -20,6 +21,16 @@ public abstract class Subject {
         observers.add(observer);
     }
 
+    //MODIFIES: this
+    //EFFECTS: set the changed to the given
+    public void setChanged(int changed) {
+        this.changed = changed;
+    }
+
     //EFFECTS: notify all observers
-    public abstract void notifyObservers();
+    public void notifyObservers() {
+        for (Observer observer: observers) {
+            observer.update(changed);
+        }
+    }
 }

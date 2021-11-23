@@ -1,7 +1,9 @@
 package ui.inventorypanel.stockpanel;
 
+import model.ApplicationConstantValue;
 import model.Inventory;
 import model.Observer;
+import model.Subject;
 
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
@@ -126,19 +128,22 @@ public class StockButtonTableModel extends AbstractTableModel implements Observe
     //MODIFIES: this
     //EFFECTS: update this. selected category/item
     @Override
-    public void update() {
-        String selectedCategory = searchTool.getSelectedCategory();
-        if (selectedCategory.equals(StockSearchPanel.ALL)) {
-            category = null;
-        } else if (!selectedCategory.equals(StockSearchPanel.TYPE)) {
-            category = searchTool.getSelectedCategory();
+    public void update(int arg) {
+        if (arg == ApplicationConstantValue.CATEGORY || arg == ApplicationConstantValue.ITEM) {
+            String selectedCategory = searchTool.getSelectedCategory();
+            if (selectedCategory.equals(StockSearchPanel.ALL)) {
+                category = null;
+            } else if (!selectedCategory.equals(StockSearchPanel.TYPE)) {
+                category = searchTool.getSelectedCategory();
+            }
+            fireTableDataChanged();
+            String selectedID = searchTool.getSelectedID();
+            if (selectedID.equals(StockSearchPanel.ALL)) {
+                item = null;
+            } else if (!selectedID.equals(StockSearchPanel.TYPE)) {
+                item = searchTool.getSelectedID();
+            }
+            fireTableDataChanged();
         }
-        String selectedID = searchTool.getSelectedID();
-        if (selectedID.equals(StockSearchPanel.ALL)) {
-            item = null;
-        } else if (!selectedID.equals(StockSearchPanel.TYPE)) {
-            item = searchTool.getSelectedID();
-        }
-        fireTableDataChanged();
     }
 }

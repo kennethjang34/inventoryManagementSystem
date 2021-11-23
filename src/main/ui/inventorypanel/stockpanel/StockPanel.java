@@ -9,7 +9,7 @@ import javax.swing.*;
 import java.awt.*;
 
 //A panel that will display stock situation of the inventory
-public class StockPanel extends JPanel implements Observer {
+public class StockPanel extends JPanel {
     private StockButtonTable stockButtonTable;
     private StockSearchPanel stockSearchPanel;
     private JScrollPane tableScrollPane;
@@ -50,35 +50,29 @@ public class StockPanel extends JPanel implements Observer {
         ((StockButtonTableModel)(stockButtonTable.getModel())).fireTableDataChanged();
     }
 
-    //MODIFIES: this
-    //EFFECTS: display the item with the given id.
-    //if there is no item with the specified id, display no item
-    public void displayItem(String id) {
-        stockButtonTable.setItem(id);
-    }
+//    //MODIFIES: this
+//    //EFFECTS: display the item with the given id.
+//    //if there is no item with the specified id, display no item
+//    public void displayItem(String id) {
+//        stockButtonTable.setItem(id);
+//    }
+//
+//
+//    //MODIFIES: this
+//    //EFFECTS: when a new item is added to this, update related fields accordingly
+//    public void itemAddedUpdate(String id) {
+//        stockSearchPanel.update();
+//        stockButtonTable.repaint();
+//    }
+//
+//    ///MODIFIES: this
+//    //EFFECTS: when a new category is added to this, udpate related fields accordingly
+//    public void categoryAddedUpdate(String categoryName) {
+//        //searchPanel.addCategory(categoryName);
+//        stockSearchPanel.update();
+//        stockButtonTable.repaint();
+//    }
 
-
-    //MODIFIES: this
-    //EFFECTS: when a new item is added to this, update related fields accordingly
-    public void itemAddedUpdate(String id) {
-        stockSearchPanel.update();
-        stockButtonTable.repaint();
-    }
-
-    ///MODIFIES: this
-    //EFFECTS: when a new category is added to this, udpate related fields accordingly
-    public void categoryAddedUpdate(String categoryName) {
-        //searchPanel.addCategory(categoryName);
-        stockSearchPanel.update();
-        stockButtonTable.repaint();
-    }
-
-    //MODIFIES: this
-    //EFFECTS: update this, so it keeps up with the latest data
-    @Override
-    public void update() {
-
-    }
 
 
 }

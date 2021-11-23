@@ -221,7 +221,6 @@ public class InventoryManagementSystemApplication extends JFrame implements Json
             createMainPanel();
 
             add(mainPanel);
-            //setPreferredSize(new Dimension(1500, 2000));
             menuBar = createMenuBar();
             setJMenuBar(menuBar);
             pack();

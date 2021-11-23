@@ -54,7 +54,8 @@ public class AddPanel extends JPanel implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         String id = idField.getText().toUpperCase();
         double cost = costField.getText().length() == 0 ? 0 : Double.parseDouble(costField.getText());
-        double price = priceField.getText().length() == 0 ? 0 : Double.parseDouble(priceField.getText());
+        double price = priceField.getText().length() == 0 ? inventory.getListPrice(id) :
+                Double.parseDouble(priceField.getText());
         LocalDate bestBeforeDate;
         String stringBBD = bbdField.getText();
         if (stringBBD.isEmpty()) {

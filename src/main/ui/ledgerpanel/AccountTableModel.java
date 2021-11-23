@@ -54,7 +54,7 @@ public class AccountTableModel extends AbstractTableModel implements Observer {
     @Override
     //MODIFIES: this
     //EFFECTS: update this table model up to date when a new date is added
-    public void update() {
+    public void update(int arg) {
         List<String> datesInfo = Arrays.asList(ledger.getDates());
         //Update only when dates have been added/removed
         //this table model doesn't store values belonging to the dates

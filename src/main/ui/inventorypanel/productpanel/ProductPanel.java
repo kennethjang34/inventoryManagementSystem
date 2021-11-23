@@ -23,7 +23,7 @@ import java.util.Comparator;
 import java.util.List;
 
 //A panel that displays a list of individual products with buttons that can be used to add/remove products
-public class ProductPanel extends JPanel implements ActionListener, Observer {
+public class ProductPanel extends JPanel implements ActionListener {
     //Order: based on best-before date from nearest to farthest
     private static final int BEST_BEFORE_DATE_NF = 0;
     //Order: based on best-before date from farthest to nearest
@@ -358,14 +358,6 @@ public class ProductPanel extends JPanel implements ActionListener, Observer {
             s += obj.toString();
         }
         return s;
-    }
-
-
-    //MODIFIES: this
-    //EFFECTS: update this so it shows the latest data
-    @Override
-    public void update() {
-        //
     }
 
 
