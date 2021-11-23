@@ -31,22 +31,9 @@ public class Admin implements JsonConvertible {
         private boolean isAdmin;
 
 
-//        //EFFECTS: create a new account that can access inventory and return it.
-//        private LoginAccount(String id, String password, String name, LocalDate birthDay, int personalCode) {
-//            this.id = id;
-//            this.pw = password;
-//            this.name = name;
-//            this.birthday = birthDay;
-//            this.personalCode = personalCode;
-//            this.accessPermission = INVENTORY_ACCESS;
-//        }
-
         //EFFECTS: create a new account that can access inventory and/or admin and return it.
         private LoginAccount(String id, String password, String name, LocalDate birthDay,
                              int personalCode, boolean isAdmin) {
-//            if (accessPermission != ADMIN_ACCESS && accessPermission != INVENTORY_ACCESS) {
-//                throw new IllegalArgumentException("Access permission level cannot be found");
-//            }
             this.id = id;
             this.pw = password;
             this.name = name;
@@ -222,9 +209,6 @@ public class Admin implements JsonConvertible {
     //return fail if it fails
     public LoginAccount createLoginAccount(String id, String password, String name,
                                            LocalDate birthDay, int personalCode) {
-//        if (accounts.size() != 0) {
-//            return null;
-//        }
         accounts.add(new LoginAccount(id, password, name, birthDay, personalCode, true));
         return accounts.get(0);
     }
@@ -241,6 +225,7 @@ public class Admin implements JsonConvertible {
         }
         LoginAccount account = new LoginAccount(id, password, name, birthDay, personalCode, isAdmin);
         accounts.add(account);
+        EventLog.getInstance().logEvent(new Event("new login account with ID: " + id + " is added"));
         return true;
     }
 

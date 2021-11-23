@@ -102,6 +102,7 @@ public class Inventory extends Subject implements JsonConvertible {
         }
         categories.put(name, new Category(name));
         notifyObservers();
+        EventLog.getInstance().logEvent(new Event("new category " + name + " is created"));
         return true;
     }
 
@@ -132,6 +133,8 @@ public class Inventory extends Subject implements JsonConvertible {
         items.put(id, item);
         categories.get(category).addItem(item);
         notifyObservers();
+        EventLog.getInstance().logEvent(new Event("new item with ID" + name
+                + " and name " + name + " is created in category " + category));
         return true;
     }
 
@@ -191,35 +194,6 @@ public class Inventory extends Subject implements JsonConvertible {
     }
 
 
-
-
-
-//    //MODIFIES: this
-//    //EFFECTS: remove the product indicated from the inventory.
-//    //return a list of products that have been removed. If quantity to remove exceeds that inside the inventory,
-//    //skip the tag(quantity)
-//    public LinkedList<QuantityTag> removeProducts(List<QuantityTag> tags) {
-//        LinkedList<QuantityTag> invoice = new LinkedList<>();
-//        LinkedList<Product> removed;
-//        ArrayList<QuantityTag> failed = new ArrayList<>();
-//        for (QuantityTag tag: tags) {
-//            int qty = tag.getQuantity();
-//            String itemCode = tag.getId();
-//            String location = tag.getLocation().toUpperCase();
-//            int numericLocationCode = getLocationCodeNumber(location);
-//            ItemList items = locations.get(numericLocationCode);
-//            if (items == null) {
-//                failed.add(tag);
-//            } else {
-//                removed = items.removeProducts(itemCode, qty);
-//                if (removed != null) {
-//                    quantity -= removed.size();
-//                    invoice.add(new QuantityTag(itemCode, location, -removed.size()));
-//                }
-//            }
-//        }
-//        return invoice;
-//    }
 
 
     //MODIFIES: this

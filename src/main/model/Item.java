@@ -13,7 +13,7 @@ import java.util.*;
 //contains product list belonging to it
 //item can be thought of a super-category of products
 public class Item implements  TableEntryConvertible, JsonConvertible {
-    private static int count = 0;
+    private int count = 0;
     private final String id;
     private final String name;
     private String category;
@@ -133,6 +133,7 @@ public class Item implements  TableEntryConvertible, JsonConvertible {
             return false;
         } else {
             stocks.get(product.getLocation()).remove(product);
+            EventLog.getInstance().logEvent(new Event("Product with SKU: " + sku + " removed "));
             return true;
         }
     }
@@ -153,7 +154,8 @@ public class Item implements  TableEntryConvertible, JsonConvertible {
             this.products.remove(product.getSku());
             products.remove(product);
         }
-        //assert getQuantity(location) == originalQty - qty;
+        EventLog.getInstance().logEvent(new Event(qty + " products belonging to ID: "
+                + id + " removed from " + location));
         return true;
     }
 
@@ -184,11 +186,10 @@ public class Item implements  TableEntryConvertible, JsonConvertible {
     public void addProducts(InventoryTag tag) {
         int originalQty = getQuantity();
         int quantity = tag.getQuantity();
-        double unitCost = tag.getUnitCost();
         String location = tag.getLocation();
         List<Product> toBeAdded = new ArrayList<>();
         for (int i = 0; i < quantity; i++) {
-            Product product = new Product(id, createSku(), unitCost, tag.getUnitPrice(),
+            Product product = new Product(id, createSku(), tag.getUnitCost(), tag.getUnitPrice(),
                     tag.getDateGenerated(), tag.getBestBeforeDate(), location);
             toBeAdded.add(product);
             products.put(product.getSku(), product);
@@ -199,10 +200,12 @@ public class Item implements  TableEntryConvertible, JsonConvertible {
         } else {
             existing.addAll(toBeAdded);
         }
+        EventLog.getInstance().logEvent(new Event(quantity + " new products belonging to ID: "
+                + id + " added at " + location));
         if (originalQty != 0) {
-            averageCost = (averageCost * originalQty + unitCost * quantity) / (originalQty + quantity);
+            averageCost = (averageCost * originalQty + tag.getUnitCost() * quantity) / (originalQty + quantity);
         } else {
-            averageCost = unitCost;
+            averageCost = tag.getUnitCost();
         }
     }
 
@@ -224,6 +227,8 @@ public class Item implements  TableEntryConvertible, JsonConvertible {
         } else {
             existing.addAll(toBeAdded);
         }
+        EventLog.getInstance().logEvent(new Event(qty + " new products belonging to ID: "
+                + id + " added at " + location));
         if (originalQty != 0) {
             averageCost = (averageCost * originalQty + cost * qty) / (originalQty + qty);
         } else {
@@ -278,7 +283,6 @@ public class Item implements  TableEntryConvertible, JsonConvertible {
         json.put("note", note);
         json.put("listPrice", listPrice);
         json.put("averageCost", averageCost);
-        //json.put("products", new JSONArray(convertToJsonArray(JsonConvertible.convertToList(products))));
         JSONArray jsonStocks = new JSONArray();
         for (Map.Entry<String, List<Product>> entry: stocks.entrySet()) {
             jsonStocks.put(convertToJsonArray(entry.getValue()));

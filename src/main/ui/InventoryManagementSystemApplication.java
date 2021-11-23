@@ -1,6 +1,7 @@
 package ui;
 
 import model.*;
+import model.Event;
 import org.json.JSONObject;
 import persistence.JsonConvertible;
 import persistence.Reader;
@@ -136,20 +137,6 @@ public class InventoryManagementSystemApplication extends JFrame implements Json
         if (loginPanel == null) {
             loginPanel = new LoginPanel(admin, this);
         }
-//        tabbedPane.addTab("Inventory", inventoryPanel);
-//        tabbedPane.addTab("Ledger", ledgerPanel);
-//        tabbedPane.addTab("Admin", adminPanel);
-//        tabbedPane.addChangeListener(new ChangeListener() {
-//            @Override
-//            public void stateChanged(ChangeEvent e) {
-//                JTabbedPane pane = (JTabbedPane)e.getSource();
-//                if (pane.getSelectedIndex() == 2) {
-//                    if (login == false && !admin.isEmpty()) {
-//                        switchToLoginPanel();
-//                    }
-//                }
-//            }
-//        });
         createTabbedPane();
         cardLayout.addLayoutComponent(tabbedPane, "ControlPanel");
         cardLayout.addLayoutComponent(loginPanel, "LoginPanel");
@@ -160,53 +147,6 @@ public class InventoryManagementSystemApplication extends JFrame implements Json
         mainPanel.add(loginPanel, "LoginPanel");
         cardLayout.show(mainPanel, "ControlPanel");
     }
-
-//    InventoryManagementSystemApplication(JSONObject jsonObject) {
-//        try {
-//            image = ImageIO.read(new File(imagePath));
-//
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//        ii = new ImageIcon(image);
-//        image = ii.getImage();
-//        JDialog dialog = new JDialog();
-//        dialog.setLayout(new FlowLayout());
-//        JLabel descriptionLabel = new JLabel();
-//        descriptionLabel.setLayout(new BorderLayout());
-//        descriptionLabel.setIcon(ii);
-//        descriptionLabel.add(new JLabel(description), BorderLayout.CENTER);
-//        dialog.add(descriptionLabel);
-//        dialog.setSize(500, 600);
-//
-//        admin = new Admin(jsonObject.getJSONObject("admin"));
-//        ledger = new Ledger(jsonObject.getJSONObject("ledger"));
-//        inventory = new Inventory(jsonObject.getJSONObject("inventory"));
-//        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-//        cardLayout = new CardLayout();
-//        tabbedPane = new JTabbedPane();
-//        inventoryPanel = new InventoryPanel(inventory, this);
-//        ledgerPanel = new LedgerPanel(ledger);
-//        adminPanel = new AdminPanel(admin);
-//        loginPanel = new LoginPanel(admin, this);
-//        tabbedPane.addTab("Inventory", inventoryPanel);
-//        tabbedPane.addTab("Ledger", ledgerPanel);
-//        tabbedPane.addTab("Admin", adminPanel);
-////        tabbedPane.set
-//        menuBar = createMenuBar();
-//        cardLayout.addLayoutComponent(tabbedPane, "ControlPanel");
-//        cardLayout.addLayoutComponent(loginPanel, "LoginPanel");
-//        tabbedPane.setBounds(50, 50, 200, 200);
-//        mainPanel = new JPanel();
-//        mainPanel.setLayout(cardLayout);
-//        mainPanel.add(tabbedPane);
-//        mainPanel.add(loginPanel);
-//        cardLayout.show(mainPanel, "LoginPanel");
-//        add(mainPanel);
-//        pack();
-//        setVisible(true);
-//        dialog.setVisible(true);
-//    }
 
 
     //MODIFIES: this
@@ -257,7 +197,6 @@ public class InventoryManagementSystemApplication extends JFrame implements Json
 
     //EFFECTS: save the status of the program
     public void save() {
-        //switchToLoginPanel();
         try {
             Writer writer = new Writer(fileLocation);
             writer.write(this);
@@ -276,13 +215,11 @@ public class InventoryManagementSystemApplication extends JFrame implements Json
             getContentPane().removeAll();
             setVisible(false);
             repaint();
-            //Admin is always up to date
-            //admin = new Admin(jsonObject.getJSONObject("admin"));
+
             inventory = new Inventory(jsonObject.getJSONObject("inventory"));
             ledger = new Ledger(jsonObject.getJSONObject("ledger"));
             createMainPanel();
-            //adminPanel.setLoginAccount(account);
-            //cardLayout.show(mainPanel, "LoginPanel");
+
             add(mainPanel);
             //setPreferredSize(new Dimension(1500, 2000));
             menuBar = createMenuBar();
@@ -349,6 +286,7 @@ public class InventoryManagementSystemApplication extends JFrame implements Json
     public void actionPerformed(ActionEvent e) {
         String command = e.getActionCommand();
         if (command.equals("Quit")) {
+            printLog(EventLog.getInstance());
             System.exit(0);
         }
 
@@ -459,6 +397,14 @@ public class InventoryManagementSystemApplication extends JFrame implements Json
                 switchToControlPanel();
             }
         }
+    }
+
+    //EFFECTS: print logs on the console
+    public void printLog(EventLog log) {
+        for (Event event: log) {
+            System.out.println(event);
+        }
+        log.clear();
     }
 }
 

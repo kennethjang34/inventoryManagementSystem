@@ -1,63 +1,63 @@
 {
     "ledger": {
         "accounts": [{
-            "date": "2021-11-20",
+            "date": "2021-11-22",
             "accountList": [
                 {
                     "date": {
                         "month": 11,
                         "year": 2021,
-                        "day": 20
+                        "day": 22
                     },
                     "code": "111111",
-                    "quantity": 1,
-                    "description": "TEST",
-                    "location": "F12",
+                    "quantity": 100,
+                    "description": "",
+                    "location": "F123",
                     "id": "APP",
-                    "averagePrice": 1,
+                    "averagePrice": 2,
                     "averageCost": 1
                 },
                 {
                     "date": {
                         "month": 11,
                         "year": 2021,
-                        "day": 20
+                        "day": 22
                     },
                     "code": "111112",
                     "quantity": 100,
-                    "description": "TESTING",
-                    "location": "F21",
-                    "id": "PORK",
-                    "averagePrice": 1,
-                    "averageCost": 1
+                    "description": "",
+                    "location": "NOT SPECIFIED",
+                    "id": "PRK",
+                    "averagePrice": 4,
+                    "averageCost": 2
                 },
                 {
                     "date": {
                         "month": 11,
                         "year": 2021,
-                        "day": 20
+                        "day": 22
                     },
                     "code": "111113",
-                    "quantity": -1,
+                    "quantity": -3,
                     "description": "",
-                    "location": "F12",
+                    "location": "F123",
                     "id": "APP",
-                    "averagePrice": 1,
+                    "averagePrice": 2,
                     "averageCost": 1
                 },
                 {
                     "date": {
                         "month": 11,
                         "year": 2021,
-                        "day": 20
+                        "day": 22
                     },
                     "code": "111114",
-                    "quantity": -1,
+                    "quantity": -3,
                     "description": "",
-                    "location": "F21",
-                    "id": "PORK",
-                    "averagePrice": 1,
-                    "averageCost": 1
+                    "location": "NOT SPECIFIED",
+                    "id": "PRK",
+                    "averagePrice": 4,
+                    "averageCost": 2
                 }
             ]
         }],
@@ -96,47 +96,22 @@
             {
                 "quantity": 0,
                 "name": "FRUIT",
-                "items": [
-                    "APP",
-                    "BNN"
-                ]
+                "items": ["APP"]
             },
             {
                 "quantity": 0,
                 "name": "MEAT",
-                "items": ["PORK"]
+                "items": ["PRK"]
             }
         ],
         "items": [
             {
                 "note": "",
-                "count": 101,
+                "count": 100,
                 "name": "APPLE",
                 "description": "",
                 "id": "APP",
                 "category": "FRUIT",
-                "averageCost": 1,
-                "listPrice": 1,
-                "stocks": [[]]
-            },
-            {
-                "note": "",
-                "count": 101,
-                "name": "BANANA",
-                "description": "",
-                "id": "BNN",
-                "category": "FRUIT",
-                "averageCost": 0,
-                "listPrice": 1,
-                "stocks": []
-            },
-            {
-                "note": "",
-                "count": 101,
-                "name": "PORK",
-                "description": "",
-                "id": "PORK",
-                "category": "MEAT",
                 "averageCost": 1,
                 "listPrice": 1,
                 "stocks": [[
@@ -145,1683 +120,2922 @@
                         "dateGenerated": {
                             "month": 11,
                             "year": 2021,
-                            "day": 20
+                            "day": 22
                         },
-                        "price": 1,
-                        "bestBeforeDate": {
-                            "month": 12,
+                        "price": 2,
+                        "bestBeforeDate": null,
+                        "location": "F123",
+                        "id": "APP",
+                        "sku": "APP0"
+                    },
+                    {
+                        "cost": 1,
+                        "dateGenerated": {
+                            "month": 11,
+                            "year": 2021,
+                            "day": 22
+                        },
+                        "price": 2,
+                        "bestBeforeDate": null,
+                        "location": "F123",
+                        "id": "APP",
+                        "sku": "APP1"
+                    },
+                    {
+                        "cost": 1,
+                        "dateGenerated": {
+                            "month": 11,
+                            "year": 2021,
+                            "day": 22
+                        },
+                        "price": 2,
+                        "bestBeforeDate": null,
+                        "location": "F123",
+                        "id": "APP",
+                        "sku": "APP2"
+                    },
+                    {
+                        "cost": 1,
+                        "dateGenerated": {
+                            "month": 11,
+                            "year": 2021,
+                            "day": 22
+                        },
+                        "price": 2,
+                        "bestBeforeDate": null,
+                        "location": "F123",
+                        "id": "APP",
+                        "sku": "APP6"
+                    },
+                    {
+                        "cost": 1,
+                        "dateGenerated": {
+                            "month": 11,
+                            "year": 2021,
+                            "day": 22
+                        },
+                        "price": 2,
+                        "bestBeforeDate": null,
+                        "location": "F123",
+                        "id": "APP",
+                        "sku": "APP7"
+                    },
+                    {
+                        "cost": 1,
+                        "dateGenerated": {
+                            "month": 11,
+                            "year": 2021,
+                            "day": 22
+                        },
+                        "price": 2,
+                        "bestBeforeDate": null,
+                        "location": "F123",
+                        "id": "APP",
+                        "sku": "APP8"
+                    },
+                    {
+                        "cost": 1,
+                        "dateGenerated": {
+                            "month": 11,
+                            "year": 2021,
+                            "day": 22
+                        },
+                        "price": 2,
+                        "bestBeforeDate": null,
+                        "location": "F123",
+                        "id": "APP",
+                        "sku": "APP9"
+                    },
+                    {
+                        "cost": 1,
+                        "dateGenerated": {
+                            "month": 11,
+                            "year": 2021,
+                            "day": 22
+                        },
+                        "price": 2,
+                        "bestBeforeDate": null,
+                        "location": "F123",
+                        "id": "APP",
+                        "sku": "APP10"
+                    },
+                    {
+                        "cost": 1,
+                        "dateGenerated": {
+                            "month": 11,
+                            "year": 2021,
+                            "day": 22
+                        },
+                        "price": 2,
+                        "bestBeforeDate": null,
+                        "location": "F123",
+                        "id": "APP",
+                        "sku": "APP11"
+                    },
+                    {
+                        "cost": 1,
+                        "dateGenerated": {
+                            "month": 11,
+                            "year": 2021,
+                            "day": 22
+                        },
+                        "price": 2,
+                        "bestBeforeDate": null,
+                        "location": "F123",
+                        "id": "APP",
+                        "sku": "APP12"
+                    },
+                    {
+                        "cost": 1,
+                        "dateGenerated": {
+                            "month": 11,
+                            "year": 2021,
+                            "day": 22
+                        },
+                        "price": 2,
+                        "bestBeforeDate": null,
+                        "location": "F123",
+                        "id": "APP",
+                        "sku": "APP13"
+                    },
+                    {
+                        "cost": 1,
+                        "dateGenerated": {
+                            "month": 11,
+                            "year": 2021,
+                            "day": 22
+                        },
+                        "price": 2,
+                        "bestBeforeDate": null,
+                        "location": "F123",
+                        "id": "APP",
+                        "sku": "APP14"
+                    },
+                    {
+                        "cost": 1,
+                        "dateGenerated": {
+                            "month": 11,
+                            "year": 2021,
+                            "day": 22
+                        },
+                        "price": 2,
+                        "bestBeforeDate": null,
+                        "location": "F123",
+                        "id": "APP",
+                        "sku": "APP15"
+                    },
+                    {
+                        "cost": 1,
+                        "dateGenerated": {
+                            "month": 11,
+                            "year": 2021,
+                            "day": 22
+                        },
+                        "price": 2,
+                        "bestBeforeDate": null,
+                        "location": "F123",
+                        "id": "APP",
+                        "sku": "APP16"
+                    },
+                    {
+                        "cost": 1,
+                        "dateGenerated": {
+                            "month": 11,
+                            "year": 2021,
+                            "day": 22
+                        },
+                        "price": 2,
+                        "bestBeforeDate": null,
+                        "location": "F123",
+                        "id": "APP",
+                        "sku": "APP17"
+                    },
+                    {
+                        "cost": 1,
+                        "dateGenerated": {
+                            "month": 11,
+                            "year": 2021,
+                            "day": 22
+                        },
+                        "price": 2,
+                        "bestBeforeDate": null,
+                        "location": "F123",
+                        "id": "APP",
+                        "sku": "APP18"
+                    },
+                    {
+                        "cost": 1,
+                        "dateGenerated": {
+                            "month": 11,
+                            "year": 2021,
+                            "day": 22
+                        },
+                        "price": 2,
+                        "bestBeforeDate": null,
+                        "location": "F123",
+                        "id": "APP",
+                        "sku": "APP19"
+                    },
+                    {
+                        "cost": 1,
+                        "dateGenerated": {
+                            "month": 11,
+                            "year": 2021,
+                            "day": 22
+                        },
+                        "price": 2,
+                        "bestBeforeDate": null,
+                        "location": "F123",
+                        "id": "APP",
+                        "sku": "APP20"
+                    },
+                    {
+                        "cost": 1,
+                        "dateGenerated": {
+                            "month": 11,
+                            "year": 2021,
+                            "day": 22
+                        },
+                        "price": 2,
+                        "bestBeforeDate": null,
+                        "location": "F123",
+                        "id": "APP",
+                        "sku": "APP21"
+                    },
+                    {
+                        "cost": 1,
+                        "dateGenerated": {
+                            "month": 11,
+                            "year": 2021,
+                            "day": 22
+                        },
+                        "price": 2,
+                        "bestBeforeDate": null,
+                        "location": "F123",
+                        "id": "APP",
+                        "sku": "APP22"
+                    },
+                    {
+                        "cost": 1,
+                        "dateGenerated": {
+                            "month": 11,
+                            "year": 2021,
+                            "day": 22
+                        },
+                        "price": 2,
+                        "bestBeforeDate": null,
+                        "location": "F123",
+                        "id": "APP",
+                        "sku": "APP23"
+                    },
+                    {
+                        "cost": 1,
+                        "dateGenerated": {
+                            "month": 11,
+                            "year": 2021,
+                            "day": 22
+                        },
+                        "price": 2,
+                        "bestBeforeDate": null,
+                        "location": "F123",
+                        "id": "APP",
+                        "sku": "APP24"
+                    },
+                    {
+                        "cost": 1,
+                        "dateGenerated": {
+                            "month": 11,
+                            "year": 2021,
+                            "day": 22
+                        },
+                        "price": 2,
+                        "bestBeforeDate": null,
+                        "location": "F123",
+                        "id": "APP",
+                        "sku": "APP25"
+                    },
+                    {
+                        "cost": 1,
+                        "dateGenerated": {
+                            "month": 11,
+                            "year": 2021,
+                            "day": 22
+                        },
+                        "price": 2,
+                        "bestBeforeDate": null,
+                        "location": "F123",
+                        "id": "APP",
+                        "sku": "APP26"
+                    },
+                    {
+                        "cost": 1,
+                        "dateGenerated": {
+                            "month": 11,
+                            "year": 2021,
+                            "day": 22
+                        },
+                        "price": 2,
+                        "bestBeforeDate": null,
+                        "location": "F123",
+                        "id": "APP",
+                        "sku": "APP27"
+                    },
+                    {
+                        "cost": 1,
+                        "dateGenerated": {
+                            "month": 11,
+                            "year": 2021,
+                            "day": 22
+                        },
+                        "price": 2,
+                        "bestBeforeDate": null,
+                        "location": "F123",
+                        "id": "APP",
+                        "sku": "APP28"
+                    },
+                    {
+                        "cost": 1,
+                        "dateGenerated": {
+                            "month": 11,
+                            "year": 2021,
+                            "day": 22
+                        },
+                        "price": 2,
+                        "bestBeforeDate": null,
+                        "location": "F123",
+                        "id": "APP",
+                        "sku": "APP29"
+                    },
+                    {
+                        "cost": 1,
+                        "dateGenerated": {
+                            "month": 11,
+                            "year": 2021,
+                            "day": 22
+                        },
+                        "price": 2,
+                        "bestBeforeDate": null,
+                        "location": "F123",
+                        "id": "APP",
+                        "sku": "APP30"
+                    },
+                    {
+                        "cost": 1,
+                        "dateGenerated": {
+                            "month": 11,
+                            "year": 2021,
+                            "day": 22
+                        },
+                        "price": 2,
+                        "bestBeforeDate": null,
+                        "location": "F123",
+                        "id": "APP",
+                        "sku": "APP31"
+                    },
+                    {
+                        "cost": 1,
+                        "dateGenerated": {
+                            "month": 11,
+                            "year": 2021,
+                            "day": 22
+                        },
+                        "price": 2,
+                        "bestBeforeDate": null,
+                        "location": "F123",
+                        "id": "APP",
+                        "sku": "APP32"
+                    },
+                    {
+                        "cost": 1,
+                        "dateGenerated": {
+                            "month": 11,
+                            "year": 2021,
+                            "day": 22
+                        },
+                        "price": 2,
+                        "bestBeforeDate": null,
+                        "location": "F123",
+                        "id": "APP",
+                        "sku": "APP33"
+                    },
+                    {
+                        "cost": 1,
+                        "dateGenerated": {
+                            "month": 11,
+                            "year": 2021,
+                            "day": 22
+                        },
+                        "price": 2,
+                        "bestBeforeDate": null,
+                        "location": "F123",
+                        "id": "APP",
+                        "sku": "APP34"
+                    },
+                    {
+                        "cost": 1,
+                        "dateGenerated": {
+                            "month": 11,
+                            "year": 2021,
+                            "day": 22
+                        },
+                        "price": 2,
+                        "bestBeforeDate": null,
+                        "location": "F123",
+                        "id": "APP",
+                        "sku": "APP35"
+                    },
+                    {
+                        "cost": 1,
+                        "dateGenerated": {
+                            "month": 11,
+                            "year": 2021,
+                            "day": 22
+                        },
+                        "price": 2,
+                        "bestBeforeDate": null,
+                        "location": "F123",
+                        "id": "APP",
+                        "sku": "APP36"
+                    },
+                    {
+                        "cost": 1,
+                        "dateGenerated": {
+                            "month": 11,
+                            "year": 2021,
+                            "day": 22
+                        },
+                        "price": 2,
+                        "bestBeforeDate": null,
+                        "location": "F123",
+                        "id": "APP",
+                        "sku": "APP37"
+                    },
+                    {
+                        "cost": 1,
+                        "dateGenerated": {
+                            "month": 11,
+                            "year": 2021,
+                            "day": 22
+                        },
+                        "price": 2,
+                        "bestBeforeDate": null,
+                        "location": "F123",
+                        "id": "APP",
+                        "sku": "APP38"
+                    },
+                    {
+                        "cost": 1,
+                        "dateGenerated": {
+                            "month": 11,
+                            "year": 2021,
+                            "day": 22
+                        },
+                        "price": 2,
+                        "bestBeforeDate": null,
+                        "location": "F123",
+                        "id": "APP",
+                        "sku": "APP39"
+                    },
+                    {
+                        "cost": 1,
+                        "dateGenerated": {
+                            "month": 11,
+                            "year": 2021,
+                            "day": 22
+                        },
+                        "price": 2,
+                        "bestBeforeDate": null,
+                        "location": "F123",
+                        "id": "APP",
+                        "sku": "APP40"
+                    },
+                    {
+                        "cost": 1,
+                        "dateGenerated": {
+                            "month": 11,
+                            "year": 2021,
+                            "day": 22
+                        },
+                        "price": 2,
+                        "bestBeforeDate": null,
+                        "location": "F123",
+                        "id": "APP",
+                        "sku": "APP41"
+                    },
+                    {
+                        "cost": 1,
+                        "dateGenerated": {
+                            "month": 11,
+                            "year": 2021,
+                            "day": 22
+                        },
+                        "price": 2,
+                        "bestBeforeDate": null,
+                        "location": "F123",
+                        "id": "APP",
+                        "sku": "APP42"
+                    },
+                    {
+                        "cost": 1,
+                        "dateGenerated": {
+                            "month": 11,
+                            "year": 2021,
+                            "day": 22
+                        },
+                        "price": 2,
+                        "bestBeforeDate": null,
+                        "location": "F123",
+                        "id": "APP",
+                        "sku": "APP43"
+                    },
+                    {
+                        "cost": 1,
+                        "dateGenerated": {
+                            "month": 11,
+                            "year": 2021,
+                            "day": 22
+                        },
+                        "price": 2,
+                        "bestBeforeDate": null,
+                        "location": "F123",
+                        "id": "APP",
+                        "sku": "APP44"
+                    },
+                    {
+                        "cost": 1,
+                        "dateGenerated": {
+                            "month": 11,
+                            "year": 2021,
+                            "day": 22
+                        },
+                        "price": 2,
+                        "bestBeforeDate": null,
+                        "location": "F123",
+                        "id": "APP",
+                        "sku": "APP45"
+                    },
+                    {
+                        "cost": 1,
+                        "dateGenerated": {
+                            "month": 11,
+                            "year": 2021,
+                            "day": 22
+                        },
+                        "price": 2,
+                        "bestBeforeDate": null,
+                        "location": "F123",
+                        "id": "APP",
+                        "sku": "APP46"
+                    },
+                    {
+                        "cost": 1,
+                        "dateGenerated": {
+                            "month": 11,
+                            "year": 2021,
+                            "day": 22
+                        },
+                        "price": 2,
+                        "bestBeforeDate": null,
+                        "location": "F123",
+                        "id": "APP",
+                        "sku": "APP47"
+                    },
+                    {
+                        "cost": 1,
+                        "dateGenerated": {
+                            "month": 11,
+                            "year": 2021,
+                            "day": 22
+                        },
+                        "price": 2,
+                        "bestBeforeDate": null,
+                        "location": "F123",
+                        "id": "APP",
+                        "sku": "APP48"
+                    },
+                    {
+                        "cost": 1,
+                        "dateGenerated": {
+                            "month": 11,
+                            "year": 2021,
+                            "day": 22
+                        },
+                        "price": 2,
+                        "bestBeforeDate": null,
+                        "location": "F123",
+                        "id": "APP",
+                        "sku": "APP49"
+                    },
+                    {
+                        "cost": 1,
+                        "dateGenerated": {
+                            "month": 11,
+                            "year": 2021,
+                            "day": 22
+                        },
+                        "price": 2,
+                        "bestBeforeDate": null,
+                        "location": "F123",
+                        "id": "APP",
+                        "sku": "APP50"
+                    },
+                    {
+                        "cost": 1,
+                        "dateGenerated": {
+                            "month": 11,
+                            "year": 2021,
+                            "day": 22
+                        },
+                        "price": 2,
+                        "bestBeforeDate": null,
+                        "location": "F123",
+                        "id": "APP",
+                        "sku": "APP51"
+                    },
+                    {
+                        "cost": 1,
+                        "dateGenerated": {
+                            "month": 11,
+                            "year": 2021,
+                            "day": 22
+                        },
+                        "price": 2,
+                        "bestBeforeDate": null,
+                        "location": "F123",
+                        "id": "APP",
+                        "sku": "APP52"
+                    },
+                    {
+                        "cost": 1,
+                        "dateGenerated": {
+                            "month": 11,
+                            "year": 2021,
+                            "day": 22
+                        },
+                        "price": 2,
+                        "bestBeforeDate": null,
+                        "location": "F123",
+                        "id": "APP",
+                        "sku": "APP53"
+                    },
+                    {
+                        "cost": 1,
+                        "dateGenerated": {
+                            "month": 11,
+                            "year": 2021,
+                            "day": 22
+                        },
+                        "price": 2,
+                        "bestBeforeDate": null,
+                        "location": "F123",
+                        "id": "APP",
+                        "sku": "APP54"
+                    },
+                    {
+                        "cost": 1,
+                        "dateGenerated": {
+                            "month": 11,
+                            "year": 2021,
+                            "day": 22
+                        },
+                        "price": 2,
+                        "bestBeforeDate": null,
+                        "location": "F123",
+                        "id": "APP",
+                        "sku": "APP55"
+                    },
+                    {
+                        "cost": 1,
+                        "dateGenerated": {
+                            "month": 11,
+                            "year": 2021,
+                            "day": 22
+                        },
+                        "price": 2,
+                        "bestBeforeDate": null,
+                        "location": "F123",
+                        "id": "APP",
+                        "sku": "APP56"
+                    },
+                    {
+                        "cost": 1,
+                        "dateGenerated": {
+                            "month": 11,
+                            "year": 2021,
+                            "day": 22
+                        },
+                        "price": 2,
+                        "bestBeforeDate": null,
+                        "location": "F123",
+                        "id": "APP",
+                        "sku": "APP57"
+                    },
+                    {
+                        "cost": 1,
+                        "dateGenerated": {
+                            "month": 11,
+                            "year": 2021,
+                            "day": 22
+                        },
+                        "price": 2,
+                        "bestBeforeDate": null,
+                        "location": "F123",
+                        "id": "APP",
+                        "sku": "APP58"
+                    },
+                    {
+                        "cost": 1,
+                        "dateGenerated": {
+                            "month": 11,
+                            "year": 2021,
+                            "day": 22
+                        },
+                        "price": 2,
+                        "bestBeforeDate": null,
+                        "location": "F123",
+                        "id": "APP",
+                        "sku": "APP59"
+                    },
+                    {
+                        "cost": 1,
+                        "dateGenerated": {
+                            "month": 11,
+                            "year": 2021,
+                            "day": 22
+                        },
+                        "price": 2,
+                        "bestBeforeDate": null,
+                        "location": "F123",
+                        "id": "APP",
+                        "sku": "APP60"
+                    },
+                    {
+                        "cost": 1,
+                        "dateGenerated": {
+                            "month": 11,
+                            "year": 2021,
+                            "day": 22
+                        },
+                        "price": 2,
+                        "bestBeforeDate": null,
+                        "location": "F123",
+                        "id": "APP",
+                        "sku": "APP61"
+                    },
+                    {
+                        "cost": 1,
+                        "dateGenerated": {
+                            "month": 11,
+                            "year": 2021,
+                            "day": 22
+                        },
+                        "price": 2,
+                        "bestBeforeDate": null,
+                        "location": "F123",
+                        "id": "APP",
+                        "sku": "APP62"
+                    },
+                    {
+                        "cost": 1,
+                        "dateGenerated": {
+                            "month": 11,
+                            "year": 2021,
+                            "day": 22
+                        },
+                        "price": 2,
+                        "bestBeforeDate": null,
+                        "location": "F123",
+                        "id": "APP",
+                        "sku": "APP63"
+                    },
+                    {
+                        "cost": 1,
+                        "dateGenerated": {
+                            "month": 11,
+                            "year": 2021,
+                            "day": 22
+                        },
+                        "price": 2,
+                        "bestBeforeDate": null,
+                        "location": "F123",
+                        "id": "APP",
+                        "sku": "APP64"
+                    },
+                    {
+                        "cost": 1,
+                        "dateGenerated": {
+                            "month": 11,
+                            "year": 2021,
+                            "day": 22
+                        },
+                        "price": 2,
+                        "bestBeforeDate": null,
+                        "location": "F123",
+                        "id": "APP",
+                        "sku": "APP65"
+                    },
+                    {
+                        "cost": 1,
+                        "dateGenerated": {
+                            "month": 11,
+                            "year": 2021,
+                            "day": 22
+                        },
+                        "price": 2,
+                        "bestBeforeDate": null,
+                        "location": "F123",
+                        "id": "APP",
+                        "sku": "APP66"
+                    },
+                    {
+                        "cost": 1,
+                        "dateGenerated": {
+                            "month": 11,
+                            "year": 2021,
+                            "day": 22
+                        },
+                        "price": 2,
+                        "bestBeforeDate": null,
+                        "location": "F123",
+                        "id": "APP",
+                        "sku": "APP67"
+                    },
+                    {
+                        "cost": 1,
+                        "dateGenerated": {
+                            "month": 11,
+                            "year": 2021,
+                            "day": 22
+                        },
+                        "price": 2,
+                        "bestBeforeDate": null,
+                        "location": "F123",
+                        "id": "APP",
+                        "sku": "APP68"
+                    },
+                    {
+                        "cost": 1,
+                        "dateGenerated": {
+                            "month": 11,
+                            "year": 2021,
+                            "day": 22
+                        },
+                        "price": 2,
+                        "bestBeforeDate": null,
+                        "location": "F123",
+                        "id": "APP",
+                        "sku": "APP69"
+                    },
+                    {
+                        "cost": 1,
+                        "dateGenerated": {
+                            "month": 11,
+                            "year": 2021,
+                            "day": 22
+                        },
+                        "price": 2,
+                        "bestBeforeDate": null,
+                        "location": "F123",
+                        "id": "APP",
+                        "sku": "APP70"
+                    },
+                    {
+                        "cost": 1,
+                        "dateGenerated": {
+                            "month": 11,
+                            "year": 2021,
+                            "day": 22
+                        },
+                        "price": 2,
+                        "bestBeforeDate": null,
+                        "location": "F123",
+                        "id": "APP",
+                        "sku": "APP71"
+                    },
+                    {
+                        "cost": 1,
+                        "dateGenerated": {
+                            "month": 11,
+                            "year": 2021,
+                            "day": 22
+                        },
+                        "price": 2,
+                        "bestBeforeDate": null,
+                        "location": "F123",
+                        "id": "APP",
+                        "sku": "APP72"
+                    },
+                    {
+                        "cost": 1,
+                        "dateGenerated": {
+                            "month": 11,
+                            "year": 2021,
+                            "day": 22
+                        },
+                        "price": 2,
+                        "bestBeforeDate": null,
+                        "location": "F123",
+                        "id": "APP",
+                        "sku": "APP73"
+                    },
+                    {
+                        "cost": 1,
+                        "dateGenerated": {
+                            "month": 11,
+                            "year": 2021,
+                            "day": 22
+                        },
+                        "price": 2,
+                        "bestBeforeDate": null,
+                        "location": "F123",
+                        "id": "APP",
+                        "sku": "APP74"
+                    },
+                    {
+                        "cost": 1,
+                        "dateGenerated": {
+                            "month": 11,
                             "year": 2021,
-                            "day": 13
+                            "day": 22
                         },
-                        "location": "F21",
-                        "id": "PORK",
-                        "sku": "PORK2"
+                        "price": 2,
+                        "bestBeforeDate": null,
+                        "location": "F123",
+                        "id": "APP",
+                        "sku": "APP75"
                     },
                     {
                         "cost": 1,
                         "dateGenerated": {
                             "month": 11,
                             "year": 2021,
-                            "day": 20
+                            "day": 22
                         },
-                        "price": 1,
-                        "bestBeforeDate": {
-                            "month": 12,
+                        "price": 2,
+                        "bestBeforeDate": null,
+                        "location": "F123",
+                        "id": "APP",
+                        "sku": "APP76"
+                    },
+                    {
+                        "cost": 1,
+                        "dateGenerated": {
+                            "month": 11,
+                            "year": 2021,
+                            "day": 22
+                        },
+                        "price": 2,
+                        "bestBeforeDate": null,
+                        "location": "F123",
+                        "id": "APP",
+                        "sku": "APP77"
+                    },
+                    {
+                        "cost": 1,
+                        "dateGenerated": {
+                            "month": 11,
+                            "year": 2021,
+                            "day": 22
+                        },
+                        "price": 2,
+                        "bestBeforeDate": null,
+                        "location": "F123",
+                        "id": "APP",
+                        "sku": "APP78"
+                    },
+                    {
+                        "cost": 1,
+                        "dateGenerated": {
+                            "month": 11,
+                            "year": 2021,
+                            "day": 22
+                        },
+                        "price": 2,
+                        "bestBeforeDate": null,
+                        "location": "F123",
+                        "id": "APP",
+                        "sku": "APP79"
+                    },
+                    {
+                        "cost": 1,
+                        "dateGenerated": {
+                            "month": 11,
+                            "year": 2021,
+                            "day": 22
+                        },
+                        "price": 2,
+                        "bestBeforeDate": null,
+                        "location": "F123",
+                        "id": "APP",
+                        "sku": "APP80"
+                    },
+                    {
+                        "cost": 1,
+                        "dateGenerated": {
+                            "month": 11,
+                            "year": 2021,
+                            "day": 22
+                        },
+                        "price": 2,
+                        "bestBeforeDate": null,
+                        "location": "F123",
+                        "id": "APP",
+                        "sku": "APP81"
+                    },
+                    {
+                        "cost": 1,
+                        "dateGenerated": {
+                            "month": 11,
+                            "year": 2021,
+                            "day": 22
+                        },
+                        "price": 2,
+                        "bestBeforeDate": null,
+                        "location": "F123",
+                        "id": "APP",
+                        "sku": "APP82"
+                    },
+                    {
+                        "cost": 1,
+                        "dateGenerated": {
+                            "month": 11,
+                            "year": 2021,
+                            "day": 22
+                        },
+                        "price": 2,
+                        "bestBeforeDate": null,
+                        "location": "F123",
+                        "id": "APP",
+                        "sku": "APP83"
+                    },
+                    {
+                        "cost": 1,
+                        "dateGenerated": {
+                            "month": 11,
+                            "year": 2021,
+                            "day": 22
+                        },
+                        "price": 2,
+                        "bestBeforeDate": null,
+                        "location": "F123",
+                        "id": "APP",
+                        "sku": "APP84"
+                    },
+                    {
+                        "cost": 1,
+                        "dateGenerated": {
+                            "month": 11,
+                            "year": 2021,
+                            "day": 22
+                        },
+                        "price": 2,
+                        "bestBeforeDate": null,
+                        "location": "F123",
+                        "id": "APP",
+                        "sku": "APP85"
+                    },
+                    {
+                        "cost": 1,
+                        "dateGenerated": {
+                            "month": 11,
+                            "year": 2021,
+                            "day": 22
+                        },
+                        "price": 2,
+                        "bestBeforeDate": null,
+                        "location": "F123",
+                        "id": "APP",
+                        "sku": "APP86"
+                    },
+                    {
+                        "cost": 1,
+                        "dateGenerated": {
+                            "month": 11,
+                            "year": 2021,
+                            "day": 22
+                        },
+                        "price": 2,
+                        "bestBeforeDate": null,
+                        "location": "F123",
+                        "id": "APP",
+                        "sku": "APP87"
+                    },
+                    {
+                        "cost": 1,
+                        "dateGenerated": {
+                            "month": 11,
+                            "year": 2021,
+                            "day": 22
+                        },
+                        "price": 2,
+                        "bestBeforeDate": null,
+                        "location": "F123",
+                        "id": "APP",
+                        "sku": "APP88"
+                    },
+                    {
+                        "cost": 1,
+                        "dateGenerated": {
+                            "month": 11,
+                            "year": 2021,
+                            "day": 22
+                        },
+                        "price": 2,
+                        "bestBeforeDate": null,
+                        "location": "F123",
+                        "id": "APP",
+                        "sku": "APP89"
+                    },
+                    {
+                        "cost": 1,
+                        "dateGenerated": {
+                            "month": 11,
+                            "year": 2021,
+                            "day": 22
+                        },
+                        "price": 2,
+                        "bestBeforeDate": null,
+                        "location": "F123",
+                        "id": "APP",
+                        "sku": "APP90"
+                    },
+                    {
+                        "cost": 1,
+                        "dateGenerated": {
+                            "month": 11,
+                            "year": 2021,
+                            "day": 22
+                        },
+                        "price": 2,
+                        "bestBeforeDate": null,
+                        "location": "F123",
+                        "id": "APP",
+                        "sku": "APP91"
+                    },
+                    {
+                        "cost": 1,
+                        "dateGenerated": {
+                            "month": 11,
+                            "year": 2021,
+                            "day": 22
+                        },
+                        "price": 2,
+                        "bestBeforeDate": null,
+                        "location": "F123",
+                        "id": "APP",
+                        "sku": "APP92"
+                    },
+                    {
+                        "cost": 1,
+                        "dateGenerated": {
+                            "month": 11,
+                            "year": 2021,
+                            "day": 22
+                        },
+                        "price": 2,
+                        "bestBeforeDate": null,
+                        "location": "F123",
+                        "id": "APP",
+                        "sku": "APP93"
+                    },
+                    {
+                        "cost": 1,
+                        "dateGenerated": {
+                            "month": 11,
                             "year": 2021,
-                            "day": 13
+                            "day": 22
                         },
-                        "location": "F21",
-                        "id": "PORK",
-                        "sku": "PORK3"
+                        "price": 2,
+                        "bestBeforeDate": null,
+                        "location": "F123",
+                        "id": "APP",
+                        "sku": "APP94"
                     },
                     {
                         "cost": 1,
                         "dateGenerated": {
                             "month": 11,
                             "year": 2021,
-                            "day": 20
+                            "day": 22
                         },
-                        "price": 1,
+                        "price": 2,
+                        "bestBeforeDate": null,
+                        "location": "F123",
+                        "id": "APP",
+                        "sku": "APP95"
+                    },
+                    {
+                        "cost": 1,
+                        "dateGenerated": {
+                            "month": 11,
+                            "year": 2021,
+                            "day": 22
+                        },
+                        "price": 2,
+                        "bestBeforeDate": null,
+                        "location": "F123",
+                        "id": "APP",
+                        "sku": "APP96"
+                    },
+                    {
+                        "cost": 1,
+                        "dateGenerated": {
+                            "month": 11,
+                            "year": 2021,
+                            "day": 22
+                        },
+                        "price": 2,
+                        "bestBeforeDate": null,
+                        "location": "F123",
+                        "id": "APP",
+                        "sku": "APP97"
+                    },
+                    {
+                        "cost": 1,
+                        "dateGenerated": {
+                            "month": 11,
+                            "year": 2021,
+                            "day": 22
+                        },
+                        "price": 2,
+                        "bestBeforeDate": null,
+                        "location": "F123",
+                        "id": "APP",
+                        "sku": "APP98"
+                    },
+                    {
+                        "cost": 1,
+                        "dateGenerated": {
+                            "month": 11,
+                            "year": 2021,
+                            "day": 22
+                        },
+                        "price": 2,
+                        "bestBeforeDate": null,
+                        "location": "F123",
+                        "id": "APP",
+                        "sku": "APP99"
+                    }
+                ]]
+            },
+            {
+                "note": "",
+                "count": 100,
+                "name": "PORK",
+                "description": "",
+                "id": "PRK",
+                "category": "MEAT",
+                "averageCost": 2,
+                "listPrice": 3,
+                "stocks": [[
+                    {
+                        "cost": 2,
+                        "dateGenerated": {
+                            "month": 11,
+                            "year": 2021,
+                            "day": 22
+                        },
+                        "price": 4,
                         "bestBeforeDate": {
                             "month": 12,
                             "year": 2021,
-                            "day": 13
+                            "day": 12
                         },
-                        "location": "F21",
-                        "id": "PORK",
-                        "sku": "PORK4"
+                        "location": "NOT SPECIFIED",
+                        "id": "PRK",
+                        "sku": "PRK0"
                     },
                     {
-                        "cost": 1,
+                        "cost": 2,
                         "dateGenerated": {
                             "month": 11,
                             "year": 2021,
-                            "day": 20
+                            "day": 22
                         },
-                        "price": 1,
+                        "price": 4,
                         "bestBeforeDate": {
                             "month": 12,
                             "year": 2021,
-                            "day": 13
+                            "day": 12
                         },
-                        "location": "F21",
-                        "id": "PORK",
-                        "sku": "PORK5"
+                        "location": "NOT SPECIFIED",
+                        "id": "PRK",
+                        "sku": "PRK1"
                     },
                     {
-                        "cost": 1,
+                        "cost": 2,
                         "dateGenerated": {
                             "month": 11,
                             "year": 2021,
-                            "day": 20
+                            "day": 22
                         },
-                        "price": 1,
+                        "price": 4,
                         "bestBeforeDate": {
                             "month": 12,
                             "year": 2021,
-                            "day": 13
+                            "day": 12
                         },
-                        "location": "F21",
-                        "id": "PORK",
-                        "sku": "PORK6"
+                        "location": "NOT SPECIFIED",
+                        "id": "PRK",
+                        "sku": "PRK2"
                     },
                     {
-                        "cost": 1,
+                        "cost": 2,
                         "dateGenerated": {
                             "month": 11,
                             "year": 2021,
-                            "day": 20
+                            "day": 22
                         },
-                        "price": 1,
+                        "price": 4,
                         "bestBeforeDate": {
                             "month": 12,
                             "year": 2021,
-                            "day": 13
+                            "day": 12
                         },
-                        "location": "F21",
-                        "id": "PORK",
-                        "sku": "PORK7"
+                        "location": "NOT SPECIFIED",
+                        "id": "PRK",
+                        "sku": "PRK3"
                     },
                     {
-                        "cost": 1,
+                        "cost": 2,
                         "dateGenerated": {
                             "month": 11,
                             "year": 2021,
-                            "day": 20
+                            "day": 22
                         },
-                        "price": 1,
+                        "price": 4,
                         "bestBeforeDate": {
                             "month": 12,
                             "year": 2021,
-                            "day": 13
+                            "day": 12
                         },
-                        "location": "F21",
-                        "id": "PORK",
-                        "sku": "PORK8"
+                        "location": "NOT SPECIFIED",
+                        "id": "PRK",
+                        "sku": "PRK4"
                     },
                     {
-                        "cost": 1,
+                        "cost": 2,
                         "dateGenerated": {
                             "month": 11,
                             "year": 2021,
-                            "day": 20
+                            "day": 22
                         },
-                        "price": 1,
+                        "price": 4,
                         "bestBeforeDate": {
                             "month": 12,
                             "year": 2021,
-                            "day": 13
+                            "day": 12
                         },
-                        "location": "F21",
-                        "id": "PORK",
-                        "sku": "PORK9"
+                        "location": "NOT SPECIFIED",
+                        "id": "PRK",
+                        "sku": "PRK5"
                     },
                     {
-                        "cost": 1,
+                        "cost": 2,
                         "dateGenerated": {
                             "month": 11,
                             "year": 2021,
-                            "day": 20
+                            "day": 22
                         },
-                        "price": 1,
+                        "price": 4,
                         "bestBeforeDate": {
                             "month": 12,
                             "year": 2021,
-                            "day": 13
+                            "day": 12
                         },
-                        "location": "F21",
-                        "id": "PORK",
-                        "sku": "PORK10"
+                        "location": "NOT SPECIFIED",
+                        "id": "PRK",
+                        "sku": "PRK6"
                     },
                     {
-                        "cost": 1,
+                        "cost": 2,
                         "dateGenerated": {
                             "month": 11,
                             "year": 2021,
-                            "day": 20
+                            "day": 22
                         },
-                        "price": 1,
+                        "price": 4,
                         "bestBeforeDate": {
                             "month": 12,
                             "year": 2021,
-                            "day": 13
+                            "day": 12
                         },
-                        "location": "F21",
-                        "id": "PORK",
-                        "sku": "PORK11"
+                        "location": "NOT SPECIFIED",
+                        "id": "PRK",
+                        "sku": "PRK7"
                     },
                     {
-                        "cost": 1,
+                        "cost": 2,
                         "dateGenerated": {
                             "month": 11,
                             "year": 2021,
-                            "day": 20
+                            "day": 22
                         },
-                        "price": 1,
+                        "price": 4,
                         "bestBeforeDate": {
                             "month": 12,
                             "year": 2021,
-                            "day": 13
+                            "day": 12
                         },
-                        "location": "F21",
-                        "id": "PORK",
-                        "sku": "PORK12"
+                        "location": "NOT SPECIFIED",
+                        "id": "PRK",
+                        "sku": "PRK8"
                     },
                     {
-                        "cost": 1,
+                        "cost": 2,
                         "dateGenerated": {
                             "month": 11,
                             "year": 2021,
-                            "day": 20
+                            "day": 22
                         },
-                        "price": 1,
+                        "price": 4,
                         "bestBeforeDate": {
                             "month": 12,
                             "year": 2021,
-                            "day": 13
+                            "day": 12
                         },
-                        "location": "F21",
-                        "id": "PORK",
-                        "sku": "PORK13"
+                        "location": "NOT SPECIFIED",
+                        "id": "PRK",
+                        "sku": "PRK9"
                     },
                     {
-                        "cost": 1,
+                        "cost": 2,
                         "dateGenerated": {
                             "month": 11,
                             "year": 2021,
-                            "day": 20
+                            "day": 22
                         },
-                        "price": 1,
+                        "price": 4,
                         "bestBeforeDate": {
                             "month": 12,
                             "year": 2021,
-                            "day": 13
+                            "day": 12
                         },
-                        "location": "F21",
-                        "id": "PORK",
-                        "sku": "PORK14"
+                        "location": "NOT SPECIFIED",
+                        "id": "PRK",
+                        "sku": "PRK10"
                     },
                     {
-                        "cost": 1,
+                        "cost": 2,
                         "dateGenerated": {
                             "month": 11,
                             "year": 2021,
-                            "day": 20
+                            "day": 22
                         },
-                        "price": 1,
+                        "price": 4,
                         "bestBeforeDate": {
                             "month": 12,
                             "year": 2021,
-                            "day": 13
+                            "day": 12
                         },
-                        "location": "F21",
-                        "id": "PORK",
-                        "sku": "PORK15"
+                        "location": "NOT SPECIFIED",
+                        "id": "PRK",
+                        "sku": "PRK11"
                     },
                     {
-                        "cost": 1,
+                        "cost": 2,
                         "dateGenerated": {
                             "month": 11,
                             "year": 2021,
-                            "day": 20
+                            "day": 22
                         },
-                        "price": 1,
+                        "price": 4,
                         "bestBeforeDate": {
                             "month": 12,
                             "year": 2021,
-                            "day": 13
+                            "day": 12
                         },
-                        "location": "F21",
-                        "id": "PORK",
-                        "sku": "PORK16"
+                        "location": "NOT SPECIFIED",
+                        "id": "PRK",
+                        "sku": "PRK12"
                     },
                     {
-                        "cost": 1,
+                        "cost": 2,
                         "dateGenerated": {
                             "month": 11,
                             "year": 2021,
-                            "day": 20
+                            "day": 22
                         },
-                        "price": 1,
+                        "price": 4,
                         "bestBeforeDate": {
                             "month": 12,
                             "year": 2021,
-                            "day": 13
+                            "day": 12
                         },
-                        "location": "F21",
-                        "id": "PORK",
-                        "sku": "PORK17"
+                        "location": "NOT SPECIFIED",
+                        "id": "PRK",
+                        "sku": "PRK13"
                     },
                     {
-                        "cost": 1,
+                        "cost": 2,
                         "dateGenerated": {
                             "month": 11,
                             "year": 2021,
-                            "day": 20
+                            "day": 22
                         },
-                        "price": 1,
+                        "price": 4,
                         "bestBeforeDate": {
                             "month": 12,
                             "year": 2021,
-                            "day": 13
+                            "day": 12
                         },
-                        "location": "F21",
-                        "id": "PORK",
-                        "sku": "PORK18"
+                        "location": "NOT SPECIFIED",
+                        "id": "PRK",
+                        "sku": "PRK14"
                     },
                     {
-                        "cost": 1,
+                        "cost": 2,
                         "dateGenerated": {
                             "month": 11,
                             "year": 2021,
-                            "day": 20
+                            "day": 22
                         },
-                        "price": 1,
+                        "price": 4,
                         "bestBeforeDate": {
                             "month": 12,
                             "year": 2021,
-                            "day": 13
+                            "day": 12
                         },
-                        "location": "F21",
-                        "id": "PORK",
-                        "sku": "PORK19"
+                        "location": "NOT SPECIFIED",
+                        "id": "PRK",
+                        "sku": "PRK15"
                     },
                     {
-                        "cost": 1,
+                        "cost": 2,
                         "dateGenerated": {
                             "month": 11,
                             "year": 2021,
-                            "day": 20
+                            "day": 22
                         },
-                        "price": 1,
+                        "price": 4,
                         "bestBeforeDate": {
                             "month": 12,
                             "year": 2021,
-                            "day": 13
+                            "day": 12
                         },
-                        "location": "F21",
-                        "id": "PORK",
-                        "sku": "PORK20"
+                        "location": "NOT SPECIFIED",
+                        "id": "PRK",
+                        "sku": "PRK16"
                     },
                     {
-                        "cost": 1,
+                        "cost": 2,
                         "dateGenerated": {
                             "month": 11,
                             "year": 2021,
-                            "day": 20
+                            "day": 22
                         },
-                        "price": 1,
+                        "price": 4,
                         "bestBeforeDate": {
                             "month": 12,
                             "year": 2021,
-                            "day": 13
+                            "day": 12
                         },
-                        "location": "F21",
-                        "id": "PORK",
-                        "sku": "PORK21"
+                        "location": "NOT SPECIFIED",
+                        "id": "PRK",
+                        "sku": "PRK17"
                     },
                     {
-                        "cost": 1,
+                        "cost": 2,
                         "dateGenerated": {
                             "month": 11,
                             "year": 2021,
-                            "day": 20
+                            "day": 22
                         },
-                        "price": 1,
+                        "price": 4,
                         "bestBeforeDate": {
                             "month": 12,
                             "year": 2021,
-                            "day": 13
+                            "day": 12
                         },
-                        "location": "F21",
-                        "id": "PORK",
-                        "sku": "PORK22"
+                        "location": "NOT SPECIFIED",
+                        "id": "PRK",
+                        "sku": "PRK18"
                     },
                     {
-                        "cost": 1,
+                        "cost": 2,
                         "dateGenerated": {
                             "month": 11,
                             "year": 2021,
-                            "day": 20
+                            "day": 22
                         },
-                        "price": 1,
+                        "price": 4,
                         "bestBeforeDate": {
                             "month": 12,
                             "year": 2021,
-                            "day": 13
+                            "day": 12
                         },
-                        "location": "F21",
-                        "id": "PORK",
-                        "sku": "PORK23"
+                        "location": "NOT SPECIFIED",
+                        "id": "PRK",
+                        "sku": "PRK19"
                     },
                     {
-                        "cost": 1,
+                        "cost": 2,
                         "dateGenerated": {
                             "month": 11,
                             "year": 2021,
-                            "day": 20
+                            "day": 22
                         },
-                        "price": 1,
+                        "price": 4,
                         "bestBeforeDate": {
                             "month": 12,
                             "year": 2021,
-                            "day": 13
+                            "day": 12
                         },
-                        "location": "F21",
-                        "id": "PORK",
-                        "sku": "PORK24"
+                        "location": "NOT SPECIFIED",
+                        "id": "PRK",
+                        "sku": "PRK20"
                     },
                     {
-                        "cost": 1,
+                        "cost": 2,
                         "dateGenerated": {
                             "month": 11,
                             "year": 2021,
-                            "day": 20
+                            "day": 22
                         },
-                        "price": 1,
+                        "price": 4,
                         "bestBeforeDate": {
                             "month": 12,
                             "year": 2021,
-                            "day": 13
+                            "day": 12
                         },
-                        "location": "F21",
-                        "id": "PORK",
-                        "sku": "PORK25"
+                        "location": "NOT SPECIFIED",
+                        "id": "PRK",
+                        "sku": "PRK21"
                     },
                     {
-                        "cost": 1,
+                        "cost": 2,
                         "dateGenerated": {
                             "month": 11,
                             "year": 2021,
-                            "day": 20
+                            "day": 22
                         },
-                        "price": 1,
+                        "price": 4,
                         "bestBeforeDate": {
                             "month": 12,
                             "year": 2021,
-                            "day": 13
+                            "day": 12
                         },
-                        "location": "F21",
-                        "id": "PORK",
-                        "sku": "PORK26"
+                        "location": "NOT SPECIFIED",
+                        "id": "PRK",
+                        "sku": "PRK22"
                     },
                     {
-                        "cost": 1,
+                        "cost": 2,
                         "dateGenerated": {
                             "month": 11,
                             "year": 2021,
-                            "day": 20
+                            "day": 22
                         },
-                        "price": 1,
+                        "price": 4,
                         "bestBeforeDate": {
                             "month": 12,
                             "year": 2021,
-                            "day": 13
+                            "day": 12
                         },
-                        "location": "F21",
-                        "id": "PORK",
-                        "sku": "PORK27"
+                        "location": "NOT SPECIFIED",
+                        "id": "PRK",
+                        "sku": "PRK23"
                     },
                     {
-                        "cost": 1,
+                        "cost": 2,
                         "dateGenerated": {
                             "month": 11,
                             "year": 2021,
-                            "day": 20
+                            "day": 22
                         },
-                        "price": 1,
+                        "price": 4,
                         "bestBeforeDate": {
                             "month": 12,
                             "year": 2021,
-                            "day": 13
+                            "day": 12
                         },
-                        "location": "F21",
-                        "id": "PORK",
-                        "sku": "PORK28"
+                        "location": "NOT SPECIFIED",
+                        "id": "PRK",
+                        "sku": "PRK24"
                     },
                     {
-                        "cost": 1,
+                        "cost": 2,
                         "dateGenerated": {
                             "month": 11,
                             "year": 2021,
-                            "day": 20
+                            "day": 22
                         },
-                        "price": 1,
+                        "price": 4,
                         "bestBeforeDate": {
                             "month": 12,
                             "year": 2021,
-                            "day": 13
+                            "day": 12
                         },
-                        "location": "F21",
-                        "id": "PORK",
-                        "sku": "PORK29"
+                        "location": "NOT SPECIFIED",
+                        "id": "PRK",
+                        "sku": "PRK25"
                     },
                     {
-                        "cost": 1,
+                        "cost": 2,
                         "dateGenerated": {
                             "month": 11,
                             "year": 2021,
-                            "day": 20
+                            "day": 22
                         },
-                        "price": 1,
+                        "price": 4,
                         "bestBeforeDate": {
                             "month": 12,
                             "year": 2021,
-                            "day": 13
+                            "day": 12
                         },
-                        "location": "F21",
-                        "id": "PORK",
-                        "sku": "PORK30"
+                        "location": "NOT SPECIFIED",
+                        "id": "PRK",
+                        "sku": "PRK26"
                     },
                     {
-                        "cost": 1,
+                        "cost": 2,
                         "dateGenerated": {
                             "month": 11,
                             "year": 2021,
-                            "day": 20
+                            "day": 22
                         },
-                        "price": 1,
+                        "price": 4,
                         "bestBeforeDate": {
                             "month": 12,
                             "year": 2021,
-                            "day": 13
+                            "day": 12
                         },
-                        "location": "F21",
-                        "id": "PORK",
-                        "sku": "PORK31"
+                        "location": "NOT SPECIFIED",
+                        "id": "PRK",
+                        "sku": "PRK27"
                     },
                     {
-                        "cost": 1,
+                        "cost": 2,
                         "dateGenerated": {
                             "month": 11,
                             "year": 2021,
-                            "day": 20
+                            "day": 22
                         },
-                        "price": 1,
+                        "price": 4,
                         "bestBeforeDate": {
                             "month": 12,
                             "year": 2021,
-                            "day": 13
+                            "day": 12
                         },
-                        "location": "F21",
-                        "id": "PORK",
-                        "sku": "PORK32"
+                        "location": "NOT SPECIFIED",
+                        "id": "PRK",
+                        "sku": "PRK28"
                     },
                     {
-                        "cost": 1,
+                        "cost": 2,
                         "dateGenerated": {
                             "month": 11,
                             "year": 2021,
-                            "day": 20
+                            "day": 22
                         },
-                        "price": 1,
+                        "price": 4,
                         "bestBeforeDate": {
                             "month": 12,
                             "year": 2021,
-                            "day": 13
+                            "day": 12
                         },
-                        "location": "F21",
-                        "id": "PORK",
-                        "sku": "PORK33"
+                        "location": "NOT SPECIFIED",
+                        "id": "PRK",
+                        "sku": "PRK29"
                     },
                     {
-                        "cost": 1,
+                        "cost": 2,
                         "dateGenerated": {
                             "month": 11,
                             "year": 2021,
-                            "day": 20
+                            "day": 22
                         },
-                        "price": 1,
+                        "price": 4,
                         "bestBeforeDate": {
                             "month": 12,
                             "year": 2021,
-                            "day": 13
+                            "day": 12
                         },
-                        "location": "F21",
-                        "id": "PORK",
-                        "sku": "PORK34"
+                        "location": "NOT SPECIFIED",
+                        "id": "PRK",
+                        "sku": "PRK30"
                     },
                     {
-                        "cost": 1,
+                        "cost": 2,
                         "dateGenerated": {
                             "month": 11,
                             "year": 2021,
-                            "day": 20
+                            "day": 22
                         },
-                        "price": 1,
+                        "price": 4,
                         "bestBeforeDate": {
                             "month": 12,
                             "year": 2021,
-                            "day": 13
+                            "day": 12
                         },
-                        "location": "F21",
-                        "id": "PORK",
-                        "sku": "PORK35"
+                        "location": "NOT SPECIFIED",
+                        "id": "PRK",
+                        "sku": "PRK31"
                     },
                     {
-                        "cost": 1,
+                        "cost": 2,
                         "dateGenerated": {
                             "month": 11,
                             "year": 2021,
-                            "day": 20
+                            "day": 22
                         },
-                        "price": 1,
+                        "price": 4,
                         "bestBeforeDate": {
                             "month": 12,
                             "year": 2021,
-                            "day": 13
+                            "day": 12
                         },
-                        "location": "F21",
-                        "id": "PORK",
-                        "sku": "PORK36"
+                        "location": "NOT SPECIFIED",
+                        "id": "PRK",
+                        "sku": "PRK32"
                     },
                     {
-                        "cost": 1,
+                        "cost": 2,
                         "dateGenerated": {
                             "month": 11,
                             "year": 2021,
-                            "day": 20
+                            "day": 22
                         },
-                        "price": 1,
+                        "price": 4,
                         "bestBeforeDate": {
                             "month": 12,
                             "year": 2021,
-                            "day": 13
+                            "day": 12
                         },
-                        "location": "F21",
-                        "id": "PORK",
-                        "sku": "PORK37"
+                        "location": "NOT SPECIFIED",
+                        "id": "PRK",
+                        "sku": "PRK33"
                     },
                     {
-                        "cost": 1,
+                        "cost": 2,
                         "dateGenerated": {
                             "month": 11,
                             "year": 2021,
-                            "day": 20
+                            "day": 22
                         },
-                        "price": 1,
+                        "price": 4,
                         "bestBeforeDate": {
                             "month": 12,
                             "year": 2021,
-                            "day": 13
+                            "day": 12
                         },
-                        "location": "F21",
-                        "id": "PORK",
-                        "sku": "PORK38"
+                        "location": "NOT SPECIFIED",
+                        "id": "PRK",
+                        "sku": "PRK34"
                     },
                     {
-                        "cost": 1,
+                        "cost": 2,
                         "dateGenerated": {
                             "month": 11,
                             "year": 2021,
-                            "day": 20
+                            "day": 22
                         },
-                        "price": 1,
+                        "price": 4,
                         "bestBeforeDate": {
                             "month": 12,
                             "year": 2021,
-                            "day": 13
+                            "day": 12
                         },
-                        "location": "F21",
-                        "id": "PORK",
-                        "sku": "PORK39"
+                        "location": "NOT SPECIFIED",
+                        "id": "PRK",
+                        "sku": "PRK35"
                     },
                     {
-                        "cost": 1,
+                        "cost": 2,
                         "dateGenerated": {
                             "month": 11,
                             "year": 2021,
-                            "day": 20
+                            "day": 22
                         },
-                        "price": 1,
+                        "price": 4,
                         "bestBeforeDate": {
                             "month": 12,
                             "year": 2021,
-                            "day": 13
+                            "day": 12
                         },
-                        "location": "F21",
-                        "id": "PORK",
-                        "sku": "PORK40"
+                        "location": "NOT SPECIFIED",
+                        "id": "PRK",
+                        "sku": "PRK36"
                     },
                     {
-                        "cost": 1,
+                        "cost": 2,
                         "dateGenerated": {
                             "month": 11,
                             "year": 2021,
-                            "day": 20
+                            "day": 22
                         },
-                        "price": 1,
+                        "price": 4,
                         "bestBeforeDate": {
                             "month": 12,
                             "year": 2021,
-                            "day": 13
+                            "day": 12
                         },
-                        "location": "F21",
-                        "id": "PORK",
-                        "sku": "PORK41"
+                        "location": "NOT SPECIFIED",
+                        "id": "PRK",
+                        "sku": "PRK37"
                     },
                     {
-                        "cost": 1,
+                        "cost": 2,
                         "dateGenerated": {
                             "month": 11,
                             "year": 2021,
-                            "day": 20
+                            "day": 22
                         },
-                        "price": 1,
+                        "price": 4,
                         "bestBeforeDate": {
                             "month": 12,
                             "year": 2021,
-                            "day": 13
+                            "day": 12
                         },
-                        "location": "F21",
-                        "id": "PORK",
-                        "sku": "PORK42"
+                        "location": "NOT SPECIFIED",
+                        "id": "PRK",
+                        "sku": "PRK38"
                     },
                     {
-                        "cost": 1,
+                        "cost": 2,
                         "dateGenerated": {
                             "month": 11,
                             "year": 2021,
-                            "day": 20
+                            "day": 22
                         },
-                        "price": 1,
+                        "price": 4,
                         "bestBeforeDate": {
                             "month": 12,
                             "year": 2021,
-                            "day": 13
+                            "day": 12
                         },
-                        "location": "F21",
-                        "id": "PORK",
-                        "sku": "PORK43"
+                        "location": "NOT SPECIFIED",
+                        "id": "PRK",
+                        "sku": "PRK39"
                     },
                     {
-                        "cost": 1,
+                        "cost": 2,
                         "dateGenerated": {
                             "month": 11,
                             "year": 2021,
-                            "day": 20
+                            "day": 22
                         },
-                        "price": 1,
+                        "price": 4,
                         "bestBeforeDate": {
                             "month": 12,
                             "year": 2021,
-                            "day": 13
+                            "day": 12
                         },
-                        "location": "F21",
-                        "id": "PORK",
-                        "sku": "PORK44"
+                        "location": "NOT SPECIFIED",
+                        "id": "PRK",
+                        "sku": "PRK40"
                     },
                     {
-                        "cost": 1,
+                        "cost": 2,
                         "dateGenerated": {
                             "month": 11,
                             "year": 2021,
-                            "day": 20
+                            "day": 22
                         },
-                        "price": 1,
+                        "price": 4,
                         "bestBeforeDate": {
                             "month": 12,
                             "year": 2021,
-                            "day": 13
+                            "day": 12
                         },
-                        "location": "F21",
-                        "id": "PORK",
-                        "sku": "PORK45"
+                        "location": "NOT SPECIFIED",
+                        "id": "PRK",
+                        "sku": "PRK41"
                     },
                     {
-                        "cost": 1,
+                        "cost": 2,
                         "dateGenerated": {
                             "month": 11,
                             "year": 2021,
-                            "day": 20
+                            "day": 22
                         },
-                        "price": 1,
+                        "price": 4,
                         "bestBeforeDate": {
                             "month": 12,
                             "year": 2021,
-                            "day": 13
+                            "day": 12
                         },
-                        "location": "F21",
-                        "id": "PORK",
-                        "sku": "PORK46"
+                        "location": "NOT SPECIFIED",
+                        "id": "PRK",
+                        "sku": "PRK42"
                     },
                     {
-                        "cost": 1,
+                        "cost": 2,
                         "dateGenerated": {
                             "month": 11,
                             "year": 2021,
-                            "day": 20
+                            "day": 22
                         },
-                        "price": 1,
+                        "price": 4,
                         "bestBeforeDate": {
                             "month": 12,
                             "year": 2021,
-                            "day": 13
+                            "day": 12
                         },
-                        "location": "F21",
-                        "id": "PORK",
-                        "sku": "PORK47"
+                        "location": "NOT SPECIFIED",
+                        "id": "PRK",
+                        "sku": "PRK43"
                     },
                     {
-                        "cost": 1,
+                        "cost": 2,
                         "dateGenerated": {
                             "month": 11,
                             "year": 2021,
-                            "day": 20
+                            "day": 22
                         },
-                        "price": 1,
+                        "price": 4,
                         "bestBeforeDate": {
                             "month": 12,
                             "year": 2021,
-                            "day": 13
+                            "day": 12
                         },
-                        "location": "F21",
-                        "id": "PORK",
-                        "sku": "PORK48"
+                        "location": "NOT SPECIFIED",
+                        "id": "PRK",
+                        "sku": "PRK44"
                     },
                     {
-                        "cost": 1,
+                        "cost": 2,
                         "dateGenerated": {
                             "month": 11,
                             "year": 2021,
-                            "day": 20
+                            "day": 22
                         },
-                        "price": 1,
+                        "price": 4,
                         "bestBeforeDate": {
                             "month": 12,
                             "year": 2021,
-                            "day": 13
+                            "day": 12
                         },
-                        "location": "F21",
-                        "id": "PORK",
-                        "sku": "PORK49"
+                        "location": "NOT SPECIFIED",
+                        "id": "PRK",
+                        "sku": "PRK45"
                     },
                     {
-                        "cost": 1,
+                        "cost": 2,
                         "dateGenerated": {
                             "month": 11,
                             "year": 2021,
-                            "day": 20
+                            "day": 22
                         },
-                        "price": 1,
+                        "price": 4,
                         "bestBeforeDate": {
                             "month": 12,
                             "year": 2021,
-                            "day": 13
+                            "day": 12
                         },
-                        "location": "F21",
-                        "id": "PORK",
-                        "sku": "PORK50"
+                        "location": "NOT SPECIFIED",
+                        "id": "PRK",
+                        "sku": "PRK46"
                     },
                     {
-                        "cost": 1,
+                        "cost": 2,
                         "dateGenerated": {
                             "month": 11,
                             "year": 2021,
-                            "day": 20
+                            "day": 22
                         },
-                        "price": 1,
+                        "price": 4,
                         "bestBeforeDate": {
                             "month": 12,
                             "year": 2021,
-                            "day": 13
+                            "day": 12
                         },
-                        "location": "F21",
-                        "id": "PORK",
-                        "sku": "PORK51"
+                        "location": "NOT SPECIFIED",
+                        "id": "PRK",
+                        "sku": "PRK47"
                     },
                     {
-                        "cost": 1,
+                        "cost": 2,
                         "dateGenerated": {
                             "month": 11,
                             "year": 2021,
-                            "day": 20
+                            "day": 22
                         },
-                        "price": 1,
+                        "price": 4,
                         "bestBeforeDate": {
                             "month": 12,
                             "year": 2021,
-                            "day": 13
+                            "day": 12
                         },
-                        "location": "F21",
-                        "id": "PORK",
-                        "sku": "PORK52"
+                        "location": "NOT SPECIFIED",
+                        "id": "PRK",
+                        "sku": "PRK48"
                     },
                     {
-                        "cost": 1,
+                        "cost": 2,
                         "dateGenerated": {
                             "month": 11,
                             "year": 2021,
-                            "day": 20
+                            "day": 22
                         },
-                        "price": 1,
+                        "price": 4,
                         "bestBeforeDate": {
                             "month": 12,
                             "year": 2021,
-                            "day": 13
+                            "day": 12
                         },
-                        "location": "F21",
-                        "id": "PORK",
-                        "sku": "PORK53"
+                        "location": "NOT SPECIFIED",
+                        "id": "PRK",
+                        "sku": "PRK49"
                     },
                     {
-                        "cost": 1,
+                        "cost": 2,
                         "dateGenerated": {
                             "month": 11,
                             "year": 2021,
-                            "day": 20
+                            "day": 22
                         },
-                        "price": 1,
+                        "price": 4,
                         "bestBeforeDate": {
                             "month": 12,
                             "year": 2021,
-                            "day": 13
+                            "day": 12
                         },
-                        "location": "F21",
-                        "id": "PORK",
-                        "sku": "PORK54"
+                        "location": "NOT SPECIFIED",
+                        "id": "PRK",
+                        "sku": "PRK50"
                     },
                     {
-                        "cost": 1,
+                        "cost": 2,
                         "dateGenerated": {
                             "month": 11,
                             "year": 2021,
-                            "day": 20
+                            "day": 22
                         },
-                        "price": 1,
+                        "price": 4,
                         "bestBeforeDate": {
                             "month": 12,
                             "year": 2021,
-                            "day": 13
+                            "day": 12
                         },
-                        "location": "F21",
-                        "id": "PORK",
-                        "sku": "PORK55"
+                        "location": "NOT SPECIFIED",
+                        "id": "PRK",
+                        "sku": "PRK51"
                     },
                     {
-                        "cost": 1,
+                        "cost": 2,
                         "dateGenerated": {
                             "month": 11,
                             "year": 2021,
-                            "day": 20
+                            "day": 22
                         },
-                        "price": 1,
+                        "price": 4,
                         "bestBeforeDate": {
                             "month": 12,
                             "year": 2021,
-                            "day": 13
+                            "day": 12
                         },
-                        "location": "F21",
-                        "id": "PORK",
-                        "sku": "PORK56"
+                        "location": "NOT SPECIFIED",
+                        "id": "PRK",
+                        "sku": "PRK52"
                     },
                     {
-                        "cost": 1,
+                        "cost": 2,
                         "dateGenerated": {
                             "month": 11,
                             "year": 2021,
-                            "day": 20
+                            "day": 22
                         },
-                        "price": 1,
+                        "price": 4,
                         "bestBeforeDate": {
                             "month": 12,
                             "year": 2021,
-                            "day": 13
+                            "day": 12
                         },
-                        "location": "F21",
-                        "id": "PORK",
-                        "sku": "PORK57"
+                        "location": "NOT SPECIFIED",
+                        "id": "PRK",
+                        "sku": "PRK53"
                     },
                     {
-                        "cost": 1,
+                        "cost": 2,
                         "dateGenerated": {
                             "month": 11,
                             "year": 2021,
-                            "day": 20
+                            "day": 22
                         },
-                        "price": 1,
+                        "price": 4,
                         "bestBeforeDate": {
                             "month": 12,
                             "year": 2021,
-                            "day": 13
+                            "day": 12
                         },
-                        "location": "F21",
-                        "id": "PORK",
-                        "sku": "PORK58"
+                        "location": "NOT SPECIFIED",
+                        "id": "PRK",
+                        "sku": "PRK54"
                     },
                     {
-                        "cost": 1,
+                        "cost": 2,
                         "dateGenerated": {
                             "month": 11,
                             "year": 2021,
-                            "day": 20
+                            "day": 22
                         },
-                        "price": 1,
+                        "price": 4,
                         "bestBeforeDate": {
                             "month": 12,
                             "year": 2021,
-                            "day": 13
+                            "day": 12
                         },
-                        "location": "F21",
-                        "id": "PORK",
-                        "sku": "PORK59"
+                        "location": "NOT SPECIFIED",
+                        "id": "PRK",
+                        "sku": "PRK55"
                     },
                     {
-                        "cost": 1,
+                        "cost": 2,
                         "dateGenerated": {
                             "month": 11,
                             "year": 2021,
-                            "day": 20
+                            "day": 22
                         },
-                        "price": 1,
+                        "price": 4,
                         "bestBeforeDate": {
                             "month": 12,
                             "year": 2021,
-                            "day": 13
+                            "day": 12
                         },
-                        "location": "F21",
-                        "id": "PORK",
-                        "sku": "PORK60"
+                        "location": "NOT SPECIFIED",
+                        "id": "PRK",
+                        "sku": "PRK56"
                     },
                     {
-                        "cost": 1,
+                        "cost": 2,
                         "dateGenerated": {
                             "month": 11,
                             "year": 2021,
-                            "day": 20
+                            "day": 22
                         },
-                        "price": 1,
+                        "price": 4,
                         "bestBeforeDate": {
                             "month": 12,
                             "year": 2021,
-                            "day": 13
+                            "day": 12
                         },
-                        "location": "F21",
-                        "id": "PORK",
-                        "sku": "PORK61"
+                        "location": "NOT SPECIFIED",
+                        "id": "PRK",
+                        "sku": "PRK57"
                     },
                     {
-                        "cost": 1,
+                        "cost": 2,
                         "dateGenerated": {
                             "month": 11,
                             "year": 2021,
-                            "day": 20
+                            "day": 22
                         },
-                        "price": 1,
+                        "price": 4,
                         "bestBeforeDate": {
                             "month": 12,
                             "year": 2021,
-                            "day": 13
+                            "day": 12
                         },
-                        "location": "F21",
-                        "id": "PORK",
-                        "sku": "PORK62"
+                        "location": "NOT SPECIFIED",
+                        "id": "PRK",
+                        "sku": "PRK58"
                     },
                     {
-                        "cost": 1,
+                        "cost": 2,
                         "dateGenerated": {
                             "month": 11,
                             "year": 2021,
-                            "day": 20
+                            "day": 22
                         },
-                        "price": 1,
+                        "price": 4,
                         "bestBeforeDate": {
                             "month": 12,
                             "year": 2021,
-                            "day": 13
+                            "day": 12
                         },
-                        "location": "F21",
-                        "id": "PORK",
-                        "sku": "PORK63"
+                        "location": "NOT SPECIFIED",
+                        "id": "PRK",
+                        "sku": "PRK59"
                     },
                     {
-                        "cost": 1,
+                        "cost": 2,
                         "dateGenerated": {
                             "month": 11,
                             "year": 2021,
-                            "day": 20
+                            "day": 22
                         },
-                        "price": 1,
+                        "price": 4,
                         "bestBeforeDate": {
                             "month": 12,
                             "year": 2021,
-                            "day": 13
+                            "day": 12
                         },
-                        "location": "F21",
-                        "id": "PORK",
-                        "sku": "PORK64"
+                        "location": "NOT SPECIFIED",
+                        "id": "PRK",
+                        "sku": "PRK60"
                     },
                     {
-                        "cost": 1,
+                        "cost": 2,
                         "dateGenerated": {
                             "month": 11,
                             "year": 2021,
-                            "day": 20
+                            "day": 22
                         },
-                        "price": 1,
+                        "price": 4,
                         "bestBeforeDate": {
                             "month": 12,
                             "year": 2021,
-                            "day": 13
+                            "day": 12
                         },
-                        "location": "F21",
-                        "id": "PORK",
-                        "sku": "PORK65"
+                        "location": "NOT SPECIFIED",
+                        "id": "PRK",
+                        "sku": "PRK61"
                     },
                     {
-                        "cost": 1,
+                        "cost": 2,
                         "dateGenerated": {
                             "month": 11,
                             "year": 2021,
-                            "day": 20
+                            "day": 22
                         },
-                        "price": 1,
+                        "price": 4,
                         "bestBeforeDate": {
                             "month": 12,
                             "year": 2021,
-                            "day": 13
+                            "day": 12
                         },
-                        "location": "F21",
-                        "id": "PORK",
-                        "sku": "PORK66"
+                        "location": "NOT SPECIFIED",
+                        "id": "PRK",
+                        "sku": "PRK62"
                     },
                     {
-                        "cost": 1,
+                        "cost": 2,
                         "dateGenerated": {
                             "month": 11,
                             "year": 2021,
-                            "day": 20
+                            "day": 22
                         },
-                        "price": 1,
+                        "price": 4,
                         "bestBeforeDate": {
                             "month": 12,
                             "year": 2021,
-                            "day": 13
+                            "day": 12
                         },
-                        "location": "F21",
-                        "id": "PORK",
-                        "sku": "PORK67"
+                        "location": "NOT SPECIFIED",
+                        "id": "PRK",
+                        "sku": "PRK63"
                     },
                     {
-                        "cost": 1,
+                        "cost": 2,
                         "dateGenerated": {
                             "month": 11,
                             "year": 2021,
-                            "day": 20
+                            "day": 22
                         },
-                        "price": 1,
+                        "price": 4,
                         "bestBeforeDate": {
                             "month": 12,
                             "year": 2021,
-                            "day": 13
+                            "day": 12
                         },
-                        "location": "F21",
-                        "id": "PORK",
-                        "sku": "PORK68"
+                        "location": "NOT SPECIFIED",
+                        "id": "PRK",
+                        "sku": "PRK64"
                     },
                     {
-                        "cost": 1,
+                        "cost": 2,
                         "dateGenerated": {
                             "month": 11,
                             "year": 2021,
-                            "day": 20
+                            "day": 22
                         },
-                        "price": 1,
+                        "price": 4,
                         "bestBeforeDate": {
                             "month": 12,
                             "year": 2021,
-                            "day": 13
+                            "day": 12
                         },
-                        "location": "F21",
-                        "id": "PORK",
-                        "sku": "PORK69"
+                        "location": "NOT SPECIFIED",
+                        "id": "PRK",
+                        "sku": "PRK65"
                     },
                     {
-                        "cost": 1,
+                        "cost": 2,
                         "dateGenerated": {
                             "month": 11,
                             "year": 2021,
-                            "day": 20
+                            "day": 22
                         },
-                        "price": 1,
+                        "price": 4,
                         "bestBeforeDate": {
                             "month": 12,
                             "year": 2021,
-                            "day": 13
+                            "day": 12
                         },
-                        "location": "F21",
-                        "id": "PORK",
-                        "sku": "PORK70"
+                        "location": "NOT SPECIFIED",
+                        "id": "PRK",
+                        "sku": "PRK66"
                     },
                     {
-                        "cost": 1,
+                        "cost": 2,
                         "dateGenerated": {
                             "month": 11,
                             "year": 2021,
-                            "day": 20
+                            "day": 22
                         },
-                        "price": 1,
+                        "price": 4,
                         "bestBeforeDate": {
                             "month": 12,
                             "year": 2021,
-                            "day": 13
+                            "day": 12
                         },
-                        "location": "F21",
-                        "id": "PORK",
-                        "sku": "PORK71"
+                        "location": "NOT SPECIFIED",
+                        "id": "PRK",
+                        "sku": "PRK67"
                     },
                     {
-                        "cost": 1,
+                        "cost": 2,
                         "dateGenerated": {
                             "month": 11,
                             "year": 2021,
-                            "day": 20
+                            "day": 22
                         },
-                        "price": 1,
+                        "price": 4,
                         "bestBeforeDate": {
                             "month": 12,
                             "year": 2021,
-                            "day": 13
+                            "day": 12
                         },
-                        "location": "F21",
-                        "id": "PORK",
-                        "sku": "PORK72"
+                        "location": "NOT SPECIFIED",
+                        "id": "PRK",
+                        "sku": "PRK68"
                     },
                     {
-                        "cost": 1,
+                        "cost": 2,
                         "dateGenerated": {
                             "month": 11,
                             "year": 2021,
-                            "day": 20
+                            "day": 22
                         },
-                        "price": 1,
+                        "price": 4,
                         "bestBeforeDate": {
                             "month": 12,
                             "year": 2021,
-                            "day": 13
+                            "day": 12
                         },
-                        "location": "F21",
-                        "id": "PORK",
-                        "sku": "PORK73"
+                        "location": "NOT SPECIFIED",
+                        "id": "PRK",
+                        "sku": "PRK69"
                     },
                     {
-                        "cost": 1,
+                        "cost": 2,
                         "dateGenerated": {
                             "month": 11,
                             "year": 2021,
-                            "day": 20
+                            "day": 22
                         },
-                        "price": 1,
+                        "price": 4,
                         "bestBeforeDate": {
                             "month": 12,
                             "year": 2021,
-                            "day": 13
+                            "day": 12
                         },
-                        "location": "F21",
-                        "id": "PORK",
-                        "sku": "PORK74"
+                        "location": "NOT SPECIFIED",
+                        "id": "PRK",
+                        "sku": "PRK70"
                     },
                     {
-                        "cost": 1,
+                        "cost": 2,
                         "dateGenerated": {
                             "month": 11,
                             "year": 2021,
-                            "day": 20
+                            "day": 22
                         },
-                        "price": 1,
+                        "price": 4,
                         "bestBeforeDate": {
                             "month": 12,
                             "year": 2021,
-                            "day": 13
+                            "day": 12
                         },
-                        "location": "F21",
-                        "id": "PORK",
-                        "sku": "PORK75"
+                        "location": "NOT SPECIFIED",
+                        "id": "PRK",
+                        "sku": "PRK71"
                     },
                     {
-                        "cost": 1,
+                        "cost": 2,
                         "dateGenerated": {
                             "month": 11,
                             "year": 2021,
-                            "day": 20
+                            "day": 22
                         },
-                        "price": 1,
+                        "price": 4,
                         "bestBeforeDate": {
                             "month": 12,
                             "year": 2021,
-                            "day": 13
+                            "day": 12
                         },
-                        "location": "F21",
-                        "id": "PORK",
-                        "sku": "PORK76"
+                        "location": "NOT SPECIFIED",
+                        "id": "PRK",
+                        "sku": "PRK72"
                     },
                     {
-                        "cost": 1,
+                        "cost": 2,
                         "dateGenerated": {
                             "month": 11,
                             "year": 2021,
-                            "day": 20
+                            "day": 22
                         },
-                        "price": 1,
+                        "price": 4,
                         "bestBeforeDate": {
                             "month": 12,
                             "year": 2021,
-                            "day": 13
+                            "day": 12
                         },
-                        "location": "F21",
-                        "id": "PORK",
-                        "sku": "PORK77"
+                        "location": "NOT SPECIFIED",
+                        "id": "PRK",
+                        "sku": "PRK73"
                     },
                     {
-                        "cost": 1,
+                        "cost": 2,
                         "dateGenerated": {
                             "month": 11,
                             "year": 2021,
-                            "day": 20
+                            "day": 22
                         },
-                        "price": 1,
+                        "price": 4,
                         "bestBeforeDate": {
                             "month": 12,
                             "year": 2021,
-                            "day": 13
+                            "day": 12
                         },
-                        "location": "F21",
-                        "id": "PORK",
-                        "sku": "PORK78"
+                        "location": "NOT SPECIFIED",
+                        "id": "PRK",
+                        "sku": "PRK74"
                     },
                     {
-                        "cost": 1,
+                        "cost": 2,
                         "dateGenerated": {
                             "month": 11,
                             "year": 2021,
-                            "day": 20
+                            "day": 22
                         },
-                        "price": 1,
+                        "price": 4,
                         "bestBeforeDate": {
                             "month": 12,
                             "year": 2021,
-                            "day": 13
+                            "day": 12
                         },
-                        "location": "F21",
-                        "id": "PORK",
-                        "sku": "PORK79"
+                        "location": "NOT SPECIFIED",
+                        "id": "PRK",
+                        "sku": "PRK75"
                     },
                     {
-                        "cost": 1,
+                        "cost": 2,
                         "dateGenerated": {
                             "month": 11,
                             "year": 2021,
-                            "day": 20
+                            "day": 22
                         },
-                        "price": 1,
+                        "price": 4,
                         "bestBeforeDate": {
                             "month": 12,
                             "year": 2021,
-                            "day": 13
+                            "day": 12
                         },
-                        "location": "F21",
-                        "id": "PORK",
-                        "sku": "PORK80"
+                        "location": "NOT SPECIFIED",
+                        "id": "PRK",
+                        "sku": "PRK76"
                     },
                     {
-                        "cost": 1,
+                        "cost": 2,
                         "dateGenerated": {
                             "month": 11,
                             "year": 2021,
-                            "day": 20
+                            "day": 22
                         },
-                        "price": 1,
+                        "price": 4,
                         "bestBeforeDate": {
                             "month": 12,
                             "year": 2021,
-                            "day": 13
+                            "day": 12
                         },
-                        "location": "F21",
-                        "id": "PORK",
-                        "sku": "PORK81"
+                        "location": "NOT SPECIFIED",
+                        "id": "PRK",
+                        "sku": "PRK77"
                     },
                     {
-                        "cost": 1,
+                        "cost": 2,
                         "dateGenerated": {
                             "month": 11,
                             "year": 2021,
-                            "day": 20
+                            "day": 22
                         },
-                        "price": 1,
+                        "price": 4,
                         "bestBeforeDate": {
                             "month": 12,
                             "year": 2021,
-                            "day": 13
+                            "day": 12
                         },
-                        "location": "F21",
-                        "id": "PORK",
-                        "sku": "PORK82"
+                        "location": "NOT SPECIFIED",
+                        "id": "PRK",
+                        "sku": "PRK78"
                     },
                     {
-                        "cost": 1,
+                        "cost": 2,
                         "dateGenerated": {
                             "month": 11,
                             "year": 2021,
-                            "day": 20
+                            "day": 22
                         },
-                        "price": 1,
+                        "price": 4,
                         "bestBeforeDate": {
                             "month": 12,
                             "year": 2021,
-                            "day": 13
+                            "day": 12
                         },
-                        "location": "F21",
-                        "id": "PORK",
-                        "sku": "PORK83"
+                        "location": "NOT SPECIFIED",
+                        "id": "PRK",
+                        "sku": "PRK79"
                     },
                     {
-                        "cost": 1,
+                        "cost": 2,
                         "dateGenerated": {
                             "month": 11,
                             "year": 2021,
-                            "day": 20
+                            "day": 22
                         },
-                        "price": 1,
+                        "price": 4,
                         "bestBeforeDate": {
                             "month": 12,
                             "year": 2021,
-                            "day": 13
+                            "day": 12
                         },
-                        "location": "F21",
-                        "id": "PORK",
-                        "sku": "PORK84"
+                        "location": "NOT SPECIFIED",
+                        "id": "PRK",
+                        "sku": "PRK80"
                     },
                     {
-                        "cost": 1,
+                        "cost": 2,
                         "dateGenerated": {
                             "month": 11,
                             "year": 2021,
-                            "day": 20
+                            "day": 22
                         },
-                        "price": 1,
+                        "price": 4,
                         "bestBeforeDate": {
                             "month": 12,
                             "year": 2021,
-                            "day": 13
+                            "day": 12
                         },
-                        "location": "F21",
-                        "id": "PORK",
-                        "sku": "PORK85"
+                        "location": "NOT SPECIFIED",
+                        "id": "PRK",
+                        "sku": "PRK81"
                     },
                     {
-                        "cost": 1,
+                        "cost": 2,
                         "dateGenerated": {
                             "month": 11,
                             "year": 2021,
-                            "day": 20
+                            "day": 22
                         },
-                        "price": 1,
+                        "price": 4,
                         "bestBeforeDate": {
                             "month": 12,
                             "year": 2021,
-                            "day": 13
+                            "day": 12
                         },
-                        "location": "F21",
-                        "id": "PORK",
-                        "sku": "PORK86"
+                        "location": "NOT SPECIFIED",
+                        "id": "PRK",
+                        "sku": "PRK82"
                     },
                     {
-                        "cost": 1,
+                        "cost": 2,
                         "dateGenerated": {
                             "month": 11,
                             "year": 2021,
-                            "day": 20
+                            "day": 22
                         },
-                        "price": 1,
+                        "price": 4,
                         "bestBeforeDate": {
                             "month": 12,
                             "year": 2021,
-                            "day": 13
+                            "day": 12
                         },
-                        "location": "F21",
-                        "id": "PORK",
-                        "sku": "PORK87"
+                        "location": "NOT SPECIFIED",
+                        "id": "PRK",
+                        "sku": "PRK83"
                     },
                     {
-                        "cost": 1,
+                        "cost": 2,
                         "dateGenerated": {
                             "month": 11,
                             "year": 2021,
-                            "day": 20
+                            "day": 22
                         },
-                        "price": 1,
+                        "price": 4,
                         "bestBeforeDate": {
                             "month": 12,
                             "year": 2021,
-                            "day": 13
+                            "day": 12
                         },
-                        "location": "F21",
-                        "id": "PORK",
-                        "sku": "PORK88"
+                        "location": "NOT SPECIFIED",
+                        "id": "PRK",
+                        "sku": "PRK84"
                     },
                     {
-                        "cost": 1,
+                        "cost": 2,
                         "dateGenerated": {
                             "month": 11,
                             "year": 2021,
-                            "day": 20
+                            "day": 22
                         },
-                        "price": 1,
+                        "price": 4,
                         "bestBeforeDate": {
                             "month": 12,
                             "year": 2021,
-                            "day": 13
+                            "day": 12
                         },
-                        "location": "F21",
-                        "id": "PORK",
-                        "sku": "PORK89"
+                        "location": "NOT SPECIFIED",
+                        "id": "PRK",
+                        "sku": "PRK85"
                     },
                     {
-                        "cost": 1,
+                        "cost": 2,
                         "dateGenerated": {
                             "month": 11,
                             "year": 2021,
-                            "day": 20
+                            "day": 22
                         },
-                        "price": 1,
+                        "price": 4,
                         "bestBeforeDate": {
                             "month": 12,
                             "year": 2021,
-                            "day": 13
+                            "day": 12
                         },
-                        "location": "F21",
-                        "id": "PORK",
-                        "sku": "PORK90"
+                        "location": "NOT SPECIFIED",
+                        "id": "PRK",
+                        "sku": "PRK86"
                     },
                     {
-                        "cost": 1,
+                        "cost": 2,
                         "dateGenerated": {
                             "month": 11,
                             "year": 2021,
-                            "day": 20
+                            "day": 22
                         },
-                        "price": 1,
+                        "price": 4,
                         "bestBeforeDate": {
                             "month": 12,
                             "year": 2021,
-                            "day": 13
+                            "day": 12
                         },
-                        "location": "F21",
-                        "id": "PORK",
-                        "sku": "PORK91"
+                        "location": "NOT SPECIFIED",
+                        "id": "PRK",
+                        "sku": "PRK87"
                     },
                     {
-                        "cost": 1,
+                        "cost": 2,
                         "dateGenerated": {
                             "month": 11,
                             "year": 2021,
-                            "day": 20
+                            "day": 22
                         },
-                        "price": 1,
+                        "price": 4,
                         "bestBeforeDate": {
                             "month": 12,
                             "year": 2021,
-                            "day": 13
+                            "day": 12
                         },
-                        "location": "F21",
-                        "id": "PORK",
-                        "sku": "PORK92"
+                        "location": "NOT SPECIFIED",
+                        "id": "PRK",
+                        "sku": "PRK88"
                     },
                     {
-                        "cost": 1,
+                        "cost": 2,
                         "dateGenerated": {
                             "month": 11,
                             "year": 2021,
-                            "day": 20
+                            "day": 22
                         },
-                        "price": 1,
+                        "price": 4,
                         "bestBeforeDate": {
                             "month": 12,
                             "year": 2021,
-                            "day": 13
+                            "day": 12
                         },
-                        "location": "F21",
-                        "id": "PORK",
-                        "sku": "PORK93"
+                        "location": "NOT SPECIFIED",
+                        "id": "PRK",
+                        "sku": "PRK89"
                     },
                     {
-                        "cost": 1,
+                        "cost": 2,
                         "dateGenerated": {
                             "month": 11,
                             "year": 2021,
-                            "day": 20
+                            "day": 22
                         },
-                        "price": 1,
+                        "price": 4,
                         "bestBeforeDate": {
                             "month": 12,
                             "year": 2021,
-                            "day": 13
+                            "day": 12
                         },
-                        "location": "F21",
-                        "id": "PORK",
-                        "sku": "PORK94"
+                        "location": "NOT SPECIFIED",
+                        "id": "PRK",
+                        "sku": "PRK90"
                     },
                     {
-                        "cost": 1,
+                        "cost": 2,
                         "dateGenerated": {
                             "month": 11,
                             "year": 2021,
-                            "day": 20
+                            "day": 22
                         },
-                        "price": 1,
+                        "price": 4,
                         "bestBeforeDate": {
                             "month": 12,
                             "year": 2021,
-                            "day": 13
+                            "day": 12
                         },
-                        "location": "F21",
-                        "id": "PORK",
-                        "sku": "PORK95"
+                        "location": "NOT SPECIFIED",
+                        "id": "PRK",
+                        "sku": "PRK91"
                     },
                     {
-                        "cost": 1,
+                        "cost": 2,
                         "dateGenerated": {
                             "month": 11,
                             "year": 2021,
-                            "day": 20
+                            "day": 22
                         },
-                        "price": 1,
+                        "price": 4,
                         "bestBeforeDate": {
                             "month": 12,
                             "year": 2021,
-                            "day": 13
+                            "day": 12
                         },
-                        "location": "F21",
-                        "id": "PORK",
-                        "sku": "PORK96"
+                        "location": "NOT SPECIFIED",
+                        "id": "PRK",
+                        "sku": "PRK92"
                     },
                     {
-                        "cost": 1,
+                        "cost": 2,
                         "dateGenerated": {
                             "month": 11,
                             "year": 2021,
-                            "day": 20
+                            "day": 22
                         },
-                        "price": 1,
+                        "price": 4,
                         "bestBeforeDate": {
                             "month": 12,
                             "year": 2021,
-                            "day": 13
+                            "day": 12
                         },
-                        "location": "F21",
-                        "id": "PORK",
-                        "sku": "PORK97"
+                        "location": "NOT SPECIFIED",
+                        "id": "PRK",
+                        "sku": "PRK93"
                     },
                     {
-                        "cost": 1,
+                        "cost": 2,
                         "dateGenerated": {
                             "month": 11,
                             "year": 2021,
-                            "day": 20
+                            "day": 22
                         },
-                        "price": 1,
+                        "price": 4,
                         "bestBeforeDate": {
                             "month": 12,
                             "year": 2021,
-                            "day": 13
+                            "day": 12
                         },
-                        "location": "F21",
-                        "id": "PORK",
-                        "sku": "PORK98"
+                        "location": "NOT SPECIFIED",
+                        "id": "PRK",
+                        "sku": "PRK94"
                     },
                     {
-                        "cost": 1,
+                        "cost": 2,
                         "dateGenerated": {
                             "month": 11,
                             "year": 2021,
-                            "day": 20
+                            "day": 22
                         },
-                        "price": 1,
+                        "price": 4,
                         "bestBeforeDate": {
                             "month": 12,
                             "year": 2021,
-                            "day": 13
+                            "day": 12
                         },
-                        "location": "F21",
-                        "id": "PORK",
-                        "sku": "PORK99"
+                        "location": "NOT SPECIFIED",
+                        "id": "PRK",
+                        "sku": "PRK95"
                     },
                     {
-                        "cost": 1,
+                        "cost": 2,
                         "dateGenerated": {
                             "month": 11,
                             "year": 2021,
-                            "day": 20
+                            "day": 22
                         },
-                        "price": 1,
+                        "price": 4,
                         "bestBeforeDate": {
                             "month": 12,
                             "year": 2021,
-                            "day": 13
+                            "day": 12
                         },
-                        "location": "F21",
-                        "id": "PORK",
-                        "sku": "PORK100"
+                        "location": "NOT SPECIFIED",
+                        "id": "PRK",
+                        "sku": "PRK99"
                     }
                 ]]
             }
