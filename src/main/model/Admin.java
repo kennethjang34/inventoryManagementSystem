@@ -12,8 +12,8 @@ import java.util.ArrayList;
 //Written to provide a functionality for Inventory management system application.
 public class Admin implements JsonConvertible {
 
-    public static final int ADMIN_ACCESS = -1;
-    public static final int INVENTORY_ACCESS = 1;
+//    public static final int ADMIN_ACCESS = -1;
+//    public static final int INVENTORY_ACCESS = 1;
 
 
 

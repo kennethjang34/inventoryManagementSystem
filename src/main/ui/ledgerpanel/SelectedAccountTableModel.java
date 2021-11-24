@@ -11,11 +11,9 @@ import java.util.List;
 //represents a table model for selected account table
 public class SelectedAccountTableModel extends AbstractTableModel {
     private List<Account> accountList;
-    private LedgerPanel ledgerPanel;
 
     //create a new table model
-    public SelectedAccountTableModel(LedgerPanel panel) {
-        ledgerPanel = panel;
+    public SelectedAccountTableModel() {
         accountList = new ArrayList<>();
     }
 

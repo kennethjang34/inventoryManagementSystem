@@ -54,7 +54,6 @@ public class ProductTableModel extends AbstractTableModel {
             case "LOCATION":
                 return product.getLocation();
         }
-
         return null;
     }
 }

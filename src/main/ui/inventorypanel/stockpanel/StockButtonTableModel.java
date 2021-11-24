@@ -3,7 +3,6 @@ package ui.inventorypanel.stockpanel;
 import model.ApplicationConstantValue;
 import model.Inventory;
 import model.Observer;
-import model.Subject;
 
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
@@ -136,7 +135,7 @@ public class StockButtonTableModel extends AbstractTableModel implements Observe
             } else if (!selectedCategory.equals(StockSearchPanel.TYPE)) {
                 category = searchTool.getSelectedCategory();
             }
-            fireTableDataChanged();
+            //fireTableDataChanged();
             String selectedID = searchTool.getSelectedID();
             if (selectedID.equals(StockSearchPanel.ALL)) {
                 item = null;

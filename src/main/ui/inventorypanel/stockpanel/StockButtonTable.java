@@ -20,8 +20,8 @@ public class StockButtonTable extends JTable implements ActionListener, TableCel
     private Inventory inventory;
     private ProductPanel productPanel;
     private String[] columnName;
-    private String category;
-    private String id;
+//    private String category;
+//    private String id;
 
 //    private StockLocationButtonTable locationButtonTable;
 

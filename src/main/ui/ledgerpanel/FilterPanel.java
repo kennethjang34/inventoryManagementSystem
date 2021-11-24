@@ -1,8 +1,6 @@
 package ui.ledgerpanel;
 
 import model.Account;
-import model.Observer;
-import model.Subject;
 import ui.SubjectPanel;
 
 import javax.swing.*;

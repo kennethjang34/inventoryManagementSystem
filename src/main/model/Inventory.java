@@ -9,7 +9,7 @@ import java.time.LocalDate;
 import java.util.*;
 
 //represents an inventory containing information of stocks of different items
-public class Inventory extends Subject implements JsonConvertible {
+public class Inventory extends Observable implements JsonConvertible {
 
     //hashmap with key and value being id of the item and item object respectively
     private final Map<String, Item> items;

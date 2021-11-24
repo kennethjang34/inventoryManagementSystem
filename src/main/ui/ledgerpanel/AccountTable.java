@@ -15,13 +15,11 @@ import java.time.LocalDate;
 
 //represents a table that displays several accounts sorted by the date it was written
 public class AccountTable extends JTable implements TableCellRenderer, MouseListener, ActionListener, Observer {
-    private Ledger ledger;
     private LedgerPanel ledgerPanel;
     private AccountTableModel tableModel;
 
     //EFFECTS: create a new panel
     public AccountTable(Ledger ledger, LedgerPanel panel) {
-        this.ledger = ledger;
         this.ledgerPanel = panel;
         tableModel = new AccountTableModel(ledger, this);
         ledger.registerObserver(this);

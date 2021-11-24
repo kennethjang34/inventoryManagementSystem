@@ -1,7 +1,7 @@
 package ui.adminpanel;
 
 import model.Admin;
-import ui.AbstractLoginAccountPanel;
+import ui.AbstractLoginAccountPrompter;
 import ui.InventoryManagementSystemApplication;
 
 import javax.swing.*;
@@ -15,7 +15,7 @@ import java.time.LocalDate;
 public class AdminPanel extends JPanel {
     private Admin admin;
     private InventoryManagementSystemApplication application;
-    private RegisterPanel registerPanel;
+    private RegisterPrompter registerPanel;
     private String logedInID;
 
 //    public Admin.LoginAccount getLoginAccount() {
@@ -23,12 +23,12 @@ public class AdminPanel extends JPanel {
 //    }
 
     //A small panel that will be displayed if the user presses register button to create a new account
-    private class RegisterPanel extends AbstractLoginAccountPanel implements ActionListener {
+    private class RegisterPrompter extends AbstractLoginAccountPrompter implements ActionListener {
         private JButton registerButton;
         private JPasswordField pwField = new JPasswordField(10);
 
         //EFFECTS: create a new register panel with empty text fields.
-        private RegisterPanel() {
+        private RegisterPrompter() {
             registerButton = new JButton("Register");
             registerButton.addActionListener(this);
             add(nameLabel);
@@ -114,7 +114,7 @@ public class AdminPanel extends JPanel {
     public AdminPanel(Admin admin, InventoryManagementSystemApplication application) {
         this.admin = admin;
         this.application = application;
-        registerPanel = new RegisterPanel();
+        registerPanel = new RegisterPrompter();
         add(registerPanel);
         setPreferredSize(new Dimension(400, 500));
     }

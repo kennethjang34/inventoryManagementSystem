@@ -14,14 +14,12 @@ import java.util.List;
 //represents a table that is composed of particular accounts selected by the user
 public class SelectedAccountTable extends JTable implements MouseListener, TableCellRenderer {
     private SelectedAccountTableModel tableModel;
-    private Ledger ledger;
     private LedgerPanel ledgerPanel;
 
     //EFFECTS: create a new table
-    public SelectedAccountTable(Ledger ledger, LedgerPanel panel) {
-        this.ledger = ledger;
+    public SelectedAccountTable(LedgerPanel panel) {
         ledgerPanel = panel;
-        tableModel = new SelectedAccountTableModel(ledgerPanel);
+        tableModel = new SelectedAccountTableModel();
         setModel(tableModel);
         setDefaultRenderer(String.class, this);
         setSize(300, 400);

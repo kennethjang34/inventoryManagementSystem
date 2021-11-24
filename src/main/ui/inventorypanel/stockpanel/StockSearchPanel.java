@@ -3,7 +3,6 @@ package ui.inventorypanel.stockpanel;
 import model.ApplicationConstantValue;
 import model.Inventory;
 import model.Observer;
-import model.Subject;
 import ui.SubjectPanel;
 
 import javax.swing.*;
@@ -14,8 +13,6 @@ import java.util.List;
 public class StockSearchPanel extends SubjectPanel implements ActionListener, Observer {
 //    StockPanel stockPanel;
     Inventory inventory;
-    int selectedOption;
-
     //Base option: ALL Categories
     //Last option: Type Manually (if there is no such category, show nothing). When selected, set field visible
     JComboBox categoryBox;

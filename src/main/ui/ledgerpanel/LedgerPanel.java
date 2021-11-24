@@ -20,7 +20,7 @@ public class LedgerPanel extends JPanel implements ActionListener {
     public LedgerPanel(Ledger ledger) {
         this.ledger = ledger;
         accountTable = new AccountTable(ledger, this);
-        selectedAccountTable = new SelectedAccountTable(ledger, this);
+        selectedAccountTable = new SelectedAccountTable(this);
         filterPanel = new FilterPanel(this);
         setLayout(new BorderLayout());
         add(accountTable, BorderLayout.SOUTH);

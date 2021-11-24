@@ -5,13 +5,13 @@ import java.util.List;
 
 
 //represents an abstract subject that is observed by observers
-public class Subject {
+public class Observable {
     //list of observers that get notified of change of this
     protected List<Observer> observers;
     protected int changed = -1;
 
     //EFFECTS: create a new subject with an empty observer list
-    public Subject() {
+    public Observable() {
         observers = new ArrayList<>();
     }
 

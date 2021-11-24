@@ -8,7 +8,7 @@ import java.time.LocalDate;
 import java.util.*;
 
 //represents a ledger that contains several transaction accounts
-public class Ledger extends Subject implements JsonConvertible {
+public class Ledger extends Observable implements JsonConvertible {
     //key: LocalDate.toString(), value: list of accounts that occurred that day
     private Map<String, List<Account>> accounts;
     //private ArrayList<Account> accounts;

@@ -16,10 +16,10 @@ public class InventoryPanel extends JPanel implements Observer {
     //private final SearchPanel searchPanel;
     private StockPanel stockPanel;
     private ProductPanel productPanel;
-    private String add = "add";
-    private String remove = "remove";
-    private String update = "update";
-    private String search = "search";
+//    private String add = "add";
+//    private String remove = "remove";
+//    private String update = "update";
+//    private String search = "search";
 
     //EFFECTS: create a new inventory making a new stock panel and product panel
     public InventoryPanel(Inventory inventory, InventoryManagementSystemApplication application) {

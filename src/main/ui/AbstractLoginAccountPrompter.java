@@ -6,7 +6,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 //represents an abstract panel that has neccessary fields for jobs related to login accounts
-public abstract class AbstractLoginAccountPanel extends JPanel {
+public abstract class AbstractLoginAccountPrompter extends JPanel {
     protected JTextField nameField;
     protected JTextField birthdayField;
     protected JTextField codeField;
@@ -17,7 +17,7 @@ public abstract class AbstractLoginAccountPanel extends JPanel {
     protected JLabel nameLabel;
 
     //MODIFIES: initialize the fields that are used for prompting user to enter the input
-    protected AbstractLoginAccountPanel() {
+    protected AbstractLoginAccountPrompter() {
         setLayout(new FlowLayout());
         nameField = new JTextField(10);
         birthdayField = new JTextField(10);

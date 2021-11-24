@@ -1,13 +1,11 @@
 package ui;
 
-import jdk.nashorn.internal.scripts.JO;
 import model.Admin;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.net.URL;
 import java.time.LocalDate;
 
 
@@ -28,21 +26,21 @@ public class LoginPanel extends JPanel implements ActionListener {
     public static final int LOAD = 1;
     public static final int ADMIN = 2;
     private Admin admin;
-    private RegisterPanel registerPanel = new RegisterPanel();
-    private RetrievePanel retrievePanel = new RetrievePanel();
+    private RegisterPrompter registerPanel = new RegisterPrompter();
+    private RetrievePrompter retrievePanel = new RetrievePrompter();
 
 
 
 
 
     //A small panel that will be displayed if the user presses register button to create a new account
-    private class RegisterPanel extends AbstractLoginAccountPanel implements ActionListener {
+    private class RegisterPrompter extends AbstractLoginAccountPrompter implements ActionListener {
         private JButton registerButton;
         private JPasswordField pwField = new JPasswordField(10);
         private Window window;
 
         //EFFECTS: create a new register panel with empty text fields.
-        private RegisterPanel() {
+        private RegisterPrompter() {
             registerButton = new JButton("Register");
             registerButton.addActionListener(this);
             add(nameLabel);
@@ -104,12 +102,12 @@ public class LoginPanel extends JPanel implements ActionListener {
 
 
     //A small panel that will be displayed if the user presses retrieve button
-    private class RetrievePanel extends AbstractLoginAccountPanel implements ActionListener {
+    private class RetrievePrompter extends AbstractLoginAccountPrompter implements ActionListener {
         private JButton retrieveButton;
         private Window window;
 
         //EFFECTS: create a new retrieve panel with empty text fields.
-        private RetrievePanel() {
+        private RetrievePrompter() {
             retrieveButton = new JButton("Retrieve PW");
             retrieveButton.addActionListener(this);
             add(idLabel);

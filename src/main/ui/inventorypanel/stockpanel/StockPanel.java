@@ -21,7 +21,7 @@ public class StockPanel extends JPanel {
         stockSearchPanel = new StockSearchPanel(inventory);
         stockButtonTable = new StockButtonTable(inventory, stockSearchPanel, productPanel);
         JPanel typeCreator = new JPanel();
-        typeCreator.add(new CategoryGenerator(inventory, this));
+        typeCreator.add(new CategoryGenerator(inventory));
         typeCreator.add(new ItemGenerator(inventory, this));
         productPanel.setStockTable(stockButtonTable);
         tableScrollPane =  new JScrollPane(stockButtonTable);
@@ -31,24 +31,24 @@ public class StockPanel extends JPanel {
         add(tableScrollPane, BorderLayout.SOUTH);
     }
 
-
-    //MODIFIES: this
-    //EFFECTS: if there exists such a category name, display all the items belonging to the category
-    //Otherwise, do nothing
-    public void displayItems(String categoryName) {
-        stockButtonTable.setCategory(categoryName);
-        stockButtonTable.repaint();
-//        StockPanel.this.tableScrollPane = new JScrollPane(stockButtonTable);
-//        tableScrollPane.setPreferredSize(new Dimension(500, 200));
-//        add(tableScrollPane, BorderLayout.SOUTH);
-    }
-
-    //MODIFIES: this
-    //EFFECTS: display all items in the inventory
-    public void displayAllItems() {
-        stockButtonTable.setCategory(null);
-        ((StockButtonTableModel)(stockButtonTable.getModel())).fireTableDataChanged();
-    }
+//
+//    //MODIFIES: this
+//    //EFFECTS: if there exists such a category name, display all the items belonging to the category
+//    //Otherwise, do nothing
+//    public void displayItems(String categoryName) {
+//        stockButtonTable.setCategory(categoryName);
+//        stockButtonTable.repaint();
+////        StockPanel.this.tableScrollPane = new JScrollPane(stockButtonTable);
+////        tableScrollPane.setPreferredSize(new Dimension(500, 200));
+////        add(tableScrollPane, BorderLayout.SOUTH);
+//    }
+//
+//    //MODIFIES: this
+//    //EFFECTS: display all items in the inventory
+//    public void displayAllItems() {
+//        stockButtonTable.setCategory(null);
+//        ((StockButtonTableModel)(stockButtonTable.getModel())).fireTableDataChanged();
+//    }
 
 //    //MODIFIES: this
 //    //EFFECTS: display the item with the given id.

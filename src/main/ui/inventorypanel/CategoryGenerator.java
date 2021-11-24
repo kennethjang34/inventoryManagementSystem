@@ -10,7 +10,6 @@ public class CategoryGenerator extends JPanel {
     private JTextField categoryField = new JTextField(10);
     private JLabel categoryLabel = new JLabel("Category name: ");
     private JButton button = new JButton("create");
-    private Inventory inventory;
 //    private StockSearchPanel searchPanel;
 //    private JTextField itemField = new JTextField(10);
 //    private JLabel itemLabel = new JLabel("Item name: ");
@@ -19,8 +18,7 @@ public class CategoryGenerator extends JPanel {
 //    private Inventory inventory;
 
     //EFFECTS: create a panel that helps the user create a new category
-    public CategoryGenerator(Inventory inventory, StockPanel stockPanel) {
-        this.inventory = inventory;
+    public CategoryGenerator(Inventory inventory) {
         add(categoryLabel);
         add(categoryField);
         add(button);
