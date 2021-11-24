@@ -80,3 +80,24 @@ Process finished with exit code 0
 
 
 ##Phase 4:Task 3
+
+- As Tables and their models have almost the same components and they are tightly coupled to their data source(Inventory, Ledger), if I had more time, I would make an abstract class
+such as AbstractButtonTable, so I can reuse the codes for the tables and decouple them by adding interface such as TableDataSource so no matter what actual data model is used, the table can perform its own functionality.
+- When Observable.update() is called, as there is no parameter, those tables implementing the interface needs to draw every cell again because it doesn't know at which cell a data has changed.
+Therefore, if I had more time, I would modify the Observer interface so the notified observers can identify a particular change precisely
+- Even if StockButtonTableModel is decoupled from Inventory class, it needs to call methods of its data source every time getValueat(int,int) method is called.
+this is because the StockButtonTableModel doesn't store the table cell data in its own, but obtain it everytime it needs, which is highly inefficient.
+Therefore, If I had more time, I would make the class store table cell data on its own, so when a particular location of the table model gets updated,
+through Observer's new interface, it could make a minimal change to the existing model
+- Even though they are not drawn in the UML diagram since they were private nested classes,
+there are two classes named RegisterPanel and RetrievePanel used by LoginPanel and AdminPanel.
+They are exactly the same in both LoginPanel and AdminPanel, but since I made them private, and
+they were tightly coupled to their outer class as they get necessary information directly from the outer class member fields.
+Therefore, If I had more time I would make those classes outside their outer classes and decouple their functionality from them.
+- InventoryManagementSystemApplication class was meant to make a GUI using several other panel classes, but it has also taken the responsibility to record stock change events by calling Ledger.addAccount() method.
+As this reduces cohesion of the class, if I had more time, I would register Ledger class to Inventory as an Observer,
+so it can automatically record each stock change event, without needing outside classes calling its own addAccount method.
+- Moreover, InventoryManagementSystemApplication extends JFrame (not shown in the UML diagram since it's from Java library).
+This also reduces the cohesion of the class since the class itself is not considered a frame. It is a creator of the frame.
+Therefore, if I had more time, I would make it have a member field for JFrame, rather than make it one of the Frames itself.
+
