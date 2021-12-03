@@ -1,6 +1,5 @@
 package ui.inventorypanel.stockpanel;
 
-import model.Observer;
 import model.QuantityTag;
 import ui.inventorypanel.productpanel.ProductPanel;
 

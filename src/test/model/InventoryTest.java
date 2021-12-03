@@ -148,10 +148,10 @@ public class InventoryTest {
 
     @Test
     void testGetCategoryNames() {
-        assertEquals(1, inventory.getCategoryNames().length);
+        assertEquals(1, inventory.getCategoryNames().size());
         inventory.createCategory("Chicken");
-        assertEquals(2, inventory.getCategoryNames().length);
-        assertEquals("FOOD", inventory.getCategoryNames()[1]);
+        assertEquals(2, inventory.getCategoryNames().size());
+        assertEquals("FOOD", inventory.getCategoryNames().get(1));
     }
 
     @Test

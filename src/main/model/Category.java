@@ -7,7 +7,7 @@ import persistence.JsonConvertible;
 import java.util.*;
 
 //represents a category where similar items belong
-public class Category implements JsonConvertible {
+public class Category implements JsonConvertible, TableEntryConvertible {
     private final String name;
     private int quantity;
     //set containing id's of items belonging to this category
@@ -103,6 +103,20 @@ public class Category implements JsonConvertible {
         itemList.addAll(items);
         json.put("items", itemList);
         return json;
+    }
+
+    @Override
+    public Object[] convertToTableEntry() {
+        return new Object[]{
+                name, quantity
+        };
+    }
+
+    @Override
+    public String[] getDataList() {
+        return new String[]{
+                "Name", "Quantity"
+        };
     }
 
 //    //EFFECTS: return the hash code of this.

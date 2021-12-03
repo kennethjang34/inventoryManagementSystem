@@ -312,10 +312,17 @@ public class InventoryManagementSystemApplication extends JFrame implements Json
     //REQUIRES: the date must be a string type in YYYYMMDD form without any space in between
     //EFFECTS: convert the date in string form into LocalDate type
     public static LocalDate convertToLocalDate(String date) {
-        int year = Integer.parseInt(date.substring(0, 4));
-        int month = Integer.parseInt(date.substring(4, 6));
-        int day = Integer.parseInt(date.substring(6, 8));
-        return LocalDate.of(year, month, day);
+        if (date == null || date.isEmpty()) {
+            return null;
+        }
+        try {
+            int year = Integer.parseInt(date.substring(0, 4));
+            int month = Integer.parseInt(date.substring(4, 6));
+            int day = Integer.parseInt(date.substring(6, 8));
+            return LocalDate.of(year, month, day);
+        } catch (Exception e) {
+            throw new IllegalArgumentException("The format of the date is illegal");
+        }
     }
 
     //EFFECTS: return inventory of this

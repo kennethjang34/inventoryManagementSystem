@@ -2,7 +2,7 @@ package model;
 
 //represents a tag that is used for various purposes
 //such as removing products, recording an account for quantity change.
-public class QuantityTag {
+public class QuantityTag implements TableEntryConvertible {
     private String id;
     private String location;
     private int quantity;
@@ -38,7 +38,24 @@ public class QuantityTag {
     //EFFECTS: return a string description that contains all information of this
     @Override
     public String toString() {
-        String s = "Item Code: " + id + ", Location: " + location + ", Quantity: " + quantity;
+        String s = "ID: " + id + ", Location: " + location + ", Quantity: " + quantity;
         return s;
     }
+
+    @Override
+    public Object[] convertToTableEntry() {
+        Object[] entry = new Object[]{
+                id, location, quantity
+        };
+        return entry;
+    }
+
+    @Override
+    public String[] getDataList() {
+        return new String[]{
+                "ID", "Location", "Quantity"
+        };
+    }
+
+
 }

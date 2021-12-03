@@ -4,12 +4,22 @@ package model;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import persistence.JsonConvertible;
+import ui.AbstractTableDataModel;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeSupport;
 import java.time.LocalDate;
 import java.util.*;
 
 //represents an inventory containing information of stocks of different items
-public class Inventory extends Observable implements JsonConvertible {
+public class Inventory extends AbstractTableDataModel implements JsonConvertible {
+
+    public static final String CATEGORY = "CATEGORY";
+    public static final String ITEM = "ITEM";
+    public static final String DATE = "DATE";
+    public static final String STOCK = "STOCK";
+    public static final String PRODUCT = "PRODUCT";
+
 
     //hashmap with key and value being id of the item and item object respectively
     private final Map<String, Item> items;
@@ -17,9 +27,8 @@ public class Inventory extends Observable implements JsonConvertible {
     private int quantity;
     private LocalDate currentDate;
 
-
-
-
+//For stock, Property name: STOCK, old value, new value: old/new tags.
+//
 
 
 
@@ -81,8 +90,9 @@ public class Inventory extends Observable implements JsonConvertible {
     //MODIFIES: this
     //EFFECTS: set the current Date
     public void setCurrentDate(LocalDate currentDate) {
+        changeFirer.firePropertyChange(DATE, this.currentDate, currentDate);
         this.currentDate = currentDate;
-        notifyObservers();
+//        notifyObservers();
     }
 
 
@@ -92,10 +102,12 @@ public class Inventory extends Observable implements JsonConvertible {
         if (categories.containsKey(name)) {
             return false;
         }
-        categories.put(name, new Category(name));
-        setChanged(ApplicationConstantValue.CATEGORY);
-        notifyObservers();
+        Category category = new Category(name);
+        categories.put(name, category);
+//        setChanged(ApplicationConstantValue.CATEGORY);
+//        notifyObservers();
         EventLog.getInstance().logEvent(new Event("new category " + name + " is created"));
+        changeFirer.firePropertyChange(CATEGORY, null, category);
         return true;
     }
 
@@ -125,10 +137,11 @@ public class Inventory extends Observable implements JsonConvertible {
         Item item = new Item(id, name, category, listPrice, description, note);
         items.put(id, item);
         categories.get(category).addItem(item);
-        setChanged(ApplicationConstantValue.ITEM);
-        notifyObservers();
+//        setChanged(ApplicationConstantValue.ITEM);
+//        notifyObservers();
         EventLog.getInstance().logEvent(new Event("new item with ID: " + name
                 + " and name " + name + " is created in category " + category));
+        changeFirer.firePropertyChange(ITEM, null, item);
         return true;
     }
 
@@ -145,12 +158,14 @@ public class Inventory extends Observable implements JsonConvertible {
             if (item == null) {
                 failed.add(tag);
             } else {
+                int originalQty = item.getQuantity();
                 item.addProducts(tag);
+                changeFirer.firePropertyChange(STOCK, originalQty, item.getQuantity());
             }
         }
         if (failed.size() != tags.size()) {
-            setChanged(ApplicationConstantValue.STOCK);
-            notifyObservers();
+//            setChanged(ApplicationConstantValue.STOCK);
+//            notifyObservers();
         }
         return failed;
     }
@@ -166,9 +181,11 @@ public class Inventory extends Observable implements JsonConvertible {
         if (item == null) {
             return false;
         } else {
+            int originalQty = item.getQuantity();
             item.addProducts(tag);
-            setChanged(ApplicationConstantValue.STOCK);
-            notifyObservers();
+            PropertyChangeEvent event = new PropertyChangeEvent(this, STOCK, originalQty, item);
+            event.setPropagationId(id);
+            changeFirer.firePropertyChange(event);
             return true;
         }
     }
@@ -178,12 +195,10 @@ public class Inventory extends Observable implements JsonConvertible {
     //EFFECTS: remove a product with its item code and SKU. if the product is removed, return true
     //if there is no such product, return false.
     public boolean removeProduct(String sku) {
-
         for (Item item: getItemList()) {
-            if (item.contains(sku)) {
-                item.removeProduct(sku);
-                setChanged(ApplicationConstantValue.STOCK);
-                notifyObservers();
+            Product product = item.removeProduct(sku);
+            if (product != null) {
+                changeFirer.firePropertyChange(PRODUCT, product, null);
                 return true;
             }
         }
@@ -191,8 +206,12 @@ public class Inventory extends Observable implements JsonConvertible {
     }
 
 
-
-
+    /**
+     *
+     * @param tag a quantity tag that specifies item id, location, and amount to remove
+     * @return true if successfully removed. false otherwise.
+     */
+    //This is the model for implementing fire property chang event
     //MODIFIES: this
     //EFFECTS: remove as many products in the item as specified
     //return true if succeeded. return false otherwise.
@@ -201,9 +220,10 @@ public class Inventory extends Observable implements JsonConvertible {
         if (item == null) {
             return false;
         }
+        QuantityTag oldTag = new QuantityTag(item.getId(), tag.getLocation(), item.getQuantity(tag.getLocation()));
         if (item.removeStocks(tag.getLocation(), tag.getQuantity())) {
-            setChanged(ApplicationConstantValue.STOCK);
-            notifyObservers();
+            QuantityTag newTag = new QuantityTag(item.getId(), tag.getLocation(), item.getQuantity(tag.getLocation()));
+            changeFirer.firePropertyChange(STOCK, oldTag, newTag);
             return true;
         }
         return false;
@@ -218,13 +238,7 @@ public class Inventory extends Observable implements JsonConvertible {
         if (item == null) {
             return false;
         }
-        if (item.removeStocks(location, qty) == true) {
-            item.removeStocks(location, qty);
-            setChanged(ApplicationConstantValue.STOCK);
-            notifyAll();
-            return true;
-        }
-        return false;
+        return item.removeStocks(location, qty);
     }
 
     //MODIFIES: this
@@ -244,8 +258,8 @@ public class Inventory extends Observable implements JsonConvertible {
         if (succeeded.size() == 0) {
             return Collections.emptyList();
         }
-        setChanged(ApplicationConstantValue.STOCK);
-        notifyObservers();
+//        setChanged(ApplicationConstantValue.STOCK);
+//        notifyObservers();
         return succeeded;
     }
 
@@ -328,11 +342,11 @@ public class Inventory extends Observable implements JsonConvertible {
 
 
     //EFFECTS: return a String array of categories
-    public String[] getCategoryNames() {
+    public List<String> getCategoryNames() {
         List<Category> categoryList = getCategories();
-        String[] names = new String[categoryList.size()];
-        for (int i = 0; i < names.length; i++) {
-            names[i] = categoryList.get(i).getName();
+        List<String> names = new ArrayList<>(categoryList.size());
+        for (int i = 0; i < categoryList.size(); i++) {
+            names.add(categoryList.get(i).getName());
         }
         return names;
     }
@@ -452,6 +466,20 @@ public class Inventory extends Observable implements JsonConvertible {
             throw new IllegalArgumentException("There is no such item with the id");
         }
         return item.getListPrice();
+    }
+
+
+    //EFFECTS: create and return a list of data array each of which can be used for a row in a table
+    @Override
+    public List<Object[]> getTableRows() {
+        if (items.isEmpty()) {
+            return Collections.emptyList();
+        }
+        List<Object[]> rows = new ArrayList<>();
+        for (Item item: items.values()) {
+            rows.add(item.convertToTableEntry());
+        }
+        return rows;
     }
 }
 

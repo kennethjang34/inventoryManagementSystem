@@ -1,6 +1,7 @@
 package ui.inventorypanel;
 
 import model.Inventory;
+import ui.inventorypanel.controller.InventoryController;
 import ui.inventorypanel.stockpanel.StockPanel;
 
 import javax.swing.*;
@@ -39,6 +40,31 @@ public class ItemGenerator extends JPanel implements ActionListener {
         gc.gridx = 1;
         gc.gridy = 1;
         add(button, gc);
+    }
+
+    //EFFECTS: create a new panel that generates items
+    public ItemGenerator() {
+        JPanel fieldPanel = new JPanel();
+        initializeFieldPanel(fieldPanel);
+        //button.addActionListener(stockPanel);
+        setLayout(new GridBagLayout());
+        GridBagConstraints gc = new GridBagConstraints();
+        gc.fill = GridBagConstraints.HORIZONTAL;
+        gc.gridx = 0;
+        gc.gridy = 0;
+        add(fieldPanel, gc);
+        gc.gridx = 1;
+        gc.gridy = 1;
+        add(button, gc);;
+    }
+
+
+//    public void setButtonActionListener(ActionListener actionListener) {
+//        button.addActionListener(actionListener);
+//    }
+
+    public JButton getButton() {
+        return button;
     }
 
     //MODIFIES: this
@@ -98,5 +124,29 @@ public class ItemGenerator extends JPanel implements ActionListener {
                     "Item: " + id + " has been successfully created");
         }
         clearFields();
+    }
+
+    public String getPriceFieldValue() {
+        return priceField.getText();
+    }
+
+    public String getIDFieldValue() {
+        return idField.getText();
+    }
+
+    public String getNameFieldValue() {
+        return nameField.getText();
+    }
+
+    public String getCategoryFieldValue() {
+        return categoryField.getText();
+    }
+
+    public String getDescriptionFieldValue() {
+        return description.getText();
+    }
+
+    public String getNoteFieldValue() {
+        return note.getText();
     }
 }

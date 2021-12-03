@@ -19,7 +19,7 @@ import java.util.List;
 public class StockButtonTable extends JTable implements ActionListener, TableCellRenderer, MouseListener, Observer {
     private Inventory inventory;
     private ProductPanel productPanel;
-    private String[] columnName;
+    private String[] columnNames;
 //    private String category;
 //    private String id;
 
@@ -30,13 +30,13 @@ public class StockButtonTable extends JTable implements ActionListener, TableCel
     public StockButtonTable(Inventory inventory, StockSearchPanel searchTool, ProductPanel productPanel) {
         this.inventory = inventory;
         this.productPanel = productPanel;
-        inventory.registerObserver(this);
+//        inventory.registerObserver(this);
         String[] dataList = inventory.getDataList();
-        columnName = new String[dataList.length + 1];
+        columnNames = new String[dataList.length + 1];
         for (int i = 0; i < dataList.length; i++) {
-            columnName[i] = dataList[i];
+            columnNames[i] = dataList[i];
         }
-        columnName[columnName.length - 1] = "BUTTON";
+        columnNames[columnNames.length - 1] = "BUTTON";
         setModel(new StockButtonTableModel(inventory, searchTool,this));
         setUpTableDesign();
         setDefaultRenderer(JButton.class, this);
@@ -168,5 +168,6 @@ public class StockButtonTable extends JTable implements ActionListener, TableCel
             ((AbstractTableModel) getModel()).fireTableDataChanged();
         }
     }
+
 
 }

@@ -31,6 +31,19 @@ public class StockPanel extends JPanel {
         add(tableScrollPane, BorderLayout.SOUTH);
     }
 
+
+    //EFFECTS: create a button table displaying current inventory situation
+    public JTable createButtonTable(TableEntryConvertible entrySource) {
+        return null;
+    }
+
+
+
+
+
+
+
+
 //
 //    //MODIFIES: this
 //    //EFFECTS: if there exists such a category name, display all the items belonging to the category

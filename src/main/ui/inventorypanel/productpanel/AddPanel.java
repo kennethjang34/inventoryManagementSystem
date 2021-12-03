@@ -1,7 +1,6 @@
 package ui.inventorypanel.productpanel;
 
 import model.Inventory;
-import model.InventoryTag;
 import ui.InventoryManagementSystemApplication;
 
 import javax.swing.*;
@@ -21,7 +20,7 @@ public class AddPanel extends JPanel implements ActionListener {
     JTextField locationField = new JTextField(10);
     JTextField quantityField = new JTextField(10);
     JTextField description = new JTextField(10);
-
+    JButton button;
 
     //EFFECTS: create a new panel that will pop up if the user attempts to add new stocks
     public AddPanel(Inventory inventory, JButton button, InventoryManagementSystemApplication application) {
@@ -43,6 +42,32 @@ public class AddPanel extends JPanel implements ActionListener {
         add(quantityField);
         add(new JLabel("Description: "));
         add(description);
+        this.button = button;
+        button.setText("Register");
+        button.addActionListener(this);
+        add(button);
+        setSize(600, 700);
+    }
+
+    public AddPanel(Inventory inventory) {
+        this.inventory = inventory;
+        add(new JLabel("ID"));
+        add(idField);
+//        add(new JLabel("SKU: "));
+//        add(codeField);
+        add(new JLabel("Cost: "));
+        add(costField);
+        add(new JLabel("Price: "));
+        add(priceField);
+        add(new JLabel("Best-before date: "));
+        add(bbdField);
+        add(new JLabel("Location: "));
+        add(locationField);
+        add(new JLabel("Quantity: "));
+        add(quantityField);
+        add(new JLabel("Description: "));
+        add(description);
+        this.button = new JButton();
         button.setText("Register");
         button.addActionListener(this);
         add(button);
@@ -50,30 +75,96 @@ public class AddPanel extends JPanel implements ActionListener {
     }
 
     //MODIFIES: this
+    //EFFECTS: process string as cost and return a valid cost.
+    //if any exception happens(ex. null or empty string), return 0
+    public double convertToDoubleCost(String s) {
+        double cost;
+        try {
+            cost = Double.parseDouble(s);
+        } catch (Exception e) {
+            return 0;
+        }
+        return cost;
+    }
+
+    //REQUIRES: ID must be valid
+    //MODIFIES: this
+    //EFFECTS: process string as price and return a valid price.
+    //if any exception happens(ex. null or empty string), return list price of the item the product belongs to
+    public double convertToDoublePrice(String s, String id) {
+        double price;
+        try {
+            price = Double.parseDouble(s);
+        } catch (Exception e) {
+            return inventory.getListPrice(id);
+        }
+        return price;
+    }
+
+    //MODIFIES: this
+    //EFFECTS: process string as location and return a valid location.
+    public String trimLocationFormat(String s) {
+        if (s == null || s.isEmpty()) {
+            return "NOT SPECIFIED";
+        }
+        return s.toUpperCase();
+    }
+
+
+    //MODIFIES: this
     //EFFECTS: add a new Inventory tag and add it to the list to add
     public void actionPerformed(ActionEvent e) {
-        String id = idField.getText().toUpperCase();
-        double cost = costField.getText().length() == 0 ? 0 : Double.parseDouble(costField.getText());
-        double price = priceField.getText().length() == 0 ? inventory.getListPrice(id) :
-                Double.parseDouble(priceField.getText());
-        LocalDate bestBeforeDate;
-        String stringBBD = bbdField.getText();
-        if (stringBBD.isEmpty()) {
-            bestBeforeDate = null;
-        } else {
-            bestBeforeDate = InventoryManagementSystemApplication.convertToLocalDate(stringBBD);
-        }
-        String location = locationField.getText().toUpperCase();
-        if (location.isEmpty()) {
-            location = "NOT SPECIFIED";
-        }
-        int qty = quantityField.getText().isEmpty() ? 0 : Integer.parseInt(quantityField.getText());
-        if (qty > 0) {
-            InventoryTag tag = new InventoryTag(id, cost, price, LocalDate.now(), bestBeforeDate, location, qty);
-            if (inventory.addProducts(tag)) {
-                application.addAccount(tag, description.getText(), LocalDate.now());
-            }
-        }
+//        String id = idField.getText().toUpperCase();
+//
+//        String location = trimLocationFormat(locationField.getText());
+//        int qty = quantityField.getText().isEmpty() ? 0 : Integer.parseInt(quantityField.getText());
+        //The job done below is Data model's extended responsibility related to its property change listeners
+//        if (qty > 0) {
+//            InventoryTag tag = new InventoryTag(id, cost, price, LocalDate.now(), bestBeforeDate, location, qty);
+//            if (inventory.addProducts(tag)) {
+//                application.addAccount(tag, description.getText(), LocalDate.now());
+//            }
+//        }
     }
+
+
+    public String getId() {
+        return idField.getText();
+    }
+
+    public String getDescription() {
+        return description.getText();
+    }
+
+    public String getCostText() {
+        return costField.getText();
+    }
+
+    public String getPriceText() {
+        return priceField.getText();
+    }
+
+    public String getQuantityText() {
+        return quantityField.getText();
+    }
+
+    public String getLocationText() {
+        return locationField.getText();
+    }
+
+    public String getBestBeforeDateText() {
+        return bbdField.getText();
+    }
+
+    public JButton getButton() {
+        return button;
+    }
+
+
+//    //EFFECTS: create and display error message above this
+//    public void displayErrorMessage(String message) {
+//        JOptionPane.showMessageDialog(this, message);
+//    }
+
 
 }

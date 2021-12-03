@@ -1,9 +1,12 @@
 package ui.inventorypanel;
 
+import javafx.scene.control.ButtonType;
 import model.Inventory;
+import ui.View;
 import ui.inventorypanel.stockpanel.StockPanel;
 
 import javax.swing.*;
+import java.beans.PropertyChangeEvent;
 
 //represents a panel that makes it possible to create a new category as requested by the user
 public class CategoryGenerator extends JPanel {
@@ -22,6 +25,7 @@ public class CategoryGenerator extends JPanel {
         add(categoryLabel);
         add(categoryField);
         add(button);
+        //this is a job for the inventory controller
         button.addActionListener(e -> {
             String name = categoryField.getText();
             name = name.toUpperCase();
@@ -39,5 +43,21 @@ public class CategoryGenerator extends JPanel {
                         + name + " is already existing");
             }
         });
+    }
+
+    public CategoryGenerator() {
+        add(categoryLabel);
+        add(categoryField);
+        add(button);
+    }
+
+    //EFFECTS: return the button of this
+    public JButton getButton() {
+        return button;
+    }
+
+    //EFFECTS; return the category field
+    public JTextField getCategoryField() {
+        return categoryField;
     }
 }

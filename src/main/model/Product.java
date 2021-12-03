@@ -8,7 +8,7 @@ import java.time.LocalDate;
 //represents product. Each product will have item code, SKU (Stock keeping unit),
 //date generated, best before date, and cost it was bought for.
 //No data about the product can be changed after creation.
-public class Product implements JsonConvertible {
+public class Product implements JsonConvertible, TableEntryConvertible {
     //item code represents the code composed only of English alphabets that indicates
     //the category of the product. Multiple products can have the same item code.
     private final String id;
@@ -138,6 +138,28 @@ public class Product implements JsonConvertible {
         }
         json.put("location", location);
         return json;
+    }
+
+
+
+    @Override
+    public Object[] convertToTableEntry() {
+        Object[] entry = new Object[7];
+        entry[0] = id;
+        entry[1] = sku;
+        entry[2] = cost;
+        entry[3] = price;
+        entry[4] = bestBeforeDate.toString();
+        entry[5] = dateGenerated.toString();
+        entry[6] = location;
+        return entry;
+    }
+
+    @Override
+    public String[] getDataList() {
+        return new String[]{
+                "ID", "SKU", "COST", "PRICE", "BEST_BEFORE_DATE", "DATE_GENERATED", "LOCATION"
+        };
     }
 }
 

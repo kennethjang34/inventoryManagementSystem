@@ -33,7 +33,7 @@ public class StockSearchPanel extends SubjectPanel implements ActionListener, Ob
     //EFFECTS: create a new stock search panel that can modify the given stock panel based on filters chosen by the user
     public StockSearchPanel(Inventory inventory) {
         this.inventory = inventory;
-        inventory.registerObserver(this);
+//        inventory.registerObserver(this);
         add(new JLabel("Category"));
         categoryBox = new JComboBox();
         itemBox = new JComboBox();
@@ -61,7 +61,7 @@ public class StockSearchPanel extends SubjectPanel implements ActionListener, Ob
     //If there is no category at all, display "No category"
     public void updateCategoryBox() {
         DefaultComboBoxModel categoryModel = new DefaultComboBoxModel();
-        if (inventory.getCategoryNames().length == 0) {
+        if (inventory.getCategoryNames().size() == 0) {
             categoryModel = new DefaultComboBoxModel<>();
             categoryModel.addElement(NO_CATEGORY);
         } else {

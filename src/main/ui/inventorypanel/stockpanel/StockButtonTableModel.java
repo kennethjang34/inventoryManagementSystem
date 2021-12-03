@@ -6,6 +6,7 @@ import model.Observer;
 
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.TableModel;
 import java.awt.event.ActionListener;
 import java.util.HashMap;
 
@@ -18,6 +19,7 @@ public class StockButtonTableModel extends AbstractTableModel implements Observe
     private StockSearchPanel searchTool;
     private String category = null;
     private String item = null;
+    private RowFilter<TableModel, Integer> rowFilter;
 
     //EFFECTS: create a new table model
     public StockButtonTableModel(Inventory inventory, StockSearchPanel searchTool, ActionListener actionListener) {
@@ -144,5 +146,11 @@ public class StockButtonTableModel extends AbstractTableModel implements Observe
             }
             fireTableDataChanged();
         }
+    }
+
+    //MODIFIES: this
+    //EFFECTS: set the row filter
+    public void setRowFilter(RowFilter<TableModel, Integer> filter) {
+        rowFilter = filter;
     }
 }

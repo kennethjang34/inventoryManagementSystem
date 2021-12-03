@@ -127,14 +127,14 @@ public class Item implements  TableEntryConvertible, JsonConvertible {
     //EFFECTS: remove the product specified by the sku
     //If there was the product, and it has been removed, return true
     //Otherwise, return false.
-    public boolean removeProduct(String sku) {
+    public Product removeProduct(String sku) {
         Product product = products.remove(sku);
         if (product == null) {
-            return false;
+            return null;
         } else {
             stocks.get(product.getLocation()).remove(product);
             EventLog.getInstance().logEvent(new Event("Product with SKU: " + sku + " removed "));
-            return true;
+            return product;
         }
     }
 
@@ -267,6 +267,13 @@ public class Item implements  TableEntryConvertible, JsonConvertible {
     public Object[] convertToTableEntry() {
         return new Object[]{
                 category, id, name, description, note, getQuantity(), averageCost, listPrice
+        };
+    }
+
+    @Override
+    public String[] getDataList() {
+        return new String[]{
+                "CATEGORY", "ID", "NAME", "DESCRIPTION", "NOTE", "QUANTITY", "AVERAGE_COST", "LIST_PRICE"
         };
     }
 
