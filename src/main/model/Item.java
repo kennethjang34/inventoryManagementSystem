@@ -4,15 +4,17 @@ package model;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import persistence.JsonConvertible;
+import ui.table.TableEntryConvertibleModel;
 
-import javax.swing.*;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.time.LocalDate;
 import java.util.*;
 
 //represents each item in the inventory.
 //contains product list belonging to it
 //item can be thought of a super-category of products
-public class Item implements  TableEntryConvertible, JsonConvertible {
+public class Item extends TableEntryConvertibleModel implements JsonConvertible, PropertyChangeListener {
     private int count = 0;
     private final String id;
     private final String name;
@@ -21,7 +23,9 @@ public class Item implements  TableEntryConvertible, JsonConvertible {
     private double averageCost;
     private double listPrice;
     private String note;
-
+    public static final String[] DATA_LIST = new String[]{
+            "CATEGORY", "ID", "NAME", "DESCRIPTION", "NOTE", "QUANTITY", "AVERAGE_COST", "LIST_PRICE"
+    };
     //key: sku, value: product
     private LinkedHashMap<String, Product> products;
     //key: location, value: stock
@@ -30,6 +34,7 @@ public class Item implements  TableEntryConvertible, JsonConvertible {
     //REQUIRES: ID, name must be composed of digits or English letters
     //EFFECTS: create a new item containing an empty product list with given information
     public Item(String id, String name, String category, double listPrice, String description, String note) {
+        super(DATA_LIST);
         this.id = id;
         this.name = name;
         this.category = category;
@@ -43,7 +48,9 @@ public class Item implements  TableEntryConvertible, JsonConvertible {
 
     //REQUIRES: json must be in a valid JSONObject format containing all necessary info for item class
     //EFFECTS: create a new item based on the given json data
+    @SuppressWarnings({"checkstyle:MethodLength", "checkstyle:SuppressWarnings"})
     public Item(JSONObject json) {
+        super(DATA_LIST);
         count = json.getInt("count");
         id = json.getString("id");
         name = json.getString("name");
@@ -55,11 +62,11 @@ public class Item implements  TableEntryConvertible, JsonConvertible {
         products = new LinkedHashMap<>();
         stocks = new LinkedHashMap<>();
         JSONArray jsonStocks = json.getJSONArray("stocks");
-        for (Object obj: jsonStocks) {
+        for (Object obj : jsonStocks) {
             JSONArray jsonList = (JSONArray) obj;
             List<Product> productList = new ArrayList<>();
-            for (Object toBeJson: jsonList) {
-                Product product = new Product((JSONObject)toBeJson);
+            for (Object toBeJson : jsonList) {
+                Product product = new Product((JSONObject) toBeJson);
                 productList.add(product);
                 products.put(product.getSku(), product);
             }
@@ -134,6 +141,7 @@ public class Item implements  TableEntryConvertible, JsonConvertible {
         } else {
             stocks.get(product.getLocation()).remove(product);
             EventLog.getInstance().logEvent(new Event("Product with SKU: " + sku + " removed "));
+//            changeFirer.firePropertyChange(DATA_LIST[5], product, null);
             return product;
         }
     }
@@ -170,7 +178,6 @@ public class Item implements  TableEntryConvertible, JsonConvertible {
     public boolean contains(String sku) {
         return (products.containsKey(sku));
     }
-
 
 
     //MODIFIES: this
@@ -255,7 +262,7 @@ public class Item implements  TableEntryConvertible, JsonConvertible {
     //EFFECTS: return a list of quantity tags that contain stock information at different location
     public List<QuantityTag> getQuantities() {
         List<QuantityTag> tags = new ArrayList<>();
-        for (Map.Entry<String, List<Product>> entry: stocks.entrySet()) {
+        for (Map.Entry<String, List<Product>> entry : stocks.entrySet()) {
             tags.add(new QuantityTag(id, entry.getKey(), entry.getValue().size()));
         }
         return tags;
@@ -270,12 +277,12 @@ public class Item implements  TableEntryConvertible, JsonConvertible {
         };
     }
 
-    @Override
-    public String[] getDataList() {
-        return new String[]{
-                "CATEGORY", "ID", "NAME", "DESCRIPTION", "NOTE", "QUANTITY", "AVERAGE_COST", "LIST_PRICE"
-        };
-    }
+//    @Override
+//    public String[] getDataList() {
+//        return new String[]{
+//                "CATEGORY", "ID", "NAME", "DESCRIPTION", "NOTE", "QUANTITY", "AVERAGE_COST", "LIST_PRICE"
+//        };
+//    }
 
 
     //EFFECTS: return a JSONObject of this
@@ -291,10 +298,28 @@ public class Item implements  TableEntryConvertible, JsonConvertible {
         json.put("listPrice", listPrice);
         json.put("averageCost", averageCost);
         JSONArray jsonStocks = new JSONArray();
-        for (Map.Entry<String, List<Product>> entry: stocks.entrySet()) {
+        for (Map.Entry<String, List<Product>> entry : stocks.entrySet()) {
             jsonStocks.put(convertToJsonArray(entry.getValue()));
         }
         json.put("stocks", jsonStocks);
         return json;
+    }
+
+    @Override
+    public String toString() {
+        return id;
+    }
+
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+        if (evt.getPropertyName().equals(Product.DataList.LOCATION.toString())) {
+            List<Product> stock = stocks.get(evt.getOldValue());
+            stock.remove(evt.getSource());
+            List<Product> newLocation = stocks.get(evt.getNewValue());
+            if (newLocation == null) {
+                newLocation = new ArrayList<>();
+            }
+            newLocation.add((Product) evt.getSource());
+        }
     }
 }

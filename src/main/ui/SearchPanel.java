@@ -11,7 +11,7 @@ import java.beans.PropertyChangeEvent;
 import java.util.List;
 
 //represents a panel that helps the user to search for a particular item/product
-public class SearchPanel extends JPanel implements ActionListener, View {
+public class SearchPanel extends JPanel implements ActionListener {
     private final Inventory inventory;
     private final JTextField itemCodeField;
     private final JTextField skuField;
@@ -90,15 +90,6 @@ public class SearchPanel extends JPanel implements ActionListener, View {
     }
 
 
-
-
-
-
-    //called only when "Model" changes
-    @Override
-    public void propertyChange(PropertyChangeEvent evt) {
-
-    }
 
 
 }

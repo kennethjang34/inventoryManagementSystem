@@ -1,17 +1,23 @@
 package model;
 
+import ui.table.TableEntryConvertibleModel;
+
 //represents a tag that is used for various purposes
 //such as removing products, recording an account for quantity change.
-public class QuantityTag implements TableEntryConvertible {
+public class QuantityTag extends TableEntryConvertibleModel {
     private String id;
     private String location;
     private int quantity;
     private double averageCost;
     private double averagePrice;
+    public static final String[] DATA_LIST = new String[]{
+            "ID", "Location", "Quantity"
+    };
 
-    //It is possible for quantity to be negative, but it shouldn't be
-    //EFFECTS: create a new quantity tag with item code, assigned location, and quantity given.
+        //It is possible for quantity to be negative, but it shouldn't be
+        //EFFECTS: create a new quantity tag with item code, assigned location, and quantity given.
     public QuantityTag(String itemCode, String location, int quantity) {
+        super(DATA_LIST);
         this.id = itemCode.toUpperCase();
         this.location = location.toUpperCase();
         this.quantity = quantity;
@@ -50,12 +56,7 @@ public class QuantityTag implements TableEntryConvertible {
         return entry;
     }
 
-    @Override
-    public String[] getDataList() {
-        return new String[]{
-                "ID", "Location", "Quantity"
-        };
-    }
+
 
 
 }

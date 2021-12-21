@@ -4,21 +4,24 @@ package model;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import persistence.JsonConvertible;
-import ui.AbstractTableDataModel;
+import ui.table.AbstractTableDataModel;
+import ui.table.TableEntryConvertibleModel;
 
 import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeSupport;
+import java.beans.PropertyChangeListener;
 import java.time.LocalDate;
 import java.util.*;
 
 //represents an inventory containing information of stocks of different items
-public class Inventory extends AbstractTableDataModel implements JsonConvertible {
+public class Inventory extends AbstractTableDataModel implements JsonConvertible, PropertyChangeListener {
 
     public static final String CATEGORY = "CATEGORY";
     public static final String ITEM = "ITEM";
     public static final String DATE = "DATE";
     public static final String STOCK = "STOCK";
     public static final String PRODUCT = "PRODUCT";
+    public static final String ID = "ID";
+//    public static final String SKU = "SKU";
 
 
     //hashmap with key and value being id of the item and item object respectively
@@ -40,6 +43,25 @@ public class Inventory extends AbstractTableDataModel implements JsonConvertible
         currentDate = LocalDate.now();
     }
 
+    @Override
+    public List<String> getContentsOf(String property) {
+        switch (property) {
+            case CATEGORY:
+                return getCategoryNames();
+            case ITEM:
+                return getItemNames();
+        }
+        return null;
+    }
+
+    private List<String> getItemNames() {
+        List<Item> items = getItemList();
+        List<String> names = new ArrayList<>();
+        for (Item item: items) {
+            names.add(item.getName());
+        }
+        return names;
+    }
 
 
     //REQUIRES: the data in JSON format must contain all necessary information
@@ -104,10 +126,8 @@ public class Inventory extends AbstractTableDataModel implements JsonConvertible
         }
         Category category = new Category(name);
         categories.put(name, category);
-//        setChanged(ApplicationConstantValue.CATEGORY);
-//        notifyObservers();
+        changeFirer.fireAdditionEvent(CATEGORY, category);
         EventLog.getInstance().logEvent(new Event("new category " + name + " is created"));
-        changeFirer.firePropertyChange(CATEGORY, null, category);
         return true;
     }
 
@@ -141,7 +161,9 @@ public class Inventory extends AbstractTableDataModel implements JsonConvertible
 //        notifyObservers();
         EventLog.getInstance().logEvent(new Event("new item with ID: " + name
                 + " and name " + name + " is created in category " + category));
-        changeFirer.firePropertyChange(ITEM, null, item);
+        changeFirer.fireAdditionEvent(ITEM, item);
+//        changeFirer.firePropertyChange(ITEM, null, item);
+//        changeFirer.firePropertyChange(CATEGORY, null, item);
         return true;
     }
 
@@ -160,7 +182,7 @@ public class Inventory extends AbstractTableDataModel implements JsonConvertible
             } else {
                 int originalQty = item.getQuantity();
                 item.addProducts(tag);
-                changeFirer.firePropertyChange(STOCK, originalQty, item.getQuantity());
+                changeFirer.firePropertyChange(ITEM, originalQty, item.getQuantity());
             }
         }
         if (failed.size() != tags.size()) {
@@ -183,8 +205,8 @@ public class Inventory extends AbstractTableDataModel implements JsonConvertible
         } else {
             int originalQty = item.getQuantity();
             item.addProducts(tag);
-            PropertyChangeEvent event = new PropertyChangeEvent(this, STOCK, originalQty, item);
-            event.setPropagationId(id);
+            PropertyChangeEvent event = new PropertyChangeEvent(item, ITEM, originalQty, item);
+//            event.setPropagationId(id);
             changeFirer.firePropertyChange(event);
             return true;
         }
@@ -198,7 +220,9 @@ public class Inventory extends AbstractTableDataModel implements JsonConvertible
         for (Item item: getItemList()) {
             Product product = item.removeProduct(sku);
             if (product != null) {
-                changeFirer.firePropertyChange(PRODUCT, product, null);
+                product.getLocation();
+                changeFirer.firePropertyChange(ITEM, null, item);
+                changeFirer.fireRemovalEvent(PRODUCT, product);
                 return true;
             }
         }
@@ -324,7 +348,7 @@ public class Inventory extends AbstractTableDataModel implements JsonConvertible
     public List<String> getIDs(String categoryName) {
         Category category = categories.get(categoryName);
         if (category == null) {
-            return Collections.emptyList();
+            return new ArrayList<>();
         }
         return category.getItemIDs();
     }
@@ -332,7 +356,7 @@ public class Inventory extends AbstractTableDataModel implements JsonConvertible
     //EFFECTS: return a list of item codes existing in the inventory.
     public List<String> getIDs() {
         if (items.keySet().size() == 0) {
-            return Collections.emptyList();
+            return new ArrayList<>();
         }
         List<String> ids = new ArrayList<>();
         ids.addAll(items.keySet());
@@ -434,6 +458,7 @@ public class Inventory extends AbstractTableDataModel implements JsonConvertible
         return getProductList(id).get(0);
     }
 
+
     //EFFECTS: return column data for converting this to table
     public String[] getDataList() {
 
@@ -443,7 +468,6 @@ public class Inventory extends AbstractTableDataModel implements JsonConvertible
         };
         return columns;
     }
-
 
 
     //EFFECTS: return data for the item with the given ID
@@ -469,17 +493,34 @@ public class Inventory extends AbstractTableDataModel implements JsonConvertible
     }
 
 
-    //EFFECTS: create and return a list of data array each of which can be used for a row in a table
+//    //EFFECTS: create and return a list of data array each of which can be used for a row in a table
+//    @Override
+//    public List<Object[]> getRows() {
+//        if (items.isEmpty()) {
+//            return Collections.emptyList();
+//        }
+//        List<Object[]> rows = new ArrayList<>();
+//        for (Item item: items.values()) {
+//            rows.add(item.convertToTableEntry());
+//        }
+//        return rows;
+//    }
+
     @Override
-    public List<Object[]> getTableRows() {
+    public List<TableEntryConvertibleModel> getEntryModels() {
         if (items.isEmpty()) {
             return Collections.emptyList();
         }
-        List<Object[]> rows = new ArrayList<>();
+        List<TableEntryConvertibleModel> rows = new ArrayList<>();
         for (Item item: items.values()) {
-            rows.add(item.convertToTableEntry());
+            rows.add(item);
         }
         return rows;
+    }
+
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+        //
     }
 }
 

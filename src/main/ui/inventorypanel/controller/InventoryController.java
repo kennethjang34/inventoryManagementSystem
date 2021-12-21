@@ -2,13 +2,19 @@ package ui.inventorypanel.controller;
 
 import model.Inventory;
 import model.InventoryTag;
+import model.Product;
 import ui.*;
+import ui.table.ButtonTable;
+import ui.table.ButtonTableModel;
+import ui.table.RowConverterTableModel;
 import ui.inventorypanel.CategoryGenerator;
 import ui.inventorypanel.ItemGenerator;
 import ui.inventorypanel.productpanel.AddPanel;
+import ui.inventorypanel.view.FilterBox;
 import ui.inventorypanel.view.InventoryViewPanel;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 import java.awt.*;
@@ -37,9 +43,33 @@ public class InventoryController extends AbstractController<Inventory, Inventory
             int row = table.findRow(e.getSource());
             int column = table.findColumn("ID");
             String id = (String) table.getValueAt(row, column);
-            view.displayLocationStockView(id);
+            if (view.isLocationTableDialogDisplayed()) {
+                view.addToLocationStockView(id);
+            } else {
+                view.displayLocationStockView(id);
+            }
         }
     }
+
+    private class LocationTableButtonAction extends AbstractAction {
+        private LocationTableButtonAction() {
+            super("Add");
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            InventoryViewPanel.StockLocationTable locationTable =
+                    (InventoryViewPanel.StockLocationTable) view.getLocationTableOnDisplay();
+            String id = locationTable.getId();
+            String location = locationTable.getSelectedLocation();
+            RowConverterTableModel tableModel = (RowConverterTableModel)(view.getProductTable().getModel());
+            tableModel.addRowsWithDataList(model.getProductList(id, location));
+        }
+    }
+
+
+
+
 
     public InventoryController(Inventory model, InventoryViewPanel view) {
         super(model, view);
@@ -61,29 +91,74 @@ public class InventoryController extends AbstractController<Inventory, Inventory
         setUpItemFilter(view.getItemFilter());
         setUpCategoryField(view.getCategoryField());
         setUpItemField(view.getItemField());
-        setUpProductGeneratorButton();
+        setUpRemovalButton();
+        view.setLocationTableAction(new LocationTableButtonAction());
         setUpAddPanel();
+//        view.setLocationTableAction(new LocationTableButtonAction());
     }
 
-//
-//    private void setUpSearchPanel(SearchPanel searchPanel) {
-//
-//    }
+    private void setUpRemovalButton() {
+        JButton button = view.getProductRemovalButton();
+        button.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JTable productTable = view.getProductTable();
+                RowConverterTableModel tableModel = ((RowConverterTableModel)(productTable.getModel()));
+                List<Object[]> rows = tableModel.getRowObjects(productTable.getSelectedRows());
+                productRemovalHelper(rows);
+            }
+        });
+    }
+
+    private JTable createSelectedProductsTable(List<Object[]> rows) {
+        JTable productTable = view.getProductTable();
+        RowConverterTableModel tableModel = ((RowConverterTableModel)(productTable.getModel()));
+        JTable toBeRemoved = new JTable();
+        toBeRemoved.setModel(new DefaultTableModel((rows.toArray(new Object[rows.size()][])), Product.DATA_LIST));
+        toBeRemoved.setPreferredSize(new Dimension(600, 400));
+        return toBeRemoved;
+    }
+
+    private void productRemovalHelper(List<Object[]> rows) {
+        JTable productTable = view.getProductTable();
+        RowConverterTableModel tableModel = ((RowConverterTableModel)(productTable.getModel()));
+        JTable toBeRemoved = createSelectedProductsTable(rows);
+        JPanel tablePanel = new JPanel();
+        tablePanel.add(new JLabel("The total quantity to be removed: " + rows.size()));
+        tablePanel.add(toBeRemoved);
+        int option = JOptionPane.showConfirmDialog(view, tablePanel,
+                "Would you really like to remove the following products from the stocks?",
+                JOptionPane.YES_OPTION, JOptionPane.PLAIN_MESSAGE);
+        if (option == JOptionPane.YES_OPTION) {
+            int skuColumn = tableModel.findColumn(Product.DataList.SKU.toString());
+            for (int i = 0; i < rows.size(); i++) {
+                String sku = (String)rows.get(i)[skuColumn];
+                model.removeProduct(sku);
+                //Product table will keep up its contents performing observer pattern(PropertyChangeEvent)
+//                int correspondingTableIndex = tableModel.findRowIndex(sku, skuColumn);
+//                tableModel.removeRow(correspondingTableIndex);
+            }
+        }
+    }
 
 
     private void setUpCategoryFilter(JComboBox categoryFilter) {
         categoryFilter.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String selectedCategory = (String) categoryFilter.getSelectedItem();
-                if (selectedCategory.equals("TYPE_MANUALLY")) {
-                    view.getCategoryField().setVisible(true);
+                if (categoryFilter.getSelectedItem() != null) {
+                    String selectedCategory = (String) categoryFilter.getSelectedItem();
+                    if (selectedCategory.equals(FilterBox.TYPE_MANUALLY)) {
+                        view.getCategoryField().setVisible(true);
+                        return;
+                    }
+                    setUpItemFilter(view.getItemFilter(), selectedCategory);
+                    TableRowSorter sorter = (TableRowSorter) view.getStockButtonTable().getRowSorter();
+                    RowFilter<TableModel, Integer> filter = createCategoryRowFilter(selectedCategory);
+                    sorter.setRowFilter(filter);
                 }
-                setUpItemFilter(view.getItemFilter(), selectedCategory);
-                TableRowSorter sorter = (TableRowSorter) view.getStockButtonTable().getRowSorter();
-                RowFilter<TableModel, Integer> filter = createCategoryRowFilter(selectedCategory);
-                sorter.setRowFilter(filter);
             }
+
         });
     }
 
@@ -94,12 +169,14 @@ public class InventoryController extends AbstractController<Inventory, Inventory
             @Override
             public void actionPerformed(ActionEvent e) {
                 String selectedItem = (String) itemFilter.getSelectedItem();
-                if (selectedItem.equals("TYPE_MANUALLY")) {
-                    view.getItemField().setVisible(true);
+                if (selectedItem != null) {
+                    if (selectedItem.equals("TYPE_MANUALLY")) {
+                        view.getItemField().setVisible(true);
+                    }
+                    TableRowSorter sorter = (TableRowSorter) view.getStockButtonTable().getRowSorter();
+                    RowFilter<TableModel, Integer> filter = createIDRowFilter(selectedItem);
+                    sorter.setRowFilter(filter);
                 }
-                TableRowSorter sorter = (TableRowSorter) view.getStockButtonTable().getRowSorter();
-                RowFilter<TableModel, Integer> filter = createIDRowFilter(selectedItem);
-                sorter.setRowFilter(filter);
             }
         });
     }
@@ -108,20 +185,23 @@ public class InventoryController extends AbstractController<Inventory, Inventory
     //called only when category is newly selected by categoryFilter
     //MODIFIES: item filter
     //EFFECTS: set up the item filter, so it matches the newly selected category
-    private void setUpItemFilter(JComboBox itemFilter, String selectedCategory) {
-        List<String> ids = null;
-        if (selectedCategory.equals("ALL")) {
+    private void setUpItemFilter(FilterBox itemFilter, String selectedCategory) {
+        List<String> ids;
+        if (selectedCategory.equals(FilterBox.ALL)) {
             ids = model.getIDs();
-        } else if (!selectedCategory.equals("TYPE_MANUALLY")) {
+        } else {
             //in case of TYPE_MANUALLY, it's the same as ids.addAll(null);
             ids = model.getIDs(selectedCategory);
         }
+
         if (ids.isEmpty()) {
-            ids.add("No Item");
+            ids.add(FilterBox.EMPTY);
         } else {
-            ids.add(0, "ALL");
-            ids.add(1, "TYPE_MANUALLY");
+            ids.add(0, FilterBox.ALL);
+            ids.add(1, FilterBox.TYPE_MANUALLY);
+//            itemFilter.setPropertyWatched(selectedCategory);
         }
+
         itemFilter.setModel(new DefaultComboBoxModel(ids.toArray(new String[0])));
     }
 
@@ -131,6 +211,10 @@ public class InventoryController extends AbstractController<Inventory, Inventory
     //MODIFIES: productTable
     //EFFECTS: initialize productTable
     private void setUpProductTable(JTable productTable) {
+        RowConverterTableModel tableModel = (RowConverterTableModel) productTable.getModel();
+        tableModel.setColumnNames(Product.DATA_LIST);
+        tableModel.setDuplicateAllowed(false);
+        tableModel.setBaseColumnIndex(tableModel.findColumn("SKU"));
         productTable.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -141,7 +225,54 @@ public class InventoryController extends AbstractController<Inventory, Inventory
                 }
             }
         });
+        productTable.setRowSorter(createRowSorter(productTable, null, Comparator.<String>naturalOrder()));
+        JPopupMenu menu = createPopUpMenuForProductTable();
+        productTable.setComponentPopupMenu(menu);
+
     }
+
+    private JPopupMenu createPopUpMenuForProductTable() {
+        JPopupMenu menu = new JPopupMenu();
+        JMenuItem remove = new JMenuItem("remove");
+        JTable productTable = view.getProductTable();
+        RowConverterTableModel tableModel = ((RowConverterTableModel)(productTable.getModel()));
+        remove.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                List<Object[]> rows = tableModel.getRowObjects(productTable.getSelectedRows());
+                productRemovalHelper(rows);
+            }
+        });
+        JMenuItem location = new JMenuItem("change location");
+        location.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                List<Object[]> rows = tableModel.getRowObjects(productTable.getSelectedRows());
+                productLocationChangeHelper(rows);
+            }
+        });
+        menu.add(remove);
+        menu.add(location);
+        return menu;
+    }
+
+    private void productLocationChangeHelper(List<Object[]> rows) {
+        JTable table = createSelectedProductsTable(rows);
+        JTable productTable = view.getProductTable();
+        RowConverterTableModel tableModel = (RowConverterTableModel) productTable.getModel();
+        JPanel toBeChanged = new JPanel();
+        toBeChanged.add(table);
+        String newLocation = JOptionPane.showInputDialog(view, toBeChanged,
+                "Enter the new location for the following products");
+        for (Object[] row: rows) {
+            int skuColumn = tableModel.findColumn("SKU");
+            String sku = (String) row[skuColumn];
+            model.getProduct(sku).setLocation(newLocation);
+        }
+    }
+
+
+
 
 
     private void setUpCategoryField(JTextField categoryField) {
@@ -180,54 +311,67 @@ public class InventoryController extends AbstractController<Inventory, Inventory
     //MODIFIES: Inventory
     //EFFECTS:create a new category
     private void setUpCategoryGenerator(CategoryGenerator categoryGenerator) {
-        categoryGenerator.getButton().addActionListener(e -> {
-            String name = categoryGenerator.getCategoryField().getText();
-            name = name.toUpperCase();
-            if (name.equals("")) {
-                JOptionPane.showMessageDialog(null, "Category name cannot be empty");
-                return;
+        AbstractAction action = new AbstractAction("Create") {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String name = categoryGenerator.getCategoryField().getText();
+                name = name.toUpperCase();
+                if (name.equals("")) {
+                    JOptionPane.showMessageDialog(null, "Category name cannot be empty");
+                    return;
+                }
+                if (model.createCategory(name)) {
+                    //stockPanel.categoryAddedUpdate(name);
+                    JOptionPane.showMessageDialog(null, "New Category: "
+                            + name + " has been successfully created");
+                    categoryGenerator.clearFields();
+                } else {
+                    JOptionPane.showMessageDialog(null, "The category with the name: "
+                            + name + " is already existing");
+                }
             }
-            categoryGenerator.getCategoryField().removeAll();
-            if (model.createCategory(name)) {
-                //stockPanel.categoryAddedUpdate(name);
-                JOptionPane.showMessageDialog(null, "New Category: "
-                        + name + " has been successfully created");
-            } else {
-                JOptionPane.showMessageDialog(null, "The category with the name: "
-                        + name + " is already existing");
-            }
-        });
+        };
+        categoryGenerator.setAction(action);
     }
 
 //done
     //MODIFIES: Inventory
     //EFFECTS:create a new item
     private void setUpItemGenerator(ItemGenerator itemGenerator) {
-        itemGenerator.getButton().addActionListener(e -> {
-
-            String id = itemGenerator.getIDFieldValue().toUpperCase();
-            String category = itemGenerator.getCategoryFieldValue().toUpperCase();
-            double listPrice;
-            try {
-                listPrice = Double.parseDouble(itemGenerator.getPriceFieldValue());
-            } catch (NumberFormatException exception) {
-                listPrice = 0;
+        Action buttonAction = new AbstractAction("Create") {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String id = itemGenerator.getIDFieldValue().toUpperCase();
+                String category = itemGenerator.getCategoryFieldValue().toUpperCase();
+                double listPrice;
+                try {
+                    listPrice = Double.parseDouble(itemGenerator.getPriceFieldValue());
+                } catch (NumberFormatException exception) {
+                    listPrice = 0;
+                }
+                if (id.equals("") || model.containsItem(id)) {
+                    JOptionPane.showMessageDialog(null,
+                            "ID is invalid or duplicate");
+                } else if (!model.containsCategory(category)) {
+                    JOptionPane.showMessageDialog(null,
+                            "The given category: " + category + " is invalid");
+                } else {
+                    model.createItem(id, itemGenerator.getNameFieldValue(), category,
+                            listPrice, itemGenerator.getDescriptionFieldValue(), itemGenerator.getNoteFieldValue());
+                    //            stockPanel.itemAddedUpdate(id);
+                    JOptionPane.showMessageDialog(null,
+                            "Item: " + id + " has been successfully created");
+                    itemGenerator.clearFields();
+                }
             }
-            if (id.equals("") || model.containsItem(id)) {
-                JOptionPane.showMessageDialog(null,
-                        "ID is invalid or duplicate");
-            } else if (!model.containsCategory(category)) {
-                JOptionPane.showMessageDialog(null,
-                        "The given category: " + category + " is invalid");
-            } else {
-                model.createItem(id, itemGenerator.getNameFieldValue(), category,
-                        listPrice, itemGenerator.getDescriptionFieldValue(), itemGenerator.getNoteFieldValue());
-//            stockPanel.itemAddedUpdate(id);
-                JOptionPane.showMessageDialog(null,
-                        "Item: " + id + " has been successfully created");
+        };
+        Action textFieldAction = new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                ((JComponent)(e.getSource())).transferFocus();
             }
-            itemGenerator.clearFields();
-        });
+        };
+        itemGenerator.setAction(textFieldAction, buttonAction);
     }
 
 
@@ -241,68 +385,88 @@ public class InventoryController extends AbstractController<Inventory, Inventory
                 if (e.getButton() == MouseEvent.BUTTON1) {
                     if (e.getClickCount() == 2) {
                         Object[] row = stockTable.getSelectedRowData();
-                        String id = (String) row[0];
-                        RowConverterTableModel tableModel = (RowConverterTableModel)(view.getProductTable().getModel());
-                        tableModel.addRowsWithDataList(model.getProductList(id));
+                        if (row != null) {
+                            String id = (String) row[stockTable.findColumn(Inventory.ID)];
+                            RowConverterTableModel tableModel = (RowConverterTableModel) (view.getProductTable().getModel());
+                            tableModel.addRowsWithDataList(model.getProductList(id));
+                        }
                     }
                 } else if (e.getButton() == MouseEvent.BUTTON2) {
                     //
                 }
             }
         });
+        ButtonTableModel tableModel = (ButtonTableModel) stockTable.getModel();
+        tableModel.setBaseColumnIndex(tableModel.findColumn(Inventory.ID));
         stockTable.setRowSorter(createRowSorter(stockTable, null, Comparator.<String>naturalOrder()));
+        JPopupMenu menu = createPopUpMenuForStockTable();
+        stockTable.setComponentPopupMenu(menu);
     }
+
+    private JPopupMenu createPopUpMenuForStockTable() {
+        return null;
+    }
+
 
     @SuppressWarnings({"checkstyle:MethodLength", "checkstyle:SuppressWarnings"})
     private void setUpAddPanel() {
         AddPanel addPanel = view.getAddPanel();
-        JButton button = addPanel.getButton();
-        button.addActionListener(new ActionListener() {
+        Action buttonAction = new AbstractAction("Register") {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String id = addPanel.getId();
+                //Item ids: case-insensitive
+                String id = addPanel.getId().toUpperCase();
                 if (!model.containsItem(id)) {
                     view.displayErrorMessage(addPanel, "There is no such ID");
                     return;
                 }
                 double cost = convertToDoubleCost(addPanel.getCostText());
                 double price = convertToDoublePrice(addPanel.getPriceText(), id);
-                LocalDate bestBeforeDate = null;
+                LocalDate bestBeforeDate;
                 try {
                     bestBeforeDate =
                             InventoryManagementSystemApplication.convertToLocalDate(addPanel.getBestBeforeDateText());
                 } catch (IllegalArgumentException ila) {
                     view.displayErrorMessage(addPanel, ila.getMessage());
+                    return;
                 }
                 String location = trimLocationFormat(addPanel.getLocationText());
                 int qty = addPanel.getQuantityText().isEmpty() ? 0 : Integer.parseInt(addPanel.getQuantityText());
                 InventoryTag tag = new InventoryTag(id, cost, price,
                         LocalDate.now(), bestBeforeDate, location, qty);
                 model.addProducts(tag);
+                addPanel.clearFields();
             }
-        });
-    }
-
-    private void setUpProductGeneratorButton() {
-        JButton button = view.getProductGeneratorButton();
-        button.addActionListener(new ActionListener() {
+        };
+        Action textFieldAction = new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                JDialog dialog = new JDialog();
-                JButton button = new JButton();
-                button.addActionListener(e1 -> {
-                    dialog.setVisible(false);
-//                    ((AbstractTableModel)stockTable.getModel()).fireTableDataChanged();
-                });
-                AddPanel addPanel = view.getAddPanel();
-
-                dialog.setLayout(new FlowLayout());
-                dialog.add(addPanel);
-                dialog.pack();
-                dialog.setVisible(true);
+                JComponent component = (JComponent) e.getSource();
+                component.transferFocus();
             }
-        });
+        };
+        addPanel.setAction(textFieldAction,buttonAction);
     }
+
+    //Moved to InventoryViewPanel class
+//    private void setUpProductGeneratorButton() {
+//        JButton button = view.getProductGeneratorButton();
+//        button.addActionListener(new ActionListener() {
+//            @Override
+//            public void actionPerformed(ActionEvent e) {
+//                JDialog dialog = new JDialog();
+//                JButton button = new JButton();
+//                button.addActionListener(e1 -> {
+//                    dialog.setVisible(false);
+//                });
+//                AddPanel addPanel = view.getAddPanel();
+//                dialog.setLayout(new FlowLayout());
+//                dialog.add(addPanel);
+//                dialog.pack();
+//                dialog.setVisible(true);
+//            }
+//        });
+//    }
 
 
     //PropertyChangeEvent is fired by InventoryView when the user has entered input through the view
@@ -323,7 +487,7 @@ public class InventoryController extends AbstractController<Inventory, Inventory
         RowFilter<TableModel, Integer> rowFilter = new RowFilter<TableModel, Integer>() {
             @Override
             public boolean include(Entry<? extends TableModel, ? extends Integer> entry) {
-                if (category.equals("ALL") || category.equals("TYPE_MANUALLY")) {
+                if (category.equals(FilterBox.ALL) || category.equals(FilterBox.TYPE_MANUALLY)) {
                     return true;
                 }
                 for (int i = 0; i < entry.getValueCount(); i++) {
@@ -337,6 +501,7 @@ public class InventoryController extends AbstractController<Inventory, Inventory
         return rowFilter;
     }
 
+
     /**
      * @param id selected item id
      * @return a new row filter.
@@ -347,7 +512,10 @@ public class InventoryController extends AbstractController<Inventory, Inventory
         RowFilter<TableModel, Integer> rowFilter = new RowFilter<TableModel, Integer>() {
             @Override
             public boolean include(Entry<? extends TableModel, ? extends Integer> entry) {
-                if (id.equals("ALL") || id.equals("TYPE_MANUALLY")) {
+                if (id.equals(FilterBox.ALL) || id.equals(FilterBox.TYPE_MANUALLY)) {
+                    if (category.equals(FilterBox.ALL)) {
+                        return true;
+                    }
                     for (int i = 0; i < entry.getValueCount(); i++) {
                         if (entry.getStringValue(i).equals(category)) {
                             return true;
@@ -434,6 +602,7 @@ public class InventoryController extends AbstractController<Inventory, Inventory
 
 
 
+
     //TEST MAIN
     public static void main(String[] args) {
         Inventory inventory = new Inventory();
@@ -443,7 +612,8 @@ public class InventoryController extends AbstractController<Inventory, Inventory
         controller.setUpView();
         frame.add(viewPanel);
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        frame.setSize(500, 600);
+        frame.pack();
+        frame.setSize(1400, 1000);
         frame.setVisible(true);
     }
 

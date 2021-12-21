@@ -4,12 +4,15 @@ import model.Inventory;
 import ui.InventoryManagementSystemApplication;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 //A panel that prompts the user to enter inputs for creating new products
-public class AddPanel extends JPanel implements ActionListener {
+public class AddPanel extends JPanel {
     private InventoryManagementSystemApplication application;
     Inventory inventory;
     //JTextField codeField = new JTextField(10);
@@ -21,6 +24,8 @@ public class AddPanel extends JPanel implements ActionListener {
     JTextField quantityField = new JTextField(10);
     JTextField description = new JTextField(10);
     JButton button;
+    private List<JTextField> textFields = new ArrayList<>(7);
+
 
     //EFFECTS: create a new panel that will pop up if the user attempts to add new stocks
     public AddPanel(Inventory inventory, JButton button, InventoryManagementSystemApplication application) {
@@ -44,9 +49,16 @@ public class AddPanel extends JPanel implements ActionListener {
         add(description);
         this.button = button;
         button.setText("Register");
-        button.addActionListener(this);
+//        button.addActionListener(this);
         add(button);
-        setSize(600, 700);
+        setPreferredSize(new Dimension(700, 500));
+        textFields.add(costField);
+        textFields.add(bbdField);
+        textFields.add(priceField);
+        textFields.add(idField);
+        textFields.add(locationField);
+        textFields.add(quantityField);
+        textFields.add(description);
     }
 
     public AddPanel(Inventory inventory) {
@@ -69,9 +81,16 @@ public class AddPanel extends JPanel implements ActionListener {
         add(description);
         this.button = new JButton();
         button.setText("Register");
-        button.addActionListener(this);
+//        button.addActionListener(this);
         add(button);
         setSize(600, 700);
+        textFields.add(costField);
+        textFields.add(bbdField);
+        textFields.add(priceField);
+        textFields.add(idField);
+        textFields.add(locationField);
+        textFields.add(quantityField);
+        textFields.add(description);
     }
 
     //MODIFIES: this
@@ -111,21 +130,21 @@ public class AddPanel extends JPanel implements ActionListener {
     }
 
 
-    //MODIFIES: this
-    //EFFECTS: add a new Inventory tag and add it to the list to add
-    public void actionPerformed(ActionEvent e) {
-//        String id = idField.getText().toUpperCase();
-//
-//        String location = trimLocationFormat(locationField.getText());
-//        int qty = quantityField.getText().isEmpty() ? 0 : Integer.parseInt(quantityField.getText());
-        //The job done below is Data model's extended responsibility related to its property change listeners
-//        if (qty > 0) {
-//            InventoryTag tag = new InventoryTag(id, cost, price, LocalDate.now(), bestBeforeDate, location, qty);
-//            if (inventory.addProducts(tag)) {
-//                application.addAccount(tag, description.getText(), LocalDate.now());
-//            }
-//        }
-    }
+//    //MODIFIES: this
+//    //EFFECTS: add a new Inventory tag and add it to the list to add
+//    public void actionPerformed(ActionEvent e) {
+////        String id = idField.getText().toUpperCase();
+////
+////        String location = trimLocationFormat(locationField.getText());
+////        int qty = quantityField.getText().isEmpty() ? 0 : Integer.parseInt(quantityField.getText());
+//        //The job done below is Data model's extended responsibility related to its property change listeners
+////        if (qty > 0) {
+////            InventoryTag tag = new InventoryTag(id, cost, price, LocalDate.now(), bestBeforeDate, location, qty);
+////            if (inventory.addProducts(tag)) {
+////                application.addAccount(tag, description.getText(), LocalDate.now());
+////            }
+////        }
+//    }
 
 
     public String getId() {
@@ -158,6 +177,27 @@ public class AddPanel extends JPanel implements ActionListener {
 
     public JButton getButton() {
         return button;
+    }
+
+    public List<JTextField> getTextFields() {
+        return textFields;
+    }
+
+    public void setAction(Action textFieldAction, Action buttonAction) {
+        for (JTextField textField: textFields) {
+            textField.addActionListener(textFieldAction);
+        }
+        button.setAction(buttonAction);
+    }
+
+    public void addButtonActionListener(ActionListener listener) {
+        button.addActionListener(listener);
+    }
+
+    public void clearFields() {
+        for (JTextField textField: textFields) {
+            textField.setText("");
+        }
     }
 
 

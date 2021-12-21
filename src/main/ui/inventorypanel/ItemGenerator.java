@@ -8,6 +8,9 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 //represents a panel that can generate items
 public class ItemGenerator extends JPanel implements ActionListener {
@@ -20,6 +23,7 @@ public class ItemGenerator extends JPanel implements ActionListener {
     private JTextField description = new JTextField(10);
     private JTextField note = new JTextField(10);
     private JButton button = new JButton("Create");
+    private List<JComponent> components = new ArrayList<>();
 
     //EFFECTS: create a new panel that generates items
     public ItemGenerator(Inventory inventory, StockPanel stockPanel) {
@@ -49,13 +53,22 @@ public class ItemGenerator extends JPanel implements ActionListener {
         //button.addActionListener(stockPanel);
         setLayout(new GridBagLayout());
         GridBagConstraints gc = new GridBagConstraints();
-        gc.fill = GridBagConstraints.HORIZONTAL;
+        gc.fill = GridBagConstraints.BOTH;
         gc.gridx = 0;
         gc.gridy = 0;
+        gc.gridwidth = 3;
         add(fieldPanel, gc);
-        gc.gridx = 1;
+        gc.gridx = 0;
         gc.gridy = 1;
-        add(button, gc);;
+        add(button, gc);
+        components.add(idField);
+        components.add(nameField);
+        components.add(categoryField);
+        components.add(priceField);
+        components.add(description);
+        components.add(note);
+        components.add(button);
+
     }
 
 
@@ -83,17 +96,18 @@ public class ItemGenerator extends JPanel implements ActionListener {
         fieldPanel.add(description);
         fieldPanel.add(new JLabel("NOTE: "));
         fieldPanel.add(note);
+
     }
 
     //MODIFIES: this
     //EFFECTS: clear all fields of field panel
     public void clearFields() {
-        idField.removeAll();
-        categoryField.removeAll();
-        description.removeAll();
-        note.removeAll();
-        priceField.removeAll();
-        nameField.removeAll();
+        idField.setText("");
+        categoryField.setText("");
+        description.setText("");
+        note. setText("");
+        priceField.setText("");
+        nameField.setText("");
     }
 
     //MODIFIES: this
@@ -148,5 +162,15 @@ public class ItemGenerator extends JPanel implements ActionListener {
 
     public String getNoteFieldValue() {
         return note.getText();
+    }
+
+    public void setAction(Action textFieldAction, Action buttonAction) {
+        for (JComponent component: components) {
+            if (component instanceof JButton) {
+                ((JButton) component).setAction(buttonAction);
+            } else if (component instanceof JTextField) {
+                ((JTextField) component).setAction(textFieldAction);
+            }
+        }
     }
 }

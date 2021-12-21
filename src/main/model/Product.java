@@ -2,13 +2,14 @@ package model;
 
 import org.json.JSONObject;
 import persistence.JsonConvertible;
+import ui.table.TableEntryConvertibleModel;
 
 import java.time.LocalDate;
 
 //represents product. Each product will have item code, SKU (Stock keeping unit),
 //date generated, best before date, and cost it was bought for.
 //No data about the product can be changed after creation.
-public class Product implements JsonConvertible, TableEntryConvertible {
+public class Product extends TableEntryConvertibleModel implements JsonConvertible {
     //item code represents the code composed only of English alphabets that indicates
     //the category of the product. Multiple products can have the same item code.
     private final String id;
@@ -16,11 +17,49 @@ public class Product implements JsonConvertible, TableEntryConvertible {
     private final String sku;
     private final LocalDate dateGenerated;
     //Only products given best-before date will have a valid best-before date.
-    private final LocalDate bestBeforeDate;
+    private LocalDate bestBeforeDate;
     //cost is the money paid for this product
     private double price;
     private final double cost;
     private String location;
+
+
+//
+//    @Override
+//    public List<String> getContentsOf(String property) {
+//        property = property.toUpperCase();
+//        List<String> contents = new ArrayList<>();
+//        switch (property) {
+//            case "ID":
+//                contents.add(id);
+//                break;
+//            case "SKU":
+//                contents.add(sku);
+//                break;
+//            case "BESTBEFOREDATE":
+//                contents.add(bestBeforeDate.toString());
+//            case "PRICE":
+//                contents.add(String.valueOf(price));
+//                break;
+//            case "COST":
+//                contents.add(String.valueOf(cost));
+//                break;
+//            case "LOCATION":
+//                contents.add(location);
+//        }
+//        return contents;
+//    }
+
+    public enum DataList {
+        ID, SKU, COST, PRICE, BEST_BEFORE_DATE, DATE_GENERATED, LOCATION
+    }
+
+    public static final String[] DATA_LIST = new String[]{
+            DataList.ID.toString(), DataList.SKU.toString(), DataList.COST.toString(),
+            DataList.PRICE.toString(), DataList.BEST_BEFORE_DATE.toString(),
+            DataList.DATE_GENERATED.toString(), DataList.LOCATION.toString()
+    };
+
 
     //It is possible for date generated and best before date to be null,
     //However, it is strongly recommended to ensure date generated is a valid Local Date instance.
@@ -28,6 +67,7 @@ public class Product implements JsonConvertible, TableEntryConvertible {
     //EFFECTS: create a product with specified data.
     public Product(String id, String sku, double cost, double price,
                    LocalDate dateGenerated, LocalDate bestBeforeDate, String location) {
+        super(DATA_LIST);
         id = id.toUpperCase();
         this.id = id;
         this.sku = sku;
@@ -41,6 +81,7 @@ public class Product implements JsonConvertible, TableEntryConvertible {
     //REQUIRES: data in JSONObject format must contain all the information necessary for creating a new product
     //EFFECTS: create a new product with data in JSON format
     public Product(JSONObject json) {
+        super(DATA_LIST);
         id = json.getString("id");
         sku = json.getString("sku");
         price = json.getDouble("price");
@@ -81,6 +122,12 @@ public class Product implements JsonConvertible, TableEntryConvertible {
         return bestBeforeDate;
     }
 
+    public void setBestBeforeDate(LocalDate date) {
+        LocalDate oldDate = this.bestBeforeDate;
+        this.bestBeforeDate = date;
+        changeFirer.firePropertyChange(DataList.BEST_BEFORE_DATE.toString(), null, this);
+    }
+
     //EFFECTS: return the cost paid for this product
     public double getCost() {
         return cost;
@@ -98,7 +145,9 @@ public class Product implements JsonConvertible, TableEntryConvertible {
         if (price < 0) {
             throw new IllegalArgumentException("Price cannot be negative");
         }
+        double oldPrice = this.price;
         this.price = price;
+        changeFirer.firePropertyChange(DataList.PRICE.toString(), null, this);
     }
 
     //EFFECTS: return the location of this product
@@ -106,10 +155,13 @@ public class Product implements JsonConvertible, TableEntryConvertible {
         return location;
     }
 
+
     //MODIFIES: this
     //EFFECTS: change the location of this product
     public void setLocation(String location) {
+        String oldLocation = this.location;
         this.location = location;
+        changeFirer.firePropertyChange(DataList.LOCATION.toString(), oldLocation, location);
     }
 
 
@@ -149,18 +201,13 @@ public class Product implements JsonConvertible, TableEntryConvertible {
         entry[1] = sku;
         entry[2] = cost;
         entry[3] = price;
-        entry[4] = bestBeforeDate.toString();
+        entry[4] = bestBeforeDate == null ? "N/A" : bestBeforeDate.toString();
         entry[5] = dateGenerated.toString();
         entry[6] = location;
         return entry;
     }
 
-    @Override
-    public String[] getDataList() {
-        return new String[]{
-                "ID", "SKU", "COST", "PRICE", "BEST_BEFORE_DATE", "DATE_GENERATED", "LOCATION"
-        };
-    }
+
 }
 
 

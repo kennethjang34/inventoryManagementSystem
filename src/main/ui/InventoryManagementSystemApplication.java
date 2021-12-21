@@ -53,49 +53,11 @@ public class InventoryManagementSystemApplication extends JFrame implements Json
         } catch (IOException e) {
             admin = new Admin();
         }
-//        try {
-//            image = ImageIO.read(new File(imagePath));
-//
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//        ii = new ImageIcon(image);
-//        image = ii.getImage();
-//        JDialog dialog = new JDialog();
-//        dialog.setLayout(new BorderLayout());
-//        JLabel descriptionLabel = new JLabel();
-//        descriptionLabel.setLayout(new FlowLayout());
-//        descriptionLabel.setIcon(ii);
-//        for (int i = 0; i < 100; i++) {
-//            JLabel label = new JLabel(description);
-//            label.setForeground(Color.CYAN);
-//            descriptionLabel.add(label);
-//        }
-//        dialog.add(descriptionLabel, BorderLayout.CENTER);
-//        dialog.setSize(500, 600);
 
         ledger = new Ledger();
         inventory = new Inventory();
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-//        cardLayout = new CardLayout();
-//        tabbedPane = new JTabbedPane();
-//        inventoryPanel = new InventoryPanel(inventory, this);
-//        ledgerPanel = new LedgerPanel(ledger);
-//        adminPanel = new AdminPanel(admin);
-//        loginPanel = new LoginPanel(admin, this);
-//        tabbedPane.addTab("Inventory", inventoryPanel);
-//        tabbedPane.addTab("Ledger", ledgerPanel);
-//        tabbedPane.addTab("Admin", adminPanel);
-//        menuBar = createMenuBar();
-//        cardLayout.addLayoutComponent(tabbedPane, "ControlPanel");
-//        cardLayout.addLayoutComponent(loginPanel, "LoginPanel");
-//        tabbedPane.setBounds(50, 50, 200, 200);
-//        setSize(100, 200);
         createMainPanel();
-//        mainPanel.setLayout(cardLayout);
-//        mainPanel.add(tabbedPane, "ControlPanel");
-//        mainPanel.add(loginPanel, "LoginPanel");
-//        cardLayout.show(mainPanel, "LoginPanel");
         add(mainPanel);
         menuBar = createMenuBar();
         setJMenuBar(menuBar);

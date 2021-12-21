@@ -3,28 +3,34 @@ package model;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import persistence.JsonConvertible;
+import ui.table.TableEntryConvertibleModel;
 
 import java.util.*;
 
 //represents a category where similar items belong
-public class Category implements JsonConvertible, TableEntryConvertible {
+public class Category extends TableEntryConvertibleModel implements JsonConvertible {
     private final String name;
     private int quantity;
     //set containing id's of items belonging to this category
     private final Set<String> items;
+    public static final String[] DATA_LIST = new String[]{
+            "Name", "Quantity"
+    };
 
 
     //REQUIRES: category must be composed of English letters or digits only
     //EFFECTS: create a new category with no items belonging to it
     public Category(String category) {
+        super(DATA_LIST);
         this.name = category;
         quantity = 0;
         items = new HashSet<>();
     }
 
     //REQUIRES: the data must be in valid JSONObject form
-    //EFFECTS: create a new categoryt form this json data
+    //EFFECTS: create a new category form this json data
     public Category(JSONObject json) {
+        super(DATA_LIST);
         name = json.getString("name");
         quantity = json.getInt("quantity");
         items = new HashSet<>();
@@ -117,6 +123,12 @@ public class Category implements JsonConvertible, TableEntryConvertible {
         return new String[]{
                 "Name", "Quantity"
         };
+    }
+
+
+    @Override
+    public String toString() {
+        return name;
     }
 
 //    //EFFECTS: return the hash code of this.

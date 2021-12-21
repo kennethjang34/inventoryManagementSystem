@@ -1,18 +1,18 @@
 package ui.inventorypanel;
 
-import javafx.scene.control.ButtonType;
 import model.Inventory;
-import ui.View;
-import ui.inventorypanel.stockpanel.StockPanel;
 
 import javax.swing.*;
-import java.beans.PropertyChangeEvent;
+import java.awt.*;
 
 //represents a panel that makes it possible to create a new category as requested by the user
 public class CategoryGenerator extends JPanel {
     private JTextField categoryField = new JTextField(10);
     private JLabel categoryLabel = new JLabel("Category name: ");
     private JButton button = new JButton("create");
+
+
+
 //    private StockSearchPanel searchPanel;
 //    private JTextField itemField = new JTextField(10);
 //    private JLabel itemLabel = new JLabel("Item name: ");
@@ -20,35 +20,33 @@ public class CategoryGenerator extends JPanel {
 //    private JButton itemButton = new JButton("create");
 //    private Inventory inventory;
 
+    //Not ued
     //EFFECTS: create a panel that helps the user create a new category
     public CategoryGenerator(Inventory inventory) {
+        //this is a job for the inventory controller
         add(categoryLabel);
         add(categoryField);
         add(button);
-        //this is a job for the inventory controller
-        button.addActionListener(e -> {
-            String name = categoryField.getText();
-            name = name.toUpperCase();
-            if (name.equals("")) {
-                JOptionPane.showMessageDialog(null, "Category name cannot be empty");
-                return;
-            }
-            categoryField.removeAll();
-            if (inventory.createCategory(name)) {
-                //stockPanel.categoryAddedUpdate(name);
-                JOptionPane.showMessageDialog(null, "New Category: "
-                        + name + " has been successfully created");
-            } else {
-                JOptionPane.showMessageDialog(null, "The category with the name: "
-                        + name + " is already existing");
-            }
-        });
+
     }
 
     public CategoryGenerator() {
-        add(categoryLabel);
-        add(categoryField);
-        add(button);
+        setLayout(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.gridwidth = 2;
+        add(categoryLabel, gbc);
+        gbc.gridx = gbc.gridx + gbc.gridwidth;
+        add(categoryField, gbc);
+        gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        gbc.gridwidth = 5;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.weightx = 1;
+        add(button, gbc);
     }
 
     //EFFECTS: return the button of this
@@ -59,5 +57,14 @@ public class CategoryGenerator extends JPanel {
     //EFFECTS; return the category field
     public JTextField getCategoryField() {
         return categoryField;
+    }
+
+    public void setAction(Action action) {
+        button.setAction(action);
+        categoryField.setAction(action);
+    }
+
+    public void clearFields() {
+        categoryField.setText("");
     }
 }

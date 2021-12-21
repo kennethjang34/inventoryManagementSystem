@@ -1,7 +1,6 @@
 package ui.ledgerpanel;
 
 import model.Account;
-import ui.SubjectPanel;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -10,7 +9,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 //represents a panel that provides options to filter stock change accounts based on the chosen category/item id
-public class FilterPanel extends SubjectPanel implements ActionListener {
+public class FilterPanel  implements ActionListener {
     private LedgerPanel ledgerPanel;
     private JComboBox dateBox;
     private JComboBox codeBox;

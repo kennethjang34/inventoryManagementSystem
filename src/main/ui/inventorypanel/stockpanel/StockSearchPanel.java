@@ -3,14 +3,13 @@ package ui.inventorypanel.stockpanel;
 import model.ApplicationConstantValue;
 import model.Inventory;
 import model.Observer;
-import ui.SubjectPanel;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
 
-public class StockSearchPanel extends SubjectPanel implements ActionListener, Observer {
+public class StockSearchPanel extends JPanel implements ActionListener, Observer {
 //    StockPanel stockPanel;
     Inventory inventory;
     //Base option: ALL Categories
