@@ -75,11 +75,9 @@ public class InventoryViewPanel extends JPanel {
 
 
     public  class StockLocationTable extends ButtonTable {
-        private String id;
 
         public StockLocationTable(String id) {
             super(inventory.getQuantitiesAtLocations(id), locationTableColumns, "To product table");
-            this.id = id;
 //            List<QuantityTag> stocks = inventory.getQuantitiesAtLocations(id);
 //            //excludes the button column
 //            locationTable = new ButtonTable(stocks, locationTableColumns, "To product table");
@@ -88,8 +86,9 @@ public class InventoryViewPanel extends JPanel {
             setPreferredSize(new Dimension(500, 600));
         }
 
-        public String getId() {
-            return id;
+        public String getSelectedId() {
+            int row = getSelectedRow();
+            return (String)getValueAt(row, getColumn(LocationTableColumns.ID.toString()).getModelIndex());
         }
 
         public String getSelectedLocation() {
@@ -116,7 +115,7 @@ public class InventoryViewPanel extends JPanel {
         RowConverterTableModel productTableModel = new RowConverterTableModel();
         productTableModel.setColumnNames(Product.DATA_LIST);
         productTable = new JTable(productTableModel);
-        inventory.addDataModelListener(Inventory.PRODUCT, productTableModel);
+        inventory.addDataChangeListener(Inventory.PRODUCT, productTableModel);
         itemFilter = new FilterBox(inventory, Inventory.ITEM);
         categoryFilter = new FilterBox(inventory, Inventory.CATEGORY);
         categoryField = new JTextField(10);
@@ -271,8 +270,7 @@ public class InventoryViewPanel extends JPanel {
         dialog.setVisible(true);
         dialog.addWindowListener(new WindowAdapter() {
             @Override
-            public void windowClosed(WindowEvent e) {
-                super.windowClosed(e);
+            public void windowClosing(WindowEvent e) {
                 isLocationViewDialogDisplayed = false;
             }
             });

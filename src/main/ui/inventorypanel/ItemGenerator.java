@@ -2,7 +2,6 @@ package ui.inventorypanel;
 
 import model.Inventory;
 import ui.inventorypanel.controller.InventoryController;
-import ui.inventorypanel.stockpanel.StockPanel;
 
 import javax.swing.*;
 import java.awt.*;
@@ -15,7 +14,6 @@ import java.util.List;
 //represents a panel that can generate items
 public class ItemGenerator extends JPanel implements ActionListener {
     private Inventory inventory;
-    private StockPanel stockPanel;
     private JTextField idField = new JTextField(10);
     private JTextField nameField = new JTextField(10);
     private JTextField categoryField = new JTextField(10);
@@ -24,27 +22,6 @@ public class ItemGenerator extends JPanel implements ActionListener {
     private JTextField note = new JTextField(10);
     private JButton button = new JButton("Create");
     private List<JComponent> components = new ArrayList<>();
-
-    //EFFECTS: create a new panel that generates items
-    public ItemGenerator(Inventory inventory, StockPanel stockPanel) {
-        this.stockPanel = stockPanel;
-        this.inventory = inventory;
-        //this.searchPanel = searchPanel;
-
-        JPanel fieldPanel = new JPanel();
-        initializeFieldPanel(fieldPanel);
-        button.addActionListener(this);
-        //button.addActionListener(stockPanel);
-        setLayout(new GridBagLayout());
-        GridBagConstraints gc = new GridBagConstraints();
-        gc.fill = GridBagConstraints.HORIZONTAL;
-        gc.gridx = 0;
-        gc.gridy = 0;
-        add(fieldPanel, gc);
-        gc.gridx = 1;
-        gc.gridy = 1;
-        add(button, gc);
-    }
 
     //EFFECTS: create a new panel that generates items
     public ItemGenerator() {

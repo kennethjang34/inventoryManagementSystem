@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 public class RowDataChangeSupport extends PropertyChangeSupport {
-    Map<String, List<DataFactoryViewer>> tableDataListeners;
+    Map<String, List<DataViewer>> tableDataListeners;
 
     /**
      * Constructs a <code>PropertyChangeSupport</code> object.
@@ -21,8 +21,8 @@ public class RowDataChangeSupport extends PropertyChangeSupport {
         tableDataListeners = new LinkedHashMap<>();
     }
 
-    public void addTableDataModelListener(String category, DataFactoryViewer listener) {
-        List<DataFactoryViewer> list = tableDataListeners.get(category);
+    public void addTableDataModelListener(String category, DataViewer listener) {
+        List<DataViewer> list = tableDataListeners.get(category);
         if (list == null) {
             list = new ArrayList<>();
         }
@@ -30,14 +30,38 @@ public class RowDataChangeSupport extends PropertyChangeSupport {
         tableDataListeners.put(category, list);
     }
 
-    public void removeTableModelListener(DataFactoryViewer listener) {
-        tableDataListeners.remove(listener);
+    public void addTableDataModelListener(DataViewer listener) {
+        for (Map.Entry<String, List<DataViewer>> entry: tableDataListeners.entrySet()) {
+            List<DataViewer> list = entry.getValue();
+            if (list == null) {
+                list = new ArrayList<>();
+            }
+            list.add(listener);
+            entry.setValue(list);
+        }
     }
 
-    public void fireRemovalEvent(String category, Object removed) {
-        List<DataFactoryViewer> list = tableDataListeners.get(category);
+
+    public void removeTableModelListener(DataViewer listener) {
+        for (Map.Entry<String, List<DataViewer>> entry : tableDataListeners.entrySet()) {
+            List<DataViewer> list = entry.getValue();
+            if (list != null) {
+                list.remove(listener);
+            }
+        }
+    }
+
+    public void removeTableModelListener(String category, DataViewer viewer) {
+        List<DataViewer> viewers = tableDataListeners.get(category);
+        if (viewers != null) {
+            viewers.remove(viewer);
+        }
+    }
+
+    public void fireRemovalEvent(String category, TableEntryConvertibleModel removed) {
+        List<DataViewer> list = tableDataListeners.get(category);
         if (list != null) {
-            for (DataFactoryViewer tableModel : list) {
+            for (DataViewer tableModel : list) {
                 tableModel.entryRemoved(removed);
             }
         }
@@ -55,9 +79,40 @@ public class RowDataChangeSupport extends PropertyChangeSupport {
 //        }
 //    }
 
-    public void fireAdditionEvent(String category, Object added) {
-        for (DataFactoryViewer tableModel: tableDataListeners.get(category)) {
+    public void fireAdditionEvent(String category, TableEntryConvertibleModel added) {
+        for (DataViewer tableModel: tableDataListeners.get(category)) {
             tableModel.entryAdded(added);
         }
     }
+//
+//    public void fireUpdateEvent(String category, Object old, Object newData) {
+//        for (DataViewer tableModel: tableDataListeners.get(category)) {
+//            tableModel.entryUpdated(old, newData);
+//        }
+//    }
+
+    public void fireUpdateEvent(String category, TableEntryConvertibleModel updatedObject) {
+        for (DataViewer tableModel: tableDataListeners.get(category)) {
+            tableModel.entryUpdated(updatedObject);
+        }
+    }
+
+    public void fireUpdateEvent(String category, TableEntryConvertibleModel source, Object old, Object newObject) {
+        for (DataViewer tableModel: tableDataListeners.get(category)) {
+            tableModel.entryUpdated(source, old, newObject);
+        }
+    }
+
+    public void fireUpdateEvent(TableEntryConvertibleModel updatedObject) {
+        for (Map.Entry<String, List<DataViewer>> entry: tableDataListeners.entrySet()) {
+            List<DataViewer> list = entry.getValue();
+            if (list != null) {
+                for (DataViewer viewer: list) {
+                    viewer.entryUpdated(updatedObject);
+                }
+            }
+        }
+    }
+
+
 }

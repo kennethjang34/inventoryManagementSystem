@@ -1,13 +1,18 @@
 package ui.table;
 
-import java.util.List;
+import model.TableEntryConvertible;
 
-public abstract class AbstractTableDataModel extends AbstractDataModel {
+public abstract class TableEntryConvertibleDataFactory extends TableEntryConvertibleModel implements DataFactory {
 
 
-    public abstract List<String> getContentsOf(String property);
 
-    public abstract Object[] getDataList();
+
+
+    public TableEntryConvertibleDataFactory(String[] columnNames) {
+        super(columnNames);
+    }
+
+
 
     public String[] getTableColumnNames() {
         String[] columnNames = new String[getDataList().length];
@@ -16,6 +21,5 @@ public abstract class AbstractTableDataModel extends AbstractDataModel {
         }
         return columnNames;
     }
-
 
 }

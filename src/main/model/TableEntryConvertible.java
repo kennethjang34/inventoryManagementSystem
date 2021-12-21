@@ -7,7 +7,7 @@ public interface TableEntryConvertible {
     Object[] convertToTableEntry();
 
     //EFFECTS: return a String array of types(names) of the data returned by convertToTableEntry()
-    String[] getDataList();
+    String[] getColumnNames();
 
 
 

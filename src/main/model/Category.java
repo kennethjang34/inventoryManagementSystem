@@ -119,7 +119,7 @@ public class Category extends TableEntryConvertibleModel implements JsonConverti
     }
 
     @Override
-    public String[] getDataList() {
+    public String[] getColumnNames() {
         return new String[]{
                 "Name", "Quantity"
         };
@@ -130,6 +130,8 @@ public class Category extends TableEntryConvertibleModel implements JsonConverti
     public String toString() {
         return name;
     }
+
+
 
 //    //EFFECTS: return the hash code of this.
 //    //Same name means same category

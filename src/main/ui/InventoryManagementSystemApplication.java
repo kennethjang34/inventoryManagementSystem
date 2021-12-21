@@ -7,7 +7,6 @@ import persistence.JsonConvertible;
 import persistence.Reader;
 import persistence.Writer;
 import ui.adminpanel.AdminPanel;
-import ui.inventorypanel.InventoryPanel;
 import ui.ledgerpanel.LedgerPanel;
 
 import javax.imageio.ImageIO;
@@ -34,7 +33,6 @@ public class InventoryManagementSystemApplication extends JFrame implements Json
     private CardLayout cardLayout;
     private JTabbedPane tabbedPane;
     private LoginPanel loginPanel;
-    private InventoryPanel inventoryPanel;
     private LedgerPanel ledgerPanel;
     private AdminPanel adminPanel;
     private JMenuBar menuBar;
@@ -71,7 +69,6 @@ public class InventoryManagementSystemApplication extends JFrame implements Json
     //EFFECTS: create a tabbed pane for the main panel
     public void createTabbedPane() {
         tabbedPane = new JTabbedPane();
-        tabbedPane.addTab("Inventory", inventoryPanel);
         tabbedPane.addTab("Ledger", ledgerPanel);
         tabbedPane.addTab("Admin", adminPanel);
         tabbedPane.addChangeListener(e -> {
@@ -91,7 +88,6 @@ public class InventoryManagementSystemApplication extends JFrame implements Json
         mainPanel = new JPanel();
         cardLayout = new CardLayout();
         //tabbedPane = new JTabbedPane();
-        inventoryPanel = new InventoryPanel(inventory, this);
 
         //inventoryPanel = new InventoryPanel(inventory, this);
         ledgerPanel = new LedgerPanel(ledger);

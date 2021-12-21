@@ -25,7 +25,7 @@ public class LedgerPanel extends JPanel implements ActionListener {
         setLayout(new BorderLayout());
         add(accountTable, BorderLayout.SOUTH);
         add(selectedAccountTable, BorderLayout.NORTH);
-        add(filterPanel, BorderLayout.CENTER);
+//        add(filterPanel, BorderLayout.CENTER);
         setSize(new Dimension(600, 900));
     }
 

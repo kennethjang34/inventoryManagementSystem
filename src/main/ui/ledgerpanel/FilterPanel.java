@@ -9,7 +9,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 //represents a panel that provides options to filter stock change accounts based on the chosen category/item id
-public class FilterPanel  implements ActionListener {
+public class FilterPanel  extends JPanel implements ActionListener {
     private LedgerPanel ledgerPanel;
     private JComboBox dateBox;
     private JComboBox codeBox;

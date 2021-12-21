@@ -46,7 +46,7 @@ public class ButtonTable extends JTable {
     }
 
 
-    public ButtonTable(AbstractTableDataModel model, String buttonColumnName, String category) {
+    public ButtonTable(AbstractTableDataFactory model, String buttonColumnName, String category) {
         setModel(new ButtonTableModel(model, buttonColumnName, category));
         setDefaultRenderer(JButton.class, ButtonColumnRenderer.getInstance());
         addMouseListener(new MouseAdapter() {

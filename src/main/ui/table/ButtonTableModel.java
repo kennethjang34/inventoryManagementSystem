@@ -48,7 +48,7 @@ public class ButtonTableModel extends RowConverterTableModel {
         for (TableEntryConvertibleModel entry: entries) {
             data.put(entry, entry.convertToTableEntry());
         }
-        String[] columnNames = entries.get(0).getDataList();
+        String[] columnNames = entries.get(0).getColumnNames();
         this.columnNames = new String[columnNames.length + 1];
         for (int i = 0; i < columnNames.length; i++) {
             this.columnNames[i] = columnNames[i];
@@ -57,7 +57,7 @@ public class ButtonTableModel extends RowConverterTableModel {
         addButtonColumn();
     }
 
-    public ButtonTableModel(AbstractTableDataModel model, String buttonColumnName, String category) {
+    public ButtonTableModel(AbstractTableDataFactory model, String buttonColumnName, String category) {
         super(model, createColumnNames(model.getTableColumnNames(), buttonColumnName), category);
     }
 

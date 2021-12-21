@@ -60,7 +60,7 @@ public class InventoryController extends AbstractController<Inventory, Inventory
         public void actionPerformed(ActionEvent e) {
             InventoryViewPanel.StockLocationTable locationTable =
                     (InventoryViewPanel.StockLocationTable) view.getLocationTableOnDisplay();
-            String id = locationTable.getId();
+            String id = locationTable.getSelectedId();
             String location = locationTable.getSelectedLocation();
             RowConverterTableModel tableModel = (RowConverterTableModel)(view.getProductTable().getModel());
             tableModel.addRowsWithDataList(model.getProductList(id, location));

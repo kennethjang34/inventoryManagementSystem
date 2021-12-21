@@ -4,7 +4,7 @@ package model;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import persistence.JsonConvertible;
-import ui.table.AbstractTableDataModel;
+import ui.table.AbstractTableDataFactory;
 import ui.table.TableEntryConvertibleModel;
 
 import java.beans.PropertyChangeEvent;
@@ -13,7 +13,7 @@ import java.time.LocalDate;
 import java.util.*;
 
 //represents an inventory containing information of stocks of different items
-public class Inventory extends AbstractTableDataModel implements JsonConvertible, PropertyChangeListener {
+public class Inventory extends AbstractTableDataFactory implements JsonConvertible, PropertyChangeListener {
 
     public static final String CATEGORY = "CATEGORY";
     public static final String ITEM = "ITEM";
@@ -52,6 +52,15 @@ public class Inventory extends AbstractTableDataModel implements JsonConvertible
                 return getItemNames();
         }
         return null;
+    }
+
+    @Override
+    public String[] getColumnNames() {
+        String[] columns = new String[]{
+                "Category", "ID", "Name", "Description", "Special Note", "Quantity",
+                "Average Cost", "List Price"
+        };
+        return columns;
     }
 
     private List<String> getItemNames() {
@@ -182,7 +191,8 @@ public class Inventory extends AbstractTableDataModel implements JsonConvertible
             } else {
                 int originalQty = item.getQuantity();
                 item.addProducts(tag);
-                changeFirer.firePropertyChange(ITEM, originalQty, item.getQuantity());
+//                changeFirer.firePropertyChange(ITEM, originalQty, item.getQuantity());
+                changeFirer.fireUpdateEvent(ITEM, item);
             }
         }
         if (failed.size() != tags.size()) {
@@ -205,9 +215,10 @@ public class Inventory extends AbstractTableDataModel implements JsonConvertible
         } else {
             int originalQty = item.getQuantity();
             item.addProducts(tag);
-            PropertyChangeEvent event = new PropertyChangeEvent(item, ITEM, originalQty, item);
+//            PropertyChangeEvent event = new PropertyChangeEvent(item, ITEM, originalQty, item);
 //            event.setPropagationId(id);
-            changeFirer.firePropertyChange(event);
+            changeFirer.fireUpdateEvent(ITEM, item);
+//            changeFirer.fireAdditionEvent(PRODUCT, );
             return true;
         }
     }
@@ -221,8 +232,9 @@ public class Inventory extends AbstractTableDataModel implements JsonConvertible
             Product product = item.removeProduct(sku);
             if (product != null) {
                 product.getLocation();
-                changeFirer.firePropertyChange(ITEM, null, item);
+                changeFirer.fireUpdateEvent(ITEM, item);
                 changeFirer.fireRemovalEvent(PRODUCT, product);
+
                 return true;
             }
         }

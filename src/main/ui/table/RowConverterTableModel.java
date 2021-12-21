@@ -1,14 +1,13 @@
 package ui.table;
 
-import com.sun.tools.javac.util.Name;
 import org.jetbrains.annotations.NotNull;
-import ui.DataFactoryViewer;
+import ui.DataViewer;
 
 import javax.swing.table.AbstractTableModel;
 import java.beans.PropertyChangeEvent;
 import java.util.*;
 
-public class RowConverterTableModel extends AbstractTableModel implements DataFactoryViewer {
+public class RowConverterTableModel extends AbstractTableModel implements DataViewer {
     protected LinkedHashMap<TableEntryConvertibleModel, Object[]> data;
     protected List<TableEntryConvertibleModel> tableEntries;
     protected String[] columnNames;
@@ -33,7 +32,7 @@ public class RowConverterTableModel extends AbstractTableModel implements DataFa
             data.put(entry, createRow(entry.convertToTableEntry()));
             tableEntries.add(entry);
         }
-        this.columnNames = entries.get(0).getDataList();
+        this.columnNames = entries.get(0).getColumnNames();
         duplicateAllowed = false;
     }
 
@@ -48,16 +47,17 @@ public class RowConverterTableModel extends AbstractTableModel implements DataFa
         duplicateAllowed = false;
     }
 
-    public RowConverterTableModel(AbstractTableDataModel model, String[] columnNames, String category) {
+    public RowConverterTableModel(AbstractTableDataFactory model, String[] columnNames, String category) {
+        data = new LinkedHashMap<>();
+        tableEntries = new LinkedList<>();
         this.columnNames = columnNames;
         List<TableEntryConvertibleModel> entries = model.getEntryModels();
         for (TableEntryConvertibleModel entry: entries) {
-            entry.addListener(this);
+            entry.addDataChangeListener(this);
             tableEntries.add(entry);
             data.put(entry, createRow(entry.convertToTableEntry()));
         }
-        model.addDataModelListener(category, this);
-//        model.addEntryDataModelListener(category, this);
+        model.addDataChangeListener(category, this);
     }
 
     public void setAutomation(boolean automation) {
@@ -137,16 +137,6 @@ public class RowConverterTableModel extends AbstractTableModel implements DataFa
             if (data.put(entry, createRow(entry.convertToTableEntry())) == null) {
                 tableEntries.add(entry);
             }
-
-//            int rowIndex = findRowIndex(newRow);
-//            if (rowIndex == -1) {
-//                data.putIfAbsent(entry, newRow);
-////                if (entry instanceof TableEntryConvertibleModel) {
-////                    ((TableEntryConvertibleModel) entry).changeFirer.addPropertyChangeListener(this);
-////                }
-//            } else if (!duplicateAllowed) {
-//                data.set(rowIndex, newRow);
-//            }
         }
         fireTableRowsInserted(oldLastRow, getRowCount() - 1);
     }
@@ -274,40 +264,26 @@ public class RowConverterTableModel extends AbstractTableModel implements DataFa
         return entryData;
     }
 
-    @Override
-    public void propertyChange(@NotNull PropertyChangeEvent event) {
-        if (event.getNewValue() != null) {
-            TableEntryConvertibleModel entry = (TableEntryConvertibleModel)(event.getNewValue());
-            if (columnNames == null) {
-                columnNames = new String[entry.getDataList().length + 1];
-                for (int i = 0; i < entry.getDataList().length; i++) {
-                    columnNames[i] = entry.getDataList()[i];
-                }
-            }
-            if (data.put(entry, createRow(entry.convertToTableEntry())) == null) {
-                tableEntries.add(entry);
-            }
-            fireTableRowsUpdated(findRowIndex(entry), findRowIndex(entry));
-        }
-    }
 
     public List<TableEntryConvertibleModel> getEntryModels() {
         return new ArrayList<>(data.keySet());
     }
 
-    public AbstractTableDataModel getDataModel() {
+    public AbstractTableDataFactory getDataModel() {
         return null;
     }
 
     @Override
-    public void entryRemoved(Object removed) {
+    public void entryRemoved(TableEntryConvertibleModel removed) {
         int index = tableEntries.indexOf(removed);
-        data.remove(tableEntries.remove(removed));
+        if (tableEntries.remove(removed)) {
+            data.remove(removed);
+        }
         fireTableRowsDeleted(index, index);
     }
 
     @Override
-    public void entryAdded(Object added) {
+    public void entryAdded(TableEntryConvertibleModel added) {
         TableEntryConvertibleModel entry = (TableEntryConvertibleModel) added;
         Object[] row = createRow(entry.convertToTableEntry());
         if (data.put(entry, row) == null) {
@@ -317,6 +293,41 @@ public class RowConverterTableModel extends AbstractTableModel implements DataFa
             fireTableRowsUpdated(findRowIndex(entry), findRowIndex(entry));
         }
     }
+
+//    lic void entryUpdated(Object o1, Object o2) {
+//
+//    }@Override
+
+
+    @Override
+    public void entryUpdated(TableEntryConvertibleModel updatedEntry) {
+        if (columnNames == null) {
+            columnNames = new String[updatedEntry.getColumnNames().length + 1];
+            for (int i = 0; i < updatedEntry.getColumnNames().length; i++) {
+                columnNames[i] = updatedEntry.getColumnNames()[i];
+            }
+        }
+        if (data.put(updatedEntry, createRow(updatedEntry.convertToTableEntry())) == null) {
+            tableEntries.add(updatedEntry);
+            fireTableRowsInserted(tableEntries.size() - 1, tableEntries.size() - 1);
+        } else {
+            fireTableRowsUpdated(findRowIndex(updatedEntry), findRowIndex(updatedEntry));
+        }
+    }
+
+    @Override
+    public void entryUpdated(TableEntryConvertibleModel source, Object old, Object newObject) {
+        Object[] row = data.get(source);
+        for (int i = 0; i < row.length; i++) {
+            if (row[i].equals(old)) {
+                row[i] = newObject;
+                fireTableCellUpdated(tableEntries.indexOf(source), i);
+                return;
+            }
+        }
+    }
+
+
 //
 //    public void entryAdded(String category, TableEntryConvertibleModel added) {
 //        TableEntryConvertibleModel entry = added;

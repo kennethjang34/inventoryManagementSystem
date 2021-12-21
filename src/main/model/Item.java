@@ -4,6 +4,7 @@ package model;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import persistence.JsonConvertible;
+import ui.table.TableEntryConvertibleDataFactory;
 import ui.table.TableEntryConvertibleModel;
 
 import java.beans.PropertyChangeEvent;
@@ -14,7 +15,7 @@ import java.util.*;
 //represents each item in the inventory.
 //contains product list belonging to it
 //item can be thought of a super-category of products
-public class Item extends TableEntryConvertibleModel implements JsonConvertible, PropertyChangeListener {
+public class Item extends TableEntryConvertibleDataFactory implements JsonConvertible, PropertyChangeListener {
     private int count = 0;
     private final String id;
     private final String name;
@@ -23,8 +24,15 @@ public class Item extends TableEntryConvertibleModel implements JsonConvertible,
     private double averageCost;
     private double listPrice;
     private String note;
+
+    public enum DataList {
+        CATEGORY, ID, NAME, DESCRIPTION, NOTE, QUANTITY, AVERAGE_COST, LIST_PRICE
+    }
+
     public static final String[] DATA_LIST = new String[]{
-            "CATEGORY", "ID", "NAME", "DESCRIPTION", "NOTE", "QUANTITY", "AVERAGE_COST", "LIST_PRICE"
+            DataList.CATEGORY.toString(), DataList.ID.toString(), DataList.NAME.toString(),
+            DataList.DESCRIPTION.toString(), DataList.NOTE.toString(), DataList.QUANTITY.toString(),
+            DataList.AVERAGE_COST.toString(), DataList.LIST_PRICE.toString()
     };
     //key: sku, value: product
     private LinkedHashMap<String, Product> products;
@@ -277,12 +285,10 @@ public class Item extends TableEntryConvertibleModel implements JsonConvertible,
         };
     }
 
-//    @Override
-//    public String[] getDataList() {
-//        return new String[]{
-//                "CATEGORY", "ID", "NAME", "DESCRIPTION", "NOTE", "QUANTITY", "AVERAGE_COST", "LIST_PRICE"
-//        };
-//    }
+    @Override
+    public String[] getColumnNames() {
+        return DATA_LIST;
+    }
 
 
     //EFFECTS: return a JSONObject of this
@@ -321,5 +327,49 @@ public class Item extends TableEntryConvertibleModel implements JsonConvertible,
             }
             newLocation.add((Product) evt.getSource());
         }
+    }
+
+    public List<TableEntryConvertibleModel> getEntryModels() {
+        return new ArrayList<>(products.values());
+    }
+
+
+
+    public List<String> getContentsOf(String property) {
+        List<String> contents = new ArrayList<>();
+
+        //Case-insensitive
+        switch (DataList.valueOf(property.toUpperCase())) {
+            case CATEGORY:
+                contents.add(category);
+                break;
+            case ID:
+                contents.add(id);
+                break;
+            case NAME:
+                contents.add(name);
+                break;
+            case NOTE:
+                contents.add(note);
+                break;
+            case QUANTITY:
+                contents.add(String.valueOf(getQuantity()));
+                break;
+            case AVERAGE_COST:
+                contents.add(String.valueOf(listPrice));
+                break;
+            case LIST_PRICE:
+                contents.add(String.valueOf(listPrice));
+                break;
+            case DESCRIPTION:
+                contents.add(description);
+                break;
+
+        }
+        return contents;
+    }
+
+    public Object[] getDataList() {
+        return new Object[0];
     }
 }
