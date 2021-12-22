@@ -251,8 +251,50 @@ public class InventoryController extends AbstractController<Inventory, Inventory
                 productLocationChangeHelper(rows);
             }
         });
+
+        JMenuItem price = new JMenuItem("change price");
+        price.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                List<Object[]> rows = tableModel.getRowObjects(productTable.getSelectedRows());
+                productPriceChangeHelper(rows);
+            }
+        });
+
+        JMenuItem cost = new JMenuItem("change cost");
+        cost.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                List<Object[]> rows = tableModel.getRowObjects(productTable.getSelectedRows());
+                productCostChangeHelper(rows);
+            }
+        });
+
+        JMenuItem bbd = new JMenuItem("change best-before-date");
+        bbd.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                List<Object[]> rows = tableModel.getRowObjects(productTable.getSelectedRows());
+                productBBDChangeHelper(rows);
+            }
+        });
+
+        JMenuItem id = new JMenuItem("change id");
+        id.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                List<Object[]> rows = tableModel.getRowObjects(productTable.getSelectedRows());
+                productIdChangeHelper(rows);
+            }
+        });
+
         menu.add(remove);
         menu.add(location);
+        menu.add(price);
+        menu.add(cost);
+        menu.add(bbd);
+        menu.add(id);
+
         return menu;
     }
 
@@ -271,6 +313,69 @@ public class InventoryController extends AbstractController<Inventory, Inventory
         }
     }
 
+    private void productPriceChangeHelper(List<Object[]> rows) {
+        JTable table = createSelectedProductsTable(rows);
+        JTable productTable = view.getProductTable();
+        RowConverterTableModel tableModel = (RowConverterTableModel) productTable.getModel();
+        JPanel toBeChanged = new JPanel();
+        toBeChanged.add(table);
+        double newPrice = Double.parseDouble(JOptionPane.showInputDialog(view, toBeChanged,
+                "Enter the new price for the following products"));
+        if (newPrice >= 0) {
+            for (Object[] row: rows) {
+                int skuColumn = tableModel.findColumn("SKU");
+                String sku = (String) row[skuColumn];
+                model.getProduct(sku).setPrice(newPrice);
+            }
+        }
+    }
+
+    private void productCostChangeHelper(List<Object[]> rows) {
+        JTable table = createSelectedProductsTable(rows);
+        JTable productTable = view.getProductTable();
+        RowConverterTableModel tableModel = (RowConverterTableModel) productTable.getModel();
+        JPanel toBeChanged = new JPanel();
+        toBeChanged.add(table);
+        double newCost = Double.parseDouble(JOptionPane.showInputDialog(view, toBeChanged,
+                "Enter the new cost for the following products"));
+        if (newCost >= 0) {
+            for (Object[] row: rows) {
+                int skuColumn = tableModel.findColumn("SKU");
+                String sku = (String) row[skuColumn];
+                model.getProduct(sku).setCost(newCost);
+            }
+        }
+    }
+
+    private void productBBDChangeHelper(List<Object[]> rows) {
+        JTable table = createSelectedProductsTable(rows);
+        JTable productTable = view.getProductTable();
+        RowConverterTableModel tableModel = (RowConverterTableModel) productTable.getModel();
+        JPanel toBeChanged = new JPanel();
+        toBeChanged.add(table);
+        LocalDate date = convertToLocalDate((JOptionPane.showInputDialog(view, toBeChanged,
+                "Enter the new best-before-date for the following products")));
+        for (Object[] row: rows) {
+            int skuColumn = tableModel.findColumn("SKU");
+            String sku = (String) row[skuColumn];
+            model.getProduct(sku).setBestBeforeDate(date);
+        }
+    }
+
+    private void productIdChangeHelper(List<Object[]> rows) {
+        JTable table = createSelectedProductsTable(rows);
+        JTable productTable = view.getProductTable();
+        RowConverterTableModel tableModel = (RowConverterTableModel) productTable.getModel();
+        JPanel toBeChanged = new JPanel();
+        toBeChanged.add(table);
+        String id = (JOptionPane.showInputDialog(view, toBeChanged,
+                "Enter the new id for the following products"));
+        for (Object[] row: rows) {
+            int skuColumn = tableModel.findColumn("SKU");
+            String sku = (String) row[skuColumn];
+            model.getProduct(sku).setId(id);
+        }
+    }
 
 
 
@@ -615,6 +720,22 @@ public class InventoryController extends AbstractController<Inventory, Inventory
         frame.pack();
         frame.setSize(1400, 1000);
         frame.setVisible(true);
+    }
+
+    //REQUIRES: the date must be a string type in YYYYMMDD form without any space in between
+    //EFFECTS: convert the date in string form into LocalDate type
+    public static LocalDate convertToLocalDate(String date) {
+        if (date == null || date.isEmpty()) {
+            return null;
+        }
+        try {
+            int year = Integer.parseInt(date.substring(0, 4));
+            int month = Integer.parseInt(date.substring(4, 6));
+            int day = Integer.parseInt(date.substring(6, 8));
+            return LocalDate.of(year, month, day);
+        } catch (Exception e) {
+            throw new IllegalArgumentException("The format of the date is illegal");
+        }
     }
 
 

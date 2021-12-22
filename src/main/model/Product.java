@@ -12,7 +12,7 @@ import java.time.LocalDate;
 public class Product extends TableEntryConvertibleModel implements JsonConvertible {
     //item code represents the code composed only of English alphabets that indicates
     //the category of the product. Multiple products can have the same item code.
-    private final String id;
+    private String id;
     //SKU is unique to each product
     private final String sku;
     private final LocalDate dateGenerated;
@@ -20,7 +20,7 @@ public class Product extends TableEntryConvertibleModel implements JsonConvertib
     private LocalDate bestBeforeDate;
     //cost is the money paid for this product
     private double price;
-    private final double cost;
+    private double cost;
     private String location;
 
 
@@ -122,12 +122,6 @@ public class Product extends TableEntryConvertibleModel implements JsonConvertib
         return bestBeforeDate;
     }
 
-    public void setBestBeforeDate(LocalDate date) {
-        LocalDate oldDate = this.bestBeforeDate;
-        this.bestBeforeDate = date;
-        changeFirer.firePropertyChange(DataList.BEST_BEFORE_DATE.toString(), null, this);
-    }
-
     //EFFECTS: return the cost paid for this product
     public double getCost() {
         return cost;
@@ -147,8 +141,34 @@ public class Product extends TableEntryConvertibleModel implements JsonConvertib
         }
         double oldPrice = this.price;
         this.price = price;
-        changeFirer.firePropertyChange(DataList.PRICE.toString(), null, this);
+        changeFirer.fireUpdateEvent(this, DataList.PRICE.toString(), oldPrice, price);
     }
+
+    public void setCost(double cost) {
+        if (cost < 0) {
+            throw new IllegalArgumentException("Cost cannot be negative");
+        }
+        double oldCost = this.cost;
+        this.cost = cost;
+        changeFirer.fireUpdateEvent(this, DataList.COST.toString(), oldCost, cost);
+    }
+
+    public void setId(String id) {
+        if (id == null || id.isEmpty()) {
+            throw new IllegalArgumentException("ID cannot be left empty");
+        }
+        String oldId = this.id;
+        this.id = id;
+        changeFirer.fireUpdateEvent(this, DataList.ID.toString(), oldId, id);
+    }
+
+
+    public void setBestBeforeDate(LocalDate date) {
+        LocalDate oldDate = this.bestBeforeDate;
+        this.bestBeforeDate = date;
+        changeFirer.fireUpdateEvent(this, DataList.BEST_BEFORE_DATE.toString(), oldDate, date);
+    }
+
 
     //EFFECTS: return the location of this product
     public String getLocation() {
@@ -161,7 +181,7 @@ public class Product extends TableEntryConvertibleModel implements JsonConvertib
     public void setLocation(String location) {
         String oldLocation = this.location;
         this.location = location;
-        changeFirer.fireUpdateEvent(this, oldLocation, location);
+        changeFirer.fireUpdateEvent(this, DataList.LOCATION.toString(), oldLocation, location);
     }
 
 

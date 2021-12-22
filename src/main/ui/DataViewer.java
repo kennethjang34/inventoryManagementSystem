@@ -15,6 +15,7 @@ public interface DataViewer {
 
     void entryUpdated(TableEntryConvertibleModel updatedEntry);
 
+    void entryUpdated(TableEntryConvertibleModel source, String property, Object o1, Object o2);
 
     void entryUpdated(TableEntryConvertibleModel source, Object old, Object newObject);
 }

@@ -15,7 +15,7 @@ import java.util.*;
 
 //represents an inventory containing information of stocks of different items
 
-public class Inventory extends AbstractTableDataFactory implements JsonConvertible {
+public class Inventory extends AbstractTableDataFactory implements JsonConvertible, DataViewer {
 
     public static final String CATEGORY = "CATEGORY";
     public static final String ITEM = "ITEM";
@@ -532,5 +532,40 @@ public class Inventory extends AbstractTableDataFactory implements JsonConvertib
         return rows;
     }
 
+    @Override
+    public void entryRemoved(TableEntryConvertibleModel o) {
+
+    }
+
+    @Override
+    public void entryAdded(TableEntryConvertibleModel o) {
+
+    }
+
+    @Override
+    public void entryUpdated(TableEntryConvertibleModel updatedEntry) {
+
+    }
+
+    @Override
+    public void entryUpdated(TableEntryConvertibleModel source, String property, Object o1, Object o2) {
+        if (source instanceof Item) {
+            //
+        } else if (source instanceof Product) {
+            Product product = (Product) source;
+            Product.DataList dataType = Product.DataList.valueOf(property);
+            switch (dataType) {
+                case ID:
+                    items.get(product.getId()).addProduct(product);
+                    changeFirer.fireUpdateEvent(items.get(product.getId()));
+                    break;
+            }
+        }
+    }
+
+    @Override
+    public void entryUpdated(TableEntryConvertibleModel source, Object old, Object newObject) {
+
+    }
 }
 

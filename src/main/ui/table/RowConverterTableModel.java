@@ -292,6 +292,7 @@ public class RowConverterTableModel extends AbstractTableModel implements DataVi
         TableEntryConvertibleModel entry = (TableEntryConvertibleModel) added;
         Object[] row = createRow(entry.convertToTableEntry());
         if (data.put(entry, row) == null) {
+            entry.addDataChangeListener(this);
             tableEntries.add(entry);
             fireTableRowsInserted(data.size() - 1, data.size() - 1);
         } else {
@@ -318,6 +319,24 @@ public class RowConverterTableModel extends AbstractTableModel implements DataVi
             fireTableRowsInserted(tableEntries.size() - 1, tableEntries.size() - 1);
         } else {
             fireTableRowsUpdated(findRowIndex(updatedEntry), findRowIndex(updatedEntry));
+        }
+    }
+
+    @Override
+    public void entryUpdated(TableEntryConvertibleModel source, String property, Object o1, Object o2) {
+        Object[] row = data.get(source);
+        int column = findColumn(property);
+        if (column > 0) {
+            row[column] = o2;
+            fireTableCellUpdated(tableEntries.indexOf(source), column);
+        } else {
+            for (int i = 0; i < row.length; i++) {
+                if (row[i].equals(o1)) {
+                    row[i] = o2;
+                    fireTableCellUpdated(tableEntries.indexOf(source), i);
+                    return;
+                }
+            }
         }
     }
 

@@ -55,19 +55,21 @@ public class FilterBox extends JComboBox implements DataViewer {
     @Override
     public void entryUpdated(TableEntryConvertibleModel source, Object o1, Object o2) {
         removeItem(o1);
-
         if (getItemCount() == 1 && getItemAt(0).equals(EMPTY)) {
             removeItemAt(0);
             addItem(ALL);
             addItem(TYPE_MANUALLY);
         }
         addItem(o2);
-
     }
 
 
     @Override
     public void entryUpdated(TableEntryConvertibleModel updatedEntry) {
+    }
+
+    @Override
+    public void entryUpdated(TableEntryConvertibleModel source, String property, Object o1, Object o2) {
     }
 
     public List<Object> getCorrespondingItems() {

@@ -27,6 +27,7 @@ public class Item extends TableEntryConvertibleDataFactory implements JsonConver
     private String note;
 
 
+
     public enum DataList {
         CATEGORY, ID, NAME, DESCRIPTION, NOTE, QUANTITY, AVERAGE_COST, LIST_PRICE
     }
@@ -98,16 +99,37 @@ public class Item extends TableEntryConvertibleDataFactory implements JsonConver
 
     @Override
     public void entryUpdated(TableEntryConvertibleModel updatedEntry) {
-        if (products.containsValue(updatedEntry)) {
-            productLocationChanged((Product)updatedEntry);
-//            changeFirer.fireUpdateEvent(this);
+//        if (products.containsValue(updatedEntry)) {
+//            productLocationChanged((Product)updatedEntry);
+//        }
+    }
+
+    @Override
+    public void entryUpdated(TableEntryConvertibleModel source, String property, Object o1, Object o2) {
+        Product product = (Product) source;
+        Product.DataList dataType = Product.DataList.valueOf(property);
+        switch (dataType) {
+            case ID:
+                productIDChange(product, (String)o1, (String)o2);
+                break;
+            case LOCATION:
+                productLocationChanged(product, (String) o1, (String) o2);
+                break;
+            case COST:
+                productPriceChanged(product, (Double) o1, (Double) o2);
+                break;
+//                break;
+//            case PRICE:
+//
+//                break;
+//            case BEST_BEFORE_DATE:
+//
+//                break;
         }
     }
 
     @Override
     public void entryUpdated(TableEntryConvertibleModel source, Object old, Object newObject) {
-        productLocationChanged((Product)source, (String)old, (String)newObject);
-//        changeFirer.fireUpdateEvent(this);
     }
 
 
@@ -218,6 +240,17 @@ public class Item extends TableEntryConvertibleDataFactory implements JsonConver
     //EFFECTS: change the category of this item
     public void setCategory(String category) {
         this.category = category;
+    }
+
+
+    public void addProduct(Product product) {
+        products.put(product.getSku(), product);
+        List<Product> list = stocks.get(product.getLocation());
+        if (list == null) {
+            list = new LinkedList<>();
+        }
+        list.add(product);
+        stocks.put(product.getLocation(), list);
     }
 
 
@@ -344,19 +377,6 @@ public class Item extends TableEntryConvertibleDataFactory implements JsonConver
         return id;
     }
 
-//    @Override
-//    public void propertyChange(PropertyChangeEvent evt) {
-//        if (evt.getPropertyName().equals(Product.DataList.LOCATION.toString())) {
-//            List<Product> stock = stocks.get(evt.getOldValue());
-//            stock.remove(evt.getSource());
-//            List<Product> newLocation = stocks.get(evt.getNewValue());
-//            if (newLocation == null) {
-//                newLocation = new ArrayList<>();
-//            }
-//            newLocation.add((Product) evt.getSource());
-//        }
-//    }
-
     public List<TableEntryConvertibleModel> getEntryModels() {
         return new ArrayList<>(products.values());
     }
@@ -424,6 +444,25 @@ public class Item extends TableEntryConvertibleDataFactory implements JsonConver
         if (stocks.get(p.getLocation()) != null) {
             stocks.get(p.getLocation()).add(p);
         }
+        changeFirer.fireUpdateEvent(this);
+    }
+
+    //ITEM ID is immutable. ID change of a product indicates moving product to another item class
+    public void productIDChange(Product product) {
+        removeProduct(product.getSku());
+        changeFirer.fireUpdateEvent(product, Product.DataList.ID.toString(), id, product.getId());
+        changeFirer.fireUpdateEvent(this);
+//        changeFirer.fireUpdateEvent(this);
+    }
+
+    public void productIDChange(Product product, String old, String newId) {
+        removeProduct(product.getSku());
+        changeFirer.fireUpdateEvent(product, Product.DataList.ID.toString(), old, newId);
+        changeFirer.fireUpdateEvent(this);
+    }
+
+    public void productPriceChanged(Product product, double o1, double o2) {
+        averageCost = (averageCost * getQuantity() - o1 + o2) / getQuantity();
         changeFirer.fireUpdateEvent(this);
     }
 

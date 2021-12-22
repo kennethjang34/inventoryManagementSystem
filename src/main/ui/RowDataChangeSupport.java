@@ -182,7 +182,20 @@ public class RowDataChangeSupport extends PropertyChangeSupport {
                 viewer.entryUpdated(source, old, newObj);
             }
         }
+    }
 
-
+    public void fireUpdateEvent(TableEntryConvertibleModel source, String property, Object old, Object newObj) {
+        List<DataViewer> list = tableDataListeners.get(UNSPECIFIED);
+        if (list != null) {
+            for (DataViewer viewer: list) {
+                viewer.entryUpdated(source, property, old, newObj);
+            }
+        }
+        list = tableDataListeners.get(GENERAL);
+        if (list != null) {
+            for (DataViewer viewer: list) {
+                viewer.entryUpdated(source, property, old, newObj);
+            }
+        }
     }
 }
