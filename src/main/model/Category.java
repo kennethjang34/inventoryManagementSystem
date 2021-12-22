@@ -3,12 +3,12 @@ package model;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import persistence.JsonConvertible;
-import ui.table.TableEntryConvertibleModel;
+import ui.table.ViewableTableEntryConvertibleModel;
 
 import java.util.*;
 
 //represents a category where similar items belong
-public class Category extends TableEntryConvertibleModel implements JsonConvertible {
+public class Category extends ViewableTableEntryConvertibleModel implements JsonConvertible {
     private final String name;
     private int quantity;
     //set containing id's of items belonging to this category

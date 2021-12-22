@@ -6,10 +6,8 @@ import org.json.JSONObject;
 import persistence.JsonConvertible;
 import ui.DataViewer;
 import ui.table.TableEntryConvertibleDataFactory;
-import ui.table.TableEntryConvertibleModel;
+import ui.table.ViewableTableEntryConvertibleModel;
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.time.LocalDate;
 import java.util.*;
 
@@ -88,24 +86,24 @@ public class Item extends TableEntryConvertibleDataFactory implements JsonConver
     }
 
     @Override
-    public void entryRemoved(TableEntryConvertibleModel o) {
+    public void entryRemoved(ViewableTableEntryConvertibleModel o) {
 
     }
 
     @Override
-    public void entryAdded(TableEntryConvertibleModel o) {
+    public void entryAdded(ViewableTableEntryConvertibleModel o) {
 
     }
 
     @Override
-    public void entryUpdated(TableEntryConvertibleModel updatedEntry) {
+    public void entryUpdated(ViewableTableEntryConvertibleModel updatedEntry) {
 //        if (products.containsValue(updatedEntry)) {
 //            productLocationChanged((Product)updatedEntry);
 //        }
     }
 
     @Override
-    public void entryUpdated(TableEntryConvertibleModel source, String property, Object o1, Object o2) {
+    public void entryUpdated(ViewableTableEntryConvertibleModel source, String property, Object o1, Object o2) {
         Product product = (Product) source;
         Product.DataList dataType = Product.DataList.valueOf(property);
         switch (dataType) {
@@ -129,7 +127,7 @@ public class Item extends TableEntryConvertibleDataFactory implements JsonConver
     }
 
     @Override
-    public void entryUpdated(TableEntryConvertibleModel source, Object old, Object newObject) {
+    public void entryUpdated(ViewableTableEntryConvertibleModel source, Object old, Object newObject) {
     }
 
 
@@ -377,7 +375,7 @@ public class Item extends TableEntryConvertibleDataFactory implements JsonConver
         return id;
     }
 
-    public List<TableEntryConvertibleModel> getEntryModels() {
+    public List<ViewableTableEntryConvertibleModel> getEntryModels() {
         return new ArrayList<>(products.values());
     }
 

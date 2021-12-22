@@ -9,7 +9,7 @@ public interface DataFactory {
 
     String[] getColumnNames();
 
-    List<TableEntryConvertibleModel> getEntryModels();
+    List<ViewableTableEntryConvertibleModel> getEntryModels();
 
 
 }

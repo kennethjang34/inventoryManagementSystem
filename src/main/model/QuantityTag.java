@@ -1,10 +1,10 @@
 package model;
 
-import ui.table.TableEntryConvertibleModel;
+import ui.table.ViewableTableEntryConvertibleModel;
 
 //represents a tag that is used for various purposes
 //such as removing products, recording an account for quantity change.
-public class QuantityTag extends TableEntryConvertibleModel {
+public class QuantityTag extends ViewableTableEntryConvertibleModel {
     private String id;
     private String location;
     private int quantity;

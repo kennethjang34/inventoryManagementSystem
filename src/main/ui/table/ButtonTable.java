@@ -64,7 +64,7 @@ public class ButtonTable extends JTable {
     }
 
 
-    public ButtonTable(List<? extends TableEntryConvertibleModel> dataList, String[] columnNames, String buttonColumnName) {
+    public ButtonTable(List<? extends ViewableTableEntryConvertibleModel> dataList, String[] columnNames, String buttonColumnName) {
         setModel(new ButtonTableModel(dataList, columnNames, buttonColumnName));
         setDefaultRenderer(JButton.class, ButtonColumnRenderer.getInstance());
         addMouseListener(new MouseAdapter() {
@@ -124,7 +124,7 @@ public class ButtonTable extends JTable {
 
     }
 
-    public void addDataWithNewButton(List<? extends TableEntryConvertibleModel> entries) {
+    public void addDataWithNewButton(List<? extends ViewableTableEntryConvertibleModel> entries) {
         ButtonTableModel tableModel = (ButtonTableModel)getModel();
         tableModel.addRowsWithDataList(entries);
     }

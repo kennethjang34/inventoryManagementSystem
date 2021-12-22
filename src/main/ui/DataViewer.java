@@ -1,21 +1,22 @@
 package ui;
 
-import ui.table.TableEntryConvertibleModel;
+import ui.table.ViewableTableEntryConvertibleModel;
 
-import java.beans.PropertyChangeListener;
+//!!!!!!!!!tight coupling among methods
 
 public interface DataViewer {
-    void entryRemoved(TableEntryConvertibleModel o);
+    void entryRemoved(ViewableTableEntryConvertibleModel o);
 
-    void entryAdded(TableEntryConvertibleModel o);
+    void entryAdded(ViewableTableEntryConvertibleModel o);
 
 
 //    void entryUpdated(Object o1, Object o2);
 
 
-    void entryUpdated(TableEntryConvertibleModel updatedEntry);
 
-    void entryUpdated(TableEntryConvertibleModel source, String property, Object o1, Object o2);
+    void entryUpdated(ViewableTableEntryConvertibleModel updatedEntry);
 
-    void entryUpdated(TableEntryConvertibleModel source, Object old, Object newObject);
+    void entryUpdated(ViewableTableEntryConvertibleModel source, String property, Object o1, Object o2);
+
+    void entryUpdated(ViewableTableEntryConvertibleModel source, Object old, Object newObject);
 }

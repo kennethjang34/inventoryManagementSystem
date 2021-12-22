@@ -1,15 +1,13 @@
 package ui.table;
 
-import org.jetbrains.annotations.NotNull;
 import ui.DataViewer;
 
 import javax.swing.table.AbstractTableModel;
-import java.beans.PropertyChangeEvent;
 import java.util.*;
 
 public class RowConverterTableModel extends AbstractTableModel implements DataViewer {
-    protected LinkedHashMap<TableEntryConvertibleModel, Object[]> data;
-    protected List<TableEntryConvertibleModel> tableEntries;
+    protected LinkedHashMap<ViewableTableEntryConvertibleModel, Object[]> data;
+    protected List<ViewableTableEntryConvertibleModel> tableEntries;
     protected String[] columnNames;
     protected int baseColumnIndex;
     protected boolean duplicateAllowed;
@@ -25,10 +23,10 @@ public class RowConverterTableModel extends AbstractTableModel implements DataVi
 
 
 
-    public RowConverterTableModel(List<? extends TableEntryConvertibleModel> entries) {
+    public RowConverterTableModel(List<? extends ViewableTableEntryConvertibleModel> entries) {
         data = new LinkedHashMap<>(entries.size());
         tableEntries = new LinkedList<>();
-        for (TableEntryConvertibleModel entry: entries) {
+        for (ViewableTableEntryConvertibleModel entry: entries) {
             entry.addDataChangeListener(this);
             data.put(entry, createRow(entry.convertToTableEntry()));
             tableEntries.add(entry);
@@ -37,11 +35,11 @@ public class RowConverterTableModel extends AbstractTableModel implements DataVi
         duplicateAllowed = false;
     }
 
-    public RowConverterTableModel(List<? extends TableEntryConvertibleModel> entries, String[] columnNames) {
+    public RowConverterTableModel(List<? extends ViewableTableEntryConvertibleModel> entries, String[] columnNames) {
         this.columnNames = columnNames;
         tableEntries = new LinkedList<>();
         data = new LinkedHashMap<>(entries.size());
-        for (TableEntryConvertibleModel entry: entries) {
+        for (ViewableTableEntryConvertibleModel entry: entries) {
             entry.addDataChangeListener(this);
             data.put(entry, createRow(entry.convertToTableEntry()));
             tableEntries.add(entry);
@@ -53,8 +51,8 @@ public class RowConverterTableModel extends AbstractTableModel implements DataVi
         data = new LinkedHashMap<>();
         tableEntries = new LinkedList<>();
         this.columnNames = columnNames;
-        List<TableEntryConvertibleModel> entries = model.getEntryModels();
-        for (TableEntryConvertibleModel entry: entries) {
+        List<ViewableTableEntryConvertibleModel> entries = model.getEntryModels();
+        for (ViewableTableEntryConvertibleModel entry: entries) {
             entry.addDataChangeListener(this);
             tableEntries.add(entry);
             data.put(entry, createRow(entry.convertToTableEntry()));
@@ -110,13 +108,13 @@ public class RowConverterTableModel extends AbstractTableModel implements DataVi
 
     public List<Object[]> getRows() {
         List<Object[]> rows = new ArrayList<>();
-        for (TableEntryConvertibleModel entry: tableEntries) {
+        for (ViewableTableEntryConvertibleModel entry: tableEntries) {
             rows.add(data.get(entry));
         }
         return rows;
     }
 
-    public List<TableEntryConvertibleModel> getEntryModelList() {
+    public List<ViewableTableEntryConvertibleModel> getEntryModelList() {
         return tableEntries;
     }
 
@@ -130,12 +128,12 @@ public class RowConverterTableModel extends AbstractTableModel implements DataVi
     //MODIFIES: this
     //EFFECTS: add new rows to this. If the given entry objects are PropertyChangeSupport,
     // add this to the objects as listener
-    public void addRowsWithDataList(List<? extends TableEntryConvertibleModel> newRowData) {
+    public void addRowsWithDataList(List<? extends ViewableTableEntryConvertibleModel> newRowData) {
         if (newRowData.isEmpty()) {
             return;
         }
         int oldLastRow = getRowCount() - 1;
-        for (TableEntryConvertibleModel entry: newRowData) {
+        for (ViewableTableEntryConvertibleModel entry: newRowData) {
             if (data.put(entry, createRow(entry.convertToTableEntry())) == null) {
                 tableEntries.add(entry);
                 entry.addDataChangeListener(this);
@@ -239,8 +237,8 @@ public class RowConverterTableModel extends AbstractTableModel implements DataVi
         return -1;
     }
 
-    public int findRowIndex(TableEntryConvertibleModel entryModel) {
-        ArrayList<TableEntryConvertibleModel> list = new ArrayList<>(data.keySet());
+    public int findRowIndex(ViewableTableEntryConvertibleModel entryModel) {
+        ArrayList<ViewableTableEntryConvertibleModel> list = new ArrayList<>(data.keySet());
         return list.indexOf(entryModel);
     }
 
@@ -254,7 +252,7 @@ public class RowConverterTableModel extends AbstractTableModel implements DataVi
         fireTableRowsDeleted(correspondingTableIndex, correspondingTableIndex);
     }
 
-    public void removeRow(TableEntryConvertibleModel entryConvertibleModel) {
+    public void removeRow(ViewableTableEntryConvertibleModel entryConvertibleModel) {
         int correspondingTableIndex = tableEntries.indexOf(entryConvertibleModel);
         if (tableEntries.remove(entryConvertibleModel)) {
             data.remove(entryConvertibleModel);
@@ -270,7 +268,7 @@ public class RowConverterTableModel extends AbstractTableModel implements DataVi
     }
 
 
-    public List<TableEntryConvertibleModel> getEntryModels() {
+    public List<ViewableTableEntryConvertibleModel> getEntryModels() {
         return new ArrayList<>(data.keySet());
     }
 
@@ -279,7 +277,7 @@ public class RowConverterTableModel extends AbstractTableModel implements DataVi
     }
 
     @Override
-    public void entryRemoved(TableEntryConvertibleModel removed) {
+    public void entryRemoved(ViewableTableEntryConvertibleModel removed) {
         int index = tableEntries.indexOf(removed);
         if (tableEntries.remove(removed)) {
             data.remove(removed);
@@ -288,8 +286,8 @@ public class RowConverterTableModel extends AbstractTableModel implements DataVi
     }
 
     @Override
-    public void entryAdded(TableEntryConvertibleModel added) {
-        TableEntryConvertibleModel entry = (TableEntryConvertibleModel) added;
+    public void entryAdded(ViewableTableEntryConvertibleModel added) {
+        ViewableTableEntryConvertibleModel entry = (ViewableTableEntryConvertibleModel) added;
         Object[] row = createRow(entry.convertToTableEntry());
         if (data.put(entry, row) == null) {
             entry.addDataChangeListener(this);
@@ -306,7 +304,7 @@ public class RowConverterTableModel extends AbstractTableModel implements DataVi
 
 
     @Override
-    public void entryUpdated(TableEntryConvertibleModel updatedEntry) {
+    public void entryUpdated(ViewableTableEntryConvertibleModel updatedEntry) {
         if (columnNames == null) {
             columnNames = new String[updatedEntry.getColumnNames().length + 1];
             for (int i = 0; i < updatedEntry.getColumnNames().length; i++) {
@@ -323,7 +321,7 @@ public class RowConverterTableModel extends AbstractTableModel implements DataVi
     }
 
     @Override
-    public void entryUpdated(TableEntryConvertibleModel source, String property, Object o1, Object o2) {
+    public void entryUpdated(ViewableTableEntryConvertibleModel source, String property, Object o1, Object o2) {
         Object[] row = data.get(source);
         int column = findColumn(property);
         if (column > 0) {
@@ -341,7 +339,7 @@ public class RowConverterTableModel extends AbstractTableModel implements DataVi
     }
 
     @Override
-    public void entryUpdated(TableEntryConvertibleModel source, Object old, Object newObject) {
+    public void entryUpdated(ViewableTableEntryConvertibleModel source, Object old, Object newObject) {
         Object[] row = data.get(source);
         for (int i = 0; i < row.length; i++) {
             if (row[i].equals(old)) {

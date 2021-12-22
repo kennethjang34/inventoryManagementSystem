@@ -2,10 +2,9 @@ package ui.inventorypanel.view;
 
 import ui.table.AbstractTableDataFactory;
 import ui.DataViewer;
-import ui.table.TableEntryConvertibleModel;
+import ui.table.ViewableTableEntryConvertibleModel;
 
 import javax.swing.*;
-import java.beans.PropertyChangeEvent;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,12 +37,12 @@ public class FilterBox extends JComboBox implements DataViewer {
 
 
     @Override
-    public void entryRemoved(TableEntryConvertibleModel entry) {
+    public void entryRemoved(ViewableTableEntryConvertibleModel entry) {
         removeItem(entry.toString());
     }
 
     @Override
-    public void entryAdded(TableEntryConvertibleModel entry) {
+    public void entryAdded(ViewableTableEntryConvertibleModel entry) {
         if (getItemCount() == 1 && getItemAt(0).equals(EMPTY)) {
             removeItemAt(0);
             addItem(ALL);
@@ -53,7 +52,7 @@ public class FilterBox extends JComboBox implements DataViewer {
     }
 
     @Override
-    public void entryUpdated(TableEntryConvertibleModel source, Object o1, Object o2) {
+    public void entryUpdated(ViewableTableEntryConvertibleModel source, Object o1, Object o2) {
         removeItem(o1);
         if (getItemCount() == 1 && getItemAt(0).equals(EMPTY)) {
             removeItemAt(0);
@@ -65,11 +64,11 @@ public class FilterBox extends JComboBox implements DataViewer {
 
 
     @Override
-    public void entryUpdated(TableEntryConvertibleModel updatedEntry) {
+    public void entryUpdated(ViewableTableEntryConvertibleModel updatedEntry) {
     }
 
     @Override
-    public void entryUpdated(TableEntryConvertibleModel source, String property, Object o1, Object o2) {
+    public void entryUpdated(ViewableTableEntryConvertibleModel source, String property, Object o1, Object o2) {
     }
 
     public List<Object> getCorrespondingItems() {

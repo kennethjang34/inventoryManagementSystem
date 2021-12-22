@@ -6,10 +6,8 @@ import org.json.JSONObject;
 import persistence.JsonConvertible;
 import ui.DataViewer;
 import ui.table.AbstractTableDataFactory;
-import ui.table.TableEntryConvertibleModel;
+import ui.table.ViewableTableEntryConvertibleModel;
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.time.LocalDate;
 import java.util.*;
 
@@ -521,11 +519,11 @@ public class Inventory extends AbstractTableDataFactory implements JsonConvertib
 //    }
 
     @Override
-    public List<TableEntryConvertibleModel> getEntryModels() {
+    public List<ViewableTableEntryConvertibleModel> getEntryModels() {
         if (items.isEmpty()) {
             return Collections.emptyList();
         }
-        List<TableEntryConvertibleModel> rows = new ArrayList<>();
+        List<ViewableTableEntryConvertibleModel> rows = new ArrayList<>();
         for (Item item: items.values()) {
             rows.add(item);
         }
@@ -533,22 +531,22 @@ public class Inventory extends AbstractTableDataFactory implements JsonConvertib
     }
 
     @Override
-    public void entryRemoved(TableEntryConvertibleModel o) {
+    public void entryRemoved(ViewableTableEntryConvertibleModel o) {
 
     }
 
     @Override
-    public void entryAdded(TableEntryConvertibleModel o) {
+    public void entryAdded(ViewableTableEntryConvertibleModel o) {
 
     }
 
     @Override
-    public void entryUpdated(TableEntryConvertibleModel updatedEntry) {
+    public void entryUpdated(ViewableTableEntryConvertibleModel updatedEntry) {
 
     }
 
     @Override
-    public void entryUpdated(TableEntryConvertibleModel source, String property, Object o1, Object o2) {
+    public void entryUpdated(ViewableTableEntryConvertibleModel source, String property, Object o1, Object o2) {
         if (source instanceof Item) {
             //
         } else if (source instanceof Product) {
@@ -564,7 +562,7 @@ public class Inventory extends AbstractTableDataFactory implements JsonConvertib
     }
 
     @Override
-    public void entryUpdated(TableEntryConvertibleModel source, Object old, Object newObject) {
+    public void entryUpdated(ViewableTableEntryConvertibleModel source, Object old, Object newObject) {
 
     }
 }

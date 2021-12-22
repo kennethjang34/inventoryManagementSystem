@@ -1,7 +1,6 @@
 package ui;
 
-import model.Product;
-import ui.table.TableEntryConvertibleModel;
+import ui.table.ViewableTableEntryConvertibleModel;
 
 import java.beans.PropertyChangeSupport;
 import java.util.*;
@@ -88,7 +87,7 @@ public class RowDataChangeSupport extends PropertyChangeSupport {
         }
     }
 
-    public void fireRemovalEvent(String category, TableEntryConvertibleModel removed) {
+    public void fireRemovalEvent(String category, ViewableTableEntryConvertibleModel removed) {
         List<DataViewer> list = tableDataListeners.get(category);
         if (list != null) {
             for (DataViewer tableModel : list) {
@@ -109,7 +108,7 @@ public class RowDataChangeSupport extends PropertyChangeSupport {
 //        }
 //    }
 
-    public void fireAdditionEvent(String category, TableEntryConvertibleModel added) {
+    public void fireAdditionEvent(String category, ViewableTableEntryConvertibleModel added) {
         for (DataViewer tableModel: tableDataListeners.get(category)) {
             tableModel.entryAdded(added);
         }
@@ -125,7 +124,7 @@ public class RowDataChangeSupport extends PropertyChangeSupport {
 //        }
 //    }
 
-    public void fireUpdateEvent(String category, TableEntryConvertibleModel updatedObject) {
+    public void fireUpdateEvent(String category, ViewableTableEntryConvertibleModel updatedObject) {
         for (DataViewer tableModel: tableDataListeners.get(category)) {
             tableModel.entryUpdated(updatedObject);
         }
@@ -135,7 +134,7 @@ public class RowDataChangeSupport extends PropertyChangeSupport {
         }
     }
 
-    public void fireUpdateEvent(String category, TableEntryConvertibleModel source, Object old, Object newObject) {
+    public void fireUpdateEvent(String category, ViewableTableEntryConvertibleModel source, Object old, Object newObject) {
         for (DataViewer tableModel: tableDataListeners.get(category)) {
             tableModel.entryUpdated(source, old, newObject);
         }
@@ -147,7 +146,7 @@ public class RowDataChangeSupport extends PropertyChangeSupport {
 
         //
     //General event notification
-    public void fireUpdateEvent(TableEntryConvertibleModel updatedObject) {
+    public void fireUpdateEvent(ViewableTableEntryConvertibleModel updatedObject) {
         List<DataViewer> list = tableDataListeners.get(UNSPECIFIED);
         if (list != null) {
             for (DataViewer viewer: list) {
@@ -167,7 +166,7 @@ public class RowDataChangeSupport extends PropertyChangeSupport {
     }
 
 
-    public void fireUpdateEvent(TableEntryConvertibleModel source, Object old, Object newObj) {
+    public void fireUpdateEvent(ViewableTableEntryConvertibleModel source, Object old, Object newObj) {
 
         List<DataViewer> list = tableDataListeners.get(UNSPECIFIED);
         if (list != null) {
@@ -184,7 +183,7 @@ public class RowDataChangeSupport extends PropertyChangeSupport {
         }
     }
 
-    public void fireUpdateEvent(TableEntryConvertibleModel source, String property, Object old, Object newObj) {
+    public void fireUpdateEvent(ViewableTableEntryConvertibleModel source, String property, Object old, Object newObj) {
         List<DataViewer> list = tableDataListeners.get(UNSPECIFIED);
         if (list != null) {
             for (DataViewer viewer: list) {

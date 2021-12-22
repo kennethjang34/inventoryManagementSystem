@@ -2,14 +2,14 @@ package model;
 
 import org.json.JSONObject;
 import persistence.JsonConvertible;
-import ui.table.TableEntryConvertibleModel;
+import ui.table.ViewableTableEntryConvertibleModel;
 
 import java.time.LocalDate;
 
 //represents product. Each product will have item code, SKU (Stock keeping unit),
 //date generated, best before date, and cost it was bought for.
 //No data about the product can be changed after creation.
-public class Product extends TableEntryConvertibleModel implements JsonConvertible {
+public class Product extends ViewableTableEntryConvertibleModel implements JsonConvertible {
     //item code represents the code composed only of English alphabets that indicates
     //the category of the product. Multiple products can have the same item code.
     private String id;

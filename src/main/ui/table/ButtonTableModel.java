@@ -16,7 +16,7 @@ public class ButtonTableModel extends RowConverterTableModel {
 
 
     //entry must be object[] or TableEntryConvertible instance
-    public ButtonTableModel(List<? extends TableEntryConvertibleModel> entries, String[] columnNames,
+    public ButtonTableModel(List<? extends ViewableTableEntryConvertibleModel> entries, String[] columnNames,
                             String buttonColumnName) {
         super(entries, createColumnNames(columnNames, buttonColumnName));
 //        if (columnNames == null) {
@@ -96,7 +96,7 @@ public class ButtonTableModel extends RowConverterTableModel {
             return;
         }
         int buttonColumnLength = data.size();
-        for (Map.Entry<TableEntryConvertibleModel, Object[]> entry: data.entrySet()) {
+        for (Map.Entry<ViewableTableEntryConvertibleModel, Object[]> entry: data.entrySet()) {
             JButton button = new JButton();
 //            button.addActionListener(actionListener);
             button.setAction(buttonAction);
