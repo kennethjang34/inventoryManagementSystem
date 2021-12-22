@@ -145,7 +145,7 @@ public class RowDataChangeSupport extends PropertyChangeSupport {
         }
     }
 
-
+        //
     //General event notification
     public void fireUpdateEvent(TableEntryConvertibleModel updatedObject) {
         List<DataViewer> list = tableDataListeners.get(UNSPECIFIED);
