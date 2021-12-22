@@ -4,6 +4,7 @@ package model;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import persistence.JsonConvertible;
+import ui.DataViewer;
 import ui.table.AbstractTableDataFactory;
 import ui.table.TableEntryConvertibleModel;
 
@@ -13,7 +14,8 @@ import java.time.LocalDate;
 import java.util.*;
 
 //represents an inventory containing information of stocks of different items
-public class Inventory extends AbstractTableDataFactory implements JsonConvertible, PropertyChangeListener {
+
+public class Inventory extends AbstractTableDataFactory implements JsonConvertible {
 
     public static final String CATEGORY = "CATEGORY";
     public static final String ITEM = "ITEM";
@@ -530,9 +532,5 @@ public class Inventory extends AbstractTableDataFactory implements JsonConvertib
         return rows;
     }
 
-    @Override
-    public void propertyChange(PropertyChangeEvent evt) {
-        //
-    }
 }
 

@@ -4,6 +4,7 @@ package model;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import persistence.JsonConvertible;
+import ui.DataViewer;
 import ui.table.TableEntryConvertibleDataFactory;
 import ui.table.TableEntryConvertibleModel;
 
@@ -15,7 +16,7 @@ import java.util.*;
 //represents each item in the inventory.
 //contains product list belonging to it
 //item can be thought of a super-category of products
-public class Item extends TableEntryConvertibleDataFactory implements JsonConvertible, PropertyChangeListener {
+public class Item extends TableEntryConvertibleDataFactory implements JsonConvertible, DataViewer {
     private int count = 0;
     private final String id;
     private final String name;
@@ -24,6 +25,7 @@ public class Item extends TableEntryConvertibleDataFactory implements JsonConver
     private double averageCost;
     private double listPrice;
     private String note;
+
 
     public enum DataList {
         CATEGORY, ID, NAME, DESCRIPTION, NOTE, QUANTITY, AVERAGE_COST, LIST_PRICE
@@ -82,6 +84,30 @@ public class Item extends TableEntryConvertibleDataFactory implements JsonConver
                 stocks.put(productList.get(0).getLocation(), productList);
             }
         }
+    }
+
+    @Override
+    public void entryRemoved(TableEntryConvertibleModel o) {
+
+    }
+
+    @Override
+    public void entryAdded(TableEntryConvertibleModel o) {
+
+    }
+
+    @Override
+    public void entryUpdated(TableEntryConvertibleModel updatedEntry) {
+        if (products.containsValue(updatedEntry)) {
+            productLocationChanged((Product)updatedEntry);
+//            changeFirer.fireUpdateEvent(this);
+        }
+    }
+
+    @Override
+    public void entryUpdated(TableEntryConvertibleModel source, Object old, Object newObject) {
+        productLocationChanged((Product)source, (String)old, (String)newObject);
+//        changeFirer.fireUpdateEvent(this);
     }
 
 
@@ -206,6 +232,7 @@ public class Item extends TableEntryConvertibleDataFactory implements JsonConver
         for (int i = 0; i < quantity; i++) {
             Product product = new Product(id, createSku(), tag.getUnitCost(), tag.getUnitPrice(),
                     tag.getDateGenerated(), tag.getBestBeforeDate(), location);
+            product.addDataChangeListener(this);
             toBeAdded.add(product);
             products.put(product.getSku(), product);
         }
@@ -233,6 +260,7 @@ public class Item extends TableEntryConvertibleDataFactory implements JsonConver
         for (int i = 0; i < qty; i++) {
             Product product = new Product(id, createSku(), cost, price,
                     dateGenerated, bestBeforeDate, location);
+            product.addDataChangeListener(this);
             toBeAdded.add(product);
             products.put(product.getSku(), product);
         }
@@ -316,18 +344,18 @@ public class Item extends TableEntryConvertibleDataFactory implements JsonConver
         return id;
     }
 
-    @Override
-    public void propertyChange(PropertyChangeEvent evt) {
-        if (evt.getPropertyName().equals(Product.DataList.LOCATION.toString())) {
-            List<Product> stock = stocks.get(evt.getOldValue());
-            stock.remove(evt.getSource());
-            List<Product> newLocation = stocks.get(evt.getNewValue());
-            if (newLocation == null) {
-                newLocation = new ArrayList<>();
-            }
-            newLocation.add((Product) evt.getSource());
-        }
-    }
+//    @Override
+//    public void propertyChange(PropertyChangeEvent evt) {
+//        if (evt.getPropertyName().equals(Product.DataList.LOCATION.toString())) {
+//            List<Product> stock = stocks.get(evt.getOldValue());
+//            stock.remove(evt.getSource());
+//            List<Product> newLocation = stocks.get(evt.getNewValue());
+//            if (newLocation == null) {
+//                newLocation = new ArrayList<>();
+//            }
+//            newLocation.add((Product) evt.getSource());
+//        }
+//    }
 
     public List<TableEntryConvertibleModel> getEntryModels() {
         return new ArrayList<>(products.values());
@@ -372,4 +400,32 @@ public class Item extends TableEntryConvertibleDataFactory implements JsonConver
     public Object[] getDataList() {
         return new Object[0];
     }
+
+    public void productLocationChanged(Product p, String old, String newLocation) {
+        if (products.containsValue(p) && stocks.get(old) != null) {
+            stocks.get(old).remove(p);
+            List<Product> list = stocks.get(newLocation);
+            if (list == null) {
+                list = new LinkedList<>();
+            }
+            list.add(p);
+            stocks.put(newLocation, list);
+            changeFirer.fireUpdateEvent(this);
+        }
+    }
+
+    public void productLocationChanged(Product p) {
+        for (Map.Entry<String, List<Product>> entry: stocks.entrySet()) {
+            List<Product> productList = entry.getValue();
+            if (productList.remove(p)) {
+                return;
+            }
+        }
+        if (stocks.get(p.getLocation()) != null) {
+            stocks.get(p.getLocation()).add(p);
+        }
+        changeFirer.fireUpdateEvent(this);
+    }
+
+
 }

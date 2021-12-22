@@ -29,6 +29,7 @@ public class RowConverterTableModel extends AbstractTableModel implements DataVi
         data = new LinkedHashMap<>(entries.size());
         tableEntries = new LinkedList<>();
         for (TableEntryConvertibleModel entry: entries) {
+            entry.addDataChangeListener(this);
             data.put(entry, createRow(entry.convertToTableEntry()));
             tableEntries.add(entry);
         }
@@ -41,6 +42,7 @@ public class RowConverterTableModel extends AbstractTableModel implements DataVi
         tableEntries = new LinkedList<>();
         data = new LinkedHashMap<>(entries.size());
         for (TableEntryConvertibleModel entry: entries) {
+            entry.addDataChangeListener(this);
             data.put(entry, createRow(entry.convertToTableEntry()));
             tableEntries.add(entry);
         }
@@ -136,6 +138,7 @@ public class RowConverterTableModel extends AbstractTableModel implements DataVi
         for (TableEntryConvertibleModel entry: newRowData) {
             if (data.put(entry, createRow(entry.convertToTableEntry())) == null) {
                 tableEntries.add(entry);
+                entry.addDataChangeListener(this);
             }
         }
         fireTableRowsInserted(oldLastRow, getRowCount() - 1);
@@ -253,7 +256,9 @@ public class RowConverterTableModel extends AbstractTableModel implements DataVi
 
     public void removeRow(TableEntryConvertibleModel entryConvertibleModel) {
         int correspondingTableIndex = tableEntries.indexOf(entryConvertibleModel);
-        data.remove(tableEntries.remove(entryConvertibleModel));
+        if (tableEntries.remove(entryConvertibleModel)) {
+            data.remove(entryConvertibleModel);
+        }
         fireTableRowsDeleted(correspondingTableIndex, correspondingTableIndex);
     }
 
@@ -307,6 +312,7 @@ public class RowConverterTableModel extends AbstractTableModel implements DataVi
                 columnNames[i] = updatedEntry.getColumnNames()[i];
             }
         }
+
         if (data.put(updatedEntry, createRow(updatedEntry.convertToTableEntry())) == null) {
             tableEntries.add(updatedEntry);
             fireTableRowsInserted(tableEntries.size() - 1, tableEntries.size() - 1);

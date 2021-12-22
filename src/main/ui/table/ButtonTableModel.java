@@ -34,6 +34,28 @@ public class ButtonTableModel extends RowConverterTableModel {
 
     }
 
+    public ButtonTableModel(AbstractTableDataFactory model, String buttonColumnName, String category) {
+        super(model, createColumnNames(model.getTableColumnNames(), buttonColumnName), category);
+    }
+
+//    public ButtonTableModel(List<? extends TableEntryConvertibleModel> entries, String buttonColumnName) {
+////        data = new ArrayList<>(entries.size());
+//        for (TableEntryConvertibleModel entry: entries) {
+//            data.put(entry, entry.convertToTableEntry());
+//        }
+//        String[] columnNames = entries.get(0).getColumnNames();
+//        this.columnNames = new String[columnNames.length + 1];
+//        for (int i = 0; i < columnNames.length; i++) {
+//            this.columnNames[i] = columnNames[i];
+//        }
+//        this.columnNames[this.columnNames.length - 1] = buttonColumnName;
+//        addButtonColumn();
+//    }
+
+
+
+
+
     private static String[] createColumnNames(String[] columnNames, String buttonColumnName) {
         String[] newColumnNames = new String[columnNames.length + 1];
         for (int i = 0; i < columnNames.length; i++) {
@@ -43,23 +65,6 @@ public class ButtonTableModel extends RowConverterTableModel {
         return newColumnNames;
     }
 
-    public ButtonTableModel(List<? extends TableEntryConvertibleModel> entries, String buttonColumnName) {
-//        data = new ArrayList<>(entries.size());
-        for (TableEntryConvertibleModel entry: entries) {
-            data.put(entry, entry.convertToTableEntry());
-        }
-        String[] columnNames = entries.get(0).getColumnNames();
-        this.columnNames = new String[columnNames.length + 1];
-        for (int i = 0; i < columnNames.length; i++) {
-            this.columnNames[i] = columnNames[i];
-        }
-        this.columnNames[this.columnNames.length - 1] = buttonColumnName;
-        addButtonColumn();
-    }
-
-    public ButtonTableModel(AbstractTableDataFactory model, String buttonColumnName, String category) {
-        super(model, createColumnNames(model.getTableColumnNames(), buttonColumnName), category);
-    }
 
 
     //EFFECTS: add a new column of JButtons to the data of the table model
@@ -81,7 +86,6 @@ public class ButtonTableModel extends RowConverterTableModel {
             data.set(i, newRow);
         }
     }
-
 
 
     //EFFECTS: add a new column of JButtons to the data of the table model
@@ -120,16 +124,6 @@ public class ButtonTableModel extends RowConverterTableModel {
         }
         return buttons;
     }
-
-//
-//    //MODIFIES: this
-//    public void addRows(List<Object[]> newRows) {
-//        int oldLastRow = getRowCount() - 1;
-//        for (Object[] row: newRows) {
-//            data.add(createRow(row));
-//        }
-//        fireTableRowsInserted(oldLastRow, getRowCount() - 1);
-//    }
 
     @Override
     //EFFECTS: create and return a new button row

@@ -161,7 +161,7 @@ public class Product extends TableEntryConvertibleModel implements JsonConvertib
     public void setLocation(String location) {
         String oldLocation = this.location;
         this.location = location;
-        changeFirer.firePropertyChange(DataList.LOCATION.toString(), oldLocation, location);
+        changeFirer.fireUpdateEvent(this, oldLocation, location);
     }
 
 
