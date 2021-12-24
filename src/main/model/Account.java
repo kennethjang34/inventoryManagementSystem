@@ -3,6 +3,7 @@ package model;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import persistence.JsonConvertible;
+import ui.table.ViewableTableEntryConvertibleModel;
 
 import java.time.LocalDate;
 import java.util.*;
@@ -10,7 +11,7 @@ import java.util.*;
 //represents an account that contains information about the change that happens on a particular date.
 //will have account code, description, date, and quantities for each different item code.
 //Note this account must be distinguished from Login accounts, which are completely different
-public class Account implements JsonConvertible {
+public class Account extends ViewableTableEntryConvertibleModel implements JsonConvertible {
     //Code will be used for finding a particular account
     private String id;
     private String code;
@@ -20,11 +21,17 @@ public class Account implements JsonConvertible {
     private double averageCost;
     private double averagePrice;
     private String location;
+    public enum DataList {
+        CODE, ID, DATE, LOCATION, AVERAGE_PRICE, AVERAGE_COST
+    }
 
     //EFFECTS: create a new account with the given info
     public Account(int code, String description, LocalDate date,
                    String id, String location, double averageCost,
                    double averagePrice, int quantity) {
+        super(new String[]{DataList.CODE.toString(), DataList.ID.toString(), DataList.DATE.toString(),
+                DataList.LOCATION.toString(), DataList.AVERAGE_PRICE.toString(), DataList.AVERAGE_COST.toString()
+            });
         this.code = "" + code;
         this.id = id;
         this.date = date;
@@ -52,6 +59,9 @@ public class Account implements JsonConvertible {
     //all the information needed for creating a new account with matching names
     //EFFECTS: create a new account with data in JSONObject format
     public Account(JSONObject json) {
+        super(new String[]{DataList.CODE.toString(), DataList.ID.toString(), DataList.DATE.toString(),
+                DataList.LOCATION.toString(), DataList.AVERAGE_PRICE.toString(), DataList.AVERAGE_COST.toString()
+        });
         id = json.getString("id");
         description = json.getString("description");
         JSONObject jsonDate = json.getJSONObject("date");
@@ -69,7 +79,6 @@ public class Account implements JsonConvertible {
         averageCost = json.getDouble("averageCost");
         averagePrice = json.getDouble("averagePrice");
         quantity = json.getInt("quantity");
-
     }
 
     //MODIFIES: this
@@ -227,4 +236,20 @@ public class Account implements JsonConvertible {
         json.put("quantity", quantity);
         return json;
     }
+
+    @Override
+    public Object[] convertToTableEntry() {
+        return new Object[] {
+                code, id, date, location, averagePrice, averageCost, quantity, description
+        };
+    }
+//
+//    @Override
+//    public String[] getColumnNames() {
+//        String[] columnNames = new String[DataList.values().length];
+//        for (int i = 0; i < DataList.values().length; i++) {
+//            columnNames[i] = DataList.values()[i].toString();
+//        }
+//        return columnNames;
+//    }
 }

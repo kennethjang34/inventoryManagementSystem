@@ -23,7 +23,6 @@ public class Product extends ViewableTableEntryConvertibleModel implements JsonC
     private double cost;
     private String location;
 
-
 //
 //    @Override
 //    public List<String> getContentsOf(String property) {
@@ -139,6 +138,9 @@ public class Product extends ViewableTableEntryConvertibleModel implements JsonC
         if (price < 0) {
             throw new IllegalArgumentException("Price cannot be negative");
         }
+        if (price == this.price) {
+            return;
+        }
         double oldPrice = this.price;
         this.price = price;
         changeFirer.fireUpdateEvent(this, DataList.PRICE.toString(), oldPrice, price);
@@ -147,6 +149,9 @@ public class Product extends ViewableTableEntryConvertibleModel implements JsonC
     public void setCost(double cost) {
         if (cost < 0) {
             throw new IllegalArgumentException("Cost cannot be negative");
+        }
+        if (cost == this.cost) {
+            return;
         }
         double oldCost = this.cost;
         this.cost = cost;
@@ -157,6 +162,9 @@ public class Product extends ViewableTableEntryConvertibleModel implements JsonC
         if (id == null || id.isEmpty()) {
             throw new IllegalArgumentException("ID cannot be left empty");
         }
+        if (id.equals(this.id)) {
+            return;
+        }
         String oldId = this.id;
         this.id = id;
         changeFirer.fireUpdateEvent(this, DataList.ID.toString(), oldId, id);
@@ -164,6 +172,9 @@ public class Product extends ViewableTableEntryConvertibleModel implements JsonC
 
 
     public void setBestBeforeDate(LocalDate date) {
+        if (date.equals(this.bestBeforeDate)) {
+            return;
+        }
         LocalDate oldDate = this.bestBeforeDate;
         this.bestBeforeDate = date;
         changeFirer.fireUpdateEvent(this, DataList.BEST_BEFORE_DATE.toString(), oldDate, date);
@@ -179,6 +190,9 @@ public class Product extends ViewableTableEntryConvertibleModel implements JsonC
     //MODIFIES: this
     //EFFECTS: change the location of this product
     public void setLocation(String location) {
+        if (location.equals(this.location)) {
+            return;
+        }
         String oldLocation = this.location;
         this.location = location;
         changeFirer.fireUpdateEvent(this, DataList.LOCATION.toString(), oldLocation, location);

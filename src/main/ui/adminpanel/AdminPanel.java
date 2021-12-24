@@ -18,9 +18,7 @@ public class AdminPanel extends JPanel {
     private RegisterPrompter registerPanel;
     private String logedInID;
 
-//    public Admin.LoginAccount getLoginAccount() {
-//        return currentAccount;
-//    }
+
 
     //A small panel that will be displayed if the user presses register button to create a new account
     private class RegisterPrompter extends AbstractLoginAccountPrompter implements ActionListener {

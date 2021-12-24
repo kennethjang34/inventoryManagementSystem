@@ -7,7 +7,9 @@ import persistence.JsonConvertible;
 import persistence.Reader;
 import persistence.Writer;
 import ui.adminpanel.AdminPanel;
-import ui.ledgerpanel.LedgerPanel;
+import ui.inventorypanel.controller.InventoryController;
+import ui.inventorypanel.view.InventoryViewPanel;
+import ui.ledgerpanel.old.LedgerPanel;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -51,7 +53,6 @@ public class InventoryManagementSystemApplication extends JFrame implements Json
         } catch (IOException e) {
             admin = new Admin();
         }
-
         ledger = new Ledger();
         inventory = new Inventory();
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -69,6 +70,9 @@ public class InventoryManagementSystemApplication extends JFrame implements Json
     //EFFECTS: create a tabbed pane for the main panel
     public void createTabbedPane() {
         tabbedPane = new JTabbedPane();
+        InventoryController inventoryController = new InventoryController(inventory, new InventoryViewPanel(inventory));
+
+        tabbedPane.addTab("Inventory", inventoryController.getView());
         tabbedPane.addTab("Ledger", ledgerPanel);
         tabbedPane.addTab("Admin", adminPanel);
         tabbedPane.addChangeListener(e -> {
@@ -87,10 +91,7 @@ public class InventoryManagementSystemApplication extends JFrame implements Json
     public void createMainPanel() {
         mainPanel = new JPanel();
         cardLayout = new CardLayout();
-        //tabbedPane = new JTabbedPane();
-
-        //inventoryPanel = new InventoryPanel(inventory, this);
-        ledgerPanel = new LedgerPanel(ledger);
+//        ledgerPanel = new LedgerPanel(ledger);
         adminPanel = new AdminPanel(admin, this);
         if (loginPanel == null) {
             loginPanel = new LoginPanel(admin, this);

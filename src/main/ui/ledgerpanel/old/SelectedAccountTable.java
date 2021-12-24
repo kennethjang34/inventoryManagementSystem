@@ -1,7 +1,6 @@
-package ui.ledgerpanel;
+package ui.ledgerpanel.old;
 
 import model.Account;
-import model.Ledger;
 
 import javax.swing.*;
 import javax.swing.table.TableCellRenderer;

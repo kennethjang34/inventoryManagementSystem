@@ -94,7 +94,6 @@ public class Inventory extends AbstractTableDataFactory implements JsonConvertib
             Category category = categories.get(item.getCategory());
             category.addItem(item);
         }
-
     }
 
 
@@ -164,6 +163,7 @@ public class Inventory extends AbstractTableDataFactory implements JsonConvertib
             return false;
         }
         Item item = new Item(id, name, category, listPrice, description, note);
+        item.addDataChangeListener(this);
         items.put(id, item);
         categories.get(category).addItem(item);
 //        setChanged(ApplicationConstantValue.ITEM);
@@ -190,7 +190,10 @@ public class Inventory extends AbstractTableDataFactory implements JsonConvertib
                 failed.add(tag);
             } else {
                 int originalQty = item.getQuantity();
-                item.addProducts(tag);
+                List<Product> newProducts = item.addProducts(tag);
+                for (Product product: newProducts) {
+                    product.addDataChangeListener(this);
+                }
 //                changeFirer.firePropertyChange(ITEM, originalQty, item.getQuantity());
                 changeFirer.fireUpdateEvent(ITEM, item);
             }
@@ -214,11 +217,12 @@ public class Inventory extends AbstractTableDataFactory implements JsonConvertib
             return false;
         } else {
             int originalQty = item.getQuantity();
-            item.addProducts(tag);
-//            PropertyChangeEvent event = new PropertyChangeEvent(item, ITEM, originalQty, item);
-//            event.setPropagationId(id);
+            List<Product> newProducts = item.addProducts(tag);
+            for (Product product: newProducts) {
+                product.addDataChangeListener(this);
+            }
+
             changeFirer.fireUpdateEvent(ITEM, item);
-//            changeFirer.fireAdditionEvent(PRODUCT, );
             return true;
         }
     }
@@ -231,10 +235,9 @@ public class Inventory extends AbstractTableDataFactory implements JsonConvertib
         for (Item item: getItemList()) {
             Product product = item.removeProduct(sku);
             if (product != null) {
-                product.getLocation();
+                product.removeListener(this);
                 changeFirer.fireUpdateEvent(ITEM, item);
                 changeFirer.fireRemovalEvent(PRODUCT, product);
-
                 return true;
             }
         }
@@ -505,19 +508,6 @@ public class Inventory extends AbstractTableDataFactory implements JsonConvertib
     }
 
 
-//    //EFFECTS: create and return a list of data array each of which can be used for a row in a table
-//    @Override
-//    public List<Object[]> getRows() {
-//        if (items.isEmpty()) {
-//            return Collections.emptyList();
-//        }
-//        List<Object[]> rows = new ArrayList<>();
-//        for (Item item: items.values()) {
-//            rows.add(item.convertToTableEntry());
-//        }
-//        return rows;
-//    }
-
     @Override
     public List<ViewableTableEntryConvertibleModel> getEntryModels() {
         if (items.isEmpty()) {
@@ -531,7 +521,7 @@ public class Inventory extends AbstractTableDataFactory implements JsonConvertib
     }
 
     @Override
-    public void entryRemoved(ViewableTableEntryConvertibleModel o) {
+    public void entryRemoved(ViewableTableEntryConvertibleModel source) {
 
     }
 
@@ -548,14 +538,35 @@ public class Inventory extends AbstractTableDataFactory implements JsonConvertib
     @Override
     public void entryUpdated(ViewableTableEntryConvertibleModel source, String property, Object o1, Object o2) {
         if (source instanceof Item) {
-            //
+            Item item = (Item) source;
+            Item.DataList dataType = Item.DataList.valueOf(property);
+            switch (dataType) {
+                case CATEGORY:
+                    Category old = categories.get(o1.toString());
+                    if (!old.removeItem(item.getId())) {
+                        return;
+                    }
+                    item.removeListener(old);
+                    categories.get(o2).addItem(item);
+//                    item.addDataChangeListener(categories.get(o2));
+                    //Need to make it so that category notifies the listener directly
+                    changeFirer.fireUpdateEvent(ITEM, source, o1, o2);
+                    break;
+            }
         } else if (source instanceof Product) {
             Product product = (Product) source;
             Product.DataList dataType = Product.DataList.valueOf(property);
             switch (dataType) {
                 case ID:
-                    items.get(product.getId()).addProduct(product);
-                    changeFirer.fireUpdateEvent(items.get(product.getId()));
+                    Item item =  items.get(product.getId());
+                    if (item == null) {
+                        throw new IllegalArgumentException("Such id doesn't exist");
+                    }
+                    item.addProduct(product);
+//                    product.addDataChangeListener(item);
+                    //should be modified. table needs to be notified of the event from the product directly
+                    //for the new id's table entry
+//                    changeFirer.fireUpdateEvent(items.get(product.getId()));
                     break;
             }
         }

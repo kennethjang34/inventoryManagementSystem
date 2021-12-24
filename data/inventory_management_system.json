@@ -1,24 +1,8 @@
 {
     "ledger": {
-        "accounts": [{
-            "date": "2021-11-24",
-            "accountList": [{
-                "date": {
-                    "month": 11,
-                    "year": 2021,
-                    "day": 24
-                },
-                "code": "111111",
-                "quantity": 12,
-                "description": "",
-                "location": "F12",
-                "id": "APP",
-                "averagePrice": 1,
-                "averageCost": 1
-            }]
-        }],
+        "accounts": [],
         "codeSize": 6,
-        "nextAccountNumber": 111112
+        "nextAccountNumber": 111111
     },
     "admin": {"accounts": [{
         "birthday": {
@@ -41,169 +25,200 @@
         }],
         "items": [{
             "note": "",
-            "count": 12,
+            "count": 11,
             "name": "apple",
             "description": "",
             "id": "APP",
             "category": "FRUIT",
-            "averageCost": 1,
-            "listPrice": 1,
+            "averageCost": 111,
+            "listPrice": 0,
             "stocks": [[
                 {
-                    "cost": 1,
+                    "cost": 111,
                     "dateGenerated": {
-                        "month": 11,
+                        "month": 12,
                         "year": 2021,
-                        "day": 24
+                        "day": 23
                     },
-                    "price": 1,
-                    "bestBeforeDate": null,
-                    "location": "F12",
+                    "price": 111,
+                    "bestBeforeDate": {
+                        "month": 12,
+                        "year": 2021,
+                        "day": 12
+                    },
+                    "location": "F11",
                     "id": "APP",
                     "sku": "APP0"
                 },
                 {
-                    "cost": 1,
+                    "cost": 111,
                     "dateGenerated": {
-                        "month": 11,
+                        "month": 12,
                         "year": 2021,
-                        "day": 24
+                        "day": 23
                     },
-                    "price": 1,
-                    "bestBeforeDate": null,
-                    "location": "F12",
+                    "price": 111,
+                    "bestBeforeDate": {
+                        "month": 12,
+                        "year": 2021,
+                        "day": 12
+                    },
+                    "location": "F11",
                     "id": "APP",
                     "sku": "APP1"
                 },
                 {
-                    "cost": 1,
+                    "cost": 111,
                     "dateGenerated": {
-                        "month": 11,
+                        "month": 12,
                         "year": 2021,
-                        "day": 24
+                        "day": 23
                     },
-                    "price": 1,
-                    "bestBeforeDate": null,
-                    "location": "F12",
+                    "price": 111,
+                    "bestBeforeDate": {
+                        "month": 12,
+                        "year": 2021,
+                        "day": 12
+                    },
+                    "location": "F11",
                     "id": "APP",
                     "sku": "APP2"
                 },
                 {
-                    "cost": 1,
+                    "cost": 111,
                     "dateGenerated": {
-                        "month": 11,
+                        "month": 12,
                         "year": 2021,
-                        "day": 24
+                        "day": 23
                     },
-                    "price": 1,
-                    "bestBeforeDate": null,
-                    "location": "F12",
+                    "price": 111,
+                    "bestBeforeDate": {
+                        "month": 12,
+                        "year": 2021,
+                        "day": 12
+                    },
+                    "location": "F11",
                     "id": "APP",
                     "sku": "APP3"
                 },
                 {
-                    "cost": 1,
+                    "cost": 111,
                     "dateGenerated": {
-                        "month": 11,
+                        "month": 12,
                         "year": 2021,
-                        "day": 24
+                        "day": 23
                     },
-                    "price": 1,
-                    "bestBeforeDate": null,
-                    "location": "F12",
+                    "price": 111,
+                    "bestBeforeDate": {
+                        "month": 12,
+                        "year": 2021,
+                        "day": 12
+                    },
+                    "location": "F11",
                     "id": "APP",
                     "sku": "APP4"
                 },
                 {
-                    "cost": 1,
+                    "cost": 111,
                     "dateGenerated": {
-                        "month": 11,
+                        "month": 12,
                         "year": 2021,
-                        "day": 24
+                        "day": 23
                     },
-                    "price": 1,
-                    "bestBeforeDate": null,
-                    "location": "F12",
+                    "price": 111,
+                    "bestBeforeDate": {
+                        "month": 12,
+                        "year": 2021,
+                        "day": 12
+                    },
+                    "location": "F11",
                     "id": "APP",
                     "sku": "APP5"
                 },
                 {
-                    "cost": 1,
+                    "cost": 111,
                     "dateGenerated": {
-                        "month": 11,
+                        "month": 12,
                         "year": 2021,
-                        "day": 24
+                        "day": 23
                     },
-                    "price": 1,
-                    "bestBeforeDate": null,
-                    "location": "F12",
+                    "price": 111,
+                    "bestBeforeDate": {
+                        "month": 12,
+                        "year": 2021,
+                        "day": 12
+                    },
+                    "location": "F11",
                     "id": "APP",
                     "sku": "APP6"
                 },
                 {
-                    "cost": 1,
+                    "cost": 111,
                     "dateGenerated": {
-                        "month": 11,
+                        "month": 12,
                         "year": 2021,
-                        "day": 24
+                        "day": 23
                     },
-                    "price": 1,
-                    "bestBeforeDate": null,
-                    "location": "F12",
+                    "price": 111,
+                    "bestBeforeDate": {
+                        "month": 12,
+                        "year": 2021,
+                        "day": 12
+                    },
+                    "location": "F11",
                     "id": "APP",
                     "sku": "APP7"
                 },
                 {
-                    "cost": 1,
+                    "cost": 111,
                     "dateGenerated": {
-                        "month": 11,
+                        "month": 12,
                         "year": 2021,
-                        "day": 24
+                        "day": 23
                     },
-                    "price": 1,
-                    "bestBeforeDate": null,
-                    "location": "F12",
+                    "price": 111,
+                    "bestBeforeDate": {
+                        "month": 12,
+                        "year": 2021,
+                        "day": 12
+                    },
+                    "location": "F11",
                     "id": "APP",
                     "sku": "APP8"
                 },
                 {
-                    "cost": 1,
+                    "cost": 111,
                     "dateGenerated": {
-                        "month": 11,
+                        "month": 12,
                         "year": 2021,
-                        "day": 24
+                        "day": 23
                     },
-                    "price": 1,
-                    "bestBeforeDate": null,
-                    "location": "F12",
+                    "price": 111,
+                    "bestBeforeDate": {
+                        "month": 12,
+                        "year": 2021,
+                        "day": 12
+                    },
+                    "location": "F11",
                     "id": "APP",
                     "sku": "APP9"
                 },
                 {
-                    "cost": 1,
+                    "cost": 111,
                     "dateGenerated": {
-                        "month": 11,
+                        "month": 12,
                         "year": 2021,
-                        "day": 24
+                        "day": 23
                     },
-                    "price": 1,
-                    "bestBeforeDate": null,
-                    "location": "F12",
+                    "price": 111,
+                    "bestBeforeDate": {
+                        "month": 12,
+                        "year": 2021,
+                        "day": 12
+                    },
+                    "location": "F11",
                     "id": "APP",
                     "sku": "APP10"
-                },
-                {
-                    "cost": 1,
-                    "dateGenerated": {
-                        "month": 11,
-                        "year": 2021,
-                        "day": 24
-                    },
-                    "price": 1,
-                    "bestBeforeDate": null,
-                    "location": "F12",
-                    "id": "APP",
-                    "sku": "APP11"
                 }
             ]]
         }]

@@ -15,9 +15,10 @@ import java.util.*;
 //contains product list belonging to it
 //item can be thought of a super-category of products
 public class Item extends TableEntryConvertibleDataFactory implements JsonConvertible, DataViewer {
+    private int processedQty = 0;
     private int count = 0;
     private final String id;
-    private final String name;
+    private String name;
     private String category;
     private String description;
     private double averageCost;
@@ -114,9 +115,8 @@ public class Item extends TableEntryConvertibleDataFactory implements JsonConver
                 productLocationChanged(product, (String) o1, (String) o2);
                 break;
             case COST:
-                productPriceChanged(product, (Double) o1, (Double) o2);
+                productCostChanged(product, (Double) o1, (Double) o2);
                 break;
-//                break;
 //            case PRICE:
 //
 //                break;
@@ -128,6 +128,14 @@ public class Item extends TableEntryConvertibleDataFactory implements JsonConver
 
     @Override
     public void entryUpdated(ViewableTableEntryConvertibleModel source, Object old, Object newObject) {
+    }
+
+
+
+
+
+    public int getProcessedQty() {
+        return processedQty;
     }
 
 
@@ -184,6 +192,43 @@ public class Item extends TableEntryConvertibleDataFactory implements JsonConver
         return products.get(sku);
     }
 
+
+
+
+    public void setCategory(String category) {
+        String old = this.category;
+        this.category = category;
+        changeFirer.fireUpdateEvent(this, DataList.CATEGORY.toString(), old, category);
+    }
+
+    public void setName(String name) {
+        String old = this.name;
+        this.name = name;
+        changeFirer.fireUpdateEvent(this, DataList.NAME.toString(), old, name);
+    }
+
+    public void setDescription(String description) {
+        String old = this.description;
+        this.description = description;
+        changeFirer.fireUpdateEvent(this, DataList.DESCRIPTION.toString(), old, description);
+    }
+
+    public void setNote(String note) {
+        String old = this.note;
+        this.note = note;
+        changeFirer.fireUpdateEvent(this, DataList.NOTE.toString(), old, note);
+    }
+
+    public void setListPrice(double listPrice) {
+        double old = this.listPrice;
+        this.listPrice = listPrice;
+        changeFirer.fireUpdateEvent(this, DataList.LIST_PRICE.toString(), old, listPrice);
+    }
+
+
+
+
+
     //MODIFIES: this
     //EFFECTS: remove the product specified by the sku
     //If there was the product, and it has been removed, return true
@@ -194,6 +239,7 @@ public class Item extends TableEntryConvertibleDataFactory implements JsonConver
             return null;
         } else {
             stocks.get(product.getLocation()).remove(product);
+            product.removeListener(this);
             EventLog.getInstance().logEvent(new Event("Product with SKU: " + sku + " removed "));
 //            changeFirer.firePropertyChange(DATA_LIST[5], product, null);
             return product;
@@ -215,6 +261,7 @@ public class Item extends TableEntryConvertibleDataFactory implements JsonConver
             Product product = products.get(0);
             this.products.remove(product.getSku());
             products.remove(product);
+            product.removeListener(this);
         }
         EventLog.getInstance().logEvent(new Event(qty + " products belonging to ID: "
                 + id + " removed from " + location));
@@ -234,12 +281,6 @@ public class Item extends TableEntryConvertibleDataFactory implements JsonConver
     }
 
 
-    //MODIFIES: this
-    //EFFECTS: change the category of this item
-    public void setCategory(String category) {
-        this.category = category;
-    }
-
 
     public void addProduct(Product product) {
         products.put(product.getSku(), product);
@@ -249,14 +290,16 @@ public class Item extends TableEntryConvertibleDataFactory implements JsonConver
         }
         list.add(product);
         stocks.put(product.getLocation(), list);
+        product.addDataChangeListener(this);
+        averageCost = (averageCost * processedQty + product.getCost())/(++processedQty);
+        changeFirer.fireAdditionEvent(DataList.QUANTITY.toString(), this);
     }
 
 
     //REQUIRES: the tag must have id of this
     //MODIFIES: this
     //EFFECTS: add products to this with the given inventory tag
-    public void addProducts(InventoryTag tag) {
-        int originalQty = getQuantity();
+    public List<Product> addProducts(InventoryTag tag) {
         int quantity = tag.getQuantity();
         String location = tag.getLocation();
         List<Product> toBeAdded = new ArrayList<>();
@@ -275,11 +318,13 @@ public class Item extends TableEntryConvertibleDataFactory implements JsonConver
         }
         EventLog.getInstance().logEvent(new Event(quantity + " new products belonging to ID: "
                 + id + " added at " + location));
-        if (originalQty != 0) {
-            averageCost = (averageCost * originalQty + tag.getUnitCost() * quantity) / (originalQty + quantity);
+        if (processedQty != 0) {
+            averageCost = (averageCost * processedQty + tag.getUnitCost() * quantity) / (processedQty + quantity);
         } else {
             averageCost = tag.getUnitCost();
         }
+        processedQty += quantity;
+        return toBeAdded;
     }
 
     //MODIFIES: this
@@ -287,7 +332,6 @@ public class Item extends TableEntryConvertibleDataFactory implements JsonConver
     public void addProducts(double cost, double price, LocalDate bestBeforeDate,
                             LocalDate dateGenerated, String location, int qty) {
         List<Product> toBeAdded = new ArrayList<>();
-        int originalQty = getQuantity();
         for (int i = 0; i < qty; i++) {
             Product product = new Product(id, createSku(), cost, price,
                     dateGenerated, bestBeforeDate, location);
@@ -303,11 +347,12 @@ public class Item extends TableEntryConvertibleDataFactory implements JsonConver
         }
         EventLog.getInstance().logEvent(new Event(qty + " new products belonging to ID: "
                 + id + " added at " + location));
-        if (originalQty != 0) {
-            averageCost = (averageCost * originalQty + cost * qty) / (originalQty + qty);
+        if (processedQty != 0) {
+            averageCost = (averageCost * processedQty + cost * qty) / (processedQty + qty);
         } else {
             averageCost = cost;
         }
+        processedQty += qty;
     }
 
 
@@ -402,7 +447,7 @@ public class Item extends TableEntryConvertibleDataFactory implements JsonConver
                 contents.add(String.valueOf(getQuantity()));
                 break;
             case AVERAGE_COST:
-                contents.add(String.valueOf(listPrice));
+                contents.add(String.valueOf(averageCost));
                 break;
             case LIST_PRICE:
                 contents.add(String.valueOf(listPrice));
@@ -447,20 +492,40 @@ public class Item extends TableEntryConvertibleDataFactory implements JsonConver
 
     //ITEM ID is immutable. ID change of a product indicates moving product to another item class
     public void productIDChange(Product product) {
+        if (product.getId().equals(id)) {
+            return;
+        }
+        double sumCost = averageCost * processedQty;
         removeProduct(product.getSku());
-        changeFirer.fireUpdateEvent(product, Product.DataList.ID.toString(), id, product.getId());
+        sumCost = sumCost - product.getCost();
+        processedQty--;
+        if (processedQty == 0) {
+            averageCost = 0;
+        } else {
+            averageCost = sumCost/processedQty;
+        }
         changeFirer.fireUpdateEvent(this);
-//        changeFirer.fireUpdateEvent(this);
     }
 
     public void productIDChange(Product product, String old, String newId) {
+        if (product.getId().equals(id)) {
+            return;
+        }
+        double sumCost = averageCost * processedQty;
         removeProduct(product.getSku());
-        changeFirer.fireUpdateEvent(product, Product.DataList.ID.toString(), old, newId);
+        sumCost = sumCost - product.getCost();
+        processedQty--;
+        if (processedQty == 0) {
+            averageCost = 0;
+        } else {
+            averageCost = sumCost/processedQty;
+        }
+//        changeFirer.fireUpdateEvent(this, old, newId);
         changeFirer.fireUpdateEvent(this);
     }
 
-    public void productPriceChanged(Product product, double o1, double o2) {
-        averageCost = (averageCost * getQuantity() - o1 + o2) / getQuantity();
+    public void productCostChanged(Product product, double o1, double o2) {
+        averageCost = (averageCost * processedQty - o1 + o2) / processedQty;
         changeFirer.fireUpdateEvent(this);
     }
 

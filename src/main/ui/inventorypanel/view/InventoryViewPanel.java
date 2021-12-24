@@ -4,7 +4,7 @@ import model.Inventory;
 import model.Product;
 import ui.*;
 import ui.table.ButtonTable;
-import ui.table.RowConverterTableModel;
+import ui.table.RowConverterViewerTableModel;
 import ui.inventorypanel.CategoryGenerator;
 import ui.inventorypanel.ItemGenerator;
 import ui.inventorypanel.productpanel.AddPanel;
@@ -35,15 +35,19 @@ public class InventoryViewPanel extends JPanel {
     private AbstractAction locationTableAction;
     private boolean isLocationViewDialogDisplayed = false;
 
+    public static int[] getSelectedTableModelRows(JTable stockTable) {
+        int[] selectedViewIndices = stockTable.getSelectedRows();
+        int[] modelRows = new int[selectedViewIndices.length];
+        for (int i = 0; i < selectedViewIndices.length; i++) {
+            modelRows[i] = stockTable.convertRowIndexToModel(selectedViewIndices[i]);
+        }
+        return modelRows;
+    }
 
 
     private enum LocationTableColumns {
         ID, LOCATION, QUANTITY
 
-//        @Override
-//        public String toString() {
-//
-//        }
 
     }
 
@@ -112,7 +116,7 @@ public class InventoryViewPanel extends JPanel {
         stockButtonTable = new ButtonTable(inventory, "Location view", Inventory.ITEM);
         //ID determines the equivalency
         stockButtonTable.setBaseColumnIndex(1);
-        RowConverterTableModel productTableModel = new RowConverterTableModel();
+        RowConverterViewerTableModel productTableModel = new RowConverterViewerTableModel();
         productTableModel.setColumnNames(Product.DATA_LIST);
         productTable = new JTable(productTableModel);
         inventory.addDataChangeListener(Inventory.PRODUCT, productTableModel);
@@ -128,8 +132,6 @@ public class InventoryViewPanel extends JPanel {
         setUpCategoryFilter();
         setUpCategoryField();
         setUpItemField();
-//        inventory.addDataModelListener(Inventory.STOCK, (TableView) stockButtonTable.getModel());
-//        inventory.addDataModelListener(Inventory.ITEM, (TableView) stockButtonTable.getModel());
         addPanel = new AddPanel(inventory);
         addPanel.getButton().addKeyListener(buttonEnterListener);
         setUpProductGeneratorButton();
@@ -151,9 +153,10 @@ public class InventoryViewPanel extends JPanel {
         gbc.weightx = 1;
         gbc.weighty = 0.45;
         gbc.fill = GridBagConstraints.BOTH;
-        productTable.setPreferredScrollableViewportSize(new Dimension(500, 600));
+//        productTable.setPreferredScrollableViewportSize(new Dimension(500, 600));
 //        productTable.setFillsViewportHeight(true);
-        JScrollPane productScrollPane = new JScrollPane(productTable);
+        JScrollPane productScrollPane = new JScrollPane(productTable, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
+                JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         panelForTables.add(productScrollPane, gbc);
 //        gbc.fill = GridBagConstraints.NONE;
         gbc.gridx = gbc.gridx + gbc.gridwidth - 6;

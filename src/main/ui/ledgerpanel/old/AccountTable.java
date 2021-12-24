@@ -1,4 +1,4 @@
-package ui.ledgerpanel;
+package ui.ledgerpanel.old;
 
 import model.Ledger;
 import model.Observer;
@@ -22,7 +22,6 @@ public class AccountTable extends JTable implements TableCellRenderer, MouseList
     public AccountTable(Ledger ledger, LedgerPanel panel) {
         this.ledgerPanel = panel;
         tableModel = new AccountTableModel(ledger, this);
-        ledger.registerObserver(this);
         setModel(tableModel);
         setDefaultRenderer(JButton.class, this);
         setDefaultRenderer(String.class, this);

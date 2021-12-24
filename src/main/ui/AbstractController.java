@@ -9,6 +9,15 @@ public abstract class AbstractController<M, V> implements PropertyChangeListener
     public AbstractController(M model, V view) {
         this.model = model;
         this.view = view;
+        setUpView();
+    }
+
+    public V getView() {
+        return view;
+    }
+
+    public M getModel() {
+        return model;
     }
 
     public abstract void setUpView();

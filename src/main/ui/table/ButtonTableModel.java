@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 //represents a table model with a column dedicated to buttons
-public class ButtonTableModel extends RowConverterTableModel {
+public class ButtonTableModel extends RowConverterViewerTableModel {
 
 //    ActionListener buttonActionListener;
 //    String buttonText;

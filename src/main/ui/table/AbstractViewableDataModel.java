@@ -32,12 +32,16 @@ public abstract class AbstractViewableDataModel {
         changeFirer.addTableDataModelListener(listener);
     }
 
-//    public void addListUpdateListener(String category, DataViewer listener) {
-//        changeFirer.addTableDataModelListener(category, listener);
-//    }
-
     public void removeListener(String propertyName, DataViewer listener) {
         changeFirer.removeTableModelListener(propertyName, listener);
+    }
+
+    public void removeGeneralListener(DataViewer listener) {
+        changeFirer.removeTableModelListener(RowDataChangeSupport.GENERAL, listener);
+    }
+
+    public void removeListener(DataViewer listener) {
+        changeFirer.removeTableModelListener(listener);
     }
 
 

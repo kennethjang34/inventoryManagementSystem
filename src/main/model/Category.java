@@ -3,12 +3,14 @@ package model;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import persistence.JsonConvertible;
+import ui.DataViewer;
 import ui.table.ViewableTableEntryConvertibleModel;
 
+import javax.xml.crypto.Data;
 import java.util.*;
 
 //represents a category where similar items belong
-public class Category extends ViewableTableEntryConvertibleModel implements JsonConvertible {
+public class Category extends ViewableTableEntryConvertibleModel implements JsonConvertible, DataViewer {
     private final String name;
     private int quantity;
     //set containing id's of items belonging to this category
@@ -131,6 +133,30 @@ public class Category extends ViewableTableEntryConvertibleModel implements Json
         return name;
     }
 
+    @Override
+    public void entryRemoved(ViewableTableEntryConvertibleModel o) {
+
+    }
+
+    @Override
+    public void entryAdded(ViewableTableEntryConvertibleModel o) {
+
+    }
+
+    @Override
+    public void entryUpdated(ViewableTableEntryConvertibleModel updatedEntry) {
+
+    }
+
+    @Override
+    public void entryUpdated(ViewableTableEntryConvertibleModel source, String property, Object o1, Object o2) {
+
+    }
+
+    @Override
+    public void entryUpdated(ViewableTableEntryConvertibleModel source, Object old, Object newObject) {
+
+    }
 
 
 //    //EFFECTS: return the hash code of this.

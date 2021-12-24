@@ -3,21 +3,36 @@ package model;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import persistence.JsonConvertible;
+import ui.table.AbstractTableDataFactory;
+import ui.table.ViewableTableEntryConvertibleModel;
 
 import java.time.LocalDate;
 import java.util.*;
 
+
+
 //represents a ledger that contains several transaction accounts
-public class Ledger extends Observable implements JsonConvertible {
+public class Ledger extends AbstractTableDataFactory implements JsonConvertible {
     //key: LocalDate.toString(), value: list of accounts that occurred that day
     private Map<String, List<Account>> accounts;
+    //dates will replace accounts;
+    private Map<LocalDate, RecordedDate> dates;
     //private ArrayList<Account> accounts;
     private int nextAccountNumber;
     private int codeSize;
+    public enum DataList {
+        RECORDED_DATE, ID, SIZE
+    }
+
+    public final String[] columnNames = new String[]{DataList.RECORDED_DATE.toString(),
+            DataList.SIZE.toString()};
+
+
 
     //EFFECTS:create a new empty ledger.
     //default code size is 6.
     public Ledger() {
+        dates = new LinkedHashMap<>();
         codeSize = 6;
         accounts = new LinkedHashMap<>();
         nextAccountNumber = ((int)Math.pow(10, codeSize) - 1) / 9;
@@ -26,6 +41,8 @@ public class Ledger extends Observable implements JsonConvertible {
 
     //EFFECTS:create a new empty ledger with the given code size
     public Ledger(int accountNumberSize) {
+//        super(new String[]{DataList.RECORDED_DATE.toString(), DataList.ID.toString(), DataList.SIZE.toString()});
+        dates = new LinkedHashMap<>();
         this.codeSize = accountNumberSize;
         accounts = new LinkedHashMap<>();
         nextAccountNumber = ((int)Math.pow(10, codeSize) - 1) / 9;
@@ -35,6 +52,8 @@ public class Ledger extends Observable implements JsonConvertible {
     //information for creating a ledger with matching names.
     //EFFECTS: create a new ledger with data in JSON format
     public Ledger(JSONObject jsonLedger) {
+//        super(new String[]{DataList.RECORDED_DATE.toString(), DataList.SIZE.toString()});
+        dates = new LinkedHashMap<>();
         nextAccountNumber = jsonLedger.getInt("nextAccountNumber");
         codeSize = jsonLedger.getInt("codeSize");
         accounts = new LinkedHashMap<>();
@@ -49,6 +68,7 @@ public class Ledger extends Observable implements JsonConvertible {
                 accountList.add(new Account(jsonObject));
             }
             accounts.put(date, accountList);
+            dates.put(LocalDate.parse(date), new RecordedDate(LocalDate.parse(date), accountList));
         }
     }
 
@@ -96,8 +116,11 @@ public class Ledger extends Observable implements JsonConvertible {
     //EFFECTS: return a list of accounts that were generated on the specified date.
     //If there isn't any, return null.
     public List<Account> getAccounts(LocalDate date) {
-        return accounts.get(date.toString());
+        return dates.get(date).getAccounts();
+//        return accounts.get(date.toString());
     }
+
+
 
 
 
@@ -107,12 +130,17 @@ public class Ledger extends Observable implements JsonConvertible {
         Account account = new Account(nextAccountNumber++, description, date, tag.getId(), tag.getLocation(),
                 tag.getUnitCost(), tag.getUnitPrice(), tag.getQuantity());
         List<Account> accountList = accounts.get(date.toString());
+        RecordedDate recordedDate = dates.get(date);
+        if (recordedDate == null) {
+            recordedDate = new RecordedDate(date);
+        }
         if (accountList == null) {
             accountList = new ArrayList<>();
         }
+        recordedDate.addAccount(account);
         accountList.add(account);
         accounts.putIfAbsent(date.toString(), accountList);
-        notifyObservers();
+        dates.putIfAbsent(date, new RecordedDate(date, accountList));
         return account;
     }
 
@@ -166,5 +194,28 @@ public class Ledger extends Observable implements JsonConvertible {
             }
         }
         return codes;
+    }
+
+
+    @Override
+    public Object[] getDataList() {
+        return DataList.values();
+    }
+
+    @Override
+    public List<String> getContentsOf(String property) {
+        return null;
+    }
+
+    @Override
+    public String[] getColumnNames() {
+        return new String[0];
+    }
+
+
+    //return list of recordedDate object
+    @Override
+    public List<ViewableTableEntryConvertibleModel> getEntryModels() {
+        return new ArrayList<>(dates.values());
     }
 }

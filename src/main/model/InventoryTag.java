@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 //tag used to add products to the inventory as opposed to Quantity tags, which are used to remove products
-public class InventoryTag {
+public class InventoryTag implements TableEntryConvertible {
     private final String id;
     private int quantity;
     private final String location;
@@ -15,6 +15,10 @@ public class InventoryTag {
     private double unitPrice;
     private final LocalDate bestBeforeDate;
     private final LocalDate dateGenerated;
+    public enum DataList {
+        ID, QUANTITY, LOCATION, UNIT_COST, UNIT_PRICE, BEST_BEFORE_DATE, DATE_GENERATED
+    }
+
 
     //EFFECTS: create a new tag that contains all information needed for creating a product with its assigned location
     public InventoryTag(String itemCode, double cost, double price, LocalDate dateGenerated,
@@ -173,4 +177,19 @@ public class InventoryTag {
         quantity = qty;
     }
 
+    @Override
+    public Object[] convertToTableEntry() {
+        return new Object[] {
+            id, quantity, location, unitCost, unitPrice, bestBeforeDate, dateGenerated
+        };
+    }
+
+    @Override
+    public String[] getColumnNames() {
+        String[] names = new String[DataList.values().length];
+        for (int i = 0; i < names.length; i++) {
+            names[i] = DataList.values()[i].toString();
+        }
+        return names;
+    }
 }

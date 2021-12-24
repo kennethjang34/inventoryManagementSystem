@@ -4,12 +4,10 @@ public abstract class TableEntryConvertibleDataFactory extends ViewableTableEntr
         implements DataFactory {
 
 
-
-
-
     public TableEntryConvertibleDataFactory(String[] columnNames) {
         super(columnNames);
     }
+
 
 
 
@@ -22,5 +20,8 @@ public abstract class TableEntryConvertibleDataFactory extends ViewableTableEntr
         }
         return columnNames;
     }
+
+
+
 
 }
