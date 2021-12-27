@@ -11,7 +11,7 @@ import java.util.*;
 //represents an account that contains information about the change that happens on a particular date.
 //will have account code, description, date, and quantities for each different item code.
 //Note this account must be distinguished from Login accounts, which are completely different
-public class Account extends ViewableTableEntryConvertibleModel implements JsonConvertible {
+public class Account extends ui.table.ViewableTableEntryConvertibleModel implements JsonConvertible {
     //Code will be used for finding a particular account
     private String id;
     private String code;
@@ -22,7 +22,7 @@ public class Account extends ViewableTableEntryConvertibleModel implements JsonC
     private double averagePrice;
     private String location;
     public enum DataList {
-        CODE, ID, DATE, LOCATION, AVERAGE_PRICE, AVERAGE_COST
+        CODE, ID, DATE, LOCATION, AVERAGE_PRICE, AVERAGE_COST, QUANTITY, DESCRIPTION
     }
 
     //EFFECTS: create a new account with the given info
@@ -30,7 +30,8 @@ public class Account extends ViewableTableEntryConvertibleModel implements JsonC
                    String id, String location, double averageCost,
                    double averagePrice, int quantity) {
         super(new String[]{DataList.CODE.toString(), DataList.ID.toString(), DataList.DATE.toString(),
-                DataList.LOCATION.toString(), DataList.AVERAGE_PRICE.toString(), DataList.AVERAGE_COST.toString()
+                DataList.LOCATION.toString(), DataList.AVERAGE_PRICE.toString(),
+                DataList.AVERAGE_COST.toString(), DataList.QUANTITY.toString(), DataList.DESCRIPTION.toString()
             });
         this.code = "" + code;
         this.id = id;

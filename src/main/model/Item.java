@@ -87,24 +87,24 @@ public class Item extends TableEntryConvertibleDataFactory implements JsonConver
     }
 
     @Override
-    public void entryRemoved(ViewableTableEntryConvertibleModel o) {
+    public void entryRemoved(ui.table.ViewableTableEntryConvertibleModel o) {
 
     }
 
     @Override
-    public void entryAdded(ViewableTableEntryConvertibleModel o) {
+    public void entryAdded(ui.table.ViewableTableEntryConvertibleModel o) {
 
     }
 
     @Override
-    public void entryUpdated(ViewableTableEntryConvertibleModel updatedEntry) {
+    public void entryUpdated(ui.table.ViewableTableEntryConvertibleModel updatedEntry) {
 //        if (products.containsValue(updatedEntry)) {
 //            productLocationChanged((Product)updatedEntry);
 //        }
     }
 
     @Override
-    public void entryUpdated(ViewableTableEntryConvertibleModel source, String property, Object o1, Object o2) {
+    public void entryUpdated(ui.table.ViewableTableEntryConvertibleModel source, String property, Object o1, Object o2) {
         Product product = (Product) source;
         Product.DataList dataType = Product.DataList.valueOf(property);
         switch (dataType) {
@@ -127,7 +127,7 @@ public class Item extends TableEntryConvertibleDataFactory implements JsonConver
     }
 
     @Override
-    public void entryUpdated(ViewableTableEntryConvertibleModel source, Object old, Object newObject) {
+    public void entryUpdated(ui.table.ViewableTableEntryConvertibleModel source, Object old, Object newObject) {
     }
 
 
@@ -420,7 +420,7 @@ public class Item extends TableEntryConvertibleDataFactory implements JsonConver
         return id;
     }
 
-    public List<ViewableTableEntryConvertibleModel> getEntryModels() {
+    public List<? extends ViewableTableEntryConvertibleModel> getEntryModels() {
         return new ArrayList<>(products.values());
     }
 

@@ -509,11 +509,11 @@ public class Inventory extends AbstractTableDataFactory implements JsonConvertib
 
 
     @Override
-    public List<ViewableTableEntryConvertibleModel> getEntryModels() {
+    public List<? extends ViewableTableEntryConvertibleModel> getEntryModels() {
         if (items.isEmpty()) {
             return Collections.emptyList();
         }
-        List<ViewableTableEntryConvertibleModel> rows = new ArrayList<>();
+        List<ui.table.ViewableTableEntryConvertibleModel> rows = new ArrayList<>();
         for (Item item: items.values()) {
             rows.add(item);
         }
@@ -521,22 +521,22 @@ public class Inventory extends AbstractTableDataFactory implements JsonConvertib
     }
 
     @Override
-    public void entryRemoved(ViewableTableEntryConvertibleModel source) {
+    public void entryRemoved(ui.table.ViewableTableEntryConvertibleModel source) {
 
     }
 
     @Override
-    public void entryAdded(ViewableTableEntryConvertibleModel o) {
+    public void entryAdded(ui.table.ViewableTableEntryConvertibleModel o) {
 
     }
 
     @Override
-    public void entryUpdated(ViewableTableEntryConvertibleModel updatedEntry) {
+    public void entryUpdated(ui.table.ViewableTableEntryConvertibleModel updatedEntry) {
 
     }
 
     @Override
-    public void entryUpdated(ViewableTableEntryConvertibleModel source, String property, Object o1, Object o2) {
+    public void entryUpdated(ui.table.ViewableTableEntryConvertibleModel source, String property, Object o1, Object o2) {
         if (source instanceof Item) {
             Item item = (Item) source;
             Item.DataList dataType = Item.DataList.valueOf(property);
@@ -550,7 +550,7 @@ public class Inventory extends AbstractTableDataFactory implements JsonConvertib
                     categories.get(o2).addItem(item);
 //                    item.addDataChangeListener(categories.get(o2));
                     //Need to make it so that category notifies the listener directly
-                    changeFirer.fireUpdateEvent(ITEM, source, o1, o2);
+//                    changeFirer.fireUpdateEvent(ITEM, source, o1, o2);
                     break;
             }
         } else if (source instanceof Product) {
@@ -573,7 +573,7 @@ public class Inventory extends AbstractTableDataFactory implements JsonConvertib
     }
 
     @Override
-    public void entryUpdated(ViewableTableEntryConvertibleModel source, Object old, Object newObject) {
+    public void entryUpdated(ui.table.ViewableTableEntryConvertibleModel source, Object old, Object newObject) {
 
     }
 }

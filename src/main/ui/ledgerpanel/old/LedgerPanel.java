@@ -71,12 +71,13 @@ public class LedgerPanel extends JPanel implements ActionListener {
 
     //EFFECTS: return a list of dates existing in the ledger
     public LocalDate[] getDates() {
-        String[] dateInfo = ledger.getDates();
-        LocalDate[] dates = new LocalDate[dateInfo.length];
-        for (int i = 0; i < dates.length; i++) {
-            dates[i] = LocalDate.parse(dateInfo[i]);
-        }
-        return dates;
+//        String[] dateInfo = ledger.getDates().toArray(new String[]);
+//        LocalDate[] dates = new LocalDate[dateInfo.length];
+//        for (int i = 0; i < dates.length; i++) {
+//            dates[i] = LocalDate.parse(dateInfo[i]);
+//        }
+//        return dates;
+        return null;
     }
 
     //EFFECTS: return a list of account codes inside this

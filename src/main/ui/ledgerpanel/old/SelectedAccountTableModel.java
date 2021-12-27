@@ -1,10 +1,8 @@
 package ui.ledgerpanel.old;
 
 import model.Account;
-import model.Ledger;
 
 import javax.swing.table.AbstractTableModel;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 

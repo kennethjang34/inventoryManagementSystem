@@ -11,7 +11,7 @@ import ui.table.RowConverterViewerTableModel;
 import ui.inventorypanel.CategoryGenerator;
 import ui.inventorypanel.ItemGenerator;
 import ui.inventorypanel.productpanel.AddPanel;
-import ui.inventorypanel.view.FilterBox;
+import ui.FilterBox;
 import ui.inventorypanel.view.InventoryViewPanel;
 import ui.table.ViewableTableEntryConvertibleModel;
 
@@ -153,7 +153,7 @@ public class InventoryController extends AbstractController<Inventory, Inventory
                         view.getCategoryField().setVisible(true);
                         return;
                     }
-                    setUpItemFilter(view.getItemFilter(), selectedCategory);
+                    updateItemFilter(view.getItemFilter(), selectedCategory);
                     TableRowSorter sorter = (TableRowSorter) view.getStockButtonTable().getRowSorter();
                     RowFilter<TableModel, Integer> filter = createCategoryRowFilter(selectedCategory);
                     sorter.setRowFilter(filter);
@@ -186,7 +186,7 @@ public class InventoryController extends AbstractController<Inventory, Inventory
     //called only when category is newly selected by categoryFilter
     //MODIFIES: item filter
     //EFFECTS: set up the item filter, so it matches the newly selected category
-    private void setUpItemFilter(FilterBox itemFilter, String selectedCategory) {
+    private void updateItemFilter(FilterBox itemFilter, String selectedCategory) {
         List<String> ids;
         if (selectedCategory.equals(FilterBox.ALL)) {
             ids = model.getIDs();

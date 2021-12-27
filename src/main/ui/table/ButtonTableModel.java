@@ -150,7 +150,6 @@ public class ButtonTableModel extends RowConverterViewerTableModel {
     public void setButtonAction(Action action) {
         buttonAction = action;
         for (JButton button: getButtons()) {
-            //button.setAction(action);
             button.setAction(action);
         }
     }

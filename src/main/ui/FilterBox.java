@@ -1,4 +1,4 @@
-package ui.inventorypanel.view;
+package ui;
 
 import ui.table.AbstractTableDataFactory;
 import ui.DataViewer;

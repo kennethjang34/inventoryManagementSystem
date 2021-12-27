@@ -55,7 +55,7 @@ public class RowConverterViewerTableModel extends AbstractTableModel implements 
         data = new LinkedHashMap<>();
         tableEntries = new LinkedList<>();
         this.columnNames = columnNames;
-        List<ViewableTableEntryConvertibleModel> entries = model.getEntryModels();
+        List<? extends ViewableTableEntryConvertibleModel> entries = (List<? extends ViewableTableEntryConvertibleModel>) model.getEntryModels();
         for (ViewableTableEntryConvertibleModel entry: entries) {
             entry.addDataChangeListener(this);
             tableEntries.add(entry);
@@ -69,7 +69,7 @@ public class RowConverterViewerTableModel extends AbstractTableModel implements 
         data = new LinkedHashMap<>();
         tableEntries = new LinkedList<>();
         this.columnNames = columnNames;
-        List<ViewableTableEntryConvertibleModel> entries = model.getEntryModels();
+        List<? extends ViewableTableEntryConvertibleModel> entries = model.getEntryModels();
         for (ViewableTableEntryConvertibleModel entry: entries) {
             if (watching) {
                 entry.addDataChangeListener(this);
@@ -384,7 +384,7 @@ public class RowConverterViewerTableModel extends AbstractTableModel implements 
 
     @Override
     public void entryAdded(ViewableTableEntryConvertibleModel added) {
-        ViewableTableEntryConvertibleModel entry = (ViewableTableEntryConvertibleModel) added;
+        ViewableTableEntryConvertibleModel entry = added;
         Object[] row = createRow(entry.convertToTableEntry());
         if (data.put(entry, row) == null) {
             entry.addDataChangeListener(this);

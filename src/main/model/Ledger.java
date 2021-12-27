@@ -3,6 +3,7 @@ package model;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import persistence.JsonConvertible;
+import ui.DataViewer;
 import ui.table.AbstractTableDataFactory;
 import ui.table.ViewableTableEntryConvertibleModel;
 
@@ -12,7 +13,7 @@ import java.util.*;
 
 
 //represents a ledger that contains several transaction accounts
-public class Ledger extends AbstractTableDataFactory implements JsonConvertible {
+public class Ledger extends AbstractTableDataFactory implements JsonConvertible, DataViewer {
     //key: LocalDate.toString(), value: list of accounts that occurred that day
     private Map<String, List<Account>> accounts;
     //dates will replace accounts;
@@ -20,12 +21,38 @@ public class Ledger extends AbstractTableDataFactory implements JsonConvertible 
     //private ArrayList<Account> accounts;
     private int nextAccountNumber;
     private int codeSize;
+
+    @Override
+    public void entryRemoved(ViewableTableEntryConvertibleModel o) {
+
+    }
+
+    @Override
+    public void entryAdded(ViewableTableEntryConvertibleModel o) {
+
+    }
+
+    @Override
+    public void entryUpdated(ViewableTableEntryConvertibleModel updatedEntry) {
+
+    }
+
+    @Override
+    public void entryUpdated(ViewableTableEntryConvertibleModel source, String property, Object o1, Object o2) {
+
+    }
+
+    @Override
+    public void entryUpdated(ViewableTableEntryConvertibleModel source, Object old, Object newObject) {
+
+    }
+
     public enum DataList {
-        RECORDED_DATE, ID, SIZE
+        RECORDED_DATE, PROCESSED_ID, TOTAL_PROCESSED_QUANTITY
     }
 
     public final String[] columnNames = new String[]{DataList.RECORDED_DATE.toString(),
-            DataList.SIZE.toString()};
+            DataList.TOTAL_PROCESSED_QUANTITY.toString()};
 
 
 
@@ -120,6 +147,37 @@ public class Ledger extends AbstractTableDataFactory implements JsonConvertible 
 //        return accounts.get(date.toString());
     }
 
+    public List<Account> getAccounts() {
+        if (dates.isEmpty()) {
+            return Collections.EMPTY_LIST;
+        }
+        List<Account> accountList = new ArrayList<>();
+        for (RecordedDate date: dates.values()) {
+            accountList.addAll(date.getAccounts());
+        }
+        return accountList;
+    }
+
+    public List<String> getProcessedItemList() {
+        if (dates.isEmpty()) {
+            return Collections.EMPTY_LIST;
+        }
+        Set<String> idSet = new HashSet<>();
+        for (RecordedDate date: dates.values()) {
+            idSet.addAll(date.getIDList());
+        }
+        return new ArrayList<>(idSet);
+    }
+
+
+    public List<String> getProcessedItemList(LocalDate date) {
+        if (dates.get(date) == null) {
+            return Collections.EMPTY_LIST;
+        }
+        return dates.get(date).getIDList();
+    }
+
+
 
 
 
@@ -129,25 +187,22 @@ public class Ledger extends AbstractTableDataFactory implements JsonConvertible 
     public Account addAccount(InventoryTag tag, String description, LocalDate date) {
         Account account = new Account(nextAccountNumber++, description, date, tag.getId(), tag.getLocation(),
                 tag.getUnitCost(), tag.getUnitPrice(), tag.getQuantity());
-        List<Account> accountList = accounts.get(date.toString());
+
         RecordedDate recordedDate = dates.get(date);
         if (recordedDate == null) {
             recordedDate = new RecordedDate(date);
         }
-        if (accountList == null) {
-            accountList = new ArrayList<>();
-        }
         recordedDate.addAccount(account);
-        accountList.add(account);
-        accounts.putIfAbsent(date.toString(), accountList);
-        dates.putIfAbsent(date, new RecordedDate(date, accountList));
+        if (dates.putIfAbsent(date, recordedDate) == null) {
+            changeFirer.fireAdditionEvent(DataList.RECORDED_DATE.toString(), recordedDate);
+        }
         return account;
     }
 
 
     //EFFECTS: return a list of dates that have at least one account related to it
-    public String[] getDates() {
-        return accounts.keySet().toArray(new String[0]);
+    public List<LocalDate> getDates() {
+        return new ArrayList<>(dates.keySet());
     }
 
 
@@ -173,15 +228,23 @@ public class Ledger extends AbstractTableDataFactory implements JsonConvertible 
 
     //EFFECTS: return a list of IDs of items processed on the selected date
     public List<String> getIDs(LocalDate selectedDate) {
-        List<Account> accountList = accounts.get(selectedDate.toString());
-        if (accountList == null) {
+        List<Account> accounts = dates.get(selectedDate).getAccounts();
+        if (accounts == null) {
             return Collections.emptyList();
         }
         List<String> ids = new ArrayList<>();
-        for (Account account: accountList) {
+        for (Account account: accounts) {
             ids.add(account.getID());
         }
         return ids;
+    }
+
+    public Set<String> getIDs() {
+        Set set = new HashSet();
+        for (RecordedDate date: dates.values()) {
+            set.addAll(date.getIDList());
+        }
+        return set;
     }
 
     //EFFECTS: return a list of account codes recorded in this
@@ -204,18 +267,34 @@ public class Ledger extends AbstractTableDataFactory implements JsonConvertible 
 
     @Override
     public List<String> getContentsOf(String property) {
-        return null;
+        List<String> contents = new ArrayList<>();
+        switch (DataList.valueOf(property)) {
+            case RECORDED_DATE:
+                for (LocalDate date: dates.keySet()) {
+                    contents.add(date.toString());
+                }
+                break;
+            case PROCESSED_ID:
+                contents.addAll(getIDs());
+                break;
+            case TOTAL_PROCESSED_QUANTITY:
+                contents.add(String.valueOf(getSize()));
+        }
+
+        return contents;
     }
 
     @Override
     public String[] getColumnNames() {
-        return new String[0];
+        return new String[]{
+                DataList.RECORDED_DATE.toString(), DataList.PROCESSED_ID.toString(), DataList.TOTAL_PROCESSED_QUANTITY.toString()
+        };
     }
 
 
     //return list of recordedDate object
     @Override
-    public List<ViewableTableEntryConvertibleModel> getEntryModels() {
+    public List<? extends ViewableTableEntryConvertibleModel> getEntryModels() {
         return new ArrayList<>(dates.values());
     }
 }

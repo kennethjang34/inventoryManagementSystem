@@ -35,11 +35,11 @@ public class InventoryViewPanel extends JPanel {
     private AbstractAction locationTableAction;
     private boolean isLocationViewDialogDisplayed = false;
 
-    public static int[] getSelectedTableModelRows(JTable stockTable) {
-        int[] selectedViewIndices = stockTable.getSelectedRows();
+    public static int[] getSelectedTableModelRows(JTable table) {
+        int[] selectedViewIndices = table.getSelectedRows();
         int[] modelRows = new int[selectedViewIndices.length];
         for (int i = 0; i < selectedViewIndices.length; i++) {
-            modelRows[i] = stockTable.convertRowIndexToModel(selectedViewIndices[i]);
+            modelRows[i] = table.convertRowIndexToModel(selectedViewIndices[i]);
         }
         return modelRows;
     }
@@ -47,7 +47,6 @@ public class InventoryViewPanel extends JPanel {
 
     private enum LocationTableColumns {
         ID, LOCATION, QUANTITY
-
 
     }
 

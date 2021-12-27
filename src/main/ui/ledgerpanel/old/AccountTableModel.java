@@ -1,6 +1,5 @@
 package ui.ledgerpanel.old;
 
-import model.Account;
 import model.Ledger;
 import model.Observer;
 
@@ -28,13 +27,12 @@ public class AccountTableModel extends AbstractTableModel implements Observer {
     public AccountTableModel(Ledger ledger, ActionListener buttonActionListener) {
         this.buttonActionListener = buttonActionListener;
         this.ledger = ledger;
-        ledger.registerObserver(this);
         buttonMap = new HashMap<>();
         dates = new ArrayList<>();
-        List<String> dateInfo = Arrays.asList(ledger.getDates());
-        for (String s: dateInfo) {
-            dates.add(LocalDate.parse(s));
-        }
+//        List<String> dateInfo = Arrays.asList(ledger.getDates());
+//        for (String s: dateInfo) {
+//            dates.add(LocalDate.parse(s));
+//        }
     }
 
     //REQUIRES: the period start date must be before or the same as end date
@@ -55,16 +53,16 @@ public class AccountTableModel extends AbstractTableModel implements Observer {
     //MODIFIES: this
     //EFFECTS: update this table model up to date when a new date is added
     public void update(int arg) {
-        List<String> datesInfo = Arrays.asList(ledger.getDates());
+//        List<String> datesInfo = ledger.getDates();
         //Update only when dates have been added/removed
-        //this table model doesn't store values belonging to the dates
-        if (datesInfo.size() == dates.size()) {
-            return;
-        }
-        dates = new ArrayList<>();
-        for (String dateInfo: datesInfo) {
-            dates.add(LocalDate.parse(dateInfo));
-        }
+//        //this table model doesn't store values belonging to the dates
+//        if (datesInfo.size() == dates.size()) {
+//            return;
+//        }
+//        dates = new ArrayList<>();
+//        for (String dateInfo: datesInfo) {
+//            dates.add(LocalDate.parse(dateInfo));
+//        }
         fireTableDataChanged();
     }
 
@@ -87,7 +85,7 @@ public class AccountTableModel extends AbstractTableModel implements Observer {
     @Override
     public int getRowCount() {
         if (periodStart == null && periodEnd == null) {
-            return ledger.getDates().length;
+            return ledger.getDates().size();
         } else {
             return datesInPeriod(periodStart, periodEnd).size();
         }

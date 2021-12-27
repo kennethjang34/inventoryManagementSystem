@@ -1,7 +1,6 @@
 package ui.ledgerpanel.old;
 
 import model.Account;
-
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;

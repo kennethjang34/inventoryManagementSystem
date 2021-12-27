@@ -1,5 +1,6 @@
 package ui.table;
 
+
 import java.util.List;
 
 public interface DataFactory {
@@ -9,7 +10,7 @@ public interface DataFactory {
 
     String[] getColumnNames();
 
-    List<ViewableTableEntryConvertibleModel> getEntryModels();
+    List<? extends ViewableTableEntryConvertibleModel> getEntryModels();
 
 
 }

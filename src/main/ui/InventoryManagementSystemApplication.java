@@ -86,6 +86,7 @@ public class InventoryManagementSystemApplication extends JFrame implements Json
         });
     }
 
+
     //MODIFIES: this
     //EFFECTS: set up the main panel(control panel) for the application and return it
     public void createMainPanel() {
