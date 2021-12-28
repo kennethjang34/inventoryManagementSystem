@@ -42,6 +42,11 @@ public class FilterBox extends JComboBox implements DataViewer {
     }
 
     @Override
+    public void entryRemoved(List<? extends ViewableTableEntryConvertibleModel> removed) {
+
+    }
+
+    @Override
     public void entryAdded(ViewableTableEntryConvertibleModel entry) {
         if (getItemCount() == 1 && getItemAt(0).equals(EMPTY)) {
             removeItemAt(0);
@@ -49,6 +54,11 @@ public class FilterBox extends JComboBox implements DataViewer {
             addItem(TYPE_MANUALLY);
         }
         addItem(entry.toString());
+    }
+
+    @Override
+    public void entryAdded(List<? extends ViewableTableEntryConvertibleModel> list) {
+
     }
 
     @Override

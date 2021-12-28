@@ -104,8 +104,6 @@ public class LedgerViewPanel extends JPanel {
         accountsTable = new JTable();
         RowConverterViewerTableModel tableModel = new RowConverterViewerTableModel();
         accountsTable.setModel(tableModel);
-
-
     }
 
     public void setLedgerTableButtonAction(AbstractAction action) {

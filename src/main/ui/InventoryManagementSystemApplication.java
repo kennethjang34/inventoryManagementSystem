@@ -9,7 +9,9 @@ import persistence.Writer;
 import ui.adminpanel.AdminPanel;
 import ui.inventorypanel.controller.InventoryController;
 import ui.inventorypanel.view.InventoryViewPanel;
+import ui.ledgerpanel.controller.LedgerController;
 import ui.ledgerpanel.old.LedgerPanel;
+import ui.ledgerpanel.view.LedgerViewPanel;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -55,6 +57,7 @@ public class InventoryManagementSystemApplication extends JFrame implements Json
         }
         ledger = new Ledger();
         inventory = new Inventory();
+        inventory.addDataChangeListener(ledger);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         createMainPanel();
         add(mainPanel);
@@ -71,9 +74,9 @@ public class InventoryManagementSystemApplication extends JFrame implements Json
     public void createTabbedPane() {
         tabbedPane = new JTabbedPane();
         InventoryController inventoryController = new InventoryController(inventory, new InventoryViewPanel(inventory));
-
+        LedgerController ledgerController = new LedgerController(ledger, new LedgerViewPanel(ledger));
         tabbedPane.addTab("Inventory", inventoryController.getView());
-        tabbedPane.addTab("Ledger", ledgerPanel);
+        tabbedPane.addTab("Ledger", ledgerController.getView());
         tabbedPane.addTab("Admin", adminPanel);
         tabbedPane.addChangeListener(e -> {
             JTabbedPane pane = (JTabbedPane) e.getSource();

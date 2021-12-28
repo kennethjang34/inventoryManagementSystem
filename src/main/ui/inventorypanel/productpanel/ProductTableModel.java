@@ -40,7 +40,7 @@ public class ProductTableModel extends AbstractTableModel {
         Product product = products.get(row);
         switch (getColumnName(column)) {
             case "ID":
-                return product.getId();
+                return product.getID();
             case "SKU":
                 return product.getSku();
             case "COST":

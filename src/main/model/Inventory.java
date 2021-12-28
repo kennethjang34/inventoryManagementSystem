@@ -29,10 +29,15 @@ public class Inventory extends AbstractTableDataFactory implements JsonConvertib
     private Map<String, Category> categories;
     private int quantity;
     private LocalDate currentDate;
+//    private Ledger ledger;
 
 //For stock, Property name: STOCK, old value, new value: old/new tags.
 //
 
+
+//    public void setLedger(Ledger ledger) {
+//        this. ledger = ledger;
+//    }
 
 
     //EFFECTS: create an empty inventory.
@@ -194,8 +199,10 @@ public class Inventory extends AbstractTableDataFactory implements JsonConvertib
                 for (Product product: newProducts) {
                     product.addDataChangeListener(this);
                 }
+//                ledger.addAccount(tag, "Addition", LocalDate.now());
 //                changeFirer.firePropertyChange(ITEM, originalQty, item.getQuantity());
-                changeFirer.fireUpdateEvent(ITEM, item);
+//                changeFirer.fireUpdateEvent(ITEM, item);
+
             }
         }
         if (failed.size() != tags.size()) {
@@ -216,13 +223,13 @@ public class Inventory extends AbstractTableDataFactory implements JsonConvertib
         if (item == null) {
             return false;
         } else {
-            int originalQty = item.getQuantity();
+//            int originalQty = item.getQuantity();
             List<Product> newProducts = item.addProducts(tag);
             for (Product product: newProducts) {
                 product.addDataChangeListener(this);
             }
-
-            changeFirer.fireUpdateEvent(ITEM, item);
+//            ledger.addAccount(tag, "", LocalDate.now());
+//            changeFirer.fireUpdateEvent(ITEM, item);
             return true;
         }
     }
@@ -238,6 +245,9 @@ public class Inventory extends AbstractTableDataFactory implements JsonConvertib
                 product.removeListener(this);
                 changeFirer.fireUpdateEvent(ITEM, item);
                 changeFirer.fireRemovalEvent(PRODUCT, product);
+//                ledger.addAccount(new InventoryTag(product.getID(), product.getCost(),
+//                                product.getPrice(), LocalDate.now(), product.getLocation(), 1),
+//                        "", LocalDate.now());
                 return true;
             }
         }
@@ -245,44 +255,49 @@ public class Inventory extends AbstractTableDataFactory implements JsonConvertib
     }
 
 
-    /**
-     *
-     * @param tag a quantity tag that specifies item id, location, and amount to remove
-     * @return true if successfully removed. false otherwise.
-     */
-    //This is the model for implementing fire property chang event
+//    /**
+//     *
+//     * @param tag a quantity tag that specifies item id, location, and amount to remove
+//     * @return true if successfully removed. false otherwise.
+//     */
+//    //This is the model for implementing fire property chang event
     //MODIFIES: this
     //EFFECTS: remove as many products in the item as specified
     //return true if succeeded. return false otherwise.
-    public boolean removeStock(QuantityTag tag) {
-        Item item = items.get(tag.getId());
-        if (item == null) {
-            return false;
-        }
-        QuantityTag oldTag = new QuantityTag(item.getId(), tag.getLocation(), item.getQuantity(tag.getLocation()));
-        if (item.removeStocks(tag.getLocation(), tag.getQuantity())) {
-            QuantityTag newTag = new QuantityTag(item.getId(), tag.getLocation(), item.getQuantity(tag.getLocation()));
-            changeFirer.firePropertyChange(STOCK, oldTag, newTag);
-            return true;
-        }
-        return false;
-    }
+//    public boolean removeStock(QuantityTag tag) {
+//        Item item = items.get(tag.getId());
+//        if (item == null) {
+//            return false;
+//        }
+//        QuantityTag oldTag = new QuantityTag(item.getId(), tag.getLocation(), item.getQuantity(tag.getLocation()));
+//        if (item.removeStocks(tag.getLocation(), tag.getQuantity())) {
+//            QuantityTag newTag = new QuantityTag(item.getId(), tag.getLocation(), item.getQuantity(tag.getLocation()));
+//            changeFirer.firePropertyChange(STOCK, oldTag, newTag);
+////            ledger.addAccount(new InventoryTag(tag.getId(),), "", LocalDate.now());
+//            return true;
+//        }
+//        return false;
+//    }
 
 
     //MODIFIES: this
     //EFFECTS: remove as many products in the item as specified
     //return true if succeeded. return false otherwise.
-    public boolean removeStock(String id, String location, int qty) {
-        Item item = items.get(id);
-        if (item == null) {
-            return false;
-        }
-        return item.removeStocks(location, qty);
-    }
+//    public boolean removeStock(String id, String location, int qty) {
+//        Item item = items.get(id);
+//        if (item == null) {
+//            return false;
+//        }
+//        if (item.removeStocks(location, qty)) {
+//            ledger.addAccount(new InventoryTag(id))
+//            return true;
+//        }
+//    }
 
     //MODIFIES: this
     //EFFECTS: remove stocks specified by the list of quantity tags
     //return quantity tags that have been successfully processed
+    //Safe to be deleted
     public List<QuantityTag> removeStocks(List<QuantityTag> tags) {
         List<QuantityTag> succeeded = new ArrayList<>();
         for (QuantityTag tag: tags) {
@@ -526,7 +541,17 @@ public class Inventory extends AbstractTableDataFactory implements JsonConvertib
     }
 
     @Override
+    public void entryRemoved(List<? extends ViewableTableEntryConvertibleModel> removed) {
+
+    }
+
+    @Override
     public void entryAdded(ui.table.ViewableTableEntryConvertibleModel o) {
+
+    }
+
+    @Override
+    public void entryAdded(List<? extends ViewableTableEntryConvertibleModel> list) {
 
     }
 
@@ -539,7 +564,7 @@ public class Inventory extends AbstractTableDataFactory implements JsonConvertib
     public void entryUpdated(ui.table.ViewableTableEntryConvertibleModel source, String property, Object o1, Object o2) {
         if (source instanceof Item) {
             Item item = (Item) source;
-            Item.DataList dataType = Item.DataList.valueOf(property);
+            Item.ColumnNames dataType = Item.ColumnNames.valueOf(property);
             switch (dataType) {
                 case CATEGORY:
                     Category old = categories.get(o1.toString());
@@ -558,7 +583,7 @@ public class Inventory extends AbstractTableDataFactory implements JsonConvertib
             Product.DataList dataType = Product.DataList.valueOf(property);
             switch (dataType) {
                 case ID:
-                    Item item =  items.get(product.getId());
+                    Item item =  items.get(product.getID());
                     if (item == null) {
                         throw new IllegalArgumentException("Such id doesn't exist");
                     }

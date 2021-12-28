@@ -139,7 +139,17 @@ public class Category extends ViewableTableEntryConvertibleModel implements Json
     }
 
     @Override
+    public void entryRemoved(List<? extends ViewableTableEntryConvertibleModel> removed) {
+
+    }
+
+    @Override
     public void entryAdded(ViewableTableEntryConvertibleModel o) {
+
+    }
+
+    @Override
+    public void entryAdded(List<? extends ViewableTableEntryConvertibleModel> list) {
 
     }
 

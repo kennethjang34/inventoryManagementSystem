@@ -14,16 +14,18 @@ public class RecordedDate extends TableEntryConvertibleDataFactory {
     Map<String,List<Account>> accountMap;
 
     public enum DataList {
-        DATE, ID, QUANTITY
+        DATE, ID, TOTAL_ACCOUNTS, BROUGHT_IN, TAKEN_OUT
     }
 
     public static final String[] DATA_LIST = new String[]{
-            DataList.DATE.toString(), DataList.ID.toString(), DataList.QUANTITY.toString()
+            DataList.DATE.toString(), DataList.ID.toString(), DataList.TOTAL_ACCOUNTS.toString(),
+            DataList.BROUGHT_IN.toString(), DataList.TAKEN_OUT.toString()
     };
 
     public RecordedDate(LocalDate date) {
         super(new String[]{
-            DataList.DATE.toString(), DataList.ID.toString(), DataList.QUANTITY.toString()
+            DataList.DATE.toString(), DataList.ID.toString(), DataList.TOTAL_ACCOUNTS.toString(),
+                DataList.BROUGHT_IN.toString(), DataList.TAKEN_OUT.toString()
         });
         this.date = date;
         accountMap = new LinkedHashMap<>();
@@ -31,7 +33,8 @@ public class RecordedDate extends TableEntryConvertibleDataFactory {
 
     public RecordedDate(LocalDate date, List<Account> accounts) {
         super(new String[]{
-                DataList.DATE.toString(), DataList.ID.toString(), DataList.QUANTITY.toString()
+                DataList.DATE.toString(), DataList.ID.toString(), DataList.TOTAL_ACCOUNTS.toString(),
+                DataList.BROUGHT_IN.toString(), DataList.TAKEN_OUT.toString()
         });
         this.date = date;
         this.accountMap = new LinkedHashMap<>();
@@ -68,16 +71,15 @@ public class RecordedDate extends TableEntryConvertibleDataFactory {
         }
         accountList.add(account);
         accountMap.putIfAbsent(account.getID(), accountList);
-        int qty = getQuantity();
-//        changeFirer.fireUpdateEvent(DataList.QUANTITY.toString(), this, qty - 1, qty);
-        changeFirer.fireUpdateEvent(DataList.QUANTITY.toString(), this);
+//        int qty = getTotalNumAccounts();
+        changeFirer.fireUpdateEvent(this);
     }
 
     public List<String> getIDList() {
         return new ArrayList<>(accountMap.keySet());
     }
 
-    public int getQuantity() {
+    public int getTotalNumAccounts() {
         int count = 0;
         for (List<Account> accounts: accountMap.values()) {
             count += accounts.size();
@@ -85,16 +87,39 @@ public class RecordedDate extends TableEntryConvertibleDataFactory {
         return count;
     }
 
+    public int getBroughtInQuantity() {
+        int count = 0;
+        for (List<Account> accounts: accountMap.values()) {
+            for (Account account: accounts) {
+                if (account.getQuantity() > 0) {
+                    count += account.getQuantity();
+                }
+            }
+        }
+        return count;
+    }
+
+    public int getTakenOutQuantity() {
+        int count = 0;
+        for (List<Account> accounts: accountMap.values()) {
+            for (Account account: accounts) {
+                if (account.getQuantity() < 0) {
+                    count += account.getQuantity();
+                }
+            }
+        }
+        return count;
+    }
+
     @Override
     public Object[] convertToTableEntry() {
-        Object[] row = new Object[3];
+        Object[] row = new Object[DataList.values().length];
         row[0] = date;
         String ids = getIDList().toString();
-//        for (String id: getIDList()) {
-//            ids.concat(id);
-//        }
         row[1] = ids;
-        row[2] = getQuantity();
+        row[2] = getTotalNumAccounts();
+        row[3] = getBroughtInQuantity();
+        row[4] = getTakenOutQuantity();
         return row;
     }
 
@@ -113,9 +138,13 @@ public class RecordedDate extends TableEntryConvertibleDataFactory {
             case ID:
                 contents.addAll(getIDList());
                 break;
-            case QUANTITY:
-                contents.add(String.valueOf(getQuantity()));
+            case TOTAL_ACCOUNTS:
+                contents.add(String.valueOf(getTotalNumAccounts()));
+            case BROUGHT_IN:
+                contents.add(String.valueOf(getBroughtInQuantity()));
                 break;
+            case TAKEN_OUT:
+                contents.add(String.valueOf(getTakenOutQuantity()));
         }
         return contents;
     }

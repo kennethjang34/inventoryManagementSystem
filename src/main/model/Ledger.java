@@ -7,6 +7,7 @@ import ui.DataViewer;
 import ui.table.AbstractTableDataFactory;
 import ui.table.ViewableTableEntryConvertibleModel;
 
+import javax.xml.crypto.Data;
 import java.time.LocalDate;
 import java.util.*;
 
@@ -24,13 +25,43 @@ public class Ledger extends AbstractTableDataFactory implements JsonConvertible,
 
     @Override
     public void entryRemoved(ViewableTableEntryConvertibleModel o) {
+        if (o instanceof Product) {
+            Product removed = (Product) o;
+            String id = removed.getID();
+            InventoryTag tag = new InventoryTag(id, removed.getCost(), removed.getPrice(), LocalDate.now(),
+            removed.getLocation(), -1);
+            addAccount(tag, "REMOVAL", LocalDate.now());
+        }
+    }
 
+    @Override
+    public void entryRemoved(List<? extends ViewableTableEntryConvertibleModel> removed) {
+        double averageCost = calculateAverageCost((List<Product>) removed);
+        double averagePrice = calculateAveragePrice((List<Product>) removed);
+        String id = ((Product)(removed.get(0))).getID();
+        InventoryTag tag = new InventoryTag(id, averageCost, averagePrice, LocalDate.now(),
+                ((Product)(removed.get(0))).getLocation(), -removed.size());
+        addAccount(tag, "REMOVAL", LocalDate.now());
     }
 
     @Override
     public void entryAdded(ViewableTableEntryConvertibleModel o) {
-
+        if (o instanceof Item) {
+            Item item = (Item) o;
+            item.addDataChangeListener(this);
+        }
     }
+
+    @Override
+    public void entryAdded(List<? extends ViewableTableEntryConvertibleModel> added) {
+        double averageCost = calculateAverageCost((List<Product>) added);
+        double averagePrice = calculateAveragePrice((List<Product>) added);
+        String id = ((Product)(added.get(0))).getID();
+        InventoryTag tag = new InventoryTag(id, averageCost, averagePrice, LocalDate.now(),
+                ((Product)(added.get(0))).getLocation(), added.size());
+        addAccount(tag, "ADDITION", LocalDate.now());
+    }
+
 
     @Override
     public void entryUpdated(ViewableTableEntryConvertibleModel updatedEntry) {
@@ -47,13 +78,31 @@ public class Ledger extends AbstractTableDataFactory implements JsonConvertible,
 
     }
 
-    public enum DataList {
-        RECORDED_DATE, PROCESSED_ID, TOTAL_PROCESSED_QUANTITY
+
+    public double calculateAverageCost(List<Product> products) {
+        double sum = 0;
+        for (Product p: products) {
+            sum += p.getCost();
+        }
+        return sum/products.size();
     }
 
-    public final String[] columnNames = new String[]{DataList.RECORDED_DATE.toString(),
-            DataList.TOTAL_PROCESSED_QUANTITY.toString()};
+    public  double calculateAveragePrice(List<Product> products) {
+        double sum = 0;
+        for (Product p: products) {
+            sum += p.getPrice();
+        }
+        return sum/products.size();
+    }
 
+    public enum DataList {
+        RECORDED_DATE, PROCESSED_ID, TOTAL_ACCOUNTS, BROUGHT_IN, TAKEN_OUT
+    }
+
+    public static final String[] DATA_LIST = new String[]{
+            RecordedDate.DataList.DATE.toString(), RecordedDate.DataList.ID.toString(), RecordedDate.DataList.TOTAL_ACCOUNTS.toString(),
+            RecordedDate.DataList.BROUGHT_IN.toString(), RecordedDate.DataList.TAKEN_OUT.toString()
+    };
 
 
     //EFFECTS:create a new empty ledger.
@@ -274,11 +323,11 @@ public class Ledger extends AbstractTableDataFactory implements JsonConvertible,
                     contents.add(date.toString());
                 }
                 break;
-            case PROCESSED_ID:
-                contents.addAll(getIDs());
-                break;
-            case TOTAL_PROCESSED_QUANTITY:
-                contents.add(String.valueOf(getSize()));
+//            case PROCESSED_ID:
+//                contents.addAll(getIDs());
+//                break;
+//            case TOTAL_ACCOUNTS:
+//                contents.add(String.valueOf(getSize()));
         }
 
         return contents;
@@ -287,7 +336,8 @@ public class Ledger extends AbstractTableDataFactory implements JsonConvertible,
     @Override
     public String[] getColumnNames() {
         return new String[]{
-                DataList.RECORDED_DATE.toString(), DataList.PROCESSED_ID.toString(), DataList.TOTAL_PROCESSED_QUANTITY.toString()
+                DataList.RECORDED_DATE.toString(), DataList.PROCESSED_ID.toString(), DataList.TOTAL_ACCOUNTS.toString(),
+                DataList.BROUGHT_IN.toString(), DataList.TAKEN_OUT.toString()
         };
     }
 

@@ -41,6 +41,7 @@ public class QuantityTag extends ViewableTableEntryConvertibleModel {
 
 
 
+
     //EFFECTS: return a string description that contains all information of this
     @Override
     public String toString() {

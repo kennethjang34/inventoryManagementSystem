@@ -197,6 +197,9 @@ public class RowConverterViewerTableModel extends AbstractTableModel implements 
             return;
         }
         int oldLastRow = getRowCount() - 1;
+        if (columnNames == null) {
+            columnNames = newRowData.get(0).getColumnNames();
+        }
         for (ViewableTableEntryConvertibleModel entry: newRowData) {
             if (data.put(entry, createRow(entry.convertToTableEntry())) == null) {
                 tableEntries.add(entry);
@@ -383,6 +386,11 @@ public class RowConverterViewerTableModel extends AbstractTableModel implements 
     }
 
     @Override
+    public void entryRemoved(List<? extends ViewableTableEntryConvertibleModel> removed) {
+
+    }
+
+    @Override
     public void entryAdded(ViewableTableEntryConvertibleModel added) {
         ViewableTableEntryConvertibleModel entry = added;
         Object[] row = createRow(entry.convertToTableEntry());
@@ -395,6 +403,10 @@ public class RowConverterViewerTableModel extends AbstractTableModel implements 
         }
     }
 
+    @Override
+    public void entryAdded(List<? extends ViewableTableEntryConvertibleModel> list) {
+
+    }
 
 
     @Override

@@ -58,7 +58,10 @@ public class LedgerController extends AbstractController<Ledger, LedgerViewPanel
     private void setUpAccountsTable() {
         JTable table = view.getAccountsTable();
         RowConverterViewerTableModel tableModel = (RowConverterViewerTableModel) table.getModel();
-        tableModel.setColumnNames(RecordedDate.DATA_LIST);
+        tableModel.setColumnNames(new String[]{Account.DataList.CODE.toString(), Account.DataList.ID.toString(), Account.DataList.DATE.toString(),
+                Account.DataList.LOCATION.toString(), Account.DataList.AVERAGE_PRICE.toString(),
+                Account.DataList.AVERAGE_COST.toString(), Account.DataList.QUANTITY.toString(), Account.DataList.DESCRIPTION.toString()
+        });
         table.setRowSorter(createRowSorter(table, null, Comparator.naturalOrder()));
     }
 
@@ -228,22 +231,15 @@ public class LedgerController extends AbstractController<Ledger, LedgerViewPanel
 //        ledger.addAccount(tag, null, LocalDate.now());
 //        tag = new InventoryTag("GRAPE", 0.3, 2, LocalDate.now(), "ZDF", -3);
 //        ledger.addAccount(tag, null, LocalDate.now());
-
         LedgerViewPanel viewPanel = new LedgerViewPanel(ledger);
         LedgerController controller = new LedgerController(ledger, viewPanel);
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                InventoryTag tag = new InventoryTag("APP", 100, 200, LocalDate.now(), "F11", 100);
-                ledger.addAccount(tag, null, LocalDate.now());
-                tag = new InventoryTag("BNN", 34, 12, LocalDate.now(), "ADS", 2);
-                ledger.addAccount(tag, null, LocalDate.now());
-                tag = new InventoryTag("GRAPE", 0.3, 2, LocalDate.now(), "ZDF", -3);
-                ledger.addAccount(tag, null, LocalDate.now());
-            }
-        });
-
-
+        Inventory inventory = new Inventory();
+//        inventory.setLedger(ledger);
+        inventory.createCategory("TEST");
+        inventory.createItem("TEST", "testing", "TEST", 12, ",", "");
+        InventoryTag tag = new InventoryTag("TEST", 100, 200, LocalDate.now(), "F11", 100);
+        inventory.addProducts(tag);
+        inventory.removeProduct(inventory.getProductList("TEST").get(0).getSku());
         JFrame frame = new JFrame();
         controller.setUpView();
         frame.add(viewPanel);

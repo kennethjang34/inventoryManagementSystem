@@ -82,60 +82,6 @@ public class Account extends ui.table.ViewableTableEntryConvertibleModel impleme
         quantity = json.getInt("quantity");
     }
 
-    //MODIFIES: this
-    //EFFECTS: add a new entry for this item code.
-//    private void addEntries(List<QuantityTag> tags) {
-//        if (tags == null) {
-//            return;
-//        }
-//        for (QuantityTag tag : tags) {
-//            String itemCode = tag.getId();
-//            if (getEntry(itemCode) == null) {
-//                //entries.add(new AccountEntry(tag));
-//            } else {
-//                //AccountEntry entry = getEntry(itemCode);
-//                //entry.addTag(tag);
-//            }
-//        }
-//    }
-
-//
-//
-//    //EFFECTS: return the entry that contains products for the code
-//    //return null if there isn't any
-//    private AccountEntry getEntry(String itemCode) {
-//        for (AccountEntry entry: entries) {
-//            if (entry.itemCode.equalsIgnoreCase(itemCode)) {
-//                return entry;
-//            }
-//        }
-//        return null;
-//    }
-//
-//    //EFFECTS: return total product quantity processed in this
-//    public int getTotalQuantity() {
-//        int qty = 0;
-//        for (AccountEntry e: entries) {
-//            if (e.getQuantity() < 0) {
-//                qty -= e.getQuantity();
-//            } else {
-//                qty += e.getQuantity();
-//            }
-//        }
-//        return qty;
-//    }
-
-//    //EFFECTS: return a list of strings that contains quantity change at each location
-//    public List<String> getQuantitiesInfo() {
-//        ArrayList<String> quantities = new ArrayList<>();
-//        for (AccountEntry entry: entries) {
-//            quantities.add(entry.getItemCode() + ": " + entry.getQuantity());
-//            for (Map.Entry<String, Integer> qty: entry.getDistribution().entrySet()) {
-//                quantities.add("\t" + qty.getKey() + ": " + qty.getValue());
-//            }
-//        }
-//        return quantities;
-//    }
 
     //EFFECTS: return  quantity of the product specified by item code processed in this
     public int getQuantity() {

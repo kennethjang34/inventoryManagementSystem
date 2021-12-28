@@ -101,7 +101,7 @@ public class Product extends ViewableTableEntryConvertibleModel implements JsonC
 
 
     //EFFECTS: return the string item code of this product
-    public String getId() {
+    public String getID() {
         return id;
     }
 

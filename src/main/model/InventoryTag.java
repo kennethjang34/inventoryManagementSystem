@@ -108,12 +108,12 @@ public class InventoryTag implements TableEntryConvertible {
     private static Map<String, List<Product>> createIdMap(List<Product> products) {
         Map<String, List<Product>> productLists = new HashMap<>();
         for (Product product: products) {
-            if (!productLists.containsKey(product.getId())) {
+            if (!productLists.containsKey(product.getID())) {
                 List<Product> newList = new ArrayList<>();
                 newList.add(product);
-                productLists.put(product.getId(), newList);
+                productLists.put(product.getID(), newList);
             } else {
-                List<Product> existing = productLists.get(product.getId());
+                List<Product> existing = productLists.get(product.getID());
                 existing.add(product);
             }
         }
