@@ -1,5 +1,6 @@
 package ui.inventorypanel.view;
 
+import model.Category;
 import model.Inventory;
 import model.Product;
 import ui.*;
@@ -8,13 +9,17 @@ import ui.table.RowConverterViewerTableModel;
 import ui.inventorypanel.CategoryGenerator;
 import ui.inventorypanel.ItemGenerator;
 import ui.inventorypanel.productpanel.AddPanel;
+import ui.table.ViewableTableEntryConvertibleModel;
 
 import javax.swing.*;
+import javax.swing.table.JTableHeader;
 import java.awt.*;
 import java.awt.event.*;
 import java.beans.PropertyChangeEvent;
 import java.util.ArrayList;
 import java.util.List;
+
+import static ui.inventorypanel.controller.InventoryController.convertToLocalDate;
 
 public class InventoryViewPanel extends JPanel {
     private CategoryGenerator categoryGenerator;
@@ -23,7 +28,7 @@ public class InventoryViewPanel extends JPanel {
     private JButton productRemovalButton;
     private SearchPanel searchPanel;
     private ButtonTable stockButtonTable;
-    private FilterBox itemFilter;
+    private JComboBox<String> itemFilter;
     private FilterBox categoryFilter;
     //locationTable is created by the controller when needed
     private ButtonTable locationTable;
@@ -47,7 +52,6 @@ public class InventoryViewPanel extends JPanel {
 
     private enum LocationTableColumns {
         ID, LOCATION, QUANTITY
-
     }
 
     private static final String[] locationTableColumns = new String[]{
@@ -117,10 +121,56 @@ public class InventoryViewPanel extends JPanel {
         stockButtonTable.setBaseColumnIndex(1);
         RowConverterViewerTableModel productTableModel = new RowConverterViewerTableModel();
         productTableModel.setColumnNames(Product.DATA_LIST);
-        productTable = new JTable(productTableModel);
+        productTable = new JTable(productTableModel) {
+            @Override
+            public String getToolTipText(MouseEvent e) {
+                Point p = e.getPoint();
+                int row = rowAtPoint(p);
+                int column = columnAtPoint(p);
+                if (row != -1 && column != -1) {
+                    return getValueAt(row, column).toString();
+                }
+                return null;
+            }
+
+            @Override
+            protected JTableHeader createDefaultTableHeader() {
+                return new JTableHeader(columnModel) {
+                    public String getToolTipText(MouseEvent e) {
+                        Point p = e.getPoint();
+                        int column = columnAtPoint(p);
+                        if (column == -1) {
+                            return null;
+                        }
+                        return getColumnName(column);
+                    }
+                };
+            }
+        };
         inventory.addDataChangeListener(Inventory.PRODUCT, productTableModel);
-        itemFilter = new FilterBox(inventory, Inventory.ITEM);
-        categoryFilter = new FilterBox(inventory, Inventory.CATEGORY);
+        itemFilter = new JComboBox();
+        categoryFilter = new FilterBox(inventory, Inventory.CATEGORY) {
+            @Override
+            public void entryUpdated(ViewableTableEntryConvertibleModel entry) {
+                List<String> itemIDList;
+                Category updatedCategory = (Category) entry;
+                String selectedItem = (String) getSelectedItem();
+                if (selectedItem.equals(FilterBox.ALL)) {
+                    itemIDList = inventory.getIDs();
+                } else if (updatedCategory.getName().equals(selectedItem)){
+                    itemIDList = updatedCategory.getItemIDs();
+                } else {
+                    return;
+                }
+                if (itemIDList.isEmpty()) {
+                    itemIDList.add(FilterBox.EMPTY);
+                } else {
+                    itemIDList.add(0, FilterBox.ALL);
+                    itemIDList.add(1, FilterBox.TYPE_MANUALLY);
+                }
+                itemFilter.setModel(new DefaultComboBoxModel(itemIDList.toArray(new String[0])));
+            }
+        };
         categoryField = new JTextField(10);
         itemField = new JTextField(10);
         productGeneratorButton = new JButton("ADD");
@@ -152,10 +202,9 @@ public class InventoryViewPanel extends JPanel {
         gbc.weightx = 1;
         gbc.weighty = 0.45;
         gbc.fill = GridBagConstraints.BOTH;
-//        productTable.setPreferredScrollableViewportSize(new Dimension(500, 600));
+        productTable.setPreferredSize(new Dimension(500, 600));
 //        productTable.setFillsViewportHeight(true);
-        JScrollPane productScrollPane = new JScrollPane(productTable, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
-                JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        JScrollPane productScrollPane = new JScrollPane(productTable);
         panelForTables.add(productScrollPane, gbc);
 //        gbc.fill = GridBagConstraints.NONE;
         gbc.gridx = gbc.gridx + gbc.gridwidth - 6;
@@ -320,7 +369,7 @@ public class InventoryViewPanel extends JPanel {
     }
 
     //EFFECTS: return the item filter
-    public FilterBox getItemFilter() {
+    public JComboBox<String> getItemFilter() {
         return itemFilter;
     }
 

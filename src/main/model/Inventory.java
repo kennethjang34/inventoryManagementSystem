@@ -176,6 +176,8 @@ public class Inventory extends AbstractTableDataFactory implements JsonConvertib
         EventLog.getInstance().logEvent(new Event("new item with ID: " + name
                 + " and name " + name + " is created in category " + category));
         changeFirer.fireAdditionEvent(ITEM, item);
+        //needs to be replaced by calling fireUpdateEvent inside Category instance directly
+        changeFirer.fireUpdateEvent(CATEGORY, categories.get(category));
 //        changeFirer.firePropertyChange(ITEM, null, item);
 //        changeFirer.firePropertyChange(CATEGORY, null, item);
         return true;
@@ -197,11 +199,11 @@ public class Inventory extends AbstractTableDataFactory implements JsonConvertib
                 int originalQty = item.getQuantity();
                 List<Product> newProducts = item.addProducts(tag);
                 for (Product product: newProducts) {
-                    product.addDataChangeListener(this);
+                    product.addUpdateListener(this);
                 }
 //                ledger.addAccount(tag, "Addition", LocalDate.now());
 //                changeFirer.firePropertyChange(ITEM, originalQty, item.getQuantity());
-//                changeFirer.fireUpdateEvent(ITEM, item);
+//                changeFirer.fireAdditionEvent(PRODUCT, newProducts);
 
             }
         }
@@ -226,10 +228,10 @@ public class Inventory extends AbstractTableDataFactory implements JsonConvertib
 //            int originalQty = item.getQuantity();
             List<Product> newProducts = item.addProducts(tag);
             for (Product product: newProducts) {
-                product.addDataChangeListener(this);
+                product.addUpdateListener(this);
             }
 //            ledger.addAccount(tag, "", LocalDate.now());
-//            changeFirer.fireUpdateEvent(ITEM, item);
+//            changeFirer.fireAdditionEvent(PRODUCT, newProducts);
             return true;
         }
     }
@@ -243,11 +245,8 @@ public class Inventory extends AbstractTableDataFactory implements JsonConvertib
             Product product = item.removeProduct(sku);
             if (product != null) {
                 product.removeListener(this);
-                changeFirer.fireUpdateEvent(ITEM, item);
-                changeFirer.fireRemovalEvent(PRODUCT, product);
-//                ledger.addAccount(new InventoryTag(product.getID(), product.getCost(),
-//                                product.getPrice(), LocalDate.now(), product.getLocation(), 1),
-//                        "", LocalDate.now());
+//                changeFirer.fireUpdateEvent(ITEM, item, item.getQuantity() + 1, item.getQuantity());
+//                changeFirer.fireRemovalEvent(PRODUCT, product);
                 return true;
             }
         }
@@ -255,66 +254,27 @@ public class Inventory extends AbstractTableDataFactory implements JsonConvertib
     }
 
 
-//    /**
-//     *
-//     * @param tag a quantity tag that specifies item id, location, and amount to remove
-//     * @return true if successfully removed. false otherwise.
-//     */
-//    //This is the model for implementing fire property chang event
-    //MODIFIES: this
-    //EFFECTS: remove as many products in the item as specified
-    //return true if succeeded. return false otherwise.
-//    public boolean removeStock(QuantityTag tag) {
-//        Item item = items.get(tag.getId());
-//        if (item == null) {
-//            return false;
-//        }
-//        QuantityTag oldTag = new QuantityTag(item.getId(), tag.getLocation(), item.getQuantity(tag.getLocation()));
-//        if (item.removeStocks(tag.getLocation(), tag.getQuantity())) {
-//            QuantityTag newTag = new QuantityTag(item.getId(), tag.getLocation(), item.getQuantity(tag.getLocation()));
-//            changeFirer.firePropertyChange(STOCK, oldTag, newTag);
-////            ledger.addAccount(new InventoryTag(tag.getId(),), "", LocalDate.now());
-//            return true;
-//        }
-//        return false;
-//    }
-
-
-    //MODIFIES: this
-    //EFFECTS: remove as many products in the item as specified
-    //return true if succeeded. return false otherwise.
-//    public boolean removeStock(String id, String location, int qty) {
-//        Item item = items.get(id);
-//        if (item == null) {
-//            return false;
-//        }
-//        if (item.removeStocks(location, qty)) {
-//            ledger.addAccount(new InventoryTag(id))
-//            return true;
-//        }
-//    }
 
     //MODIFIES: this
     //EFFECTS: remove stocks specified by the list of quantity tags
     //return quantity tags that have been successfully processed
     //Safe to be deleted
-    public List<QuantityTag> removeStocks(List<QuantityTag> tags) {
-        List<QuantityTag> succeeded = new ArrayList<>();
+    public List<Product> removeStocks(List<QuantityTag> tags) {
+        List<Product> allRemoved = new ArrayList<>();
         for (QuantityTag tag: tags) {
             String id = tag.getId();
             Item item = items.get(id);
             if (item != null) {
-                if (item.removeStocks(tag.getLocation(), tag.getQuantity())) {
-                    succeeded.add(tag);
+                List<Product> removed = item.removeStocks(tag.getLocation(), tag.getQuantity());
+                if (!removed.isEmpty()) {
+                    allRemoved.addAll(removed);
                 }
             }
         }
-        if (succeeded.size() == 0) {
+        if (allRemoved.size() == 0) {
             return Collections.emptyList();
         }
-//        setChanged(ApplicationConstantValue.STOCK);
-//        notifyObservers();
-        return succeeded;
+        return allRemoved;
     }
 
 
@@ -454,6 +414,28 @@ public class Inventory extends AbstractTableDataFactory implements JsonConvertib
         }
         if (products != null) {
             return products;
+        }
+        return Collections.emptyList();
+    }
+
+
+    public List<Product> getProductList(String id, String location, int qty) {
+        if (items.containsKey(id)) {
+            Item item = items.get(id);
+            return item.getProducts(location, qty);
+//            if (location == null) {
+//                products = item.getProducts();
+//            } else {
+//                products = item.getProducts(location);
+//            }
+//            if (products != null) {
+//                return products;
+//            }
+//            try {
+//                return products.subList(0, qty);
+//            } catch (IndexOutOfBoundsException e) {
+//                throw new IndexOutOfBoundsException("The quantity of products to be found is fewer than that of the parameters");
+//            }
         }
         return Collections.emptyList();
     }

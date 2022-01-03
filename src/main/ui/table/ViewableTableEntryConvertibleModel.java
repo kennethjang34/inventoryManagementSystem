@@ -5,7 +5,7 @@ import ui.RowDataChangeSupport;
 
 public abstract class ViewableTableEntryConvertibleModel extends AbstractViewableDataModel
         implements TableEntryConvertible {
-    protected static String[] columnNames;
+    protected String[] columnNames;
 
     public ViewableTableEntryConvertibleModel(String[] columnNames) {
         this.columnNames = columnNames;

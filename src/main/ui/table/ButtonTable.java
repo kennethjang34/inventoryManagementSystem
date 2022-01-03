@@ -2,6 +2,7 @@ package ui.table;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.JTableHeader;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -127,6 +128,35 @@ public class ButtonTable extends JTable {
     public void addDataWithNewButton(List<? extends ViewableTableEntryConvertibleModel> entries) {
         ButtonTableModel tableModel = (ButtonTableModel)getModel();
         tableModel.addRowsWithDataList(entries);
+    }
+
+    @Override
+    public String getToolTipText(MouseEvent e) {
+        Point p = e.getPoint();
+        int row = rowAtPoint(p);
+        int column = columnAtPoint(p);
+        if (row == -1 || column == -1) {
+            return null;
+        }
+        Object value = getValueAt(row, column);
+        if (value instanceof JButton) {
+            return null;
+        }
+        return value.toString();
+    }
+
+    @Override
+    protected JTableHeader createDefaultTableHeader() {
+        return new JTableHeader(columnModel) {
+            public String getToolTipText(MouseEvent e) {
+                Point p = e.getPoint();
+                int column = columnAtPoint(p);
+                if (column == -1) {
+                    return null;
+                }
+                return getColumnName(column);
+            }
+        };
     }
 
 

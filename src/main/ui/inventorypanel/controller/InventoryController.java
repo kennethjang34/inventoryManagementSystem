@@ -1,10 +1,9 @@
 package ui.inventorypanel.controller;
 
-import model.Inventory;
-import model.InventoryTag;
-import model.Item;
-import model.Product;
+import javafx.util.converter.LocalDateStringConverter;
+import model.*;
 import ui.*;
+import ui.ledgerpanel.view.LedgerViewPanel;
 import ui.table.ButtonTable;
 import ui.table.ButtonTableModel;
 import ui.table.RowConverterViewerTableModel;
@@ -16,15 +15,13 @@ import ui.inventorypanel.view.InventoryViewPanel;
 import ui.table.ViewableTableEntryConvertibleModel;
 
 import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableModel;
-import javax.swing.table.TableRowSorter;
+import javax.swing.table.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.beans.PropertyChangeEvent;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Comparator;
+import java.time.format.DateTimeParseException;
+import java.util.*;
 import java.util.List;
 
 public class InventoryController extends AbstractController<Inventory, InventoryViewPanel> {
@@ -110,17 +107,65 @@ public class InventoryController extends AbstractController<Inventory, Inventory
     }
 
     private JTable createSelectedProductsTable(List<Object[]> rows) {
-        JTable toBeRemoved = new JTable();
-        toBeRemoved.setModel(new DefaultTableModel((rows.toArray(new Object[rows.size()][])), Product.DATA_LIST));
-        toBeRemoved.setPreferredSize(new Dimension(600, 400));
-        return toBeRemoved;
+        JTable table = new JTable() {
+            @Override
+            public String getToolTipText(MouseEvent e) {
+                Point p = e.getPoint();
+                int row = rowAtPoint(p);
+                int column = columnAtPoint(p);
+                if (row != -1 && column != -1) {
+                    return getValueAt(row, column).toString();
+                }
+                return null;            }
+
+            @Override
+            protected JTableHeader createDefaultTableHeader() {
+                return new JTableHeader(columnModel) {
+                    public String getToolTipText(MouseEvent e) {
+                        Point p = e.getPoint();
+                        int column = columnAtPoint(p);
+                        if (column == -1) {
+                            return null;
+                        }
+                        return getColumnName(column);
+                    }
+                };
+            }
+        };
+        table.setModel(new DefaultTableModel((rows.toArray(new Object[rows.size()][])), Product.DATA_LIST));
+        table.setPreferredSize(new Dimension(600, 400));
+        return table;
     }
 
     private JTable createSelectedItemTable(List<Object[]> rows) {
-        JTable toBeRemoved = new JTable();
-        toBeRemoved.setModel(new DefaultTableModel((rows.toArray(new Object[rows.size()][])), Item.DATA_LIST));
-        toBeRemoved.setPreferredSize(new Dimension(600, 400));
-        return toBeRemoved;
+        JTable table = new JTable() {
+            @Override
+            protected JTableHeader createDefaultTableHeader() {
+                return new JTableHeader(columnModel) {
+                    public String getToolTipText(MouseEvent e) {
+                        Point p = e.getPoint();
+                        int column = columnAtPoint(p);
+                        if (column == -1) {
+                            return null;
+                        }
+                        return getColumnName(column);
+                    }
+                };
+            }
+            @Override
+            public String getToolTipText(MouseEvent e) {
+                Point p = e.getPoint();
+                int row = rowAtPoint(p);
+                int column = columnAtPoint(p);
+                if (row != -1 && column != -1) {
+                    return getValueAt(row, column).toString();
+                }
+                return null;
+            }
+        };
+        table.setModel(new DefaultTableModel((rows.toArray(new Object[rows.size()][])), Item.DATA_LIST));
+        table.setPreferredSize(new Dimension(600, 400));
+        return table;
     }
 
     private void productRemovalHelper(List<ViewableTableEntryConvertibleModel> entries) {
@@ -135,9 +180,6 @@ public class InventoryController extends AbstractController<Inventory, Inventory
             for (int i = 0; i < entries.size(); i++) {
                 Product product = (Product) entries.get(i);
                 model.removeProduct(product.getSku());
-                //Product table will keep up its contents performing observer pattern(PropertyChangeEvent)
-//                int correspondingTableIndex = tableModel.findRowIndex(sku, skuColumn);
-//                tableModel.removeRow(correspondingTableIndex);
             }
         }
     }
@@ -165,7 +207,7 @@ public class InventoryController extends AbstractController<Inventory, Inventory
 
 
     private void setUpItemFilter(JComboBox itemFilter) {
-        ////
+
         itemFilter.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -186,7 +228,7 @@ public class InventoryController extends AbstractController<Inventory, Inventory
     //called only when category is newly selected by categoryFilter
     //MODIFIES: item filter
     //EFFECTS: set up the item filter, so it matches the newly selected category
-    private void updateItemFilter(FilterBox itemFilter, String selectedCategory) {
+    private void updateItemFilter(JComboBox<String> itemFilter, String selectedCategory) {
         List<String> ids;
         if (selectedCategory.equals(FilterBox.ALL)) {
             ids = model.getIDs();
@@ -200,7 +242,6 @@ public class InventoryController extends AbstractController<Inventory, Inventory
         } else {
             ids.add(0, FilterBox.ALL);
             ids.add(1, FilterBox.TYPE_MANUALLY);
-//            itemFilter.setPropertyWatched(selectedCategory);
         }
 
         itemFilter.setModel(new DefaultComboBoxModel(ids.toArray(new String[0])));
@@ -543,6 +584,8 @@ public class InventoryController extends AbstractController<Inventory, Inventory
         JMenuItem description = new JMenuItem("change description");
         JMenuItem note = new JMenuItem("change note");
         JMenuItem listPrice = new JMenuItem("change list price");
+        JMenuItem remove = new JMenuItem("remove products");
+        JMenuItem add = new JMenuItem("add products");
         JTable stockTable = view.getStockButtonTable();
         RowConverterViewerTableModel tableModel = getStockTableModel();
         category.addActionListener(new ActionListener() {
@@ -586,7 +629,23 @@ public class InventoryController extends AbstractController<Inventory, Inventory
             }
         });
 
+        remove.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                List<? extends ViewableTableEntryConvertibleModel> items = (tableModel.getEntryModelList(InventoryViewPanel.getSelectedTableModelRows(stockTable)));
+                itemStockRemovalHelper((List<Item>) items);
 
+            }
+        });
+
+        add.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+            }
+        });
+
+        menu.add(remove);
         menu.add(category);
         menu.add(name);
         menu.add(description);
@@ -680,6 +739,133 @@ public class InventoryController extends AbstractController<Inventory, Inventory
         }
     }
 
+
+    private void itemStockRemovalHelper(List<Item> items) {
+        List<Object[]> selectedRows = getStockTableModel().getRowObjects(items);
+        List<Object[]> copy = new LinkedList<>();
+        for (int i = 0; i < selectedRows.size(); i++) {
+            Object[] newRow = (Arrays.copyOf(selectedRows.get(i), selectedRows.get(i).length));
+            newRow[newRow.length - 1] = null;
+            copy.add(newRow);
+//            selectedRows.get(i)[selectedRows.get(0).length - 1] = null;
+        }
+        String[] columnNames = new String[Item.DATA_LIST.length + 1];
+        System.arraycopy(Item.DATA_LIST, 0, columnNames, 0, Item.DATA_LIST.length);
+        columnNames[columnNames.length - 1] = "Change in QTY";
+        DefaultTableModel tableModel = new DefaultTableModel();
+        tableModel.setDataVector(copy.toArray(new Object[0][]), columnNames);
+        JTable table = new JTable() {
+
+            @Override
+            public String getToolTipText(MouseEvent e) {
+                Point p = e.getPoint();
+                int row = rowAtPoint(p);
+                int column = columnAtPoint(p);
+                return getValueAt(row, column).toString();
+            }
+
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                if (column == columnNames.length - 1) {
+                    return true;
+                }
+                return false;
+            }
+        };
+        table.setModel(tableModel);
+//        table.setPreferredSize(new Dimension(700, 600));
+        JPanel panel = new JPanel();
+        panel.setLayout(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.gridwidth = 5;
+        gbc.gridheight = 5;
+        gbc.weightx = 1;
+        gbc.weighty = 1;
+        gbc.fill = GridBagConstraints.BOTH;
+        panel.add(new JScrollPane(table), gbc);
+        panel.setPreferredSize(new Dimension(900, 600));
+        JButton button = new JButton("Register");
+        gbc.gridx = gbc.gridx + gbc.gridwidth - 1;
+        gbc.gridy = gbc.gridy + gbc.gridheight;
+        gbc.gridwidth = 1;
+        gbc.gridheight = 1;
+        panel.add(button, gbc);
+        button.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                List<QuantityTag> toBeRemoved = new ArrayList<>();
+                int qtyChangeColumn = table.getColumnCount() - 1;
+                for (int i = 0; i < selectedRows.size(); i++) {
+                    int idColumn = tableModel.findColumn(Item.DataList.ID.toString());
+                    try {
+                        int qtyChange = Integer.valueOf(table.getValueAt(i, qtyChangeColumn).toString());
+                        if (qtyChange > 0) {
+                            toBeRemoved.add(new QuantityTag((String) tableModel.getValueAt(i, idColumn), qtyChange));
+                        }
+                    } catch (NullPointerException exception) {
+
+                    }
+                }
+                JPanel panel = new JPanel();
+                panel.setLayout(new GridBagLayout());
+                GridBagConstraints gbc = new GridBagConstraints();
+                gbc.gridx = 0;
+                gbc.gridy = 0;
+                for (QuantityTag tag: toBeRemoved) {
+                    JTable productTable = new JTable() {
+                        @Override
+                        public String getToolTipText(MouseEvent e) {
+                            Point p = e.getPoint();
+                            int row = rowAtPoint(p);
+                            int column = columnAtPoint(p);
+                            return getValueAt(row, column).toString();
+                        }
+                    };
+//                    productTable.setPreferredSize(new Dimension(700, 600));
+                    List<Product> products;
+                    try {
+                        products = model.getProductList(tag.getId(), tag.getLocation(), tag.getQuantity());
+                    } catch (IndexOutOfBoundsException exception) {
+                        JOptionPane.showMessageDialog(view,"cannot remove more products than existing. Check stocks for item: " + tag.getId());
+                        return;
+                    }
+                    gbc.gridy = gbc.gridy + gbc.gridheight;
+                    gbc.gridx = 1;
+                    gbc.gridheight = 1;
+                    gbc.gridwidth = 1;
+                    gbc.fill = GridBagConstraints.NONE;
+                    panel.add(new JLabel("ID: " + tag.getId() + " Products to be removed: " + products.size()), gbc);
+                    productTable.setModel(new RowConverterViewerTableModel(products));
+//                    gbc.gridx = gbc.gridx + gbc.gridwidth;
+                    gbc.gridy = gbc.gridy + gbc.gridheight;
+                    gbc.gridwidth = 5;
+                    gbc.gridheight = 5;
+                    gbc.weightx = 1;
+                    gbc.weighty = 1;
+                    gbc.fill = GridBagConstraints.BOTH;
+                    panel.add(new JScrollPane(productTable), gbc);
+                }
+                JScrollPane scrollPane = new JScrollPane(panel);
+                scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+                scrollPane.setMaximumSize(new Dimension(600, 700));
+                scrollPane.setPreferredSize(new Dimension(600, 600));
+                scrollPane.scrollRectToVisible(scrollPane.getVisibleRect());
+                int confirm = JOptionPane.showConfirmDialog(view, scrollPane, "Do you really want to remove following products?", JOptionPane.YES_OPTION, JOptionPane.PLAIN_MESSAGE);
+                if (confirm == JOptionPane.YES_OPTION) {
+                    model.removeStocks(toBeRemoved);
+                }
+            }
+        });
+        JDialog dialog = new JDialog();
+        JScrollPane scrollPane = new JScrollPane(panel);
+        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+        scrollPane.setMaximumSize(new Dimension(600, 800));
+        dialog.add(scrollPane);
+        dialog.pack();
+        dialog.setVisible(true);
+    }
 
 
 
@@ -861,23 +1047,6 @@ public class InventoryController extends AbstractController<Inventory, Inventory
     }
 
 
-
-
-
-    //TEST MAIN
-    public static void main(String[] args) {
-        Inventory inventory = new Inventory();
-        InventoryViewPanel viewPanel = new InventoryViewPanel(inventory);
-        InventoryController controller = new InventoryController(inventory, viewPanel);
-        JFrame frame = new JFrame();
-        controller.setUpView();
-        frame.add(viewPanel);
-        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        frame.pack();
-        frame.setSize(1400, 1000);
-        frame.setVisible(true);
-    }
-
     //REQUIRES: the date must be a string type in YYYYMMDD form without any space in between
     //EFFECTS: convert the date in string form into LocalDate type
     public static LocalDate convertToLocalDate(String date) {
@@ -885,6 +1054,8 @@ public class InventoryController extends AbstractController<Inventory, Inventory
             return null;
         }
         try {
+            return LocalDate.parse(date);
+        } catch (DateTimeParseException e) {
             int year = Integer.parseInt(date.substring(0, 4));
             int month = Integer.parseInt(date.substring(4, 6));
             int day = Integer.parseInt(date.substring(6, 8));

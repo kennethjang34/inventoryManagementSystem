@@ -140,6 +140,7 @@ public class Item extends TableEntryConvertibleDataFactory implements JsonConver
 
     @Override
     public void entryUpdated(ui.table.ViewableTableEntryConvertibleModel source, Object old, Object newObject) {
+
     }
 
 
@@ -253,9 +254,26 @@ public class Item extends TableEntryConvertibleDataFactory implements JsonConver
             stocks.get(product.getLocation()).remove(product);
             product.removeListener(this);
             EventLog.getInstance().logEvent(new Event("Product with SKU: " + sku + " removed "));
+            changeFirer.fireUpdateEvent(this);
             changeFirer.fireRemovalEvent(DataList.PRODUCT.toString(), product);
             return product;
         }
+    }
+
+    public Product removeProduct(Product toBeRemoved) {
+        String sku = toBeRemoved.getSku();
+        Product product = products.remove(sku);
+        if (product == null) {
+            return null;
+        } else {
+            stocks.get(product.getLocation()).remove(product);
+            product.removeListener(this);
+            EventLog.getInstance().logEvent(new Event("Product with SKU: " + sku + " removed "));
+            changeFirer.fireUpdateEvent(this);
+            changeFirer.fireRemovalEvent(DataList.PRODUCT.toString(), product);
+            return product;
+        }
+
     }
 
 
@@ -263,25 +281,19 @@ public class Item extends TableEntryConvertibleDataFactory implements JsonConver
     //MODIFIES: this
     //EFFECTS:remove as many products as specified. If succeeded, return true
     //Otherwise if there is not enough stock, return false.
-    public boolean removeStocks(String location, int qty) {
-        if (getQuantity(location) < qty) {
-            return false;
-        }
-        int originalQty = getQuantity(location);
-        List<Product> products = getProducts(location);
-        List<Product> removed = new ArrayList<>();
+    public List<Product> removeStocks(String location, int qty) {
+        List<Product> productList = getProducts(location, qty);
         for (int i = 0; i < qty; i++) {
-            Product product = products.get(0);
-            this.products.remove(product.getSku());
-            products.remove(product);
+            Product product = productList.get(i);
+            products.remove(product.getSku());
+            stocks.get(product.getLocation()).remove(product);
             product.removeListener(this);
-            removed.add(product);
         }
-        changeFirer.fireRemovalEvent(DataList.PRODUCT.toString(), removed);
-        EventLog.getInstance().logEvent(new Event(qty + " products belonging to ID: "
-                + id + " removed from " + location));
-        return true;
+        changeFirer.fireRemovalEvent(DataList.PRODUCT.toString(), productList);
+        changeFirer.fireUpdateEvent(this);
+        return productList;
     }
+
 
     //MODIFIES: this
     //EFFECTS: create a next sku
@@ -341,7 +353,8 @@ public class Item extends TableEntryConvertibleDataFactory implements JsonConver
             averageCost = tag.getUnitCost();
         }
         processedQty += quantity;
-        changeFirer.fireUpdateEvent(this, DataList.QUANTITY.toString(), processedQty - quantity, processedQty);
+//        changeFirer.fireUpdateEvent(this, DataList.QUANTITY.toString(), processedQty - quantity, processedQty);
+        changeFirer.fireUpdateEvent(this);
         changeFirer.fireAdditionEvent(DataList.PRODUCT.toString(), added);
         return added;
     }
@@ -372,7 +385,8 @@ public class Item extends TableEntryConvertibleDataFactory implements JsonConver
             averageCost = cost;
         }
         processedQty += qty;
-        changeFirer.fireUpdateEvent(this, DataList.QUANTITY.toString(), processedQty - qty, processedQty);
+//        changeFirer.fireUpdateEvent(this, DataList.QUANTITY.toString(), processedQty - qty, processedQty);
+        changeFirer.fireUpdateEvent(this);
         changeFirer.fireAdditionEvent(DataList.PRODUCT.toString(), added);
     }
 
@@ -391,6 +405,18 @@ public class Item extends TableEntryConvertibleDataFactory implements JsonConver
         }
         return products;
     }
+
+
+    //location being null indicates all locations
+    public List<Product> getProducts(String location, int qty) {
+        List<Product> productList = (location == null ? new ArrayList<>(products.values()) : stocks.get(location));
+        try {
+            return productList.subList(0, qty);
+        } catch (IndexOutOfBoundsException e) {
+            throw new IndexOutOfBoundsException("The quantity of products to be found is fewer than that of the parameters");
+        }
+    }
+
 
     //EFFECTS: return a list of quantity tags that contain stock information at different location
     public List<QuantityTag> getQuantities() {

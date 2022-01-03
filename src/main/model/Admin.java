@@ -14,8 +14,12 @@ public class Admin implements JsonConvertible {
 
 //    public static final int ADMIN_ACCESS = -1;
 //    public static final int INVENTORY_ACCESS = 1;
+    private static Admin admin = new Admin();
 
 
+    public static Admin getAdmin() {
+        return admin;
+    }
 
 
     //represents each individual login account.

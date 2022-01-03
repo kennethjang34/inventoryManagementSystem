@@ -6,7 +6,8 @@ import org.json.JSONObject;
 import persistence.JsonConvertible;
 import persistence.Reader;
 import persistence.Writer;
-import ui.adminpanel.AdminPanel;
+import ui.adminpanel.view.AdminViewPanel;
+import ui.adminpanel.view.LoginPanel;
 import ui.inventorypanel.controller.InventoryController;
 import ui.inventorypanel.view.InventoryViewPanel;
 import ui.ledgerpanel.controller.LedgerController;
@@ -38,7 +39,7 @@ public class InventoryManagementSystemApplication extends JFrame implements Json
     private JTabbedPane tabbedPane;
     private LoginPanel loginPanel;
     private LedgerPanel ledgerPanel;
-    private AdminPanel adminPanel;
+    private AdminViewPanel adminPanel;
     private JMenuBar menuBar;
     private Admin admin;
     private Ledger ledger;
@@ -96,7 +97,7 @@ public class InventoryManagementSystemApplication extends JFrame implements Json
         mainPanel = new JPanel();
         cardLayout = new CardLayout();
 //        ledgerPanel = new LedgerPanel(ledger);
-        adminPanel = new AdminPanel(admin, this);
+        adminPanel = new AdminViewPanel(admin, this);
         if (loginPanel == null) {
             loginPanel = new LoginPanel(admin, this);
         }

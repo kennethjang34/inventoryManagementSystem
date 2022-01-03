@@ -3,6 +3,7 @@ package ui.table;
 import javax.swing.*;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -131,7 +132,9 @@ public class ButtonTableModel extends RowConverterViewerTableModel {
         Object[] newRow = new Object[withoutButton.length + 1];
         if (newRow.length != columnNames.length) {
             throw new IllegalArgumentException("The given row's columns don't match columns of the table.\n given: "
-                    + newRow.length + " the existing row length: " + columnNames.length);
+                    + newRow.length + " the existing row length: " + columnNames.length
+            + "given row (withoutButton): " + Arrays.toString(withoutButton)
+                    + "existing column names: " + Arrays.toString(columnNames));
         }
         for (int i = 0; i < withoutButton.length; i++) {
             newRow[i] = withoutButton[i];

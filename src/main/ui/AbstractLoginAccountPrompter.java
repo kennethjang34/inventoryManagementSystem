@@ -29,6 +29,23 @@ public abstract class AbstractLoginAccountPrompter extends JPanel {
         codeLabel = new JLabel("Personal Code: ");
     }
 
+    public String getBirthDayInput() {
+        return birthdayField.getText();
+    }
+
+    public String getCodeInput() {
+        return codeField.getText();
+    }
+
+    public String getNameInput() {
+        return nameField.getText();
+    }
+
+    public String getIDInput() {
+        return idField.getText();
+    }
+
+
 
 
 //    @Override

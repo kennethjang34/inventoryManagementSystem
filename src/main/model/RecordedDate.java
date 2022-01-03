@@ -70,8 +70,9 @@ public class RecordedDate extends TableEntryConvertibleDataFactory {
             accountList = new LinkedList<>();
         }
         accountList.add(account);
-        accountMap.putIfAbsent(account.getID(), accountList);
-//        int qty = getTotalNumAccounts();
+        if (accountMap.putIfAbsent(account.getID(), accountList) == null) {
+            changeFirer.fireAdditionEvent(DataList.ID.toString(), account);
+        }
         changeFirer.fireUpdateEvent(this);
     }
 
@@ -97,6 +98,10 @@ public class RecordedDate extends TableEntryConvertibleDataFactory {
             }
         }
         return count;
+    }
+
+    public LocalDate getDate() {
+        return date;
     }
 
     public int getTakenOutQuantity() {
@@ -152,5 +157,11 @@ public class RecordedDate extends TableEntryConvertibleDataFactory {
     @Override
     public List<? extends ViewableTableEntryConvertibleModel> getEntryModels() {
         return getAccounts();
+    }
+
+
+    @Override
+    public String toString() {
+        return date.toString();
     }
 }

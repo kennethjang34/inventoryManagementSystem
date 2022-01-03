@@ -51,13 +51,15 @@ public class RowConverterViewerTableModel extends AbstractTableModel implements 
         duplicateAllowed = false;
     }
 
+
+
     public RowConverterViewerTableModel(AbstractTableDataFactory model, String[] columnNames, String category) {
         data = new LinkedHashMap<>();
         tableEntries = new LinkedList<>();
         this.columnNames = columnNames;
         List<? extends ViewableTableEntryConvertibleModel> entries = (List<? extends ViewableTableEntryConvertibleModel>) model.getEntryModels();
         for (ViewableTableEntryConvertibleModel entry: entries) {
-            entry.addDataChangeListener(this);
+            entry.addUpdateListener(this);
             tableEntries.add(entry);
             data.put(entry, createRow(entry.convertToTableEntry()));
         }
@@ -72,7 +74,7 @@ public class RowConverterViewerTableModel extends AbstractTableModel implements 
         List<? extends ViewableTableEntryConvertibleModel> entries = model.getEntryModels();
         for (ViewableTableEntryConvertibleModel entry: entries) {
             if (watching) {
-                entry.addDataChangeListener(this);
+                entry.addUpdateListener(this);;
             }
             tableEntries.add(entry);
             data.put(entry, createRow(entry.convertToTableEntry()));
@@ -88,7 +90,7 @@ public class RowConverterViewerTableModel extends AbstractTableModel implements 
         tableEntries = new LinkedList<>();
         for (ViewableTableEntryConvertibleModel entry: entries) {
             if (watching) {
-                entry.addDataChangeListener(this);
+                entry.addUpdateListener(this);;
             }
             data.put(entry, createRow(entry.convertToTableEntry()));
             tableEntries.add(entry);
@@ -103,7 +105,7 @@ public class RowConverterViewerTableModel extends AbstractTableModel implements 
         data = new LinkedHashMap<>(entries.size());
         for (ViewableTableEntryConvertibleModel entry: entries) {
             if (watching) {
-                entry.addDataChangeListener(this);
+                entry.addUpdateListener(this);;
             }
             data.put(entry, createRow(entry.convertToTableEntry()));
             tableEntries.add(entry);
@@ -129,11 +131,15 @@ public class RowConverterViewerTableModel extends AbstractTableModel implements 
     //
     @Override
     public Class getColumnClass(int index) {
-        if (data.isEmpty()) {
+        try {
+            List<Object[]> list = new ArrayList<>(data.values());
+            return list.get(0)[index].getClass();
+        }
+        catch (IndexOutOfBoundsException e) {
+            return Object.class;
+        } catch (NullPointerException e) {
             return Object.class;
         }
-        List<Object[]> list = new ArrayList<>(data.values());
-        return list.get(0)[index].getClass();
     }
 
     @Override
@@ -185,7 +191,7 @@ public class RowConverterViewerTableModel extends AbstractTableModel implements 
 
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
-        Object value =  data.get(tableEntries.get(rowIndex))[columnIndex];
+        Object value = data.get(tableEntries.get(rowIndex))[columnIndex];
         return value;
     }
 
@@ -203,7 +209,7 @@ public class RowConverterViewerTableModel extends AbstractTableModel implements 
         for (ViewableTableEntryConvertibleModel entry: newRowData) {
             if (data.put(entry, createRow(entry.convertToTableEntry())) == null) {
                 tableEntries.add(entry);
-                entry.addDataChangeListener(this);
+                entry.addUpdateListener(this);
             }
         }
         fireTableRowsInserted(oldLastRow, getRowCount() - 1);
@@ -221,7 +227,7 @@ public class RowConverterViewerTableModel extends AbstractTableModel implements 
             if (data.put(entry, createRow(entry.convertToTableEntry())) == null) {
                 tableEntries.add(entry);
                 if (watching) {
-                    entry.addDataChangeListener(this);
+                    entry.addUpdateListener(this);
                 }
             }
         }
@@ -282,7 +288,7 @@ public class RowConverterViewerTableModel extends AbstractTableModel implements 
         return rows;
     }
 
-    public List<Object[]> getRowObjects(List<ViewableTableEntryConvertibleModel> entries) {
+    public List<Object[]> getRowObjects(List<? extends ViewableTableEntryConvertibleModel> entries) {
         List<Object[]> rows = new LinkedList<>();
         for (ViewableTableEntryConvertibleModel entry: entries) {
             rows.add(data.get(entry));
@@ -372,9 +378,7 @@ public class RowConverterViewerTableModel extends AbstractTableModel implements 
         return new ArrayList<>(data.keySet());
     }
 
-    public AbstractTableDataFactory getDataModel() {
-        return null;
-    }
+
 
     @Override
     public void entryRemoved(ViewableTableEntryConvertibleModel removed) {
@@ -387,7 +391,6 @@ public class RowConverterViewerTableModel extends AbstractTableModel implements 
 
     @Override
     public void entryRemoved(List<? extends ViewableTableEntryConvertibleModel> removed) {
-
     }
 
     @Override
@@ -395,7 +398,7 @@ public class RowConverterViewerTableModel extends AbstractTableModel implements 
         ViewableTableEntryConvertibleModel entry = added;
         Object[] row = createRow(entry.convertToTableEntry());
         if (data.put(entry, row) == null) {
-            entry.addDataChangeListener(this);
+            entry.addUpdateListener(this);;
             tableEntries.add(entry);
             fireTableRowsInserted(data.size() - 1, data.size() - 1);
         } else {
@@ -412,10 +415,7 @@ public class RowConverterViewerTableModel extends AbstractTableModel implements 
     @Override
     public void entryUpdated(ViewableTableEntryConvertibleModel updatedEntry) {
         if (columnNames == null) {
-            columnNames = new String[updatedEntry.getColumnNames().length + 1];
-            for (int i = 0; i < updatedEntry.getColumnNames().length; i++) {
-                columnNames[i] = updatedEntry.getColumnNames()[i];
-            }
+            columnNames = updatedEntry.getColumnNames();
         }
 
         if (data.put(updatedEntry, createRow(updatedEntry.convertToTableEntry())) == null) {

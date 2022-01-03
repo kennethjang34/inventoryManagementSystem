@@ -3,11 +3,8 @@ package ui.ledgerpanel.controller;
 import model.*;
 import ui.AbstractController;
 import ui.FilterBox;
-import ui.inventorypanel.controller.InventoryController;
-import ui.inventorypanel.view.InventoryViewPanel;
 import ui.ledgerpanel.view.LedgerViewPanel;
 import ui.table.ButtonTable;
-import ui.table.ButtonTableModel;
 import ui.table.RowConverterViewerTableModel;
 
 import javax.swing.*;
@@ -28,6 +25,10 @@ import static ui.inventorypanel.controller.InventoryController.convertToLocalDat
 public class LedgerController extends AbstractController<Ledger, LedgerViewPanel> {
 
     private class LedgerButtonAction extends AbstractAction {
+
+        private LedgerButtonAction() {
+            super("Accounts");
+        }
 
         @Override
         public void actionPerformed(ActionEvent e) {
@@ -51,7 +52,7 @@ public class LedgerController extends AbstractController<Ledger, LedgerViewPanel
     public void setUpView() {
         setUpLedgerTable();
         setUpAccountsTable();
-        setUpDataFilter();
+        setUpDateFilter();
         setUpItemFilter();
     }
 
@@ -65,9 +66,9 @@ public class LedgerController extends AbstractController<Ledger, LedgerViewPanel
         table.setRowSorter(createRowSorter(table, null, Comparator.naturalOrder()));
     }
 
-    private JPopupMenu createAccountsTablePopUpMenu() {
-        return null;
-    }
+//    private JPopupMenu createAccountsTablePopUpMenu() {
+//        return null;
+//    }
 
 
     public void setUpLedgerTable() {
@@ -96,7 +97,7 @@ public class LedgerController extends AbstractController<Ledger, LedgerViewPanel
     }
 
 
-    private void setUpDataFilter() {
+    private void setUpDateFilter() {
         FilterBox dateFilter = view.getDateFilter();
         dateFilter.addActionListener(new ActionListener() {
             @Override
@@ -109,7 +110,7 @@ public class LedgerController extends AbstractController<Ledger, LedgerViewPanel
                     }
                     updateItemFilter(selectedDateString);
                     TableRowSorter sorter = (TableRowSorter) view.getLedgerTable().getRowSorter();
-                    RowFilter<TableModel, Integer> filter = createDataRowFilter(selectedDateString);
+                    RowFilter<TableModel, Integer> filter = createDateRowFilter(selectedDateString);
                     sorter.setRowFilter(filter);
                 }
             }
@@ -118,7 +119,7 @@ public class LedgerController extends AbstractController<Ledger, LedgerViewPanel
     }
 
     private void setUpItemFilter() {
-        FilterBox itemFilter = view.getItemFilter();
+        JComboBox itemFilter = view.getItemFilter();
         itemFilter.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -136,7 +137,7 @@ public class LedgerController extends AbstractController<Ledger, LedgerViewPanel
     }
 
     private void updateItemFilter(String selectedDateString) {
-        FilterBox itemFilter = view.getItemFilter();
+        JComboBox itemFilter = view.getItemFilter();
         List<String> itemIDList;
         if (selectedDateString.equals(FilterBox.ALL)) {
             itemIDList = model.getProcessedItemList();
@@ -150,7 +151,6 @@ public class LedgerController extends AbstractController<Ledger, LedgerViewPanel
         } else {
             itemIDList.add(0, FilterBox.ALL);
             itemIDList.add(1, FilterBox.TYPE_MANUALLY);
-//            itemFilter.setPropertyWatched(selectedCategory);
         }
 
         itemFilter.setModel(new DefaultComboBoxModel(itemIDList.toArray(new String[0])));
@@ -164,8 +164,21 @@ public class LedgerController extends AbstractController<Ledger, LedgerViewPanel
 
     }
 
+    public TableRowSorter createRowSorter(JTable table,
+                                          RowFilter<TableModel, Integer> filter, Comparator comparator) {
+        TableRowSorter<TableModel> sorter = new TableRowSorter<>(table.getModel());
+        sorter.setRowFilter(filter);
+        sorter.setComparator(0, comparator);
+        List<RowSorter.SortKey> sortKeys = new ArrayList<>();
+        for (int i = 0; i < table.getColumnCount(); i++) {
+            sortKeys.add(new RowSorter.SortKey(i, SortOrder.ASCENDING));
+        }
+        sorter.setSortKeys(sortKeys);
+        return sorter;
+    }
 
-    public RowFilter<TableModel, Integer> createDataRowFilter(String date) {
+
+    public RowFilter<TableModel, Integer> createDateRowFilter(String date) {
         RowFilter<TableModel, Integer> rowFilter = new RowFilter<TableModel, Integer>() {
             @Override
             public boolean include(Entry<? extends TableModel, ? extends Integer> entry) {
@@ -183,18 +196,6 @@ public class LedgerController extends AbstractController<Ledger, LedgerViewPanel
         return rowFilter;
     }
 
-    public TableRowSorter createRowSorter(JTable table,
-                                          RowFilter<TableModel, Integer> filter, Comparator comparator) {
-        TableRowSorter<TableModel> sorter = new TableRowSorter<>(table.getModel());
-        sorter.setRowFilter(filter);
-        sorter.setComparator(0, comparator);
-        List<RowSorter.SortKey> sortKeys = new ArrayList<>();
-        for (int i = 0; i < table.getColumnCount(); i++) {
-            sortKeys.add(new RowSorter.SortKey(i, SortOrder.ASCENDING));
-        }
-        sorter.setSortKeys(sortKeys);
-        return sorter;
-    }
 
     public RowFilter<TableModel, Integer> createItemRowFilter(String processedItem) {
         String date = (String) view.getDateFilter().getSelectedItem();
@@ -213,7 +214,8 @@ public class LedgerController extends AbstractController<Ledger, LedgerViewPanel
                     return false;
                 }
                 for (int i = 0; i < entry.getValueCount(); i++) {
-                    if (entry.getStringValue(i).equals(processedItem)) {
+                    String cellContent = entry.getStringValue(i);
+                    if (cellContent.contains(processedItem)) {
                         return true;
                     }
                 }
@@ -223,30 +225,5 @@ public class LedgerController extends AbstractController<Ledger, LedgerViewPanel
         return rowFilter;
     }
 
-    public static void main(String[] args) {
-        Ledger ledger = new Ledger();
-//        InventoryTag tag = new InventoryTag("APP", 100, 200, LocalDate.now(), "F11", 100);
-//        ledger.addAccount(tag, null, LocalDate.now());
-//        tag = new InventoryTag("BNN", 34, 12, LocalDate.now(), "ADS", 2);
-//        ledger.addAccount(tag, null, LocalDate.now());
-//        tag = new InventoryTag("GRAPE", 0.3, 2, LocalDate.now(), "ZDF", -3);
-//        ledger.addAccount(tag, null, LocalDate.now());
-        LedgerViewPanel viewPanel = new LedgerViewPanel(ledger);
-        LedgerController controller = new LedgerController(ledger, viewPanel);
-        Inventory inventory = new Inventory();
-//        inventory.setLedger(ledger);
-        inventory.createCategory("TEST");
-        inventory.createItem("TEST", "testing", "TEST", 12, ",", "");
-        InventoryTag tag = new InventoryTag("TEST", 100, 200, LocalDate.now(), "F11", 100);
-        inventory.addProducts(tag);
-        inventory.removeProduct(inventory.getProductList("TEST").get(0).getSku());
-        JFrame frame = new JFrame();
-        controller.setUpView();
-        frame.add(viewPanel);
-        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        frame.pack();
-        frame.setSize(1400, 1000);
-        frame.setVisible(true);
-    }
 
 }

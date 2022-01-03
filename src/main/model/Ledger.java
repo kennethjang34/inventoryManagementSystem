@@ -44,6 +44,7 @@ public class Ledger extends AbstractTableDataFactory implements JsonConvertible,
         addAccount(tag, "REMOVAL", LocalDate.now());
     }
 
+    //for new item
     @Override
     public void entryAdded(ViewableTableEntryConvertibleModel o) {
         if (o instanceof Item) {
@@ -52,6 +53,8 @@ public class Ledger extends AbstractTableDataFactory implements JsonConvertible,
         }
     }
 
+
+    //for new products
     @Override
     public void entryAdded(List<? extends ViewableTableEntryConvertibleModel> added) {
         double averageCost = calculateAverageCost((List<Product>) added);
@@ -244,7 +247,10 @@ public class Ledger extends AbstractTableDataFactory implements JsonConvertible,
         recordedDate.addAccount(account);
         if (dates.putIfAbsent(date, recordedDate) == null) {
             changeFirer.fireAdditionEvent(DataList.RECORDED_DATE.toString(), recordedDate);
+        } else {
+//            changeFirer.fireUpdateEvent(DataList.RECORDED_DATE.toString(), recordedDate);
         }
+
         return account;
     }
 

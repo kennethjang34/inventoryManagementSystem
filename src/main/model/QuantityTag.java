@@ -23,6 +23,13 @@ public class QuantityTag extends ViewableTableEntryConvertibleModel {
         this.quantity = quantity;
     }
 
+    public QuantityTag(String itemCode, int quantity) {
+        super(DATA_LIST);
+        this.id = itemCode.toUpperCase();
+        this.location = null;
+        this.quantity = quantity;
+    }
+
     //EFFECTS: return the assigned location
     public String getLocation() {
         return location;

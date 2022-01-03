@@ -9,6 +9,10 @@ public class RowDataChangeSupport extends PropertyChangeSupport {
     Map<String, List<DataViewer>> tableDataListeners;
     public static final String UNSPECIFIED = "UNSPECIFIED";
     public static final String GENERAL = "GENERAL";
+    public static final String UPDATE = "UPDATE";
+    public static final String ADDITION = "UPDATE";
+    public static final String REMOVAL = "REMOVAL";
+    public static final String addNRem = "ADDNREM";
 
     /**
      * Constructs a <code>PropertyChangeSupport</code> object.
@@ -20,6 +24,7 @@ public class RowDataChangeSupport extends PropertyChangeSupport {
         tableDataListeners = new LinkedHashMap<>();
         tableDataListeners.put(UNSPECIFIED, new LinkedList<>());
         tableDataListeners.put(GENERAL, new LinkedList<>());
+        tableDataListeners.put(UPDATE, new LinkedList<>());
     }
 
     //By default, every listener will be notified when an event occurs at the general level
@@ -70,6 +75,12 @@ public class RowDataChangeSupport extends PropertyChangeSupport {
         tableDataListeners.put(GENERAL, list);
     }
 
+    public void addUpdateDataModelListener(DataViewer listener) {
+        List<DataViewer> list = tableDataListeners.get(UPDATE);
+        list.add(listener);
+        tableDataListeners.put(UPDATE, list);
+    }
+
 
     public void removeTableModelListener(DataViewer listener) {
         for (Map.Entry<String, List<DataViewer>> entry : tableDataListeners.entrySet()) {
@@ -106,7 +117,19 @@ public class RowDataChangeSupport extends PropertyChangeSupport {
 
 
     public void fireRemovalEvent(String category, List<? extends ViewableTableEntryConvertibleModel> removed) {
+        List<DataViewer> list = tableDataListeners.get(category);
+        if (list != null) {
+            for (int i = list.size() - 1; i >= 0; i--) {
+                DataViewer viewer = list.get(i);
+                viewer.entryRemoved(removed);
+            }
+        }
 
+        list = tableDataListeners.get(UNSPECIFIED);
+        for (int i = list.size() - 1; i >= 0; i--) {
+            DataViewer viewer = list.get(i);
+            viewer.entryRemoved(removed);
+        }
     }
 
     public void fireAdditionEvent(String category, ViewableTableEntryConvertibleModel added) {
@@ -124,6 +147,8 @@ public class RowDataChangeSupport extends PropertyChangeSupport {
             viewer.entryAdded(added);
         }
     }
+
+
 
     public void fireAdditionEvent(String category, List<? extends ViewableTableEntryConvertibleModel> added) {
         List<DataViewer> list = tableDataListeners.get(category);
@@ -155,6 +180,12 @@ public class RowDataChangeSupport extends PropertyChangeSupport {
             DataViewer viewer = list.get(i);
             viewer.entryUpdated(source);
         }
+
+        list = tableDataListeners.get(UPDATE);
+        for (int i = list.size() - 1; i >= 0; i--) {
+            DataViewer viewer = list.get(i);
+            viewer.entryUpdated(source);
+        }
     }
 
     public void fireUpdateEvent(String category, ViewableTableEntryConvertibleModel source, Object old, Object newObject) {
@@ -170,6 +201,12 @@ public class RowDataChangeSupport extends PropertyChangeSupport {
         for (int i = list.size() - 1; i >= 0; i--) {
             DataViewer viewer = list.get(i);
             viewer.entryUpdated(source, old, newObject);
+        }
+
+        list = tableDataListeners.get(UPDATE);
+        for (int i = list.size() - 1; i >= 0; i--) {
+            DataViewer viewer = list.get(i);
+            viewer.entryUpdated(source);
         }
     }
 
@@ -191,6 +228,12 @@ public class RowDataChangeSupport extends PropertyChangeSupport {
                 viewer.entryUpdated(source);
             }
         }
+
+        list = tableDataListeners.get(UPDATE);
+        for (int i = list.size() - 1; i >= 0; i--) {
+            DataViewer viewer = list.get(i);
+            viewer.entryUpdated(source);
+        }
     }
 
 
@@ -210,6 +253,12 @@ public class RowDataChangeSupport extends PropertyChangeSupport {
                 DataViewer viewer = list.get(i);
                 viewer.entryUpdated(source, old, newObj);
             }
+        }
+
+        list = tableDataListeners.get(UPDATE);
+        for (int i = list.size() - 1; i >= 0; i--) {
+            DataViewer viewer = list.get(i);
+            viewer.entryUpdated(source);
         }
     }
 
@@ -231,9 +280,13 @@ public class RowDataChangeSupport extends PropertyChangeSupport {
                 DataViewer viewer = list.get(i);
                 viewer.entryUpdated(source, property, old, newObj);
             }
-//            for (DataViewer viewer: list) {
-//                viewer.entryUpdated(source, property, old, newObj);
-//            }
+
+        }
+
+        list = tableDataListeners.get(UPDATE);
+        for (int i = list.size() - 1; i >= 0; i--) {
+            DataViewer viewer = list.get(i);
+            viewer.entryUpdated(source);
         }
     }
 }

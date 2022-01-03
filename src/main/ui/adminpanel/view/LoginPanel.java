@@ -1,6 +1,8 @@
-package ui;
+package ui.adminpanel.view;
 
 import model.Admin;
+import ui.AbstractLoginAccountPrompter;
+import ui.InventoryManagementSystemApplication;
 
 import javax.swing.*;
 import java.awt.*;
@@ -26,69 +28,9 @@ public class LoginPanel extends JPanel implements ActionListener {
     public static final int LOAD = 1;
     public static final int ADMIN = 2;
     private Admin admin;
-    private RegisterPrompter registerPanel = new RegisterPrompter();
+    private AdminViewPanel.RegisterPrompter registerPanel = AdminViewPanel.RegisterPrompter.getRegisterPrompter();
     private RetrievePrompter retrievePanel = new RetrievePrompter();
 
-
-
-
-
-    //A small panel that will be displayed if the user presses register button to create a new account
-    private class RegisterPrompter extends AbstractLoginAccountPrompter implements ActionListener {
-        private JButton registerButton;
-        private JPasswordField pwField = new JPasswordField(10);
-        private Window window;
-
-        //EFFECTS: create a new register panel with empty text fields.
-        private RegisterPrompter() {
-            registerButton = new JButton("Register");
-            registerButton.addActionListener(this);
-            add(nameLabel);
-            add(nameField);
-            add(birthdayLabel);
-            add(birthdayField);
-            add(codeLabel);
-            add(codeField);
-            add(idLabel);
-            add(super.idField);
-            add(new JLabel("PW:"));
-            add(pwField);
-            add(registerButton);
-        }
-
-        //REQUIRES: all fields must be in valid form and cannot remain empty
-        //MODIFIES: this
-        //EFFECTS: create a new login account and register it in the system.
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            if (isAdmin == true || (isAdmin == false && admin.isEmpty())) {
-                int personalCode = Integer.parseInt(this.codeField.getText());
-                String birthdayText = birthdayField.getText();
-                LocalDate birthDay = InventoryManagementSystemApplication.convertToLocalDate(birthdayText);
-                boolean successful = admin.createLoginAccount(idField.getText(),
-                        String.valueOf(pwField.getPassword()),
-                        nameField.getText(), birthDay, personalCode, !isAdmin);
-                if (!successful) {
-                    JOptionPane.showMessageDialog(null, "you are not allowed to create "
-                            + "a new login account in this system");
-                }
-                isAdmin = true;
-                JOptionPane.showMessageDialog(null, "a new account is successfully created");
-                window.setVisible(false);
-                application.dataChangeHandler(purpose);
-                application.setLoginStatus(true);
-            } else {
-                JOptionPane.showMessageDialog(null, "you are not allowed to create "
-                        + "a new login account in this system");
-            }
-        }
-
-        //MODIFIES: this
-        //EFFECTS: set the window containing this to the given one
-        public void setWindow(Window window) {
-            this.window = window;
-        }
-    }
 
     //MODIFIES: this
     //EFFECTS: set the purpose of this login attempt
@@ -102,9 +44,12 @@ public class LoginPanel extends JPanel implements ActionListener {
 
 
     //A small panel that will be displayed if the user presses retrieve button
-    private class RetrievePrompter extends AbstractLoginAccountPrompter implements ActionListener {
+    public static class RetrievePrompter extends AbstractLoginAccountPrompter implements ActionListener {
         private JButton retrieveButton;
-        private Window window;
+        private Admin admin = Admin.getAdmin();
+
+        //for singleton pattern
+        private static final RetrievePrompter prompter = new RetrievePrompter();
 
         //EFFECTS: create a new retrieve panel with empty text fields.
         private RetrievePrompter() {
@@ -121,6 +66,11 @@ public class LoginPanel extends JPanel implements ActionListener {
             add(retrieveButton);
         }
 
+        //Singleton pattern applied
+        public static RetrievePrompter getRetrievePrompter() {
+            return prompter;
+        }
+
         //EFFECTS: show the password of the account matching the given information.
         //If there isn't any, display error message.
         public void actionPerformed(ActionEvent e) {
@@ -135,11 +85,6 @@ public class LoginPanel extends JPanel implements ActionListener {
             setVisible(false);
         }
 
-        //MODIFIES: this
-        //EFFECTS: set the parent window
-        public void setWindow(Window window) {
-            this.window = window;
-        }
     }
 
 
@@ -257,7 +202,6 @@ public class LoginPanel extends JPanel implements ActionListener {
     private void displayRetrievePanel() {
         retrievePanel.setSize(600, 400);
         JDialog dialog = new JDialog(application, true);
-        retrievePanel.setWindow(dialog);
         dialog.setLayout(new FlowLayout());
         dialog.setSize(600, 400);
         dialog.add(retrievePanel);
@@ -272,7 +216,7 @@ public class LoginPanel extends JPanel implements ActionListener {
         dialog.setLayout(new FlowLayout());
         dialog.setSize(600, 400);
         dialog.add(registerPanel);
-        registerPanel.setWindow(dialog);
+//        registerPanel.setWindow(dialog);
         dialog.setVisible(true);
     }
 
@@ -288,15 +232,6 @@ public class LoginPanel extends JPanel implements ActionListener {
     private void displayLoginFail() {
         JOptionPane.showMessageDialog(this, "Login failed");
     }
-
-//    public static void main(String[] args) {
-//        JFrame testFrame = new JFrame();
-//        testFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-//        testFrame.add(new LoginPanel(new Admin()));
-//        testFrame.setSize(400, 400);
-//        testFrame.setVisible(true);
-//    }
-
 
 
 

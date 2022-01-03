@@ -44,9 +44,9 @@ public abstract class AbstractViewableDataModel {
         changeFirer.removeTableModelListener(listener);
     }
 
-
-
-
+    public void addUpdateListener(DataViewer listener) {
+        changeFirer.addUpdateDataModelListener(listener);
+    }
 
 
 //    public abstract List<TableEntryConvertibleModel> getEntryModels();
