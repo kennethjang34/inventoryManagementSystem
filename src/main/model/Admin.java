@@ -272,6 +272,17 @@ public class Admin extends Viewable implements JsonConvertible {
         return false;
     }
 
+    public boolean isAdminMember(LoginAccount account) {
+        String id = account.getId();
+        if (getLoginAccount(id) == null) {
+            return false;
+        }
+        if (getLoginAccount(id).isAdmin()) {
+            return true;
+        }
+        return false;
+    }
+
     public void setLoginAccount(LoginAccount account) {
         currentAccount = account;
     }

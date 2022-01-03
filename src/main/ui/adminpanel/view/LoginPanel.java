@@ -129,4 +129,14 @@ public class LoginPanel extends JPanel {
     }
 
 
+    public void displayLoginDialog() {
+        JDialog dialog = new JDialog();
+        dialog.add(this);
+        dialog.setModal(true);
+        dialog.pack();
+        dialog.setVisible(true);
+    }
+
+
+
 }

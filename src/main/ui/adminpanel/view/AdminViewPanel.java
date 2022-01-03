@@ -34,8 +34,6 @@ public class AdminViewPanel extends JPanel {
         accountsTable.setModel(new RowConverterViewerTableModel(admin.getAccounts()));
         add(new JScrollPane(accountsTable));
         accountsTable.setVisible(false);
-//        add(registerPanel);
-//        setPreferredSize(new Dimension(400, 500));
     }
 
     public void setAccountsTableVisible(boolean visible) {
@@ -45,6 +43,8 @@ public class AdminViewPanel extends JPanel {
     public RegisterPrompter getRegisterPrompter() {
         return registerPanel;
     }
+
+
 
 
 }

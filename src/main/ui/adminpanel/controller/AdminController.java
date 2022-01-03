@@ -122,12 +122,11 @@ public class AdminController {
                     loginPanel.displayLoginFail();
                 } else {
                     admin.setLoginAccount(loginAccount);
-                    if (loginPanel.getPurpose() != LoginPanel.ADMIN || admin.isAdminMember(id)) {
-                        application.setLoginStatus(true);
-                        application.setLoginAccount(id);
-                        application.dataChangeHandler(loginPanel.getPurpose());
+
+                    if (admin.isAdminLoggedIn()) {
+                        adminViewPanel.setAccountsTableVisible(true);
                     } else {
-                        loginPanel.displayAdminLoginFail();
+                        adminViewPanel.setVisible(false);
                     }
                 }
             }
@@ -135,4 +134,16 @@ public class AdminController {
     }
 
 
+    public void displayLoginDialog() {
+        loginPanel.displayLoginDialog();
+//        JDialog dialog = new JDialog();
+//        dialog.add(loginPanel);
+//        dialog.setModal(true);
+//        dialog.pack();
+//        dialog.setVisible(true);
+    }
+
+    public void logout() {
+        admin.setLoginAccount(null);
+    }
 }

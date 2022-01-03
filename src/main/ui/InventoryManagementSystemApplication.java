@@ -84,9 +84,17 @@ public class InventoryManagementSystemApplication extends JFrame implements Json
         tabbedPane.addChangeListener(e -> {
             JTabbedPane pane = (JTabbedPane) e.getSource();
             if (pane.getSelectedIndex() == 2) {
-                if (login == false && !admin.isEmpty()) {
+                if (!admin.isAdminLoggedIn() && !admin.isEmpty()) {
                     loginPanel.setPurpose(loginPanel.ADMIN);
-                    switchToLoginPanel();
+                    displayLoginDialog();
+                    if (admin.isLoggedIn()) {
+                        //testing required
+                        if (admin.isAdminLoggedIn()) {
+                            pane.setSelectedIndex(2);
+                        } else {
+                            JOptionPane.showMessageDialog(tabbedPane, "you are not an admin member");
+                        }
+                    }
                 }
             }
         });
@@ -158,6 +166,10 @@ public class InventoryManagementSystemApplication extends JFrame implements Json
 //        login = false;
 //        updateDisplay();
         cardLayout.show(mainPanel, "LoginPanel");
+    }
+
+    public void displayLoginDialog() {
+        adminController.displayLoginDialog();
     }
 
 
@@ -256,20 +268,25 @@ public class InventoryManagementSystemApplication extends JFrame implements Json
         }
 
         if (command.equals("Save")) {
-            if (!login) {
+            if (!admin.isLoggedIn()) {
                 loginPanel.setPurpose(LoginPanel.SAVE);
-                switchToLoginPanel();
+                displayLoginDialog();
+                if (admin.isLoggedIn()) {
+                    save();
+                }
+//                switchToLoginPanel();
             } else {
                 save();
             }
         } else if (command.equals("Load")) {
-            if (!login) {
-                loginPanel.setPurpose(LoginPanel.LOAD);
-                switchToLoginPanel();
-            } else {
+            if (admin.isLoggedIn()) {
                 load();
+            } else {
+                loginPanel.setPurpose(LoginPanel.LOAD);
+                displayLoginDialog();
             }
         } else if (command.equals("LogOut")) {
+            adminController.logout();
             setLoginStatus(false);
         }
     }
@@ -368,6 +385,19 @@ public class InventoryManagementSystemApplication extends JFrame implements Json
             } else if (result == LoginPanel.ADMIN) {
                 switchToControlPanel();
             }
+        }
+    }
+
+
+
+
+    public void handleLoginAttempt() {
+        if (admin.isLoggedIn()) {
+            if (admin.isAdminLoggedIn()) {
+
+            }
+        } else {
+
         }
     }
 
