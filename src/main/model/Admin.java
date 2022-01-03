@@ -3,28 +3,26 @@ package model;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import persistence.JsonConvertible;
+import ui.Viewable;
+import ui.table.ViewableTableEntryConvertibleModel;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.List;
 
 //represents administration that have their own accounts
 //will contain a list of login accounts.
 //Written to provide a functionality for Inventory management system application.
-public class Admin implements JsonConvertible {
+public class Admin extends Viewable implements JsonConvertible {
+
 
 //    public static final int ADMIN_ACCESS = -1;
 //    public static final int INVENTORY_ACCESS = 1;
     private static Admin admin = new Admin();
-
-
-    public static Admin getAdmin() {
-        return admin;
-    }
-
-
+    private LoginAccount currentAccount;
     //represents each individual login account.
     //Must be distinguished from accounts that contain information about inventory update.
-    private class LoginAccount implements JsonConvertible {
+    public static class LoginAccount extends ViewableTableEntryConvertibleModel implements JsonConvertible {
 
         //Once a login account is created, no data can be changed.
         private final String id;
@@ -34,10 +32,18 @@ public class Admin implements JsonConvertible {
         private final int personalCode;
         private boolean isAdmin;
 
+        public enum DataList{
+            ID, PW, NAME, BIRTHDAY, PERSONAL_CODE, IS_ADMIN
+        }
 
         //EFFECTS: create a new account that can access inventory and/or admin and return it.
         private LoginAccount(String id, String password, String name, LocalDate birthDay,
                              int personalCode, boolean isAdmin) {
+            super(new String[]{
+                DataList.ID.toString(), DataList.PW.toString(),
+                    DataList.NAME.toString(), DataList.BIRTHDAY.toString(), DataList.PERSONAL_CODE.toString(),
+                    DataList.IS_ADMIN.toString()
+            });
             this.id = id;
             this.pw = password;
             this.name = name;
@@ -50,6 +56,11 @@ public class Admin implements JsonConvertible {
         //REQUIRES: data in json format must contain all the fields of this class with matching name.
         //EFFECTS: create a new account with data in json format
         private LoginAccount(JSONObject jsonLoginAccount) {
+            super(new String[]{
+                    DataList.ID.toString(), DataList.PW.toString(),
+                    DataList.NAME.toString(), DataList.BIRTHDAY.toString(), DataList.PERSONAL_CODE.toString(),
+                    DataList.IS_ADMIN.toString()
+            });
             id = jsonLoginAccount.getString("id");
             pw = jsonLoginAccount.getString("pw");
             name = jsonLoginAccount.getString("name");
@@ -115,16 +126,11 @@ public class Admin implements JsonConvertible {
             return json;
         }
 
-//        //MODIFIES: this
-//        //EFFECTS: create a login account that can access the application
-//        //return true if successful. false otherwise
-//        public LoginAccount createLoginAccount(String id, String password, String name, LocalDate birthDay,
-//                                       int personalCode, boolean isAdmin) {
-//            if (!isAdminMember(this)) {
-//                return null;
-//            }
-//            return (Admin.this.createLoginAccount(id, password, name, birthDay, personalCode, isAdmin));
-//        }
+        @Override
+        public Object[] convertToTableEntry() {
+            return new Object[]{id, pw, name, birthday, personalCode, personalCode, isAdmin
+            };
+        }
     }
 
     //list of login accounts. there is no limit on number of accounts but once an account is added,
@@ -135,6 +141,7 @@ public class Admin implements JsonConvertible {
     //EFFECTS: create a new administer.
     public Admin() {
         accounts = new ArrayList<>();
+        currentAccount = null;
     }
 
     //REQUIRES: JSONObject must have all information needed to build admin with the matching name
@@ -143,6 +150,17 @@ public class Admin implements JsonConvertible {
         accounts = new ArrayList<>();
         JSONArray jsonAccounts = jsonAdmin.getJSONArray("accounts");
         jsonAccounts.forEach(json -> accounts.add(new LoginAccount((JSONObject)json)));
+        currentAccount = null;
+    }
+
+
+
+    public static Admin getAdmin() {
+        return admin;
+    }
+
+    public List<LoginAccount> getAccounts() {
+        return accounts;
     }
 
 
@@ -206,6 +224,14 @@ public class Admin implements JsonConvertible {
         return false;
     }
 
+    public LoginAccount getLoginAccount(String id, String pw) {
+        LoginAccount account = getLoginAccount(id);
+        if (account == null || !account.passwordMatch(pw)) {
+            return null;
+        }
+        return  account;
+    }
+
     //Only for when the admin is first constructed and so there is no admin member
     //REQUIRES: before calling this, the caller must ensure the user of the application is one of the admin members
     //MODIFIES: this
@@ -244,6 +270,18 @@ public class Admin implements JsonConvertible {
             return true;
         }
         return false;
+    }
+
+    public void setLoginAccount(LoginAccount account) {
+        currentAccount = account;
+    }
+
+    public boolean isLoggedIn() {
+        return currentAccount != null;
+    }
+
+    public boolean isAdminLoggedIn() {
+        return currentAccount != null && currentAccount.isAdmin();
     }
 
 

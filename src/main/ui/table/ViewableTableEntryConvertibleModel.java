@@ -11,9 +11,6 @@ public abstract class ViewableTableEntryConvertibleModel extends AbstractViewabl
         this.columnNames = columnNames;
     }
 
-    public ViewableTableEntryConvertibleModel() {
-    }
-
     public String[] getColumnNames() {
         return columnNames;
     }

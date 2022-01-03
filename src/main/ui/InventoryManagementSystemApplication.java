@@ -6,6 +6,7 @@ import org.json.JSONObject;
 import persistence.JsonConvertible;
 import persistence.Reader;
 import persistence.Writer;
+import ui.adminpanel.controller.AdminController;
 import ui.adminpanel.view.AdminViewPanel;
 import ui.adminpanel.view.LoginPanel;
 import ui.inventorypanel.controller.InventoryController;
@@ -40,6 +41,7 @@ public class InventoryManagementSystemApplication extends JFrame implements Json
     private LoginPanel loginPanel;
     private LedgerPanel ledgerPanel;
     private AdminViewPanel adminPanel;
+    private AdminController adminController;
     private JMenuBar menuBar;
     private Admin admin;
     private Ledger ledger;
@@ -97,7 +99,7 @@ public class InventoryManagementSystemApplication extends JFrame implements Json
         mainPanel = new JPanel();
         cardLayout = new CardLayout();
 //        ledgerPanel = new LedgerPanel(ledger);
-        adminPanel = new AdminViewPanel(admin, this);
+        adminPanel = new AdminViewPanel(admin);
         if (loginPanel == null) {
             loginPanel = new LoginPanel(admin, this);
         }
@@ -317,7 +319,7 @@ public class InventoryManagementSystemApplication extends JFrame implements Json
     //MODIFIES: this
     //EFFECTS: after succeeding login, set the current to the account
     public void setLoginAccount(String id) {
-        adminPanel.setLoginAccount(id);
+//        adminController.setID
     }
 
 
@@ -326,7 +328,7 @@ public class InventoryManagementSystemApplication extends JFrame implements Json
     //EFFECTS: set login status true and save the current state
     public void setLoginStatus(boolean value) {
         if (login == true && value == false) {
-            adminPanel.setLoginAccount(null);
+//            adminController.setLoginAccount(null);
             login = false;
             openNewFile();
             return;

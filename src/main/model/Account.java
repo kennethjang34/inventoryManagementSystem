@@ -45,6 +45,10 @@ public class Account extends ui.table.ViewableTableEntryConvertibleModel impleme
 
     //EFFECTS: create a new account with the given info
     public Account(int code, String description, LocalDate date, InventoryTag tag) {
+        super(new String[]{DataList.CODE.toString(), DataList.ID.toString(), DataList.DATE.toString(),
+                DataList.LOCATION.toString(), DataList.AVERAGE_PRICE.toString(),
+                DataList.AVERAGE_COST.toString(), DataList.QUANTITY.toString(), DataList.DESCRIPTION.toString()
+        });
         this.code = "" + code;
         this.id = tag.getId();
         this.location = tag.getLocation();
