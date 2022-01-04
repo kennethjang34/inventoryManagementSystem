@@ -3,6 +3,7 @@ package ui.adminpanel.view;
 import model.Admin;
 import ui.AbstractLoginAccountPrompter;
 import ui.InventoryManagementSystemApplication;
+import ui.adminpanel.controller.AdminController;
 
 import javax.swing.*;
 import java.awt.*;
@@ -19,17 +20,17 @@ public class LoginPanel extends JPanel {
     private final JPasswordField pwField = new JPasswordField(10);
     private final JLabel idLabel = new JLabel("ID");
     private final JLabel pwLabel = new JLabel("PW");
-    private final InventoryManagementSystemApplication application;
     public static final String LOGIN = "login";
     public static final String RETRIEVE = "retrieve";
     public static final int CANCEL = -1;
     public static final int SAVE = 0;
     public static final int LOAD = 1;
     public static final int ADMIN = 2;
-    private Admin admin;
     private RetrievePrompter retrievePanel = RetrievePrompter.getRetrievePrompter();
     private JButton loginButton;
-
+    private JButton retrieveButton;
+    private JButton cancelButton;
+    private JDialog dialog;
     //MODIFIES: this
     //EFFECTS: set the purpose of this login attempt
     public void setPurpose(int purpose) {
@@ -40,14 +41,12 @@ public class LoginPanel extends JPanel {
     }
 
     //EFFECTS: create a new panel that is used to process user login attempt/register a new account/retrieve password
-    public LoginPanel(Admin admin, InventoryManagementSystemApplication application) {
+    public LoginPanel() {
 //        JDialog dialog = new JDialog();
 //        dialog.setLayout(new FlowLayout());
 //        JLabel descriptionLabel = new JLabel();
 //        descriptionLabel.setLayout(new BorderLayout());
 //        descriptionLabel.add()
-        this.application = application;
-        this.admin = admin;
         pwField.setActionCommand(LOGIN);
         add(idLabel);
         add(idField);
@@ -56,33 +55,19 @@ public class LoginPanel extends JPanel {
         loginButton = new JButton("Login");
         add(loginButton);
         add(new JLabel("To retrieve password, "));
-        JButton retrieveButton = new JButton("press here");
-        retrieveButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                displayRetrievePanel();
-            }
-        });
-        retrieveButton.setActionCommand(RETRIEVE);
+        retrieveButton = new JButton("press here");
+//        retrieveButton.setActionCommand(RETRIEVE);
         add(retrieveButton);
         JButton cancelButton = new JButton("Cancel");
-        cancelButton.addActionListener(e -> application.dataChangeHandler(CANCEL));
+        cancelButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                dialog.setVisible(false);
+            }
+        });
+//        cancelButton.addActionListener(e -> application.dataChangeHandler(CANCEL));
         add(cancelButton);
         setPreferredSize(new Dimension(400, 500));
-    }
-
-
-
-
-    //MODIFIES: this
-    //EFFECTS: display the retrieve panel of this
-    private void displayRetrievePanel() {
-        retrievePanel.setSize(600, 400);
-        JDialog dialog = new JDialog(application, true);
-        dialog.setLayout(new FlowLayout());
-        dialog.setSize(600, 400);
-        dialog.add(retrievePanel);
-        dialog.setVisible(true);
     }
 
 
@@ -104,13 +89,20 @@ public class LoginPanel extends JPanel {
         return retrievePanel;
     }
 
+
+
     public JButton getLoginButton() {
         return loginButton;
     }
 
-    public Admin getAdmin() {
-        return admin;
+    public JButton getRetrieveButton() {
+        return retrieveButton;
     }
+
+    public JButton getCancelButton() {
+        return cancelButton;
+    }
+
 
     public boolean isAdmin() {
         return isAdmin;
@@ -128,15 +120,20 @@ public class LoginPanel extends JPanel {
         return pwField.getPassword();
     }
 
+    public JDialog getLoginDialog() {
+        return dialog;
+    }
+
 
     public void displayLoginDialog() {
-        JDialog dialog = new JDialog();
+        dialog = new JDialog();
         dialog.add(this);
-        dialog.setModal(true);
+        dialog.setModalityType(Dialog.DEFAULT_MODALITY_TYPE);
         dialog.pack();
         dialog.setVisible(true);
     }
 
-
-
+    public void displayLoginSuccessful() {
+        JOptionPane.showMessageDialog(this, "Login successful");
+    }
 }

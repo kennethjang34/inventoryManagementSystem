@@ -30,6 +30,9 @@ public class RowConverterViewerTableModel extends AbstractTableModel implements 
     public RowConverterViewerTableModel(List<? extends ViewableTableEntryConvertibleModel> entries) {
         data = new LinkedHashMap<>(entries.size());
         tableEntries = new LinkedList<>();
+        if (entries.isEmpty()) {
+            return;
+        }
         for (ViewableTableEntryConvertibleModel entry: entries) {
             entry.addDataChangeListener(this);
             data.put(entry, createRow(entry.convertToTableEntry()));

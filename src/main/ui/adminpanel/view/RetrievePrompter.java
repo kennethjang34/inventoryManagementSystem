@@ -5,6 +5,7 @@ import ui.AbstractLoginAccountPrompter;
 import ui.InventoryManagementSystemApplication;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.time.LocalDate;
@@ -54,6 +55,15 @@ public class RetrievePrompter extends AbstractLoginAccountPrompter {
 
     public String getBirthDayFieldInput() {
         return birthdayField.getText();
+    }
+
+    public static void displayRetrievePrompter() {
+        prompter.setPreferredSize(new Dimension(600, 400));
+        JDialog dialog = new JDialog();
+        dialog.add(prompter);
+        dialog.pack();
+        dialog.setModalityType(Dialog.DEFAULT_MODALITY_TYPE);
+        dialog.setVisible(true);
     }
 
 }

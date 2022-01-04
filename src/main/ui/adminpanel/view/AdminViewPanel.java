@@ -1,39 +1,40 @@
 package ui.adminpanel.view;
 
+import model.Account;
 import model.Admin;
-import ui.AbstractLoginAccountPrompter;
-import ui.InventoryManagementSystemApplication;
 import ui.table.RowConverterViewerTableModel;
 
 import javax.swing.*;
-import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.time.LocalDate;
 
 //NOTE: planning to make AdminPanel extend Admin directly
 //A panel that lets the user deal with administrative jobs
 public class AdminViewPanel extends JPanel {
     private Admin admin;
-    private RegisterPrompter registerPanel;
+    private RegisterPrompter registerPrompter;
+    private RetrievePrompter retrievePrompter;
+    private LoginPanel loginPanel;
     private JTable accountsTable;
+    private JButton createButton;
 
-//
-//    //MODIFIES: this
-//    //EFFECTS: set login account
-//    public void setLoginAccount(String id) {
-//        //assert admin.getLoginAccount(id) != null;
-////        loggedInID = id;
-//    }
+
+
 
     //EFFECTS: create a new admin panel with the given admin and application
     public AdminViewPanel(Admin admin) {
         this.admin = admin;
-        registerPanel = RegisterPrompter.getRegisterPrompter();
+        createButton = new JButton("Sign-up");
+        add(createButton);
+        registerPrompter = RegisterPrompter.getRegisterPrompter();
+        retrievePrompter = RetrievePrompter.getRetrievePrompter();
+        loginPanel = new LoginPanel();
         accountsTable = new JTable();
-        accountsTable.setModel(new RowConverterViewerTableModel(admin.getAccounts()));
-        add(new JScrollPane(accountsTable));
-        accountsTable.setVisible(false);
+        accountsTable.setModel(new RowConverterViewerTableModel(admin.getAccounts(), Account.getDataListNames()));
+        JScrollPane scrollPane = new JScrollPane(accountsTable);
+        add(scrollPane);
+        scrollPane.setVisible(false);
+//        accountsTable.setVisible(false);
     }
 
     public void setAccountsTableVisible(boolean visible) {
@@ -41,8 +42,22 @@ public class AdminViewPanel extends JPanel {
     }
 
     public RegisterPrompter getRegisterPrompter() {
-        return registerPanel;
+        return registerPrompter;
     }
+
+    public RetrievePrompter getRetrievePrompter() {
+        return retrievePrompter;
+    }
+
+
+    public LoginPanel getLoginPanel() {
+        return loginPanel;
+    }
+
+    public JButton getCreateButton() {
+        return createButton;
+    }
+
 
 
 

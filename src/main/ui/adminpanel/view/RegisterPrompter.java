@@ -1,14 +1,16 @@
 package ui.adminpanel.view;
 
 
+import jdk.nashorn.internal.scripts.JD;
 import ui.AbstractLoginAccountPrompter;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 //A small panel that will be displayed if the user presses register button to create a new account
-public class RegisterPrompter extends AbstractLoginAccountPrompter implements ActionListener {
+public class RegisterPrompter extends AbstractLoginAccountPrompter {
     private JButton registerButton;
     private JPasswordField pwField = new JPasswordField(10);
     private static final RegisterPrompter prompter = new RegisterPrompter();
@@ -16,7 +18,6 @@ public class RegisterPrompter extends AbstractLoginAccountPrompter implements Ac
     //EFFECTS: create a new register panel with empty text fields.
     private RegisterPrompter() {
         registerButton = new JButton("Register");
-        registerButton.addActionListener(this);
         add(nameLabel);
         add(nameField);
         add(birthdayLabel);
@@ -71,8 +72,15 @@ public class RegisterPrompter extends AbstractLoginAccountPrompter implements Ac
         JOptionPane.showMessageDialog(this, "Creating a new account failed");
     }
 
-    @Override
-    public void actionPerformed(ActionEvent e) {
 
+    public static void displayRegisterPrompter() {
+        prompter.setPreferredSize(new Dimension(600, 400));
+        JDialog dialog = new JDialog();
+        dialog.add(prompter);
+        dialog.pack();
+        dialog.setModalityType(Dialog.DEFAULT_MODALITY_TYPE);
+        dialog.setVisible(true);
     }
+
+
 }

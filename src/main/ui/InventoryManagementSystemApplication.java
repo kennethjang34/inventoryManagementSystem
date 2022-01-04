@@ -36,12 +36,13 @@ public class InventoryManagementSystemApplication extends JFrame implements Json
     public static final int HEIGHT = 850;
     private boolean login;
     //tabbed pane is only for application panels. Login panel won't have any tabs on it
-    private CardLayout cardLayout;
     private JTabbedPane tabbedPane;
-    private LoginPanel loginPanel;
-    private LedgerPanel ledgerPanel;
-    private AdminViewPanel adminPanel;
+//    private LoginPanel loginPanel;
+//    private LedgerPanel ledgerPanel;
+//    private AdminViewPanel adminPanel;
     private AdminController adminController;
+    private InventoryController inventoryController;
+    private LedgerController ledgerController;
     private JMenuBar menuBar;
     private Admin admin;
     private Ledger ledger;
@@ -76,17 +77,18 @@ public class InventoryManagementSystemApplication extends JFrame implements Json
     //EFFECTS: create a tabbed pane for the main panel
     public void createTabbedPane() {
         tabbedPane = new JTabbedPane();
-        InventoryController inventoryController = new InventoryController(inventory, new InventoryViewPanel(inventory));
-        LedgerController ledgerController = new LedgerController(ledger, new LedgerViewPanel(ledger));
+        inventoryController = new InventoryController(inventory, new InventoryViewPanel(inventory));
+        ledgerController = new LedgerController(ledger, new LedgerViewPanel(ledger));
+        adminController = new AdminController(admin, new AdminViewPanel(admin));
         tabbedPane.addTab("Inventory", inventoryController.getView());
         tabbedPane.addTab("Ledger", ledgerController.getView());
-        tabbedPane.addTab("Admin", adminPanel);
+        tabbedPane.addTab("Admin", adminController.getView());
         tabbedPane.addChangeListener(e -> {
             JTabbedPane pane = (JTabbedPane) e.getSource();
             if (pane.getSelectedIndex() == 2) {
                 if (!admin.isAdminLoggedIn() && !admin.isEmpty()) {
-                    loginPanel.setPurpose(loginPanel.ADMIN);
-                    displayLoginDialog();
+//                    loginPanel.setPurpose(loginPanel.ADMIN);
+                    adminController.displayLoginDialog();
                     if (admin.isLoggedIn()) {
                         //testing required
                         if (admin.isAdminLoggedIn()) {
@@ -105,21 +107,13 @@ public class InventoryManagementSystemApplication extends JFrame implements Json
     //EFFECTS: set up the main panel(control panel) for the application and return it
     public void createMainPanel() {
         mainPanel = new JPanel();
-        cardLayout = new CardLayout();
-//        ledgerPanel = new LedgerPanel(ledger);
-        adminPanel = new AdminViewPanel(admin);
-        if (loginPanel == null) {
-            loginPanel = new LoginPanel(admin, this);
-        }
         createTabbedPane();
-        cardLayout.addLayoutComponent(tabbedPane, "ControlPanel");
-        cardLayout.addLayoutComponent(loginPanel, "LoginPanel");
-        //tabbedPane.setPreferredSize(new Dimension(400, 500));
         tabbedPane.setBounds(50, 50, 200, 200);
-        mainPanel.setLayout(cardLayout);
-        mainPanel.add(tabbedPane, "ControlPanel");
-        mainPanel.add(loginPanel, "LoginPanel");
-        cardLayout.show(mainPanel, "ControlPanel");
+        mainPanel.add(tabbedPane);
+//        mainPanel.setLayout(cardLayout);
+//        mainPanel.add(tabbedPane, "ControlPanel");
+//        mainPanel.add(loginPanel, "LoginPanel");
+//        cardLayout.show(mainPanel, "ControlPanel");
     }
 
 
@@ -147,7 +141,7 @@ public class InventoryManagementSystemApplication extends JFrame implements Json
         }
         dialog.add(descriptionLabel, BorderLayout.CENTER);
         dialog.setSize(500, 600);
-        dialog.setVisible(true);
+//        dialog.setVisible(true);
     }
 
 
@@ -155,7 +149,7 @@ public class InventoryManagementSystemApplication extends JFrame implements Json
     //MODIFIES: this
     //EFFECTS: set login true
     public void switchToControlPanel() {
-        cardLayout.show(mainPanel, "ControlPanel");
+//        cardLayout.show(mainPanel, "ControlPanel");
     }
 
 
@@ -165,12 +159,12 @@ public class InventoryManagementSystemApplication extends JFrame implements Json
     public void switchToLoginPanel() {
 //        login = false;
 //        updateDisplay();
-        cardLayout.show(mainPanel, "LoginPanel");
+//        cardLayout.show(mainPanel, "LoginPanel");
     }
 
-    public void displayLoginDialog() {
-        adminController.displayLoginDialog();
-    }
+//    public void displayLoginDialog() {
+//        adminController.displayLoginDialog();
+//    }
 
 
     //EFFECTS: save the status of the program
@@ -269,8 +263,8 @@ public class InventoryManagementSystemApplication extends JFrame implements Json
 
         if (command.equals("Save")) {
             if (!admin.isLoggedIn()) {
-                loginPanel.setPurpose(LoginPanel.SAVE);
-                displayLoginDialog();
+//                loginPanel.setPurpose(LoginPanel.SAVE);
+                adminController.displayLoginDialog();
                 if (admin.isLoggedIn()) {
                     save();
                 }
@@ -282,12 +276,11 @@ public class InventoryManagementSystemApplication extends JFrame implements Json
             if (admin.isLoggedIn()) {
                 load();
             } else {
-                loginPanel.setPurpose(LoginPanel.LOAD);
-                displayLoginDialog();
+//                loginPanel.setPurpose(LoginPanel.LOAD);
+                adminController.displayLoginDialog();
             }
         } else if (command.equals("LogOut")) {
             adminController.logout();
-            setLoginStatus(false);
         }
     }
 
@@ -321,37 +314,8 @@ public class InventoryManagementSystemApplication extends JFrame implements Json
         }
     }
 
-    //MODIFIES: this
-    //EFFECTS: add a new account to the ledger
-    public void addAccount(InventoryTag tag, String description, LocalDate date) {
-        ledgerPanel.addAccount(tag, description, date);
-    }
-
-//    //MODIFIES: this
-//    //EFFECTS: after succeeding login, set the current to the accont
-//    public void setLoginAccount(Admin.LoginAccount account) {
-//        adminPanel.setLoginAccount(account);
-//    }
-
-    //MODIFIES: this
-    //EFFECTS: after succeeding login, set the current to the account
-    public void setLoginAccount(String id) {
-//        adminController.setID
-    }
 
 
-
-    //MODIFIES: this
-    //EFFECTS: set login status true and save the current state
-    public void setLoginStatus(boolean value) {
-        if (login == true && value == false) {
-//            adminController.setLoginAccount(null);
-            login = false;
-            openNewFile();
-            return;
-        }
-        login = value;
-    }
 
     public static void main(String[] args) {
         new InventoryManagementSystemApplication();

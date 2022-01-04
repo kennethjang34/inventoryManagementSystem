@@ -25,6 +25,15 @@ public class Account extends ui.table.ViewableTableEntryConvertibleModel impleme
         CODE, ID, DATE, LOCATION, AVERAGE_PRICE, AVERAGE_COST, QUANTITY, DESCRIPTION
     }
 
+    public static String[] getDataListNames() {
+        return new String[]{DataList.CODE.toString(), DataList.ID.toString(), DataList.DATE.toString(),
+                DataList.LOCATION.toString(), DataList.AVERAGE_PRICE.toString(),
+                DataList.AVERAGE_COST.toString(), DataList.QUANTITY.toString(), DataList.DESCRIPTION.toString()
+        };
+    }
+
+
+
     //EFFECTS: create a new account with the given info
     public Account(int code, String description, LocalDate date,
                    String id, String location, double averageCost,
