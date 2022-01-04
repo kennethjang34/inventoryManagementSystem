@@ -994,6 +994,7 @@ public class InventoryController extends AbstractController<Inventory, Inventory
             sortKeys.add(new RowSorter.SortKey(i, SortOrder.ASCENDING));
         }
         sorter.setSortKeys(sortKeys);
+        sorter.setSortsOnUpdates(true);
         return sorter;
     }
 

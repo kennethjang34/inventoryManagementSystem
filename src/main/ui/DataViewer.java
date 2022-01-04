@@ -1,5 +1,6 @@
 package ui;
 
+import ui.table.DataFactory;
 import ui.table.ViewableTableEntryConvertibleModel;
 
 import java.util.List;
@@ -13,6 +14,8 @@ public interface DataViewer {
 
     void entryAdded(ViewableTableEntryConvertibleModel o);
 
+    void entryAdded(DataFactory source, ViewableTableEntryConvertibleModel added);
+
     void entryAdded(List<? extends ViewableTableEntryConvertibleModel> list);
 
 
@@ -23,4 +26,6 @@ public interface DataViewer {
     void entryUpdated(ViewableTableEntryConvertibleModel source, String property, Object o1, Object o2);
 
     void entryUpdated(ViewableTableEntryConvertibleModel source, Object old, Object newObject);
+
+    void entryRemoved(DataFactory source, ViewableTableEntryConvertibleModel removed);
 }

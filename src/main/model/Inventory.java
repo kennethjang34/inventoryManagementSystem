@@ -6,6 +6,7 @@ import org.json.JSONObject;
 import persistence.JsonConvertible;
 import ui.DataViewer;
 import ui.table.AbstractTableDataFactory;
+import ui.table.DataFactory;
 import ui.table.ViewableTableEntryConvertibleModel;
 
 import java.time.LocalDate;
@@ -139,7 +140,7 @@ public class Inventory extends AbstractTableDataFactory implements JsonConvertib
         }
         Category category = new Category(name);
         categories.put(name, category);
-        changeFirer.fireAdditionEvent(CATEGORY, category);
+        changeFirer.fireAdditionEvent(this, CATEGORY, category);
         EventLog.getInstance().logEvent(new Event("new category " + name + " is created"));
         return true;
     }
@@ -533,6 +534,11 @@ public class Inventory extends AbstractTableDataFactory implements JsonConvertib
     }
 
     @Override
+    public void entryAdded(DataFactory source, ViewableTableEntryConvertibleModel added) {
+
+    }
+
+    @Override
     public void entryAdded(List<? extends ViewableTableEntryConvertibleModel> list) {
 
     }
@@ -581,6 +587,11 @@ public class Inventory extends AbstractTableDataFactory implements JsonConvertib
 
     @Override
     public void entryUpdated(ui.table.ViewableTableEntryConvertibleModel source, Object old, Object newObject) {
+
+    }
+
+    @Override
+    public void entryRemoved(DataFactory source, ViewableTableEntryConvertibleModel removed) {
 
     }
 }

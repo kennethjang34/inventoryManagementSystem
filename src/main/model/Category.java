@@ -4,17 +4,22 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import persistence.JsonConvertible;
 import ui.DataViewer;
+import ui.table.DataFactory;
+import ui.table.TableEntryConvertibleDataFactory;
 import ui.table.ViewableTableEntryConvertibleModel;
 
 import javax.xml.crypto.Data;
 import java.util.*;
 
 //represents a category where similar items belong
-public class Category extends ViewableTableEntryConvertibleModel implements JsonConvertible, DataViewer {
+public class Category extends TableEntryConvertibleDataFactory implements JsonConvertible, DataViewer {
     private final String name;
     private int quantity;
     //set containing id's of items belonging to this category
-    private final Set<String> items;
+    private final Map<String, Item> items;
+
+
+
     public static final String[] DATA_LIST = new String[]{
             "Name", "Quantity"
     };
@@ -26,7 +31,7 @@ public class Category extends ViewableTableEntryConvertibleModel implements Json
         super(DATA_LIST);
         this.name = category;
         quantity = 0;
-        items = new HashSet<>();
+        items = new HashMap<>();
     }
 
     //REQUIRES: the data must be in valid JSONObject form
@@ -35,7 +40,7 @@ public class Category extends ViewableTableEntryConvertibleModel implements Json
         super(DATA_LIST);
         name = json.getString("name");
         quantity = json.getInt("quantity");
-        items = new HashSet<>();
+        items = new HashMap();
         JSONArray jsonItems = json.getJSONArray("items");
 
     }
@@ -58,14 +63,18 @@ public class Category extends ViewableTableEntryConvertibleModel implements Json
     //EFFECTS: return the list of items belonging to this category
     public List<String> getItemIDs() {
         List<String> ids = new ArrayList<>();
-        ids.addAll(items);
+        ids.addAll(items.keySet());
         return ids;
     }
 
     //EFFECTS: return true if this category contains a particular item of the name specified
     //Otherwise, return false
     public boolean contains(String name) {
-        return items.contains(name);
+        return items.containsKey(name);
+    }
+
+    public boolean contains(Item item) {
+        return items.containsValue(item);
     }
 
 
@@ -74,8 +83,9 @@ public class Category extends ViewableTableEntryConvertibleModel implements Json
     //EFFECTS: if there is no such item, add a new item to this category, return true
     //Otherwise, return false
     public boolean addItem(Item item) {
-        if (items.add(item.getId())) {
+        if (items.put(item.getId(), item) == null) {
             changeFirer.fireUpdateEvent(this);
+            changeFirer.fireAdditionEvent(this, Inventory.ITEM, item);
             return true;
         }
         return false;
@@ -86,8 +96,10 @@ public class Category extends ViewableTableEntryConvertibleModel implements Json
     //EFFECTS: remove the item with the given name from this category
     //The item removed will also have its category changed from this
     public boolean removeItem(String id) {
-        if (items.remove(id)) {
+        Item item = items.remove(id);
+        if (item != null) {
             changeFirer.fireUpdateEvent(this);
+            changeFirer.fireRemovalEvent(this, Inventory.ITEM, item);
             return true;
         }
         return false;
@@ -116,7 +128,7 @@ public class Category extends ViewableTableEntryConvertibleModel implements Json
         json.put("name", name);
         json.put("quantity", quantity);
         List<String> itemList = new ArrayList<>();
-        itemList.addAll(items);
+        itemList.addAll(items.keySet());
         json.put("items", itemList);
         return json;
     }
@@ -129,10 +141,25 @@ public class Category extends ViewableTableEntryConvertibleModel implements Json
     }
 
     @Override
+    public Object[] getDataList() {
+        return new Object[0];
+    }
+
+    @Override
+    public List<String> getContentsOf(String property) {
+        return null;
+    }
+
+    @Override
     public String[] getColumnNames() {
         return new String[]{
                 "Name", "Quantity"
         };
+    }
+
+    @Override
+    public List<? extends ViewableTableEntryConvertibleModel> getEntryModels() {
+        return null;
     }
 
 
@@ -157,6 +184,11 @@ public class Category extends ViewableTableEntryConvertibleModel implements Json
     }
 
     @Override
+    public void entryAdded(DataFactory source, ViewableTableEntryConvertibleModel added) {
+
+    }
+
+    @Override
     public void entryAdded(List<? extends ViewableTableEntryConvertibleModel> list) {
 
     }
@@ -173,6 +205,11 @@ public class Category extends ViewableTableEntryConvertibleModel implements Json
 
     @Override
     public void entryUpdated(ViewableTableEntryConvertibleModel source, Object old, Object newObject) {
+
+    }
+
+    @Override
+    public void entryRemoved(DataFactory source, ViewableTableEntryConvertibleModel removed) {
 
     }
 

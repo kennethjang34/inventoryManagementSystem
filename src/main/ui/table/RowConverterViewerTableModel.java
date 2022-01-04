@@ -410,6 +410,11 @@ public class RowConverterViewerTableModel extends AbstractTableModel implements 
     }
 
     @Override
+    public void entryAdded(DataFactory source, ViewableTableEntryConvertibleModel added) {
+
+    }
+
+    @Override
     public void entryAdded(List<? extends ViewableTableEntryConvertibleModel> list) {
 
     }
@@ -460,6 +465,11 @@ public class RowConverterViewerTableModel extends AbstractTableModel implements 
                 return;
             }
         }
+    }
+
+    @Override
+    public void entryRemoved(DataFactory source, ViewableTableEntryConvertibleModel removed) {
+
     }
 
 

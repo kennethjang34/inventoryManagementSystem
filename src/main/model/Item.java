@@ -5,6 +5,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import persistence.JsonConvertible;
 import ui.DataViewer;
+import ui.table.DataFactory;
 import ui.table.TableEntryConvertibleDataFactory;
 import ui.table.ViewableTableEntryConvertibleModel;
 
@@ -104,6 +105,11 @@ public class Item extends TableEntryConvertibleDataFactory implements JsonConver
     }
 
     @Override
+    public void entryAdded(DataFactory source, ViewableTableEntryConvertibleModel added) {
+
+    }
+
+    @Override
     public void entryAdded(List<? extends ViewableTableEntryConvertibleModel> list) {
 
     }
@@ -143,8 +149,10 @@ public class Item extends TableEntryConvertibleDataFactory implements JsonConver
 
     }
 
+    @Override
+    public void entryRemoved(DataFactory source, ViewableTableEntryConvertibleModel removed) {
 
-
+    }
 
 
     public int getProcessedQty() {

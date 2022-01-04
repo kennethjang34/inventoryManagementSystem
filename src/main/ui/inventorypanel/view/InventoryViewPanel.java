@@ -2,9 +2,11 @@ package ui.inventorypanel.view;
 
 import model.Category;
 import model.Inventory;
+import model.Item;
 import model.Product;
 import ui.*;
 import ui.table.ButtonTable;
+import ui.table.DataFactory;
 import ui.table.RowConverterViewerTableModel;
 import ui.inventorypanel.CategoryGenerator;
 import ui.inventorypanel.ItemGenerator;
@@ -150,30 +152,52 @@ public class InventoryViewPanel extends JPanel {
         inventory.addDataChangeListener(Inventory.PRODUCT, productTableModel);
         itemFilter = new JComboBox();
         categoryFilter = new FilterBox(inventory, Inventory.CATEGORY) {
-            //When item's category is changed, this method will be invoked
+            //For when a new item is added to the category or removed from it
             @Override
-            public void entryUpdated(ViewableTableEntryConvertibleModel entry) {
-                List<String> itemIDList;
-                Category updatedCategory = (Category) entry;
-                String selectedItem = (String) getSelectedItem();
-                if (selectedItem.equals(FilterBox.ALL)) {
-                    itemIDList = inventory.getIDs();
-                } else if (updatedCategory.getName().equals(selectedItem)){
-                    itemIDList = updatedCategory.getItemIDs();
-                } else {
-                    return;
+            public void entryAdded(DataFactory source, ViewableTableEntryConvertibleModel added) {
+                if (added instanceof Category) {
+                    added.addDataChangeListener(Inventory.ITEM, this);
+                    if (getItemCount() == 1 && getItemAt(0).equals(EMPTY)) {
+                        removeItemAt(0);
+                        addItem(ALL);
+                        addItem(TYPE_MANUALLY);
+                    }
+                    addItem(added.toString());
+                } else if (added instanceof Item) {
+                    Item item = (Item) added;
+                    if (categoryFilter.getSelectedItem().equals(item.getCategory().toString())
+                            || categoryFilter.getSelectedItem().equals(FilterBox.ALL)) {
+                        if (itemFilter.getSelectedItem().equals(FilterBox.EMPTY)) {
+                            itemFilter.removeAllItems();
+                            itemFilter.addItem(ALL);
+                            itemFilter.addItem(TYPE_MANUALLY);
+                        }
+                        itemFilter.addItem(item.getId());
+                    }
                 }
-                if (itemIDList.isEmpty()) {
-                    itemIDList.add(FilterBox.EMPTY);
-                } else {
-                    itemIDList.add(0, FilterBox.ALL);
-                    itemIDList.add(1, FilterBox.TYPE_MANUALLY);
-                }
-                itemFilter.setModel(new DefaultComboBoxModel(itemIDList.toArray(new String[0])));
-                //the next line is for firing itemStateChange event so that the listener added to this inside InventoryController
-                //can be notified and create a new filter for the stock table.
-                itemFilter.setSelectedItem(itemFilter.getItemAt(0));
             }
+
+            @Override
+            public void entryRemoved(DataFactory source, ViewableTableEntryConvertibleModel entry) {
+                if (entry instanceof  Category) {
+                    entry.removeListener(this);
+                    removeItem(entry.toString());
+                } else if (entry instanceof  Item){
+                    Item item = (Item) entry;
+                    Category category = (Category) source;
+                    if (categoryFilter.getSelectedItem().equals(category.getName())|| categoryFilter.getSelectedItem().equals(FilterBox.ALL)) {
+                        itemFilter.removeItem(item.getId());
+                        if (itemFilter.getItemCount() == 2) {
+                            itemFilter.removeAllItems();
+                            itemFilter.addItem(EMPTY);
+                        } else {
+                            itemFilter.setSelectedIndex(0);
+                        }
+                    }
+                }
+            }
+
+
         };
         categoryField = new JTextField(10);
         itemField = new JTextField(10);

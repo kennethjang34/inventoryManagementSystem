@@ -2,6 +2,7 @@ package ui;
 
 import ui.table.AbstractTableDataFactory;
 import ui.DataViewer;
+import ui.table.DataFactory;
 import ui.table.ViewableTableEntryConvertibleModel;
 
 import javax.swing.*;
@@ -49,13 +50,18 @@ public class FilterBox extends JComboBox implements DataViewer {
 
     @Override
     public void entryAdded(ViewableTableEntryConvertibleModel entry) {
-        entry.addUpdateListener(this);
+        entry.addDataChangeListener(this);
         if (getItemCount() == 1 && getItemAt(0).equals(EMPTY)) {
             removeItemAt(0);
             addItem(ALL);
             addItem(TYPE_MANUALLY);
         }
         addItem(entry.toString());
+    }
+
+    @Override
+    public void entryAdded(DataFactory source, ViewableTableEntryConvertibleModel added) {
+
     }
 
     @Override
@@ -74,10 +80,15 @@ public class FilterBox extends JComboBox implements DataViewer {
         addItem(o2);
     }
 
+    @Override
+    public void entryRemoved(DataFactory source, ViewableTableEntryConvertibleModel removed) {
+
+    }
+
 
     @Override
     public void entryUpdated(ViewableTableEntryConvertibleModel updatedEntry) {
-        
+
     }
 
     @Override

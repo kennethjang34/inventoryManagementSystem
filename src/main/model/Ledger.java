@@ -5,6 +5,7 @@ import org.json.JSONObject;
 import persistence.JsonConvertible;
 import ui.DataViewer;
 import ui.table.AbstractTableDataFactory;
+import ui.table.DataFactory;
 import ui.table.ViewableTableEntryConvertibleModel;
 
 import javax.xml.crypto.Data;
@@ -53,6 +54,11 @@ public class Ledger extends AbstractTableDataFactory implements JsonConvertible,
         }
     }
 
+    @Override
+    public void entryAdded(DataFactory source, ViewableTableEntryConvertibleModel added) {
+
+    }
+
 
     //for new products
     @Override
@@ -78,6 +84,11 @@ public class Ledger extends AbstractTableDataFactory implements JsonConvertible,
 
     @Override
     public void entryUpdated(ViewableTableEntryConvertibleModel source, Object old, Object newObject) {
+
+    }
+
+    @Override
+    public void entryRemoved(DataFactory source, ViewableTableEntryConvertibleModel removed) {
 
     }
 
