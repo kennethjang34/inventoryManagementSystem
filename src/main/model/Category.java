@@ -74,7 +74,11 @@ public class Category extends ViewableTableEntryConvertibleModel implements Json
     //EFFECTS: if there is no such item, add a new item to this category, return true
     //Otherwise, return false
     public boolean addItem(Item item) {
-        return items.add(item.getId());
+        if (items.add(item.getId())) {
+            changeFirer.fireUpdateEvent(this);
+            return true;
+        }
+        return false;
     }
 
 
@@ -82,7 +86,11 @@ public class Category extends ViewableTableEntryConvertibleModel implements Json
     //EFFECTS: remove the item with the given name from this category
     //The item removed will also have its category changed from this
     public boolean removeItem(String id) {
-        return  items.remove(id);
+        if (items.remove(id)) {
+            changeFirer.fireUpdateEvent(this);
+            return true;
+        }
+        return false;
     }
 
 

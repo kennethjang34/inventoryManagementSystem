@@ -1,5 +1,6 @@
 package ui.adminpanel.view;
 
+import jdk.nashorn.internal.scripts.JD;
 import model.Admin;
 import ui.AbstractLoginAccountPrompter;
 import ui.InventoryManagementSystemApplication;
@@ -14,6 +15,7 @@ import java.time.LocalDate;
 public class RetrievePrompter extends AbstractLoginAccountPrompter {
     private JButton retrieveButton;
     private Admin admin = Admin.getAdmin();
+    private static JDialog dialog;
 
     //for singleton pattern
     private static final RetrievePrompter prompter = new RetrievePrompter();
@@ -59,13 +61,16 @@ public class RetrievePrompter extends AbstractLoginAccountPrompter {
 
     public static void displayRetrievePrompter() {
         prompter.setPreferredSize(new Dimension(600, 400));
-        JDialog dialog = new JDialog();
+        dialog = new JDialog();
         dialog.add(prompter);
         dialog.pack();
         dialog.setModalityType(Dialog.DEFAULT_MODALITY_TYPE);
         dialog.setVisible(true);
     }
 
+    public static JDialog getDialog() {
+        return dialog;
+    }
 }
 
 

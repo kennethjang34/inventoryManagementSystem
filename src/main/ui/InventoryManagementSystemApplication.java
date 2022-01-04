@@ -86,17 +86,18 @@ public class InventoryManagementSystemApplication extends JFrame implements Json
         tabbedPane.addChangeListener(e -> {
             JTabbedPane pane = (JTabbedPane) e.getSource();
             if (pane.getSelectedIndex() == 2) {
-                if (!admin.isAdminLoggedIn() && !admin.isEmpty()) {
+                if (admin.isAdminLoggedIn() || admin.isEmpty()) {
+                    pane.setSelectedIndex(2);
+                } else if (!admin.isLoggedIn()) {
 //                    loginPanel.setPurpose(loginPanel.ADMIN);
                     adminController.displayLoginDialog();
-                    if (admin.isLoggedIn()) {
-                        //testing required
-                        if (admin.isAdminLoggedIn()) {
-                            pane.setSelectedIndex(2);
-                        } else {
-                            JOptionPane.showMessageDialog(tabbedPane, "you are not an admin member");
-                        }
+                    if (admin.isAdminLoggedIn()) {
+                        pane.setSelectedIndex(2);
+                    } else {
+                            JOptionPane.showMessageDialog(tabbedPane, "you don't have access to admin");
                     }
+                } else {
+                    JOptionPane.showMessageDialog(tabbedPane, "you don't have access to admin");
                 }
             }
         });
@@ -144,13 +145,13 @@ public class InventoryManagementSystemApplication extends JFrame implements Json
 //        dialog.setVisible(true);
     }
 
-
-
-    //MODIFIES: this
-    //EFFECTS: set login true
-    public void switchToControlPanel() {
-//        cardLayout.show(mainPanel, "ControlPanel");
-    }
+//
+//
+//    //MODIFIES: this
+//    //EFFECTS: set login true
+//    public void switchToControlPanel() {
+////        cardLayout.show(mainPanel, "ControlPanel");
+//    }
 
 
 
@@ -211,7 +212,6 @@ public class InventoryManagementSystemApplication extends JFrame implements Json
     //MODIFIES: this
     //EFFECTS: turn into the empty program after log-out
     public void openNewFile() {
-
         getContentPane().removeAll();
         setVisible(false);
         repaint();
@@ -260,7 +260,6 @@ public class InventoryManagementSystemApplication extends JFrame implements Json
             printLog(EventLog.getInstance());
             System.exit(0);
         }
-
         if (command.equals("Save")) {
             if (!admin.isLoggedIn()) {
 //                loginPanel.setPurpose(LoginPanel.SAVE);
@@ -273,12 +272,10 @@ public class InventoryManagementSystemApplication extends JFrame implements Json
                 save();
             }
         } else if (command.equals("Load")) {
-            if (admin.isLoggedIn()) {
-                load();
-            } else {
-//                loginPanel.setPurpose(LoginPanel.LOAD);
+            if (!admin.isLoggedIn()) {
                 adminController.displayLoginDialog();
             }
+            load();
         } else if (command.equals("LogOut")) {
             adminController.logout();
         }
@@ -332,25 +329,25 @@ public class InventoryManagementSystemApplication extends JFrame implements Json
         return json;
     }
 
-    //MODIFIES: this
-    //EFFECTS: based on whether the login attempt succeeds or not, or whether the user has cancelled the requiest,
-    //save/load data or go back to the control panel
-    public void dataChangeHandler(int result) {
-        if (result == LoginPanel.CANCEL) {
-            switchToControlPanel();
-        } else {
-            if (result == LoginPanel.LOAD) {
-                load();
-                switchToControlPanel();
-            } else if (result == LoginPanel.SAVE) {
-                save();
-                JOptionPane.showMessageDialog(this, "System saved");
-                switchToControlPanel();
-            } else if (result == LoginPanel.ADMIN) {
-                switchToControlPanel();
-            }
-        }
-    }
+//    //MODIFIES: this
+//    //EFFECTS: based on whether the login attempt succeeds or not, or whether the user has cancelled the requiest,
+//    //save/load data or go back to the control panel
+//    public void dataChangeHandler(int result) {
+//        if (result == LoginPanel.CANCEL) {
+//
+//        } else {
+//            if (result == LoginPanel.LOAD) {
+//                load();
+//
+//            } else if (result == LoginPanel.SAVE) {
+//                save();
+//                JOptionPane.showMessageDialog(this, "System saved");
+//
+//            } else if (result == LoginPanel.ADMIN) {
+//
+//            }
+//        }
+//    }
 
 
 

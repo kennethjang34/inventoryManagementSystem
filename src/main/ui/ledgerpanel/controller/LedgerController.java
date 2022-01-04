@@ -33,8 +33,8 @@ public class LedgerController extends AbstractController<Ledger, LedgerViewPanel
         @Override
         public void actionPerformed(ActionEvent e) {
             ButtonTable ledgerTable = view.getLedgerTable();
-            int row = ledgerTable.findRow(e.getSource());
-            int column = ledgerTable.findColumn(Ledger.DataList.RECORDED_DATE.toString());
+            int row = ledgerTable.findModelRowIndex(e.getSource());
+            int column = ledgerTable.findColumnModelIndex(Ledger.DataList.RECORDED_DATE.toString());
             LocalDate date = (LocalDate) ledgerTable.getValueAt(row, column);
             List<Account> selectedDateAccounts = model.getAccounts(date);
             view.addToAccountsTable(selectedDateAccounts);

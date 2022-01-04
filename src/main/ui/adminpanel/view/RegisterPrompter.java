@@ -13,7 +13,9 @@ import java.awt.event.ActionListener;
 public class RegisterPrompter extends AbstractLoginAccountPrompter {
     private JButton registerButton;
     private JPasswordField pwField = new JPasswordField(10);
+    private JCheckBox checkBox;
     private static final RegisterPrompter prompter = new RegisterPrompter();
+    private static JDialog dialog;
 
     //EFFECTS: create a new register panel with empty text fields.
     private RegisterPrompter() {
@@ -28,6 +30,9 @@ public class RegisterPrompter extends AbstractLoginAccountPrompter {
         add(super.idField);
         add(new JLabel("PW:"));
         add(pwField);
+        checkBox = new JCheckBox("is an admin member?");
+        checkBox.setBounds(new Rectangle(100, 100));
+        add(checkBox);
         add(registerButton);
     }
 
@@ -60,22 +65,26 @@ public class RegisterPrompter extends AbstractLoginAccountPrompter {
         return registerButton;
     }
 
+    public JCheckBox getCheckBox() {
+        return checkBox;
+    }
+
 
     //EFFECTS: display an option pane that indicates the user doesn't
     //have a permission to create a new login account
-    public void displayPermissionDenied() {
-        JOptionPane.showMessageDialog(this, "you are not allowed to create a new login account");
+    public static void displayPermissionDenied() {
+        JOptionPane.showMessageDialog(null, "you are not allowed to create a new login account");
     }
 
     //EFFECTS: display an option pane that indicates the login account wasn't created
-    public void displayFailedRegistration() {
-        JOptionPane.showMessageDialog(this, "Creating a new account failed");
+    public static void displayFailedRegistration() {
+        JOptionPane.showMessageDialog(null, "Creating a new account failed");
     }
 
 
     public static void displayRegisterPrompter() {
         prompter.setPreferredSize(new Dimension(600, 400));
-        JDialog dialog = new JDialog();
+        dialog = new JDialog();
         dialog.add(prompter);
         dialog.pack();
         dialog.setModalityType(Dialog.DEFAULT_MODALITY_TYPE);
@@ -83,4 +92,7 @@ public class RegisterPrompter extends AbstractLoginAccountPrompter {
     }
 
 
+    public static JDialog getDialog() {
+        return dialog;
+    }
 }

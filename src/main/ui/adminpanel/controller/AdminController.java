@@ -16,7 +16,6 @@ import java.time.LocalDate;
 
 //control admin + login status
 public class AdminController extends AbstractController<Admin, AdminViewPanel> {
-    private String loggedInID;
     private InventoryManagementSystemApplication application;
 
     public AdminController(Admin admin, AdminViewPanel adminViewPanel) {
@@ -41,32 +40,38 @@ public class AdminController extends AbstractController<Admin, AdminViewPanel> {
             //EFFECTS: create a new login account and register it in the system.
             @Override
             public void actionPerformed(ActionEvent e) {
-                boolean successful = false;
+
                 int personalCode = Integer.parseInt(registerPrompter.getCodeInput());
                 String birthdayText = registerPrompter.getBirthDayInput();
                 LocalDate birthDay = InventoryManagementSystemApplication.convertToLocalDate(birthdayText);
                 //String id = idField.getText();
                 String pw = String.valueOf(registerPrompter.getPWInput());
                 //String name = nameField.getText();
-                if (!model.isEmpty()) {
-                    if (model.isAdminMember(loggedInID)) {
-                        successful = model.createLoginAccount(registerPrompter.getIDInput(), pw, registerPrompter.getNameInput(),
-                                birthDay, personalCode, false);
-                    } else {
-                        registerPrompter.displayPermissionDenied();
+                try {
+                    if (!model.isEmpty()) {
+                        if (model.isAdminLoggedIn()) {
+                            if (registerPrompter.getCheckBox().isSelected()) {
+                                model.createLoginAccount(registerPrompter.getIDInput(), pw, registerPrompter.getNameInput(),
+                                        birthDay, personalCode, true);
+                            } else {
+                                model.createLoginAccount(registerPrompter.getIDInput(), pw, registerPrompter.getNameInput(),
+                                        birthDay, personalCode, false);
+                            }
+                        } else {
+                            registerPrompter.displayPermissionDenied();
 //                    JOptionPane.showMessageDialog(this, "you are not allowed to create "
 //                            + "a new login account in this system");
+                        }
+                    } else {
+                        model.setLoginAccount(model.createLoginAccount(registerPrompter.getIDInput(),
+                                pw, registerPrompter.getNameInput(), birthDay, personalCode, true));
                     }
-                } else {
-                    successful = model.createLoginAccount(registerPrompter.getIDInput(),
-                            pw, registerPrompter.getNameInput(), birthDay, personalCode, true);
-                    loggedInID = registerPrompter.getIDInput();
+                    JDialog registerDialog = RegisterPrompter.getDialog();
+                    JOptionPane.showMessageDialog(registerDialog, "a new account is successfully created");
+                    registerDialog.setVisible(false);
+                } catch (IllegalArgumentException illegalArgumentException) {
+                    displayExceptionMessage(illegalArgumentException);
                 }
-                if (successful) {
-                    JOptionPane.showMessageDialog(view, "a new account is successfully created");
-                    return;
-                }
-                registerPrompter.displayPermissionDenied();
             }
         });
     }
@@ -82,7 +87,8 @@ public class AdminController extends AbstractController<Admin, AdminViewPanel> {
                 String pw = model.retrievePassword(retrievePrompter.getIdFieldInput(),
                         retrievePrompter.getNameFieldInput(), birthday, personalCode);
                 if (pw != null) {
-                    JOptionPane.showMessageDialog(null, "The password is : " + pw);
+                    JOptionPane.showMessageDialog(RetrievePrompter.getDialog(), "The password is : " + pw);
+                    RetrievePrompter.getDialog().setVisible(false);
                 } else {
                     JOptionPane.showMessageDialog(null, "Given info is not correct");
                 }
@@ -92,11 +98,15 @@ public class AdminController extends AbstractController<Admin, AdminViewPanel> {
     }
 
     public void setUpAdminPanel() {
-        JButton registerButton = view.getCreateButton();
-        registerButton.addActionListener(new ActionListener() {
+        JButton createButton = view.getCreateButton();
+        createButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                RegisterPrompter.displayRegisterPrompter();
+                if (model.isAdminLoggedIn() || model.isEmpty()) {
+                    RegisterPrompter.displayRegisterPrompter();
+                } else {
+                    RegisterPrompter.displayPermissionDenied();
+                }
             }
         });
     }
@@ -117,16 +127,17 @@ public class AdminController extends AbstractController<Admin, AdminViewPanel> {
 //                String actionCommand = e.getActionCommand();
                 String id = view.getLoginPanel().getIdFieldInput();
                 char[] pw = view.getLoginPanel().getPwFieldInput();
-                Admin.LoginAccount loginAccount = model.getLoginAccount(id, String.valueOf(pw));
+                Admin.LoginAccount loginAccount = model.getAccount(id, String.valueOf(pw));
                 if (loginAccount == null) {
                     view.getLoginPanel().displayLoginFail();
                 } else {
                     model.setLoginAccount(loginAccount);
                     view.getLoginPanel().displayLoginSuccessful();
+                    view.getLoginPanel().getLoginDialog().setVisible(false);
                     if (model.isAdminLoggedIn()) {
                         view.setAccountsTableVisible(true);
                     } else {
-                        view.setVisible(false);
+                        view.setAccountsTableVisible(false);
                     }
                 }
             }
@@ -163,5 +174,10 @@ public class AdminController extends AbstractController<Admin, AdminViewPanel> {
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
 
+    }
+
+
+    public void displayExceptionMessage(Exception e) {
+        JOptionPane.showMessageDialog(null, e.getMessage());
     }
 }

@@ -171,7 +171,7 @@ public class Admin extends Viewable implements JsonConvertible {
     //with the name successfully. "pizza chicken" will be the wrong input as well.
     //return null otherwise.
     public String retrievePassword(String id, String name, LocalDate birthDay, int personalNum) {
-        LoginAccount account = getLoginAccount(id);
+        LoginAccount account = getAccount(id);
         String pw = null;
         if (account != null) {
             if ((account.getName().equalsIgnoreCase(name))
@@ -203,9 +203,13 @@ public class Admin extends Viewable implements JsonConvertible {
 //    }
 
 
+    public LoginAccount getCurrentAccount() {
+        return currentAccount;
+    }
+
     //EFFECTS: return login account matching id if there exists such an account (case-sensitive).
     //return null otherwise.
-    public LoginAccount getLoginAccount(String id) {
+    public LoginAccount getAccount(String id) {
         for (LoginAccount account: accounts) {
             if (account.getId().equals(id)) {
                 return account;
@@ -217,15 +221,15 @@ public class Admin extends Viewable implements JsonConvertible {
     //EFFECTS: return true if the id exists and pw matches password of id (case-sensitive)
     //return false otherwise.
     public boolean checkLoginAccount(String id, String pw) {
-        LoginAccount account = getLoginAccount(id);
+        LoginAccount account = getAccount(id);
         if (account != null) {
             return account.passwordMatch(pw);
         }
         return false;
     }
 
-    public LoginAccount getLoginAccount(String id, String pw) {
-        LoginAccount account = getLoginAccount(id);
+    public LoginAccount getAccount(String id, String pw) {
+        LoginAccount account = getAccount(id);
         if (account == null || !account.passwordMatch(pw)) {
             return null;
         }
@@ -248,25 +252,25 @@ public class Admin extends Viewable implements JsonConvertible {
     //Apple and apple, they will be regarded different
     //MODIFIES: this
     //EFFECTS: create a new account with the given information.
-    public boolean createLoginAccount(String id, String password, String name, LocalDate birthDay,
+    public LoginAccount createLoginAccount(String id, String password, String name, LocalDate birthDay,
                                       int personalCode, boolean isAdmin) {
-        if (getLoginAccount(id) != null) {
-            return false;
+        if (getAccount(id) != null) {
+            throw new IllegalArgumentException("Duplicate ID is not allowed");
         }
         LoginAccount account = new LoginAccount(id, password, name, birthDay, personalCode, isAdmin);
         accounts.add(account);
         EventLog.getInstance().logEvent(new Event("new login account with ID: " + id + " is added"));
-        return true;
+        return account;
     }
 
 
 
     //EFFECTS: return true if this login account is an admin member
     public boolean isAdminMember(String id) {
-        if (getLoginAccount(id) == null) {
+        if (getAccount(id) == null) {
             return false;
         }
-        if (getLoginAccount(id).isAdmin()) {
+        if (getAccount(id).isAdmin()) {
             return true;
         }
         return false;
@@ -274,10 +278,10 @@ public class Admin extends Viewable implements JsonConvertible {
 
     public boolean isAdminMember(LoginAccount account) {
         String id = account.getId();
-        if (getLoginAccount(id) == null) {
+        if (getAccount(id) == null) {
             return false;
         }
-        if (getLoginAccount(id).isAdmin()) {
+        if (getAccount(id).isAdmin()) {
             return true;
         }
         return false;

@@ -150,6 +150,7 @@ public class InventoryViewPanel extends JPanel {
         inventory.addDataChangeListener(Inventory.PRODUCT, productTableModel);
         itemFilter = new JComboBox();
         categoryFilter = new FilterBox(inventory, Inventory.CATEGORY) {
+            //When item's category is changed, this method will be invoked
             @Override
             public void entryUpdated(ViewableTableEntryConvertibleModel entry) {
                 List<String> itemIDList;
@@ -169,6 +170,9 @@ public class InventoryViewPanel extends JPanel {
                     itemIDList.add(1, FilterBox.TYPE_MANUALLY);
                 }
                 itemFilter.setModel(new DefaultComboBoxModel(itemIDList.toArray(new String[0])));
+                //the next line is for firing itemStateChange event so that the listener added to this inside InventoryController
+                //can be notified and create a new filter for the stock table.
+                itemFilter.setSelectedItem(itemFilter.getItemAt(0));
             }
         };
         categoryField = new JTextField(10);
@@ -202,7 +206,7 @@ public class InventoryViewPanel extends JPanel {
         gbc.weightx = 1;
         gbc.weighty = 0.45;
         gbc.fill = GridBagConstraints.BOTH;
-        productTable.setPreferredSize(new Dimension(500, 600));
+//        productTable.setPreferredSize(new Dimension(500, 600));
 //        productTable.setFillsViewportHeight(true);
         JScrollPane productScrollPane = new JScrollPane(productTable);
         panelForTables.add(productScrollPane, gbc);
@@ -234,7 +238,7 @@ public class InventoryViewPanel extends JPanel {
         gbc.weightx = 1;
         gbc.weighty = 0.45;
         gbc.fill = GridBagConstraints.BOTH;
-        stockButtonTable.setPreferredSize(new Dimension(500, 600));
+//        stockButtonTable.setPreferredSize(new Dimension(500, 600));
         panelForTables.add(new JScrollPane(stockButtonTable), gbc);
         panelForTables.setPreferredSize(new Dimension(700, 600));
         JPanel panelForGenerators = new JPanel();

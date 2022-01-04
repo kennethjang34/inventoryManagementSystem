@@ -1,9 +1,7 @@
 package ui.inventorypanel.controller;
 
-import javafx.util.converter.LocalDateStringConverter;
 import model.*;
 import ui.*;
-import ui.ledgerpanel.view.LedgerViewPanel;
 import ui.table.ButtonTable;
 import ui.table.ButtonTableModel;
 import ui.table.RowConverterViewerTableModel;
@@ -32,16 +30,16 @@ public class InventoryController extends AbstractController<Inventory, Inventory
 
         public StockTableButtonAction(ButtonTable table) {
             super("Location");
-            buttonColumnIndex = table.findColumn("ID");
+            buttonColumnIndex = table.findColumnModelIndex("ID");
         }
 
         //EFFECTS: create a location table
         @Override
         public void actionPerformed(ActionEvent e) {
             ButtonTable table = view.getStockButtonTable();
-            int row = table.findRow(e.getSource());
-            int column = table.findColumn("ID");
-            String id = (String) table.getValueAt(row, column);
+            int row = table.findModelRowIndex(e.getSource());
+            int column = table.findColumnModelIndex("ID");
+            String id = (String) table.getModel().getValueAt(row, column);
             if (view.isLocationTableDialogDisplayed()) {
                 view.addToLocationStockView(id);
             } else {
@@ -560,7 +558,7 @@ public class InventoryController extends AbstractController<Inventory, Inventory
                     if (e.getClickCount() == 2) {
                         Object[] row = stockTable.getSelectedRowData();
                         if (row != null) {
-                            String id = (String) row[stockTable.findColumn(Inventory.ID)];
+                            String id = (String) row[stockTable.findColumnModelIndex(Inventory.ID)];
                             RowConverterViewerTableModel tableModel = (RowConverterViewerTableModel) (view.getProductTable().getModel());
                             tableModel.addRowsWithDataList(model.getProductList(id));
                         }
@@ -773,7 +771,6 @@ public class InventoryController extends AbstractController<Inventory, Inventory
             }
         };
         table.setModel(tableModel);
-//        table.setPreferredSize(new Dimension(700, 600));
         JPanel panel = new JPanel();
         panel.setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();

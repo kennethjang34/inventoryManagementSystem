@@ -96,7 +96,7 @@ public class ButtonTable extends JTable {
         if (index < 0) {
             return null;
         }
-        return model.getRow(index);
+        return model.getRow(convertRowIndexToModel(index));
     }
 
     public void setButtonAction(AbstractAction action) {
@@ -104,17 +104,19 @@ public class ButtonTable extends JTable {
         tableModel.setButtonAction(action);
     }
 
-    public int findRow(Object object) {
+    //return the index of the row of the table model that contains the given object in it
+    public int findModelRowIndex(Object object) {
         ButtonTableModel tableModel = (ButtonTableModel)getModel();
         return tableModel.findRow(object);
     }
 
-    public int findRow(Object object, int columnBasisIndex) {
+    public int findModelRowIndex(Object object, int columnBasisIndex) {
         ButtonTableModel tableModel = (ButtonTableModel)getModel();
         return tableModel.findRowIndex(object, columnBasisIndex);
     }
 
-    public int findColumn(String columnName) {
+    //return the index of the column of the table model whose name corresponds to the argument
+    public int findColumnModelIndex(String columnName) {
         ButtonTableModel tableModel = (ButtonTableModel)getModel();
         return tableModel.findColumn(columnName);
     }

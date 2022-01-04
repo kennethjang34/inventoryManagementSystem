@@ -77,7 +77,7 @@ public class FilterBox extends JComboBox implements DataViewer {
 
     @Override
     public void entryUpdated(ViewableTableEntryConvertibleModel updatedEntry) {
-
+        
     }
 
     @Override
