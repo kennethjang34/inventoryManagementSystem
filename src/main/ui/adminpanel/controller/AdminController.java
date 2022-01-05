@@ -180,4 +180,7 @@ public class AdminController extends AbstractController<Admin, AdminViewPanel> {
     public void displayExceptionMessage(Exception e) {
         JOptionPane.showMessageDialog(null, e.getMessage());
     }
+
+
+
 }

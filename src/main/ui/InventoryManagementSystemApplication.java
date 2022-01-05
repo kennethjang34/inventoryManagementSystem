@@ -67,7 +67,7 @@ public class InventoryManagementSystemApplication extends JFrame implements Json
         add(mainPanel);
         menuBar = createMenuBar();
         setJMenuBar(menuBar);
-        setPreferredSize(new Dimension(1500, 2000));
+//        setPreferredSize(new Dimension(1500, 2000));
         pack();
         setVisible(true);
         displayWelcomingDialog();
@@ -93,11 +93,14 @@ public class InventoryManagementSystemApplication extends JFrame implements Json
                     adminController.displayLoginDialog();
                     if (admin.isAdminLoggedIn()) {
                         pane.setSelectedIndex(2);
-                    } else {
+                        return;
+                    } else if (admin.isLoggedIn()) {
                             JOptionPane.showMessageDialog(tabbedPane, "you don't have access to admin");
+                            pane.setSelectedIndex(0);
                     }
                 } else {
                     JOptionPane.showMessageDialog(tabbedPane, "you don't have access to admin");
+                    pane.setSelectedIndex(0);
                 }
             }
         });
@@ -109,7 +112,7 @@ public class InventoryManagementSystemApplication extends JFrame implements Json
     public void createMainPanel() {
         mainPanel = new JPanel();
         createTabbedPane();
-        tabbedPane.setBounds(50, 50, 200, 200);
+//        tabbedPane.setBounds(50, 50, 200, 200);
         mainPanel.add(tabbedPane);
 //        mainPanel.setLayout(cardLayout);
 //        mainPanel.add(tabbedPane, "ControlPanel");

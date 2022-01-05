@@ -5,6 +5,7 @@ import model.Admin;
 import ui.table.RowConverterViewerTableModel;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -24,16 +25,30 @@ public class AdminViewPanel extends JPanel {
     //EFFECTS: create a new admin panel with the given admin and application
     public AdminViewPanel(Admin admin) {
         this.admin = admin;
-        createButton = new JButton("Sign-up");
-        add(createButton);
+        createButton = new JButton("Create a new account");
+        setLayout(new GridBagLayout());
+        setPreferredSize(new Dimension(600 , 850));
         registerPrompter = RegisterPrompter.getRegisterPrompter();
         retrievePrompter = RetrievePrompter.getRetrievePrompter();
         loginPanel = new LoginPanel();
         accountsTable = new JTable();
         accountsTable.setModel(new RowConverterViewerTableModel(admin.getAccounts(), Account.getDataListNames()));
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.gridwidth = 3;
+        gbc.gridheight = 3;
+        gbc.weightx = 1;
+        gbc.fill = GridBagConstraints.BOTH;
+//        gbc.anchor = GridBagConstraints.PAGE_START;
         JScrollPane scrollPane = new JScrollPane(accountsTable);
-        add(scrollPane);
-        scrollPane.setVisible(false);
+        add(scrollPane, gbc);
+//        scrollPane.setVisible(false);
+        gbc.gridx = gbc.gridx + gbc.gridwidth - 1;
+        gbc.gridy = gbc.gridy + gbc.gridheight;
+        gbc.weightx = 0;
+        gbc.weighty = 0;
+        add(createButton, gbc);
 //        accountsTable.setVisible(false);
     }
 

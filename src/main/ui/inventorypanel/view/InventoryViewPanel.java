@@ -213,7 +213,6 @@ public class InventoryViewPanel extends JPanel {
         addPanel.getButton().addKeyListener(buttonEnterListener);
         setUpProductGeneratorButton();
         setUpProductRemovalButton();
-        setPreferredSize(new Dimension(700, 800));
         deployComponents();
     }
 
@@ -241,7 +240,6 @@ public class InventoryViewPanel extends JPanel {
         gbc.weighty = 0.1;
         gbc.gridheight = 3;
         gbc.gridwidth = 3;
-//        gbc.anchor = GridBagConstraints.EAST;
         panelForTables.add(productGeneratorButton, gbc);
         gbc.gridx = gbc.gridx + 3;
         panelForTables.add(productRemovalButton, gbc);
@@ -279,10 +277,10 @@ public class InventoryViewPanel extends JPanel {
         gbc.gridx = 0;
         gbc.gridy = 0;
         gbc.gridwidth = 80;
-        gbc.gridheight = 50;
+        gbc.gridheight = 40;
         gbc.weightx = 1;
         gbc.weighty = 1;
-        gbc.fill = GridBagConstraints.BOTH;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
         add(panelForTables, gbc);
         gbc.gridx = gbc.gridx + gbc.gridwidth;
         gbc.gridy = 5;
@@ -292,7 +290,6 @@ public class InventoryViewPanel extends JPanel {
         gbc.gridheight = 10;
         gbc.fill = GridBagConstraints.BOTH;
         add(panelForGenerators, gbc);
-        setPreferredSize(new Dimension(1100, 1100));
     }
 
 

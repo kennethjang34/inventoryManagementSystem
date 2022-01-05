@@ -100,8 +100,7 @@ public class LedgerViewPanel extends JPanel {
 
     private void deployComponents() {
         setLayout(new GridBagLayout());
-        ledgerTable.setPreferredSize(new Dimension(500, 600));
-        accountsTable.setPreferredSize(new Dimension(500, 600));
+        setPreferredSize(new Dimension(600 , 850));
         JScrollPane ledgerTableScrollPane = new JScrollPane(ledgerTable);
         JScrollPane accountsTableScrollPane = new JScrollPane(accountsTable);
         dateField.setVisible(false);
@@ -111,39 +110,30 @@ public class LedgerViewPanel extends JPanel {
         gbc.gridx = 0;
         gbc.gridy = 1;
         gbc.gridwidth = 40;
-        gbc.gridheight = 50;
+        gbc.gridheight = 30;
         gbc.weightx = 1;
         gbc.weighty = 0.45;
         gbc.fill = GridBagConstraints.BOTH;
         add(accountsTableScrollPane, gbc);
         gbc.gridx = 0;
         gbc.gridy = gbc.gridy + gbc.gridheight;
+        gbc.anchor = GridBagConstraints.FIRST_LINE_START;
         gbc.gridwidth = 3;
         gbc.gridheight = 3;
+        gbc.weighty = 0.05;
         add(dateFilter, gbc);
         gbc.gridx = gbc.gridx + gbc.gridwidth;
-        gbc.gridwidth = 3;
-        gbc.gridheight = 3;
-        gbc.fill = GridBagConstraints.BOTH;
+        gbc.gridwidth = 1;
+        gbc.gridheight = 1;
         add(itemFilter, gbc);
         gbc.gridx = 0;
         gbc.gridy = gbc.gridy + gbc.gridheight;
         gbc.gridwidth = 40;
-        gbc.gridheight = 50;
+        gbc.gridheight = 30;
         gbc.weightx = 1;
         gbc.weighty = 0.45;
-        gbc.fill = GridBagConstraints.BOTH;
+        gbc.anchor = GridBagConstraints.CENTER;
         add(ledgerTableScrollPane, gbc);
-//
-//
-//
-//        //
-//        add(accountsTableScrollPane);
-//        add(dateFilter);
-//        add(dateField);
-//        add(itemFilter);
-//        add(itemField);
-//        add(ledgerTableScrollPane);
     }
 
     private void setUpItemFilter() {
