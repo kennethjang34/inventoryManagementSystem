@@ -41,18 +41,18 @@ public class LedgerTest {
     void testConstructor() {
         ledger = new Ledger();
         assertEquals(6, ledger.getCodeSize());
-        assertEquals(0, ledger.getSize());
+        assertEquals(0, ledger.getAccountCount());
         ledger = new Ledger(9);
         assertEquals(9, ledger.getCodeSize());
-        assertEquals(0, ledger.getSize());
+        assertEquals(0, ledger.getAccountCount());
 
     }
 
     @Test
     void testAddAccount() {
-        assertEquals(0, ledger.getSize());
+        assertEquals(0, ledger.getAccountCount());
         ledger.addAccount(tags.get(0),"nothing", LocalDate.now());
-        assertEquals(1, ledger.getSize());
+        assertEquals(1, ledger.getAccountCount());
         assertEquals(1, ledger.getAccountLists().size());
         assertEquals("111111", ledger.getAccount(111111).getCode());
         assertEquals(1, ledger.getAccounts(TODAY).size());
@@ -125,7 +125,7 @@ public class LedgerTest {
         assertNull(ledger.getAccount(123));
         //By default, Account number in Ledger will start from 111111
         ledger.addAccount(tags.get(0),"nothing", currentDate);
-        assertEquals(1, ledger.getSize());
+        assertEquals(1, ledger.getAccountCount());
         assertNull(ledger.getAccount(1212111));
         assertNull(ledger.getAccount("1231321"));
     }
@@ -140,7 +140,7 @@ public class LedgerTest {
     @Test
     void testJsonConversion() {
         ledger.addAccount(tags.get(0), "nothing", currentDate);
-        assertEquals(1, ledger.getSize());
+        assertEquals(1, ledger.getAccountCount());
         assertEquals(1, ledger.getAccountLists().size());
         assertEquals(ledger.getAccount(111111), ledger.getAccountLists().get(0).get(0));
         assertEquals(1, ledger.getAccounts(TODAY).size());
@@ -149,7 +149,7 @@ public class LedgerTest {
 //                ledger.addAccount(new LinkedList<QuantityTag>(),
 //                        new LinkedList<>(),"test", LocalDate.now()));
         ledger = new Ledger(ledger.toJson());
-        assertEquals(1, ledger.getSize());
+        assertEquals(1, ledger.getAccountCount());
         assertEquals(1, ledger.getAccountLists().size());
         assertEquals(ledger.getAccount("111111"), ledger.getAccountLists().get(0).get(0));
         assertEquals(1, ledger.getAccounts(TODAY).size());

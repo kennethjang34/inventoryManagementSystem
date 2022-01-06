@@ -8,11 +8,9 @@ import persistence.Reader;
 import persistence.Writer;
 import ui.adminpanel.controller.AdminController;
 import ui.adminpanel.view.AdminViewPanel;
-import ui.adminpanel.view.LoginPanel;
 import ui.inventorypanel.controller.InventoryController;
 import ui.inventorypanel.view.InventoryViewPanel;
 import ui.ledgerpanel.controller.LedgerController;
-import ui.ledgerpanel.old.LedgerPanel;
 import ui.ledgerpanel.view.LedgerViewPanel;
 
 import javax.imageio.ImageIO;
@@ -230,11 +228,16 @@ public class InventoryManagementSystemApplication extends JFrame implements Json
         login.addActionListener(this);
         logOut.addActionListener(this);
         file.add(login);
+        file.add(logOut);
         file.add(save);
         file.add(load);
-        file.add(logOut);
         file.add(quit);
         menuBar.add(file);
+        if (admin.isLoggedIn()) {
+            file.getItem(0).setVisible(false);
+        } else {
+            file.getItem(1).setVisible(false);
+        }
         return menuBar;
     }
 
@@ -248,9 +251,11 @@ public class InventoryManagementSystemApplication extends JFrame implements Json
                 printLog(EventLog.getInstance());
                 System.exit(0);
             case SAVE:
-                if (!admin.isLoggedIn()) {
+                if (admin.isEmpty()) {
+                    adminController.promptAdminRegister();
+                } else if (!admin.isLoggedIn()) {
 //                loginPanel.setPurpose(LoginPanel.SAVE);
-                    adminController.displayLoginDialog();
+                    adminController.promptLogin();
                     if (admin.isLoggedIn()) {
                         save();
                     }
@@ -260,18 +265,20 @@ public class InventoryManagementSystemApplication extends JFrame implements Json
                 }
                 break;
             case LOAD:
-                if (!admin.isLoggedIn()) {
-                    adminController.displayLoginDialog();
+                if (admin.isEmpty()) {
+                    adminController.promptAdminRegister();
+                } else if (!admin.isLoggedIn()) {
+                    adminController.promptLogin();
                 }
                 load();
                 break;
-
             case LOGOUT:
                 adminController.logout();
                 break;
             case LOGIN:
-                adminController.promptLogin();
-
+                if (!admin.isLoggedIn()) {
+                    adminController.promptLogin();
+                }
         }
     }
 
@@ -307,7 +314,6 @@ public class InventoryManagementSystemApplication extends JFrame implements Json
 
 
 
-
     public static void main(String[] args) {
         new InventoryManagementSystemApplication();
     }
@@ -333,30 +339,52 @@ public class InventoryManagementSystemApplication extends JFrame implements Json
         log.clear();
     }
 
-//    public void enableAdminPanel(boolean enable) {
-//        if (enable) {
-//            tabbedPane.setEnabledAt(2, true);
-//            tabbedPane.setToolTipTextAt(2, null);
-//        } else {
-//            tabbedPane.setEnabledAt(2, false);
-//            tabbedPane.setToolTipTextAt(2, "Only admin members can access admin panel");
-//        }
-//    }
+    public void reset() {
+        getContentPane().removeAll();
+        setVisible(false);
+        repaint();
+        inventory = new Inventory();
+        ledger = new Ledger();
+        inventory.addDataChangeListener(ledger);
+        for (Item item: inventory.getItemList()) {
+            item.addDataChangeListener(ledger);
+        }
+        createMainPanel();
+        add(mainPanel);
+        menuBar = createMenuBar();
+        setJMenuBar(menuBar);
+        pack();
+        repaint();
+        setVisible(true);
+    }
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
         if (evt.getSource() == admin) {
+            //log-in event
             if (evt.getPropertyName().equals(Admin.LOGIN) && (Boolean)evt.getNewValue() == true) {
                 if (admin.isAdminLoggedIn()) {
                     tabbedPane.setEnabledAt(2, true);
                     tabbedPane.setToolTipTextAt(2, null);
                 }
-            } else {
+                // file → login invisible
+                menuBar.getMenu(0).getItem(0).setVisible(false);
+                menuBar.getMenu(0).getItem(1).setVisible(true);
+                load();
+            }
+
+            //log-out event
+            else {
+                //file → login visible
+                menuBar.getMenu(0).getItem(0).setVisible(true);
+                //file → logout invisible
+                menuBar.getMenu(0).getItem(1).setVisible(false);
                 if (tabbedPane.getSelectedIndex() == 2) {
                     tabbedPane.setSelectedIndex(0);
                 }
                 tabbedPane.setEnabledAt(2, false);
                 tabbedPane.setToolTipTextAt(2, "Only admin members can access admin panel");
+                reset();
             }
         }
     }

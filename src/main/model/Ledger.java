@@ -15,13 +15,26 @@ import java.util.*;
 
 //represents a ledger that contains several transaction accounts
 public class Ledger extends AbstractTableDataFactory implements JsonConvertible, DataViewer {
-    //key: LocalDate.toString(), value: list of accounts that occurred that day
-    private Map<String, List<Account>> accounts;
     //dates will replace accounts;
     private Map<LocalDate, RecordedDate> dates;
     //private ArrayList<Account> accounts;
     private int nextAccountNumber;
     private int codeSize;
+
+
+
+    public enum DataList {
+        RECORDED_DATE, PROCESSED_ID, TOTAL_ACCOUNTS, BROUGHT_IN, TAKEN_OUT
+    }
+
+    public enum JSONDataList {
+        RECORDED_DATE_LIST, ACCOUNTS, NEXT_ACCOUNT_NUMBER, CODE_SIZE
+    }
+
+    public static final String[] DATA_LIST = new String[]{
+            RecordedDate.ColumnName.DATE.toString(), RecordedDate.ColumnName.ID.toString(), RecordedDate.ColumnName.TOTAL_ACCOUNTS.toString(),
+            RecordedDate.ColumnName.BROUGHT_IN.toString(), RecordedDate.ColumnName.TAKEN_OUT.toString()
+    };
 
     @Override
     public void entryRemoved(ViewableTableEntryConvertibleModel o) {
@@ -29,7 +42,7 @@ public class Ledger extends AbstractTableDataFactory implements JsonConvertible,
             Product removed = (Product) o;
             String id = removed.getID();
             InventoryTag tag = new InventoryTag(id, removed.getCost(), removed.getPrice(), LocalDate.now(),
-            removed.getLocation(), -1);
+                    removed.getLocation(), -1);
             addAccount(tag, "REMOVAL", LocalDate.now());
         }
     }
@@ -108,22 +121,12 @@ public class Ledger extends AbstractTableDataFactory implements JsonConvertible,
         return sum/products.size();
     }
 
-    public enum DataList {
-        RECORDED_DATE, PROCESSED_ID, TOTAL_ACCOUNTS, BROUGHT_IN, TAKEN_OUT
-    }
-
-    public static final String[] DATA_LIST = new String[]{
-            RecordedDate.ColumnName.DATE.toString(), RecordedDate.ColumnName.ID.toString(), RecordedDate.ColumnName.TOTAL_ACCOUNTS.toString(),
-            RecordedDate.ColumnName.BROUGHT_IN.toString(), RecordedDate.ColumnName.TAKEN_OUT.toString()
-    };
-
 
     //EFFECTS:create a new empty ledger.
     //default code size is 6.
     public Ledger() {
         dates = new LinkedHashMap<>();
         codeSize = 6;
-        accounts = new LinkedHashMap<>();
         nextAccountNumber = ((int)Math.pow(10, codeSize) - 1) / 9;
     }
 
@@ -133,7 +136,6 @@ public class Ledger extends AbstractTableDataFactory implements JsonConvertible,
 //        super(new String[]{DataList.RECORDED_DATE.toString(), DataList.ID.toString(), DataList.SIZE.toString()});
         dates = new LinkedHashMap<>();
         this.codeSize = accountNumberSize;
-        accounts = new LinkedHashMap<>();
         nextAccountNumber = ((int)Math.pow(10, codeSize) - 1) / 9;
     }
 
@@ -143,22 +145,33 @@ public class Ledger extends AbstractTableDataFactory implements JsonConvertible,
     public Ledger(JSONObject jsonLedger) {
 //        super(new String[]{DataList.RECORDED_DATE.toString(), DataList.SIZE.toString()});
         dates = new LinkedHashMap<>();
-        nextAccountNumber = jsonLedger.getInt("nextAccountNumber");
-        codeSize = jsonLedger.getInt("codeSize");
-        accounts = new LinkedHashMap<>();
-        JSONArray jsonAccountsMap = jsonLedger.getJSONArray("accounts");
-        for (int i = 0; i < jsonAccountsMap.length(); i++) {
-            JSONObject jsonEntry = jsonAccountsMap.getJSONObject(i);
-            String date = jsonEntry.getString("date");
-            List<Account> accountList = new ArrayList<>();
-            JSONArray jsonAccountList = jsonEntry.getJSONArray("accountList");
-            for (Object obj: jsonAccountList) {
-                JSONObject jsonObject = (JSONObject)obj;
-                accountList.add(new Account(jsonObject));
-            }
-            accounts.put(date, accountList);
-            dates.put(LocalDate.parse(date), new RecordedDate(LocalDate.parse(date), accountList));
+        nextAccountNumber = jsonLedger.getInt(JSONDataList.NEXT_ACCOUNT_NUMBER.toString());
+        codeSize = jsonLedger.getInt(JSONDataList.CODE_SIZE.toString());
+        JSONArray recordedDateList = jsonLedger.getJSONArray(JSONDataList.RECORDED_DATE_LIST.toString());
+        for (Object obj: recordedDateList) {
+            JSONObject jsonDate = (JSONObject) obj;
+            RecordedDate recordedDate = new RecordedDate(jsonDate);
+            dates.put(recordedDate.getDate(), recordedDate);
         }
+        for (RecordedDate date: dates.values()) {
+            List<Account> accountList = date.getAccounts();
+            for (Account account: accountList) {
+
+            }
+        }
+//        JSONArray jsonAccountsMap = jsonLedger.getJSONArray("accounts");
+//        for (int i = 0; i < jsonAccountsMap.length(); i++) {
+//            JSONObject jsonEntry = jsonAccountsMap.getJSONObject(i);
+//            String date = jsonEntry.getString("date");
+//            List<Account> accountList = new ArrayList<>();
+//            JSONArray jsonAccountList = jsonEntry.getJSONArray("accountList");
+//            for (Object obj: jsonAccountList) {
+//                JSONObject jsonObject = (JSONObject)obj;
+//                accountList.add(new Account(jsonObject));
+//            }
+//            accounts.put(date, accountList);
+//            dates.put(LocalDate.parse(date), new RecordedDate(LocalDate.parse(date), accountList));
+//        }
     }
 
     //EFFECTS: return code size
@@ -167,18 +180,25 @@ public class Ledger extends AbstractTableDataFactory implements JsonConvertible,
     }
 
     //EFFECTS: return the number of accounts in this
-    public int getSize() {
-        return accounts.size();
+    public int getAccountCount() {
+        int count = 0;
+        for (RecordedDate date: dates.values()) {
+            count += date.getAccounts().size();
+        }
+        return count;
+    }
+
+    public int getRecordedDateCount() {
+        return dates.values().size();
     }
 
     //Effects: return an account that has the specified account code number
     //If there isn't any, return null.
     public Account getAccount(int code) {
-        for (List<Account> accountList: accounts.values()) {
-            for (Account account: accountList) {
-                if (account.getCode().equalsIgnoreCase("" + code)) {
-                    return account;
-                }
+        for (RecordedDate recordedDate: dates.values()) {
+            Account account = recordedDate.getAccount(String.valueOf(code));
+            if (account != null) {
+                return account;
             }
         }
         return null;
@@ -187,19 +207,28 @@ public class Ledger extends AbstractTableDataFactory implements JsonConvertible,
     //Effects: return an account that has the specified account code number
     //If there isn't any, return null.
     public Account getAccount(String code) {
-        for (List<Account> accountList: accounts.values()) {
-            for (Account account: accountList) {
-                if (account.getCode().equalsIgnoreCase(code)) {
-                    return account;
-                }
+        for (RecordedDate recordedDate: dates.values()) {
+            Account account = recordedDate.getAccount(code);
+            if (account != null) {
+                return account;
             }
         }
         return null;
     }
 
+
+
     //EFFECTS: return the list of accounts in this ledger
     public List<List<Account>> getAccountLists() {
-        return new ArrayList<>(accounts.values());
+        return null;
+    }
+
+    public List<Account> getAccounts() {
+        List<Account> accounts = new ArrayList<>();
+        for (RecordedDate date: dates.values()) {
+            accounts.addAll(date.getAccounts());
+        }
+        return accounts;
     }
 
     //EFFECTS: return a list of accounts that were generated on the specified date.
@@ -209,16 +238,7 @@ public class Ledger extends AbstractTableDataFactory implements JsonConvertible,
 //        return accounts.get(date.toString());
     }
 
-    public List<Account> getAccounts() {
-        if (dates.isEmpty()) {
-            return Collections.EMPTY_LIST;
-        }
-        List<Account> accountList = new ArrayList<>();
-        for (RecordedDate date: dates.values()) {
-            accountList.addAll(date.getAccounts());
-        }
-        return accountList;
-    }
+
 
     public List<String> getProcessedItemList() {
         if (dates.isEmpty()) {
@@ -256,7 +276,6 @@ public class Ledger extends AbstractTableDataFactory implements JsonConvertible,
             dates.put(recordedDate.getDate(), recordedDate);
             changeFirer.fireAdditionEvent(DataList.RECORDED_DATE.toString(), recordedDate);
         } else {
-
         }
         recordedDate.addAccount(account);
         return account;
@@ -276,16 +295,23 @@ public class Ledger extends AbstractTableDataFactory implements JsonConvertible,
     @Override
     public JSONObject toJson() {
         JSONObject json = new JSONObject();
-        JSONArray accountsMap = new JSONArray();
-        for (Map.Entry<String, List<Account>> entry: accounts.entrySet()) {
-            JSONObject jsonEntry = new JSONObject();
-            jsonEntry.put("date", entry.getKey());
-            jsonEntry.put("accountList", convertToJsonArray(entry.getValue()));
-            accountsMap.put(jsonEntry);
+        JSONArray recordDateList = new JSONArray();
+        for (RecordedDate recordedDate: dates.values()) {
+            recordDateList.put(recordedDate.toJson());
         }
-        json.put("accounts", accountsMap);
-        json.put("nextAccountNumber", nextAccountNumber);
-        json.put("codeSize", codeSize);
+        json.put(JSONDataList.RECORDED_DATE_LIST.toString(), recordDateList);
+//        JSONArray accountsMap = new JSONArray();
+
+
+//        for (Map.Entry<String, List<Account>> entry: accounts.entrySet()) {
+//            JSONObject jsonEntry = new JSONObject();
+//            jsonEntry.put(DataList.RECORDED_DATE.toString(), entry.getKey());
+//            jsonEntry.put("accountList", convertToJsonArray(entry.getValue()));
+//            accountsMap.put(jsonEntry);
+//        }
+//        json.put("accounts", accountsMap);
+        json.put(JSONDataList.NEXT_ACCOUNT_NUMBER.toString(), nextAccountNumber);
+        json.put(JSONDataList.CODE_SIZE.toString(), codeSize);
         return json;
     }
 
@@ -312,14 +338,11 @@ public class Ledger extends AbstractTableDataFactory implements JsonConvertible,
 
     //EFFECTS: return a list of account codes recorded in this
     public List<String> getCodes() {
-        List<String> codes = new ArrayList<>();
-        List<List<Account>> accountsLists = new ArrayList<>(accounts.values());
-        for (int i = 0; i < accountsLists.size(); i++) {
-            for (int j = 0; j < accountsLists.get(i).size(); j++) {
-                codes.add(accountsLists.get(i).get(j).getCode());
-            }
+        Set<String> set = new HashSet<>();
+        for (RecordedDate date: dates.values()) {
+            set.addAll(date.getIDList());
         }
-        return codes;
+        return new ArrayList<>(set);
     }
 
 
@@ -337,11 +360,6 @@ public class Ledger extends AbstractTableDataFactory implements JsonConvertible,
                     contents.add(date.toString());
                 }
                 break;
-//            case PROCESSED_ID:
-//                contents.addAll(getIDs());
-//                break;
-//            case TOTAL_ACCOUNTS:
-//                contents.add(String.valueOf(getSize()));
         }
 
         return contents;

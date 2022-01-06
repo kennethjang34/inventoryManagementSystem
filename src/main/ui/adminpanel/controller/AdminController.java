@@ -31,7 +31,6 @@ public class AdminController extends AbstractController<Admin, AdminViewPanel> {
 
     private void setUpRegisterPanel() {
         RegisterPrompter registerPrompter =  view.getRegisterPrompter();
-        System.out.println(registerPrompter.getRegisterButton().getActionListeners().length);
         registerPrompter.getRegisterButton().addActionListener(e -> {
             System.out.println(registerPrompter.getRegisterButton().getActionListeners().length);
             int personalCode = Integer.parseInt(registerPrompter.getCodeInput());
@@ -61,11 +60,8 @@ public class AdminController extends AbstractController<Admin, AdminViewPanel> {
             } catch (IllegalArgumentException illegalArgumentException) {
                 displayExceptionMessage(illegalArgumentException);
             }
-            JButton source = (JButton) e.getSource();
-            System.out.println(source.getActionListeners().length);
         });
 
-        System.out.println(registerPrompter.getRegisterButton().getActionListeners().length);
 
     }
 
@@ -148,16 +144,33 @@ public class AdminController extends AbstractController<Admin, AdminViewPanel> {
 
     //MODIFIES: this
     //EFFECTS: display the retrieve panel of this
-    public static void displayRetrievePrompter() {
+    private void displayRetrievePrompter() {
         RetrievePrompter.displayRetrievePrompter();
     }
 
-    public static void displayRegisterPrompter() {
+    public void promptRetrievePrompter() {
+        displayRetrievePrompter();
+    }
+
+    private void displayRegisterPrompter() {
         RegisterPrompter.displayRegisterPrompter();
     }
 
+    public void promptAdminRegister() {
+        displayAdminRegisterPanel();
+    }
 
-    public void displayLoginDialog() {
+    private void displayAdminRegisterPanel() {
+        RegisterPrompter.displayRegisterPrompterForAdmin();
+    }
+
+    public void promptRegisterPanel() {
+        displayRegisterPrompter();
+    }
+
+
+
+    private void displayLoginDialog() {
         view.getLoginPanel().displayLoginDialog();
     }
 
