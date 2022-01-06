@@ -20,6 +20,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -27,7 +29,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 //An application that manages an inventory/warehouse
-public class InventoryManagementSystemApplication extends JFrame implements JsonConvertible, ActionListener {
+public class InventoryManagementSystemApplication extends JFrame implements JsonConvertible, ActionListener, PropertyChangeListener {
     private Image image;
     private String imagePath = "./data/seol.gif";
     private static final String fileLocation = "./data/inventory_management_system.json";
@@ -49,6 +51,11 @@ public class InventoryManagementSystemApplication extends JFrame implements Json
     private Inventory inventory;
     private JPanel mainPanel;
 
+
+    public enum MenuItemList {
+        SAVE, LOAD, QUIT, LOGIN, LOGOUT
+    }
+
     //EFFECTS: create a new application program
     InventoryManagementSystemApplication() {
         login = false;
@@ -59,6 +66,7 @@ public class InventoryManagementSystemApplication extends JFrame implements Json
         } catch (IOException e) {
             admin = new Admin();
         }
+        admin.addPropertyChangeListener(Admin.LOGIN, this);
         ledger = new Ledger();
         inventory = new Inventory();
         inventory.addDataChangeListener(ledger);
@@ -88,7 +96,7 @@ public class InventoryManagementSystemApplication extends JFrame implements Json
             ledgerController = new LedgerController(ledger, new LedgerViewPanel(ledger));
         }
         if (adminController != null) {
-            adminController.setAdmin(admin);
+//            adminController.setAdmin(admin);
         } else {
             adminController = new AdminController(admin, new AdminViewPanel(admin));
         }
@@ -97,30 +105,11 @@ public class InventoryManagementSystemApplication extends JFrame implements Json
         tabbedPane.addTab("Admin", adminController.getView());
         if (admin.isAdminLoggedIn()) {
             tabbedPane.setEnabledAt(2, true);
+            tabbedPane.setToolTipTextAt(2, null);
         } else if (!admin.isEmpty()) {
+            tabbedPane.setToolTipTextAt(2, "Only admin members can access admin panel");
             tabbedPane.setEnabledAt(2, false);
         }
-//        tabbedPane.addChangeListener(e -> {
-//            JTabbedPane pane = (JTabbedPane) e.getSource();
-//            if (pane.getSelectedIndex() == 2) {
-//                if (admin.isAdminLoggedIn() || admin.isEmpty()) {
-//                    pane.setSelectedIndex(2);
-//                } else if (!admin.isLoggedIn()) {
-////                    loginPanel.setPurpose(loginPanel.ADMIN);
-//                    adminController.displayLoginDialog();
-//                    if (admin.isAdminLoggedIn()) {
-//                        pane.setSelectedIndex(2);
-//                        return;
-//                    } else if (admin.isLoggedIn()) {
-//                            JOptionPane.showMessageDialog(tabbedPane, "you don't have access to admin");
-//                            pane.setSelectedIndex(0);
-//                    }
-//                } else {
-//                    JOptionPane.showMessageDialog(tabbedPane, "you don't have access to admin");
-//                    pane.setSelectedIndex(0);
-//                }
-//            }
-//        });
     }
 
 
@@ -157,30 +146,7 @@ public class InventoryManagementSystemApplication extends JFrame implements Json
         }
         dialog.add(descriptionLabel, BorderLayout.CENTER);
         dialog.setSize(500, 600);
-//        dialog.setVisible(true);
     }
-
-//
-//
-//    //MODIFIES: this
-//    //EFFECTS: set login true
-//    public void switchToControlPanel() {
-////        cardLayout.show(mainPanel, "ControlPanel");
-//    }
-
-
-
-    //MODIFIES: this
-    //EFFECTS: switch to the login panel.
-    public void switchToLoginPanel() {
-//        login = false;
-//        updateDisplay();
-//        cardLayout.show(mainPanel, "LoginPanel");
-    }
-
-//    public void displayLoginDialog() {
-//        adminController.displayLoginDialog();
-//    }
 
 
     //EFFECTS: save the status of the program
@@ -248,18 +214,22 @@ public class InventoryManagementSystemApplication extends JFrame implements Json
     private JMenuBar createMenuBar() {
         JMenuBar menuBar = new JMenuBar();
         JMenu file = new JMenu("File");
+        JMenuItem login = new JMenuItem("Log-in");
+        login.setActionCommand(MenuItemList.LOGIN.toString());
         JMenuItem save = new JMenuItem("Save");
-        save.setActionCommand("Save");
+        save.setActionCommand(MenuItemList.SAVE.toString());
         JMenuItem load = new JMenuItem("Load");
-        load.setActionCommand("Load");
+        load.setActionCommand(MenuItemList.LOAD.toString());
         JMenuItem quit = new JMenuItem("Quit");
-        quit.setActionCommand("Quit");
-        JMenuItem logOut = new JMenuItem("Log out");
-        logOut.setActionCommand("LogOut");
+        quit.setActionCommand(MenuItemList.QUIT.toString());
+        JMenuItem logOut = new JMenuItem("Log-out");
+        logOut.setActionCommand(MenuItemList.LOGOUT.toString());
         save.addActionListener(this);
         load.addActionListener(this);
         quit.addActionListener(this);
+        login.addActionListener(this);
         logOut.addActionListener(this);
+        file.add(login);
         file.add(save);
         file.add(load);
         file.add(logOut);
@@ -273,28 +243,35 @@ public class InventoryManagementSystemApplication extends JFrame implements Json
     @Override
     public void actionPerformed(ActionEvent e) {
         String command = e.getActionCommand();
-        if (command.equals("Quit")) {
-            printLog(EventLog.getInstance());
-            System.exit(0);
-        }
-        if (command.equals("Save")) {
-            if (!admin.isLoggedIn()) {
+        switch (MenuItemList.valueOf(command)) {
+            case QUIT:
+                printLog(EventLog.getInstance());
+                System.exit(0);
+            case SAVE:
+                if (!admin.isLoggedIn()) {
 //                loginPanel.setPurpose(LoginPanel.SAVE);
-                adminController.displayLoginDialog();
-                if (admin.isLoggedIn()) {
+                    adminController.displayLoginDialog();
+                    if (admin.isLoggedIn()) {
+                        save();
+                    }
+//                switchToLoginPanel();
+                } else {
                     save();
                 }
-//                switchToLoginPanel();
-            } else {
-                save();
-            }
-        } else if (command.equals("Load")) {
-            if (!admin.isLoggedIn()) {
-                adminController.displayLoginDialog();
-            }
-            load();
-        } else if (command.equals("LogOut")) {
-            adminController.logout();
+                break;
+            case LOAD:
+                if (!admin.isLoggedIn()) {
+                    adminController.displayLoginDialog();
+                }
+                load();
+                break;
+
+            case LOGOUT:
+                adminController.logout();
+                break;
+            case LOGIN:
+                adminController.promptLogin();
+
         }
     }
 
@@ -346,38 +323,7 @@ public class InventoryManagementSystemApplication extends JFrame implements Json
         return json;
     }
 
-//    //MODIFIES: this
-//    //EFFECTS: based on whether the login attempt succeeds or not, or whether the user has cancelled the requiest,
-//    //save/load data or go back to the control panel
-//    public void dataChangeHandler(int result) {
-//        if (result == LoginPanel.CANCEL) {
-//
-//        } else {
-//            if (result == LoginPanel.LOAD) {
-//                load();
-//
-//            } else if (result == LoginPanel.SAVE) {
-//                save();
-//                JOptionPane.showMessageDialog(this, "System saved");
-//
-//            } else if (result == LoginPanel.ADMIN) {
-//
-//            }
-//        }
-//    }
 
-
-
-
-    public void handleLoginAttempt() {
-        if (admin.isLoggedIn()) {
-            if (admin.isAdminLoggedIn()) {
-
-            }
-        } else {
-
-        }
-    }
 
     //EFFECTS: print logs on the console
     public void printLog(EventLog log) {
@@ -385,6 +331,34 @@ public class InventoryManagementSystemApplication extends JFrame implements Json
             System.out.println(event);
         }
         log.clear();
+    }
+
+//    public void enableAdminPanel(boolean enable) {
+//        if (enable) {
+//            tabbedPane.setEnabledAt(2, true);
+//            tabbedPane.setToolTipTextAt(2, null);
+//        } else {
+//            tabbedPane.setEnabledAt(2, false);
+//            tabbedPane.setToolTipTextAt(2, "Only admin members can access admin panel");
+//        }
+//    }
+
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+        if (evt.getSource() == admin) {
+            if (evt.getPropertyName().equals(Admin.LOGIN) && (Boolean)evt.getNewValue() == true) {
+                if (admin.isAdminLoggedIn()) {
+                    tabbedPane.setEnabledAt(2, true);
+                    tabbedPane.setToolTipTextAt(2, null);
+                }
+            } else {
+                if (tabbedPane.getSelectedIndex() == 2) {
+                    tabbedPane.setSelectedIndex(0);
+                }
+                tabbedPane.setEnabledAt(2, false);
+                tabbedPane.setToolTipTextAt(2, "Only admin members can access admin panel");
+            }
+        }
     }
 }
 

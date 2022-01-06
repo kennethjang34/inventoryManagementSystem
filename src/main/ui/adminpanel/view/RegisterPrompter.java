@@ -41,6 +41,8 @@ public class RegisterPrompter extends AbstractLoginAccountPrompter {
         return prompter;
     }
 
+
+
     public String getBirthDayInput() {
         return birthdayField.getText();
     }
@@ -91,6 +93,18 @@ public class RegisterPrompter extends AbstractLoginAccountPrompter {
         dialog.setVisible(true);
     }
 
+    public static void displayRegisterPrompterForAdmin() {
+        prompter.getCheckBox().setSelected(true);
+        prompter.getCheckBox().setEnabled(false);
+        prompter.setPreferredSize(new Dimension(600, 400));
+        dialog = new JDialog();
+        dialog.add(prompter);
+        dialog.setModalityType(Dialog.ModalityType.APPLICATION_MODAL);
+        dialog.pack();
+        dialog.setVisible(true);
+        prompter.getCheckBox().setEnabled(true);
+        prompter.getCheckBox().setSelected(false);
+    }
 
     public static JDialog getDialog() {
         return dialog;

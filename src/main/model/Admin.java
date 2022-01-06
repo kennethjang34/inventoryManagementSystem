@@ -3,9 +3,12 @@ package model;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import persistence.JsonConvertible;
+import ui.InventoryManagementSystemApplication;
 import ui.Viewable;
+import ui.table.AbstractTableDataFactory;
 import ui.table.ViewableTableEntryConvertibleModel;
 
+import java.beans.PropertyChangeSupport;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,13 +16,51 @@ import java.util.List;
 //represents administration that have their own accounts
 //will contain a list of login accounts.
 //Written to provide a functionality for Inventory management system application.
-public class Admin extends Viewable implements JsonConvertible {
+public class Admin extends AbstractTableDataFactory implements JsonConvertible {
 
 
-//    public static final int ADMIN_ACCESS = -1;
+    public static final String LOGIN = "LOGIN" ;
+    public static final String ACCOUNT = "ACCOUNT";
+    //    public static final int ADMIN_ACCESS = -1;
 //    public static final int INVENTORY_ACCESS = 1;
     private static Admin admin = new Admin();
+
+    //list of login accounts. there is no limit on number of accounts but once an account is added,
+    //it cannot be removed from the list. In any circumstance, this list shouldn't be passed to the user.
+    private final ArrayList<LoginAccount> accounts;
     private LoginAccount currentAccount;
+
+    public enum DataList{
+        ID, PW, NAME, BIRTHDAY, PERSONAL_CODE, IS_ADMIN
+    }
+
+
+    @Override
+    public Object[] getDataList() {
+        return new String[]{
+                DataList.ID.toString(), DataList.PW.toString(),
+                DataList.NAME.toString(), DataList.BIRTHDAY.toString(), DataList.PERSONAL_CODE.toString(),
+                DataList.IS_ADMIN.toString()
+        };
+    }
+
+    @Override
+    public List<Object> getContentsOf(String property) {
+        switch (property) {
+            case ACCOUNT:
+                return new ArrayList<>(accounts);
+
+        }
+
+        return null;
+    }
+
+
+    @Override
+    public List<? extends ViewableTableEntryConvertibleModel> getEntryModels() {
+        return accounts;
+    }
+
     //represents each individual login account.
     //Must be distinguished from accounts that contain information about inventory update.
     public static class LoginAccount extends ViewableTableEntryConvertibleModel implements JsonConvertible {
@@ -33,9 +74,9 @@ public class Admin extends Viewable implements JsonConvertible {
         private boolean isAdmin;
 
 
-        public enum DataList{
-            ID, PW, NAME, BIRTHDAY, PERSONAL_CODE, IS_ADMIN
-        }
+//        public enum DataList{
+//            ID, PW, NAME, BIRTHDAY, PERSONAL_CODE, IS_ADMIN
+//        }
 
         public static String[] getDataListNames() {
             return new String[]{
@@ -141,15 +182,14 @@ public class Admin extends Viewable implements JsonConvertible {
         }
     }
 
-    //list of login accounts. there is no limit on number of accounts but once an account is added,
-    //it cannot be removed from the list. In any circumstance, this list shouldn't be passed to the user.
-    private final ArrayList<LoginAccount> accounts;
 
 
     //EFFECTS: create a new administer.
     public Admin() {
+
         accounts = new ArrayList<>();
         currentAccount = null;
+
     }
 
     //REQUIRES: JSONObject must have all information needed to build admin with the matching name
@@ -253,6 +293,7 @@ public class Admin extends Viewable implements JsonConvertible {
                                            LocalDate birthDay, int personalCode) {
         LoginAccount account = new LoginAccount(id, password, name, birthDay, personalCode, true);
         accounts.add(account);
+        changeFirer.fireAdditionEvent(ACCOUNT, account);
         return account;
     }
 
@@ -268,6 +309,9 @@ public class Admin extends Viewable implements JsonConvertible {
         }
         LoginAccount account = new LoginAccount(id, password, name, birthDay, personalCode, isAdmin);
         accounts.add(account);
+        changeFirer.fireAdditionEvent(ACCOUNT, account);
+        //admin doesn't support TableEntryConvertible function
+//        changeFirer.fireUpdateEvent(this);
         EventLog.getInstance().logEvent(new Event("new login account with ID: " + id + " is added"));
         return account;
     }
@@ -297,7 +341,15 @@ public class Admin extends Viewable implements JsonConvertible {
     }
 
     public void setLoginAccount(LoginAccount account) {
+        LoginAccount previous = currentAccount;
         currentAccount = account;
+        if (previous == null) {
+            if (account != null) {
+                changeFirer.firePropertyChange(LOGIN, false, true);
+            }
+        } else if (account == null) {
+                changeFirer.firePropertyChange(LOGIN, true, false);
+        }
     }
 
     public boolean isLoggedIn() {

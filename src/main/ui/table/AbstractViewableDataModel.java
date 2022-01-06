@@ -48,6 +48,14 @@ public abstract class AbstractViewableDataModel {
         changeFirer.addUpdateDataModelListener(listener);
     }
 
+    public void addPropertyChangeListener(PropertyChangeListener listener) {
+        changeFirer.addPropertyChangeListener(listener);
+    }
+
+    public void addPropertyChangeListener(String property, PropertyChangeListener listener) {
+        changeFirer.addPropertyChangeListener(property, listener);
+    }
+
 
 //    public abstract List<TableEntryConvertibleModel> getEntryModels();
 

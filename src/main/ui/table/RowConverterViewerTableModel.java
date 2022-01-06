@@ -16,6 +16,7 @@ public class RowConverterViewerTableModel extends AbstractTableModel implements 
     protected int baseColumnIndex;
     protected boolean duplicateAllowed;
     protected boolean automation = true;
+    //category indicates the section of the data factory that this table will display the information of
     protected String category;
 
 
@@ -27,6 +28,24 @@ public class RowConverterViewerTableModel extends AbstractTableModel implements 
         duplicateAllowed = false;
     }
 
+
+
+    public RowConverterViewerTableModel(AbstractTableDataFactory factory, String category) {
+        data = new LinkedHashMap<>();
+        tableEntries = new LinkedList<>();
+        columnNames = factory.getColumnNames();
+        this.category = category;
+        List<? extends ViewableTableEntryConvertibleModel> entries = factory.getEntryModels();
+        if (entries != null) {
+            for (ViewableTableEntryConvertibleModel entry : entries) {
+                entry.addUpdateListener(this);
+                tableEntries.add(entry);
+                data.put(entry, createRow(entry.convertToTableEntry()));
+            }
+        }
+        factory.addDataChangeListener(category, this);
+        fireTableDataChanged();
+    }
 
 
     public RowConverterViewerTableModel(List<? extends ViewableTableEntryConvertibleModel> entries) {

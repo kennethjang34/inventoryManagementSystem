@@ -36,7 +36,7 @@ public class ButtonTableModel extends RowConverterViewerTableModel {
     }
 
     public ButtonTableModel(AbstractTableDataFactory model, String buttonColumnName, String category) {
-        super(model, createColumnNames(model.getTableColumnNames(), buttonColumnName), category);
+        super(model, createColumnNames(model.getColumnNames(), buttonColumnName), category);
     }
 
 //    public ButtonTableModel(List<? extends TableEntryConvertibleModel> entries, String buttonColumnName) {

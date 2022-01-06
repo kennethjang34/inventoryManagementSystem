@@ -94,7 +94,9 @@ public class AdminController extends AbstractController<Admin, AdminViewPanel> {
         createButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (model.isAdminLoggedIn() || model.isEmpty()) {
+                if ( model.isEmpty()) {
+                    RegisterPrompter.displayRegisterPrompterForAdmin();
+                } else if (model.isAdminLoggedIn()) {
                     RegisterPrompter.displayRegisterPrompter();
                 } else {
                     RegisterPrompter.displayPermissionDenied();
@@ -175,5 +177,11 @@ public class AdminController extends AbstractController<Admin, AdminViewPanel> {
 
 
     public void setAdmin(Admin admin) {
+
+    }
+
+
+    public void promptLogin() {
+        displayLoginDialog();
     }
 }
