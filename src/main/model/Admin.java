@@ -32,8 +32,16 @@ public class Admin extends Viewable implements JsonConvertible {
         private final int personalCode;
         private boolean isAdmin;
 
+
         public enum DataList{
             ID, PW, NAME, BIRTHDAY, PERSONAL_CODE, IS_ADMIN
+        }
+
+        public static String[] getDataListNames() {
+            return new String[]{
+                    DataList.ID.toString(), DataList.PW.toString(), DataList.NAME.toString(),
+                    DataList.BIRTHDAY.toString(), DataList.PERSONAL_CODE.toString(), DataList.IS_ADMIN.toString(),
+            };
         }
 
         //EFFECTS: create a new account that can access inventory and/or admin and return it.
@@ -88,7 +96,7 @@ public class Admin extends Viewable implements JsonConvertible {
             return personalCode;
         }
 
-        //EFFECTS: return the access permision level
+        //EFFECTS: return the access permission level
         private boolean isAdmin() {
             return isAdmin;
         }
@@ -128,7 +136,7 @@ public class Admin extends Viewable implements JsonConvertible {
 
         @Override
         public Object[] convertToTableEntry() {
-            return new Object[]{id, pw, name, birthday, personalCode, personalCode, isAdmin
+            return new Object[]{id, pw, name, birthday, personalCode, isAdmin
             };
         }
     }
@@ -243,8 +251,9 @@ public class Admin extends Viewable implements JsonConvertible {
     //return fail if it fails
     public LoginAccount createLoginAccount(String id, String password, String name,
                                            LocalDate birthDay, int personalCode) {
-        accounts.add(new LoginAccount(id, password, name, birthDay, personalCode, true));
-        return accounts.get(0);
+        LoginAccount account = new LoginAccount(id, password, name, birthDay, personalCode, true);
+        accounts.add(account);
+        return account;
     }
 
     //REQUIRES: personal code must be a positive integer. No existing login account can have the same id

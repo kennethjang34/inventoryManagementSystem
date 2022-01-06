@@ -14,6 +14,8 @@ import ui.inventorypanel.productpanel.AddPanel;
 import ui.table.ViewableTableEntryConvertibleModel;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 import java.awt.*;
 import java.awt.event.*;
@@ -196,8 +198,6 @@ public class InventoryViewPanel extends JPanel {
                     }
                 }
             }
-
-
         };
         categoryField = new JTextField(10);
         itemField = new JTextField(10);
@@ -464,4 +464,41 @@ public class InventoryViewPanel extends JPanel {
     private void setUpProductRemovalButton() {
         //
     }
+
+    public void setInventory(Inventory inventory) {
+        this.inventory = inventory;
+        RowConverterViewerTableModel productTableModel = (RowConverterViewerTableModel) productTable.getModel();
+        productTableModel.reset();
+//        productTable.revalidate();
+        categoryFilter.setDataFactory(inventory);
+        updateItemFilter((String) categoryFilter.getSelectedItem());
+//        categoryFilter.revalidate();
+//        itemFilter.revalidate();
+        RowConverterViewerTableModel stockTableModel = (RowConverterViewerTableModel) stockButtonTable.getModel();
+        stockTableModel.setDataFactory(inventory);
+    }
+
+
+    //implemented
+    //called only when category is newly selected by categoryFilter
+    //MODIFIES: item filter
+    //EFFECTS: set up the item filter, so it matches the newly selected category
+    public void updateItemFilter(String selectedCategory) {
+        List<String> ids;
+        if (selectedCategory.equals(FilterBox.ALL)) {
+            ids = inventory.getIDs();
+        } else {
+            //in case of TYPE_MANUALLY, it's the same as ids.addAll(null);
+            ids = inventory.getIDs(selectedCategory);
+        }
+
+        if (ids.isEmpty()) {
+            ids.add(FilterBox.EMPTY);
+        } else {
+            ids.add(0, FilterBox.ALL);
+            ids.add(1, FilterBox.TYPE_MANUALLY);
+        }
+        itemFilter.setModel(new DefaultComboBoxModel(ids.toArray(new String[0])));
+    }
+
 }

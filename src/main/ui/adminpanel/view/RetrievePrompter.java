@@ -64,7 +64,7 @@ public class RetrievePrompter extends AbstractLoginAccountPrompter {
         dialog = new JDialog();
         dialog.add(prompter);
         dialog.pack();
-        dialog.setModalityType(Dialog.DEFAULT_MODALITY_TYPE);
+        dialog.setModalityType(Dialog.ModalityType.APPLICATION_MODAL);
         dialog.setVisible(true);
     }
 

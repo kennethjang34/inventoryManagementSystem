@@ -146,7 +146,7 @@ public class Category extends TableEntryConvertibleDataFactory implements JsonCo
     }
 
     @Override
-    public List<String> getContentsOf(String property) {
+    public List<Object> getContentsOf(String property) {
         return null;
     }
 

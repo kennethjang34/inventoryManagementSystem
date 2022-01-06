@@ -16,12 +16,9 @@ import java.time.LocalDate;
 
 //control admin + login status
 public class AdminController extends AbstractController<Admin, AdminViewPanel> {
-    private InventoryManagementSystemApplication application;
 
     public AdminController(Admin admin, AdminViewPanel adminViewPanel) {
         super(admin, adminViewPanel);
-        this.model = admin;
-        this.view = adminViewPanel;
     }
 
     public void setUpView() {
@@ -34,46 +31,42 @@ public class AdminController extends AbstractController<Admin, AdminViewPanel> {
 
     private void setUpRegisterPanel() {
         RegisterPrompter registerPrompter =  view.getRegisterPrompter();
-        registerPrompter.getRegisterButton().addActionListener(new ActionListener() {
-            //REQUIRES: all fields must be in valid form and cannot remain empty
-            //MODIFIES: this
-            //EFFECTS: create a new login account and register it in the system.
-            @Override
-            public void actionPerformed(ActionEvent e) {
-
-                int personalCode = Integer.parseInt(registerPrompter.getCodeInput());
-                String birthdayText = registerPrompter.getBirthDayInput();
-                LocalDate birthDay = InventoryManagementSystemApplication.convertToLocalDate(birthdayText);
-                //String id = idField.getText();
-                String pw = String.valueOf(registerPrompter.getPWInput());
-                //String name = nameField.getText();
-                try {
-                    if (!model.isEmpty()) {
-                        if (model.isAdminLoggedIn()) {
-                            if (registerPrompter.getCheckBox().isSelected()) {
-                                model.createLoginAccount(registerPrompter.getIDInput(), pw, registerPrompter.getNameInput(),
-                                        birthDay, personalCode, true);
-                            } else {
-                                model.createLoginAccount(registerPrompter.getIDInput(), pw, registerPrompter.getNameInput(),
-                                        birthDay, personalCode, false);
-                            }
+        System.out.println(registerPrompter.getRegisterButton().getActionListeners().length);
+        registerPrompter.getRegisterButton().addActionListener(e -> {
+            System.out.println(registerPrompter.getRegisterButton().getActionListeners().length);
+            int personalCode = Integer.parseInt(registerPrompter.getCodeInput());
+            String birthdayText = registerPrompter.getBirthDayInput();
+            LocalDate birthDay = InventoryManagementSystemApplication.convertToLocalDate(birthdayText);
+            String pw = String.valueOf(registerPrompter.getPWInput());
+            try {
+                if (!model.isEmpty()) {
+                    if (model.isAdminLoggedIn()) {
+                        if (registerPrompter.getCheckBox().isSelected()) {
+                            model.createLoginAccount(registerPrompter.getIDInput(), pw, registerPrompter.getNameInput(),
+                                    birthDay, personalCode, true);
                         } else {
-                            registerPrompter.displayPermissionDenied();
-//                    JOptionPane.showMessageDialog(this, "you are not allowed to create "
-//                            + "a new login account in this system");
+                            model.createLoginAccount(registerPrompter.getIDInput(), pw, registerPrompter.getNameInput(),
+                                    birthDay, personalCode, false);
                         }
                     } else {
-                        model.setLoginAccount(model.createLoginAccount(registerPrompter.getIDInput(),
-                                pw, registerPrompter.getNameInput(), birthDay, personalCode, true));
+                        registerPrompter.displayPermissionDenied();
                     }
-                    JDialog registerDialog = RegisterPrompter.getDialog();
-                    JOptionPane.showMessageDialog(registerDialog, "a new account is successfully created");
-                    registerDialog.setVisible(false);
-                } catch (IllegalArgumentException illegalArgumentException) {
-                    displayExceptionMessage(illegalArgumentException);
+                } else {
+                    model.setLoginAccount(model.createLoginAccount(registerPrompter.getIDInput(),
+                            pw, registerPrompter.getNameInput(), birthDay, personalCode, true));
                 }
+                JDialog registerDialog = RegisterPrompter.getDialog();
+                JOptionPane.showMessageDialog(registerDialog, "a new account is successfully created");
+                registerDialog.setVisible(false);
+            } catch (IllegalArgumentException illegalArgumentException) {
+                displayExceptionMessage(illegalArgumentException);
             }
+            JButton source = (JButton) e.getSource();
+            System.out.println(source.getActionListeners().length);
         });
+
+        System.out.println(registerPrompter.getRegisterButton().getActionListeners().length);
+
     }
 
     private void setUpRetrievePanel() {
@@ -92,7 +85,6 @@ public class AdminController extends AbstractController<Admin, AdminViewPanel> {
                 } else {
                     JOptionPane.showMessageDialog(null, "Given info is not correct");
                 }
-                retrievePrompter.setVisible(false);
             }
         });
     }
@@ -182,5 +174,6 @@ public class AdminController extends AbstractController<Admin, AdminViewPanel> {
     }
 
 
-
+    public void setAdmin(Admin admin) {
+    }
 }

@@ -481,8 +481,8 @@ public class Item extends TableEntryConvertibleDataFactory implements JsonConver
 
 
 
-    public List<String> getContentsOf(String property) {
-        List<String> contents = new ArrayList<>();
+    public List<Object> getContentsOf(String property) {
+        List<Object> contents = new ArrayList<>();
 
         //Case-insensitive
         switch (ColumnNames.valueOf(property.toUpperCase())) {

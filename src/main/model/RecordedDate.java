@@ -13,19 +13,23 @@ public class RecordedDate extends TableEntryConvertibleDataFactory {
     //value: accounts belonging to the item
     Map<String,List<Account>> accountMap;
 
-    public enum DataList {
+    public enum ColumnName {
         DATE, ID, TOTAL_ACCOUNTS, BROUGHT_IN, TAKEN_OUT
     }
 
+    public enum EntryTypes {
+        ACCOUNT
+    }
+
     public static final String[] DATA_LIST = new String[]{
-            DataList.DATE.toString(), DataList.ID.toString(), DataList.TOTAL_ACCOUNTS.toString(),
-            DataList.BROUGHT_IN.toString(), DataList.TAKEN_OUT.toString()
+            ColumnName.DATE.toString(), ColumnName.ID.toString(), ColumnName.TOTAL_ACCOUNTS.toString(),
+            ColumnName.BROUGHT_IN.toString(), ColumnName.TAKEN_OUT.toString()
     };
 
     public RecordedDate(LocalDate date) {
         super(new String[]{
-            DataList.DATE.toString(), DataList.ID.toString(), DataList.TOTAL_ACCOUNTS.toString(),
-                DataList.BROUGHT_IN.toString(), DataList.TAKEN_OUT.toString()
+            ColumnName.DATE.toString(), ColumnName.ID.toString(), ColumnName.TOTAL_ACCOUNTS.toString(),
+                ColumnName.BROUGHT_IN.toString(), ColumnName.TAKEN_OUT.toString()
         });
         this.date = date;
         accountMap = new LinkedHashMap<>();
@@ -33,8 +37,8 @@ public class RecordedDate extends TableEntryConvertibleDataFactory {
 
     public RecordedDate(LocalDate date, List<Account> accounts) {
         super(new String[]{
-                DataList.DATE.toString(), DataList.ID.toString(), DataList.TOTAL_ACCOUNTS.toString(),
-                DataList.BROUGHT_IN.toString(), DataList.TAKEN_OUT.toString()
+                ColumnName.DATE.toString(), ColumnName.ID.toString(), ColumnName.TOTAL_ACCOUNTS.toString(),
+                ColumnName.BROUGHT_IN.toString(), ColumnName.TAKEN_OUT.toString()
         });
         this.date = date;
         this.accountMap = new LinkedHashMap<>();
@@ -70,10 +74,13 @@ public class RecordedDate extends TableEntryConvertibleDataFactory {
             accountList = new LinkedList<>();
         }
         accountList.add(account);
-        if (accountMap.putIfAbsent(account.getID(), accountList) == null) {
-            changeFirer.fireAdditionEvent(DataList.ID.toString(), account);
-        }
+        accountMap.putIfAbsent(account.getID(), accountList);
+//             if (accountMap.putIfAbsent(account.getID(), accountList) == null) {
+//            changeFirer.fireAdditionEvent(DataList.ID.toString(), account);
+//        }
+        changeFirer.fireAdditionEvent(EntryTypes.ACCOUNT.toString(), account);
         changeFirer.fireUpdateEvent(this);
+//        changeFirer.fireUpdateEvent(this);
     }
 
     public List<String> getIDList() {
@@ -118,7 +125,7 @@ public class RecordedDate extends TableEntryConvertibleDataFactory {
 
     @Override
     public Object[] convertToTableEntry() {
-        Object[] row = new Object[DataList.values().length];
+        Object[] row = new Object[ColumnName.values().length];
         row[0] = date;
         String ids = getIDList().toString();
         row[1] = ids;
@@ -130,13 +137,13 @@ public class RecordedDate extends TableEntryConvertibleDataFactory {
 
     @Override
     public Object[] getDataList() {
-        return DataList.values();
+        return ColumnName.values();
     }
 
     @Override
-    public List<String> getContentsOf(String property) {
-        List<String> contents = new LinkedList<>();
-        switch (DataList.valueOf(property)) {
+    public List<Object> getContentsOf(String property) {
+        List<Object> contents = new LinkedList<>();
+        switch (ColumnName.valueOf(property)) {
             case DATE:
                 contents.add(date.toString());
                 break;

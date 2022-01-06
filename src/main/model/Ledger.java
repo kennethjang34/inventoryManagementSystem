@@ -8,7 +8,6 @@ import ui.table.AbstractTableDataFactory;
 import ui.table.DataFactory;
 import ui.table.ViewableTableEntryConvertibleModel;
 
-import javax.xml.crypto.Data;
 import java.time.LocalDate;
 import java.util.*;
 
@@ -114,8 +113,8 @@ public class Ledger extends AbstractTableDataFactory implements JsonConvertible,
     }
 
     public static final String[] DATA_LIST = new String[]{
-            RecordedDate.DataList.DATE.toString(), RecordedDate.DataList.ID.toString(), RecordedDate.DataList.TOTAL_ACCOUNTS.toString(),
-            RecordedDate.DataList.BROUGHT_IN.toString(), RecordedDate.DataList.TAKEN_OUT.toString()
+            RecordedDate.ColumnName.DATE.toString(), RecordedDate.ColumnName.ID.toString(), RecordedDate.ColumnName.TOTAL_ACCOUNTS.toString(),
+            RecordedDate.ColumnName.BROUGHT_IN.toString(), RecordedDate.ColumnName.TAKEN_OUT.toString()
     };
 
 
@@ -223,7 +222,7 @@ public class Ledger extends AbstractTableDataFactory implements JsonConvertible,
 
     public List<String> getProcessedItemList() {
         if (dates.isEmpty()) {
-            return Collections.EMPTY_LIST;
+            return new ArrayList<>();
         }
         Set<String> idSet = new HashSet<>();
         for (RecordedDate date: dates.values()) {
@@ -235,7 +234,7 @@ public class Ledger extends AbstractTableDataFactory implements JsonConvertible,
 
     public List<String> getProcessedItemList(LocalDate date) {
         if (dates.get(date) == null) {
-            return Collections.EMPTY_LIST;
+            return new ArrayList<>();
         }
         return dates.get(date).getIDList();
     }
@@ -254,14 +253,12 @@ public class Ledger extends AbstractTableDataFactory implements JsonConvertible,
         RecordedDate recordedDate = dates.get(date);
         if (recordedDate == null) {
             recordedDate = new RecordedDate(date);
-        }
-        recordedDate.addAccount(account);
-        if (dates.putIfAbsent(date, recordedDate) == null) {
+            dates.put(recordedDate.getDate(), recordedDate);
             changeFirer.fireAdditionEvent(DataList.RECORDED_DATE.toString(), recordedDate);
         } else {
-//            changeFirer.fireUpdateEvent(DataList.RECORDED_DATE.toString(), recordedDate);
-        }
 
+        }
+        recordedDate.addAccount(account);
         return account;
     }
 
@@ -332,8 +329,8 @@ public class Ledger extends AbstractTableDataFactory implements JsonConvertible,
     }
 
     @Override
-    public List<String> getContentsOf(String property) {
-        List<String> contents = new ArrayList<>();
+    public List<Object> getContentsOf(String property) {
+        List<Object> contents = new ArrayList<>();
         switch (DataList.valueOf(property)) {
             case RECORDED_DATE:
                 for (LocalDate date: dates.keySet()) {

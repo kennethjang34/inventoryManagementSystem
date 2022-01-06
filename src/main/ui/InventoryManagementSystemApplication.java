@@ -77,33 +77,50 @@ public class InventoryManagementSystemApplication extends JFrame implements Json
     //EFFECTS: create a tabbed pane for the main panel
     public void createTabbedPane() {
         tabbedPane = new JTabbedPane();
-        inventoryController = new InventoryController(inventory, new InventoryViewPanel(inventory));
-        ledgerController = new LedgerController(ledger, new LedgerViewPanel(ledger));
-        adminController = new AdminController(admin, new AdminViewPanel(admin));
+        if (inventoryController != null) {
+            inventoryController.setInventory(inventory);
+        } else {
+            inventoryController = new InventoryController(inventory, new InventoryViewPanel(inventory));
+        }
+        if (ledgerController != null) {
+            ledgerController.setLedger(ledger);
+        } else {
+            ledgerController = new LedgerController(ledger, new LedgerViewPanel(ledger));
+        }
+        if (adminController != null) {
+            adminController.setAdmin(admin);
+        } else {
+            adminController = new AdminController(admin, new AdminViewPanel(admin));
+        }
         tabbedPane.addTab("Inventory", inventoryController.getView());
         tabbedPane.addTab("Ledger", ledgerController.getView());
         tabbedPane.addTab("Admin", adminController.getView());
-        tabbedPane.addChangeListener(e -> {
-            JTabbedPane pane = (JTabbedPane) e.getSource();
-            if (pane.getSelectedIndex() == 2) {
-                if (admin.isAdminLoggedIn() || admin.isEmpty()) {
-                    pane.setSelectedIndex(2);
-                } else if (!admin.isLoggedIn()) {
-//                    loginPanel.setPurpose(loginPanel.ADMIN);
-                    adminController.displayLoginDialog();
-                    if (admin.isAdminLoggedIn()) {
-                        pane.setSelectedIndex(2);
-                        return;
-                    } else if (admin.isLoggedIn()) {
-                            JOptionPane.showMessageDialog(tabbedPane, "you don't have access to admin");
-                            pane.setSelectedIndex(0);
-                    }
-                } else {
-                    JOptionPane.showMessageDialog(tabbedPane, "you don't have access to admin");
-                    pane.setSelectedIndex(0);
-                }
-            }
-        });
+        if (admin.isAdminLoggedIn()) {
+            tabbedPane.setEnabledAt(2, true);
+        } else if (!admin.isEmpty()) {
+            tabbedPane.setEnabledAt(2, false);
+        }
+//        tabbedPane.addChangeListener(e -> {
+//            JTabbedPane pane = (JTabbedPane) e.getSource();
+//            if (pane.getSelectedIndex() == 2) {
+//                if (admin.isAdminLoggedIn() || admin.isEmpty()) {
+//                    pane.setSelectedIndex(2);
+//                } else if (!admin.isLoggedIn()) {
+////                    loginPanel.setPurpose(loginPanel.ADMIN);
+//                    adminController.displayLoginDialog();
+//                    if (admin.isAdminLoggedIn()) {
+//                        pane.setSelectedIndex(2);
+//                        return;
+//                    } else if (admin.isLoggedIn()) {
+//                            JOptionPane.showMessageDialog(tabbedPane, "you don't have access to admin");
+//                            pane.setSelectedIndex(0);
+//                    }
+//                } else {
+//                    JOptionPane.showMessageDialog(tabbedPane, "you don't have access to admin");
+//                    pane.setSelectedIndex(0);
+//                }
+//            }
+//        });
     }
 
 
@@ -112,12 +129,7 @@ public class InventoryManagementSystemApplication extends JFrame implements Json
     public void createMainPanel() {
         mainPanel = new JPanel();
         createTabbedPane();
-//        tabbedPane.setBounds(50, 50, 200, 200);
         mainPanel.add(tabbedPane);
-//        mainPanel.setLayout(cardLayout);
-//        mainPanel.add(tabbedPane, "ControlPanel");
-//        mainPanel.add(loginPanel, "LoginPanel");
-//        cardLayout.show(mainPanel, "ControlPanel");
     }
 
 
@@ -191,11 +203,13 @@ public class InventoryManagementSystemApplication extends JFrame implements Json
             getContentPane().removeAll();
             setVisible(false);
             repaint();
-
             inventory = new Inventory(jsonObject.getJSONObject("inventory"));
             ledger = new Ledger(jsonObject.getJSONObject("ledger"));
+            inventory.addDataChangeListener(ledger);
+            for (Item item: inventory.getItemList()) {
+                item.addDataChangeListener(ledger);
+            }
             createMainPanel();
-
             add(mainPanel);
             menuBar = createMenuBar();
             setJMenuBar(menuBar);

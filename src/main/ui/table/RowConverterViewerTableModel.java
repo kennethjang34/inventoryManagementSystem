@@ -16,6 +16,8 @@ public class RowConverterViewerTableModel extends AbstractTableModel implements 
     protected int baseColumnIndex;
     protected boolean duplicateAllowed;
     protected boolean automation = true;
+    protected String category;
+
 
     //EFFECTS: create a new empty table model
     public RowConverterViewerTableModel() {
@@ -66,6 +68,7 @@ public class RowConverterViewerTableModel extends AbstractTableModel implements 
             tableEntries.add(entry);
             data.put(entry, createRow(entry.convertToTableEntry()));
         }
+        this.category = category;
         model.addDataChangeListener(category, this);
     }
 
@@ -82,6 +85,7 @@ public class RowConverterViewerTableModel extends AbstractTableModel implements 
             tableEntries.add(entry);
             data.put(entry, createRow(entry.convertToTableEntry()));
         }
+        this.category = category;
         model.addDataChangeListener(category, this);
     }
 
@@ -116,6 +120,28 @@ public class RowConverterViewerTableModel extends AbstractTableModel implements 
         duplicateAllowed = false;
     }
 
+    public void setDataFactory(AbstractTableDataFactory factory) {
+        data = new LinkedHashMap<>();
+        tableEntries = new LinkedList<>();
+        List<? extends ViewableTableEntryConvertibleModel> entries = factory.getEntryModels();
+        for (ViewableTableEntryConvertibleModel entry: entries) {
+            entry.addUpdateListener(this);
+            tableEntries.add(entry);
+            data.put(entry, createRow(entry.convertToTableEntry()));
+        }
+        factory.addDataChangeListener(category, this);
+        fireTableDataChanged();
+    }
+
+
+    //The column names will be retained.
+    public void reset() {
+        tableEntries = new LinkedList<>();
+        data = new LinkedHashMap<>();
+        baseColumnIndex = -1;
+        duplicateAllowed = false;
+        fireTableDataChanged();
+    }
 
 
 
@@ -401,7 +427,7 @@ public class RowConverterViewerTableModel extends AbstractTableModel implements 
         ViewableTableEntryConvertibleModel entry = added;
         Object[] row = createRow(entry.convertToTableEntry());
         if (data.put(entry, row) == null) {
-            entry.addUpdateListener(this);;
+            entry.addUpdateListener(this);
             tableEntries.add(entry);
             fireTableRowsInserted(data.size() - 1, data.size() - 1);
         } else {
@@ -471,6 +497,8 @@ public class RowConverterViewerTableModel extends AbstractTableModel implements 
     public void entryRemoved(DataFactory source, ViewableTableEntryConvertibleModel removed) {
 
     }
+
+
 
 
 //

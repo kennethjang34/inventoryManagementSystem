@@ -59,14 +59,43 @@ public class LedgerViewPanel extends JPanel {
         this.ledger = ledger;
         setUpLedgerTable();
         setUpAccountsTable();
-        dateFilter = new FilterBox(ledger, Ledger.DataList.RECORDED_DATE.toString()) {
+        dateFilter = new FilterBox(this.ledger, Ledger.DataList.RECORDED_DATE.toString()) {
+            @Override
+            public void entryAdded(ViewableTableEntryConvertibleModel entry) {
+                if (entry instanceof RecordedDate) {
+                    entry.addDataChangeListener(this);
+                    if (getItemCount() == 1 && getItemAt(0).equals(EMPTY)) {
+                        removeItemAt(0);
+                        addItem(ALL);
+                        addItem(TYPE_MANUALLY);
+                    }
+                    addItem(entry.toString());
+                }
+                else if (entry instanceof Account) {
+                    Account account = (Account) entry;
+                    DefaultComboBoxModel<String> itemFilterModel = (DefaultComboBoxModel<String>) itemFilter.getModel();
+                    if (itemFilterModel.getIndexOf(account.getID()) != -1) {
+                        return;
+                    }
+                    if (dateFilter.getSelectedItem().equals(account.getDate().toString())
+                            || dateFilter.getSelectedItem().equals(FilterBox.ALL)) {
+                        if (itemFilter.getSelectedItem().equals(FilterBox.EMPTY)) {
+                            itemFilter.removeAllItems();
+                            itemFilter.addItem(ALL);
+                            itemFilter.addItem(TYPE_MANUALLY);
+                        }
+                        itemFilter.addItem(account.getID());
+                    }
+                }
+            }
+
             @Override
             public void entryUpdated(ViewableTableEntryConvertibleModel entry) {
                 List<String> itemIDList;
                 String selectedDateString = (String) getSelectedItem();
                 RecordedDate updatedDate = (RecordedDate) entry;
                 if (selectedDateString.equals(FilterBox.ALL)) {
-                    itemIDList = ledger.getProcessedItemList();
+                    itemIDList = LedgerViewPanel.this.ledger.getProcessedItemList();
                 } else if (updatedDate.getDate().toString().equals(selectedDateString)){
                     itemIDList = updatedDate.getIDList();
                 } else {
@@ -181,9 +210,6 @@ public class LedgerViewPanel extends JPanel {
                 };
             }
         };
-
-
-
     }
 
     private void setUpAccountsTable() {
@@ -277,5 +303,15 @@ public class LedgerViewPanel extends JPanel {
 
     public JTextField getItemField() {
         return itemField;
+    }
+
+    public void setLedger(Ledger ledger) {
+        this.ledger = ledger;
+        RowConverterViewerTableModel ledgerTableModel = (RowConverterViewerTableModel) ledgerTable.getModel();
+        ledgerTableModel.setDataFactory(ledger);
+        RowConverterViewerTableModel accountsTableModel = (RowConverterViewerTableModel) accountsTable.getModel();
+        accountsTableModel.reset();
+        dateFilter.setDataFactory(ledger);
+        setUpItemFilter();
     }
 }

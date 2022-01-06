@@ -32,7 +32,7 @@ public class AdminViewPanel extends JPanel {
         retrievePrompter = RetrievePrompter.getRetrievePrompter();
         loginPanel = new LoginPanel();
         accountsTable = new JTable();
-        accountsTable.setModel(new RowConverterViewerTableModel(admin.getAccounts(), Account.getDataListNames()));
+        accountsTable.setModel(new RowConverterViewerTableModel(admin.getAccounts(), Admin.LoginAccount.getDataListNames()));
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx = 0;
         gbc.gridy = 0;
@@ -71,6 +71,10 @@ public class AdminViewPanel extends JPanel {
 
     public JButton getCreateButton() {
         return createButton;
+    }
+
+    public JTable getAccountsTable() {
+        return accountsTable;
     }
 
 

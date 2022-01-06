@@ -184,31 +184,30 @@ public class InventoryController extends AbstractController<Inventory, Inventory
 
 
     private void setUpCategoryFilter(JComboBox categoryFilter) {
-        categoryFilter.addActionListener(new ActionListener() {
+        categoryFilter.addItemListener(new ItemListener() {
             @Override
-            public void actionPerformed(ActionEvent e) {
+            public void itemStateChanged(ItemEvent e) {
                 if (categoryFilter.getSelectedItem() != null) {
                     String selectedCategory = (String) categoryFilter.getSelectedItem();
                     if (selectedCategory.equals(FilterBox.TYPE_MANUALLY)) {
                         view.getCategoryField().setVisible(true);
                         return;
                     }
-                    updateItemFilter(view.getItemFilter(), selectedCategory);
+                    view.updateItemFilter(selectedCategory);
                     TableRowSorter sorter = (TableRowSorter) view.getStockButtonTable().getRowSorter();
                     RowFilter<TableModel, Integer> filter = createCategoryRowFilter(selectedCategory);
                     sorter.setRowFilter(filter);
                 }
             }
-
         });
     }
 
 
     private void setUpItemFilter(JComboBox itemFilter) {
 
-        itemFilter.addActionListener(new ActionListener() {
+        itemFilter.addItemListener(new ItemListener() {
             @Override
-            public void actionPerformed(ActionEvent e) {
+            public void itemStateChanged(ItemEvent e) {
                 String selectedItem = (String) itemFilter.getSelectedItem();
                 if (selectedItem != null) {
                     if (selectedItem.equals("TYPE_MANUALLY")) {
@@ -222,28 +221,28 @@ public class InventoryController extends AbstractController<Inventory, Inventory
         });
     }
 
-    //implemented
-    //called only when category is newly selected by categoryFilter
-    //MODIFIES: item filter
-    //EFFECTS: set up the item filter, so it matches the newly selected category
-    private void updateItemFilter(JComboBox<String> itemFilter, String selectedCategory) {
-        List<String> ids;
-        if (selectedCategory.equals(FilterBox.ALL)) {
-            ids = model.getIDs();
-        } else {
-            //in case of TYPE_MANUALLY, it's the same as ids.addAll(null);
-            ids = model.getIDs(selectedCategory);
-        }
-
-        if (ids.isEmpty()) {
-            ids.add(FilterBox.EMPTY);
-        } else {
-            ids.add(0, FilterBox.ALL);
-            ids.add(1, FilterBox.TYPE_MANUALLY);
-        }
-
-        itemFilter.setModel(new DefaultComboBoxModel(ids.toArray(new String[0])));
-    }
+//    //implemented
+//    //called only when category is newly selected by categoryFilter
+//    //MODIFIES: item filter
+//    //EFFECTS: set up the item filter, so it matches the newly selected category
+//    private void updateItemFilter(JComboBox<String> itemFilter, String selectedCategory) {
+//        List<String> ids;
+//        if (selectedCategory.equals(FilterBox.ALL)) {
+//            ids = model.getIDs();
+//        } else {
+//            //in case of TYPE_MANUALLY, it's the same as ids.addAll(null);
+//            ids = model.getIDs(selectedCategory);
+//        }
+//
+//        if (ids.isEmpty()) {
+//            ids.add(FilterBox.EMPTY);
+//        } else {
+//            ids.add(0, FilterBox.ALL);
+//            ids.add(1, FilterBox.TYPE_MANUALLY);
+//        }
+//
+//        itemFilter.setModel(new DefaultComboBoxModel(ids.toArray(new String[0])));
+//    }
 
 
 
@@ -759,7 +758,11 @@ public class InventoryController extends AbstractController<Inventory, Inventory
                 Point p = e.getPoint();
                 int row = rowAtPoint(p);
                 int column = columnAtPoint(p);
-                return getValueAt(row, column).toString();
+                if (row == -1 || column == -1) {
+                    return null;
+                }
+                String toolTip = getValueAt(row, column).toString();
+                return toolTip;
             }
 
             @Override
@@ -1063,6 +1066,11 @@ public class InventoryController extends AbstractController<Inventory, Inventory
         }
     }
 
+
+    public void setInventory(Inventory model) {
+        this.model = model;
+        view.setInventory(model);
+    }
 
 
 

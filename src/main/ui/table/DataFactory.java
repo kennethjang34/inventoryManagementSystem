@@ -6,7 +6,7 @@ import java.util.List;
 public interface DataFactory {
     Object[] getDataList();
 
-    List<String> getContentsOf(String property);
+    List<Object> getContentsOf(String property);
 
     String[] getColumnNames();
 

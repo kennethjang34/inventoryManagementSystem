@@ -22,17 +22,45 @@ public class FilterBox extends JComboBox implements DataViewer {
         this.model = model;
         propertyName = category;
         List<String> items = new ArrayList<>();
-        if (model.getContentsOf(category).isEmpty()) {
+        if (model.getContentsOf(propertyName).isEmpty()) {
             items.add(EMPTY);
         } else {
             items.add(ALL);
             items.add(TYPE_MANUALLY);
-            items.addAll(model.getContentsOf(category));
+            for (Object obj: model.getContentsOf(propertyName)) {
+                items.add(obj.toString());
+                if (obj instanceof ViewableTableEntryConvertibleModel) {
+                    ViewableTableEntryConvertibleModel entry = (ViewableTableEntryConvertibleModel) obj;
+                    entry.addDataChangeListener(this);
+                }
+            }
         }
         setModel(new DefaultComboBoxModel(items.toArray(new String[0])));
-        model.addDataChangeListener(category,this);
+        model.addDataChangeListener(propertyName,this);
     }
 
+
+    //
+    public void setDataFactory(AbstractTableDataFactory model) {
+        this.model.removeListener(this);
+        List<String> items = new ArrayList<>();
+        this.model = model;
+        if (model.getContentsOf(propertyName).isEmpty()) {
+            items.add(EMPTY);
+        } else {
+            items.add(ALL);
+            items.add(TYPE_MANUALLY);
+            for (Object obj: model.getContentsOf(propertyName)) {
+                items.add(obj.toString());
+                if (obj instanceof ViewableTableEntryConvertibleModel) {
+                    ViewableTableEntryConvertibleModel entry = (ViewableTableEntryConvertibleModel) obj;
+                    entry.addDataChangeListener(this);
+                }
+            }
+        }
+        setModel(new DefaultComboBoxModel(items.toArray(new String[0])));
+        model.addDataChangeListener(propertyName,this);
+    }
 
 
 

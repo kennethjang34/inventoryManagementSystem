@@ -6,14 +6,12 @@ import ui.FilterBox;
 import ui.ledgerpanel.view.LedgerViewPanel;
 import ui.table.ButtonTable;
 import ui.table.RowConverterViewerTableModel;
+import ui.table.ViewableTableEntryConvertibleModel;
 
 import javax.swing.*;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
 import java.beans.PropertyChangeEvent;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -23,6 +21,11 @@ import java.util.List;
 import static ui.inventorypanel.controller.InventoryController.convertToLocalDate;
 
 public class LedgerController extends AbstractController<Ledger, LedgerViewPanel> {
+
+    public void setLedger(Ledger ledger) {
+        this.model = ledger;
+        view.setLedger(ledger);
+    }
 
     private class LedgerButtonAction extends AbstractAction {
 
@@ -99,19 +102,22 @@ public class LedgerController extends AbstractController<Ledger, LedgerViewPanel
 
     private void setUpDateFilter() {
         FilterBox dateFilter = view.getDateFilter();
-        dateFilter.addActionListener(new ActionListener() {
+        dateFilter.addItemListener(new ItemListener() {
+
             @Override
-            public void actionPerformed(ActionEvent e) {
-                if (dateFilter.getSelectedItem() != null) {
-                    String selectedDateString = (String) dateFilter.getSelectedItem();
-                    if (selectedDateString.equals(FilterBox.TYPE_MANUALLY)) {
-                        view.getDateField().setVisible(true);
-                        return;
+            public void itemStateChanged(ItemEvent e) {
+                if (e.getStateChange() == ItemEvent.SELECTED) {
+                    if (dateFilter.getSelectedItem() != null) {
+                        String selectedDateString = (String) dateFilter.getSelectedItem();
+                        if (selectedDateString.equals(FilterBox.TYPE_MANUALLY)) {
+                            view.getDateField().setVisible(true);
+                            return;
+                        }
+                        updateItemFilter(selectedDateString);
+                        TableRowSorter sorter = (TableRowSorter) view.getLedgerTable().getRowSorter();
+                        RowFilter<TableModel, Integer> filter = createDateRowFilter(selectedDateString);
+                        sorter.setRowFilter(filter);
                     }
-                    updateItemFilter(selectedDateString);
-                    TableRowSorter sorter = (TableRowSorter) view.getLedgerTable().getRowSorter();
-                    RowFilter<TableModel, Integer> filter = createDateRowFilter(selectedDateString);
-                    sorter.setRowFilter(filter);
                 }
             }
 
@@ -120,9 +126,9 @@ public class LedgerController extends AbstractController<Ledger, LedgerViewPanel
 
     private void setUpItemFilter() {
         JComboBox itemFilter = view.getItemFilter();
-        itemFilter.addActionListener(new ActionListener() {
+        itemFilter.addItemListener(new ItemListener() {
             @Override
-            public void actionPerformed(ActionEvent e) {
+            public void itemStateChanged(ItemEvent e) {
                 String selectedItem = (String) itemFilter.getSelectedItem();
                 if (selectedItem != null) {
                     if (selectedItem.equals("TYPE_MANUALLY")) {
@@ -139,13 +145,18 @@ public class LedgerController extends AbstractController<Ledger, LedgerViewPanel
     private void updateItemFilter(String selectedDateString) {
         JComboBox itemFilter = view.getItemFilter();
         List<String> itemIDList;
-        if (selectedDateString.equals(FilterBox.ALL)) {
+        if (selectedDateString.equals(FilterBox.EMPTY)) {
+            itemIDList = new ArrayList<>();
+            itemIDList.add(FilterBox.EMPTY);
+            itemFilter.setModel(new DefaultComboBoxModel(itemIDList.toArray(new String[0])));
+            return;
+        } else if (selectedDateString.equals(FilterBox.ALL)) {
             itemIDList = model.getProcessedItemList();
         } else {
             //in case of TYPE_MANUALLY, it's the same as itemIDList.addAll(null);
-            itemIDList = model.getProcessedItemList(convertToLocalDate(selectedDateString));
+            LocalDate date = convertToLocalDate(selectedDateString);
+            itemIDList = model.getProcessedItemList(date);
         }
-
         if (itemIDList.isEmpty()) {
             itemIDList.add(FilterBox.EMPTY);
         } else {

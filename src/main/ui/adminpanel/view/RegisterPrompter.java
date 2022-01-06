@@ -86,8 +86,8 @@ public class RegisterPrompter extends AbstractLoginAccountPrompter {
         prompter.setPreferredSize(new Dimension(600, 400));
         dialog = new JDialog();
         dialog.add(prompter);
+        dialog.setModalityType(Dialog.ModalityType.APPLICATION_MODAL);
         dialog.pack();
-        dialog.setModalityType(Dialog.DEFAULT_MODALITY_TYPE);
         dialog.setVisible(true);
     }
 

@@ -50,12 +50,12 @@ public class Inventory extends AbstractTableDataFactory implements JsonConvertib
     }
 
     @Override
-    public List<String> getContentsOf(String property) {
+    public List<Object> getContentsOf(String property) {
         switch (property) {
             case CATEGORY:
-                return getCategoryNames();
+                return new ArrayList<>(categories.values());
             case ITEM:
-                return getItemNames();
+                return new ArrayList<>(items.values());
         }
         return null;
     }
