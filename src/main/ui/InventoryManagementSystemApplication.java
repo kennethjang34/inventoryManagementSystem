@@ -252,33 +252,34 @@ public class InventoryManagementSystemApplication extends JFrame implements Json
                 System.exit(0);
             case SAVE:
                 if (admin.isEmpty()) {
+                    JOptionPane.showMessageDialog(this, "Please create a login account first");
                     adminController.promptAdminRegister();
                 } else if (!admin.isLoggedIn()) {
 //                loginPanel.setPurpose(LoginPanel.SAVE);
                     adminController.promptLogin();
-                    if (admin.isLoggedIn()) {
-                        save();
-                    }
 //                switchToLoginPanel();
-                } else {
+                }
+
+                if (admin.isLoggedIn()) {
                     save();
                 }
+
                 break;
             case LOAD:
+            case LOGIN:
                 if (admin.isEmpty()) {
+                    JOptionPane.showMessageDialog(this, "Please create a login account first");
                     adminController.promptAdminRegister();
                 } else if (!admin.isLoggedIn()) {
                     adminController.promptLogin();
                 }
-                load();
+                if (admin.isLoggedIn()) {
+                    load();
+                }
                 break;
             case LOGOUT:
                 adminController.logout();
                 break;
-            case LOGIN:
-                if (!admin.isLoggedIn()) {
-                    adminController.promptLogin();
-                }
         }
     }
 
@@ -370,7 +371,6 @@ public class InventoryManagementSystemApplication extends JFrame implements Json
                 // file → login invisible
                 menuBar.getMenu(0).getItem(0).setVisible(false);
                 menuBar.getMenu(0).getItem(1).setVisible(true);
-                load();
             }
 
             //log-out event
