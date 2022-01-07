@@ -116,8 +116,18 @@ public class EntryRemovableTable extends JTable {
         int row = rowAtPoint(p);
         int column = columnAtPoint(p);
         if (row != -1 && column != -1) {
-            return getValueAt(row, column).toString();
+            Object value = getValueAt(row, column);
+            if (value == null) {
+                return null;
+            } else {
+                return value.toString();
+            }
         }
         return null;
+    }
+
+    @Override
+    public boolean isCellEditable(int row, int column) {
+        return false;
     }
 }

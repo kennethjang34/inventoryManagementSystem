@@ -692,7 +692,15 @@ public class InventoryController extends AbstractController<Inventory, Inventory
         columnNames[columnNames.length - 1] = "Change in QTY";
         DefaultTableModel tableModel = new DefaultTableModel();
         tableModel.setDataVector(copy.toArray(new Object[0][]), columnNames);
-        EntryRemovableTable table = new EntryRemovableTable();
+        EntryRemovableTable table = new EntryRemovableTable() {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                if (column == columnNames.length - 1) {
+                    return true;
+                }
+                return false;
+            }
+        };
 //        JTable table = new JTable() {
 //
 //            @Override
