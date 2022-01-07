@@ -29,6 +29,7 @@ import java.util.List;
 public class InventoryManagementSystemApplication extends JFrame implements JsonConvertible, ActionListener, PropertyChangeListener {
     private Image image;
     private String imagePath = "./data/seol.gif";
+    private JSONObject jsonData;
     private static final String fileLocation = "./data/inventory_management_system.json";
     private String description = "WELCOMEEEEEE!";
     public static final int WIDTH = 1100;
@@ -162,12 +163,12 @@ public class InventoryManagementSystemApplication extends JFrame implements Json
         try {
 //            Admin.LoginAccount account = adminPanel.getLoginAccount();
             Reader reader = new Reader(fileLocation);
-            JSONObject jsonObject = reader.read();
+            jsonData = reader.read();
             getContentPane().removeAll();
             setVisible(false);
             repaint();
-            inventory = new Inventory(jsonObject.getJSONObject("inventory"));
-            ledger = new Ledger(jsonObject.getJSONObject("ledger"));
+            inventory = new Inventory(jsonData.getJSONObject("inventory"));
+            ledger = new Ledger(jsonData.getJSONObject("ledger"));
             inventory.addDataChangeListener(ledger);
             for (Item item: inventory.getItemList()) {
                 item.addDataChangeListener(ledger);
@@ -331,6 +332,9 @@ public class InventoryManagementSystemApplication extends JFrame implements Json
 
 
 
+
+
+
     public void reset() {
         getContentPane().removeAll();
         setVisible(false);
@@ -379,5 +383,6 @@ public class InventoryManagementSystemApplication extends JFrame implements Json
             }
         }
     }
+
 }
 

@@ -4,6 +4,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 
 
 //A panel to prompt the user to log in/register a new login account/retrieve password
@@ -15,31 +17,35 @@ public class LoginPanel extends JPanel {
     private final JLabel idLabel = new JLabel("ID");
     private final JLabel pwLabel = new JLabel("PW");
     public static final String LOGIN = "login";
-    public static final String RETRIEVE = "retrieve";
-    public static final int CANCEL = -1;
-    public static final int SAVE = 0;
-    public static final int LOAD = 1;
-    public static final int ADMIN = 2;
     private RetrievePrompter retrievePanel = RetrievePrompter.getRetrievePrompter();
     private JButton loginButton;
     private JButton retrieveButton;
     private JDialog dialog;
-    //MODIFIES: this
-    //EFFECTS: set the purpose of this login attempt
-    public void setPurpose(int purpose) {
-        if (purpose != SAVE && purpose != LOAD && purpose != ADMIN) {
-            throw new IllegalArgumentException("The given purpose is not valid");
+
+
+    private KeyListener buttonEnterListener = new KeyListener() {
+        @Override
+        public void keyTyped(KeyEvent e) {
+
         }
-        this.purpose = purpose;
-    }
+
+        @Override
+        public void keyPressed(KeyEvent e) {
+            if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+                JButton button = (JButton) e.getSource();
+                button.doClick();
+            }
+        }
+
+        @Override
+        public void keyReleased(KeyEvent e) {
+
+        }
+    };
+
 
     //EFFECTS: create a new panel that is used to process user login attempt/register a new account/retrieve password
     public LoginPanel() {
-//        JDialog dialog = new JDialog();
-//        dialog.setLayout(new FlowLayout());
-//        JLabel descriptionLabel = new JLabel();
-//        descriptionLabel.setLayout(new BorderLayout());
-//        descriptionLabel.add()
         pwField.setActionCommand(LOGIN);
         add(idLabel);
         add(idField);
@@ -56,12 +62,33 @@ public class LoginPanel extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 dialog.setVisible(false);
+                clearFields();
             }
         });
+        loginButton.addKeyListener(buttonEnterListener);
+        cancelButton.addKeyListener(buttonEnterListener);
 //        cancelButton.addActionListener(e -> application.dataChangeHandler(CANCEL));
         add(cancelButton);
         setPreferredSize(new Dimension(400, 500));
+        idField.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                ((JComponent)(e.getSource())).transferFocus();
+            }
+        });
+        pwField.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                loginButton.doClick();
+            }
+        });
     }
+
+    public void clearFields() {
+        idField.setText("");
+        pwField.setText("");
+    }
+
 
 
 
@@ -94,13 +121,6 @@ public class LoginPanel extends JPanel {
 
 
 
-    public boolean isAdmin() {
-        return isAdmin;
-    }
-
-    public int getPurpose() {
-        return purpose;
-    }
 
     public String getIdFieldInput() {
         return idField.getText();
@@ -121,9 +141,7 @@ public class LoginPanel extends JPanel {
         dialog.setModalityType(Dialog.DEFAULT_MODALITY_TYPE);
         dialog.pack();
         dialog.setVisible(true);
-        idField.setText("");
-        pwField.setText("");
-
+        clearFields();
     }
 
     public void displayLoginSuccessful() {

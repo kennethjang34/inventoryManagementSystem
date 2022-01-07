@@ -31,6 +31,17 @@ public abstract class AbstractAdminInputPrompter extends JPanel {
         codeLabel = new JLabel("Personal Code: ");
         pwLabel = new JLabel("PW:");
         pwField = new JPasswordField(10);
+        ActionListener listener = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                ((Component)e.getSource()).transferFocus();
+            }
+        };
+        idField.addActionListener(listener);
+        pwField.addActionListener(listener);
+        nameField.addActionListener(listener);
+        birthdayField.addActionListener(listener);
+        codeField.addActionListener(listener);
     }
 
     public String getBirthDayInput() {

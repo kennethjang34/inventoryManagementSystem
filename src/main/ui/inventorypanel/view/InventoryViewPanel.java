@@ -8,19 +8,13 @@ import ui.*;
 import ui.table.*;
 import ui.inventorypanel.CategoryGenerator;
 import ui.inventorypanel.ItemGenerator;
-import ui.inventorypanel.productpanel.AddPanel;
 
 import javax.swing.*;
-import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.DefaultTableModel;
-import javax.swing.table.JTableHeader;
 import java.awt.*;
 import java.awt.event.*;
 import java.beans.PropertyChangeEvent;
 import java.util.ArrayList;
 import java.util.List;
-
-import static ui.inventorypanel.controller.InventoryController.convertToLocalDate;
 
 public class InventoryViewPanel extends JPanel {
     private CategoryGenerator categoryGenerator;
@@ -178,9 +172,9 @@ public class InventoryViewPanel extends JPanel {
         productRemovalButton = new JButton("Remove");
         productRemovalButton.addKeyListener(buttonEnterListener);
         setUpItemFilter();
-        setUpCategoryFilter();
-        setUpCategoryField();
-        setUpItemField();
+//        setUpCategoryFilter();
+//        setUpCategoryField();
+//        setUpItemField();
         addPanel = new AddPanel(inventory);
         addPanel.getButton().addKeyListener(buttonEnterListener);
         setUpProductGeneratorButton();

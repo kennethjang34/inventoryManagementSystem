@@ -73,7 +73,6 @@ public class ItemGenerator extends JPanel implements ActionListener {
         fieldPanel.add(description);
         fieldPanel.add(new JLabel("NOTE: "));
         fieldPanel.add(note);
-
     }
 
     //MODIFIES: this
@@ -92,6 +91,9 @@ public class ItemGenerator extends JPanel implements ActionListener {
     //If error happens, display proper error messages
     @Override
     public void actionPerformed(ActionEvent e) {
+        if (inventory == null) {
+            return;
+        }
         String id = idField.getText().toUpperCase();
         String category = categoryField.getText().toUpperCase();
         double listPrice;

@@ -141,19 +141,9 @@ public class AdminController extends AbstractController<Admin, AdminViewPanel> {
         });
     }
 
-    //MODIFIES: this
-    //EFFECTS: display the retrieve panel of this
-    private void displayRetrievePrompter() {
-        RetrievePrompter.displayRetrievePrompter();
-    }
 
-    public void promptRetrievePrompter() {
-        displayRetrievePrompter();
-    }
 
-    private void displayRegisterPrompter() {
-        RegisterPrompter.displayRegisterPrompter();
-    }
+
 
     public void promptAdminRegister() {
         displayAdminRegisterPanel();
@@ -163,9 +153,6 @@ public class AdminController extends AbstractController<Admin, AdminViewPanel> {
         RegisterPrompter.displayRegisterPrompterForAdmin();
     }
 
-    public void promptRegisterPanel() {
-        displayRegisterPrompter();
-    }
 
 
 
@@ -188,9 +175,6 @@ public class AdminController extends AbstractController<Admin, AdminViewPanel> {
     }
 
 
-    public void setAdmin(Admin admin) {
-
-    }
 
 
     public void promptLogin() {

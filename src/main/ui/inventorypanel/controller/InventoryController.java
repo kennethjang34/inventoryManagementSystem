@@ -5,7 +5,7 @@ import ui.*;
 import ui.table.*;
 import ui.inventorypanel.CategoryGenerator;
 import ui.inventorypanel.ItemGenerator;
-import ui.inventorypanel.productpanel.AddPanel;
+import ui.inventorypanel.view.AddPanel;
 import ui.FilterBox;
 import ui.inventorypanel.view.InventoryViewPanel;
 
@@ -651,7 +651,6 @@ public class InventoryController extends AbstractController<Inventory, Inventory
                 item.setNote(newNote);
             }
         }
-
     }
 
     private void itemListPriceChangeHelper(List<ViewableTableEntryConvertibleModel> entries) {

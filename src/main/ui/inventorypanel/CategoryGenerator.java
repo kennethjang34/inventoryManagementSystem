@@ -13,22 +13,15 @@ public class CategoryGenerator extends JPanel {
 
 
 
-//    private StockSearchPanel searchPanel;
-//    private JTextField itemField = new JTextField(10);
-//    private JLabel itemLabel = new JLabel("Item name: ");
-//    private JLabel
-//    private JButton itemButton = new JButton("create");
-//    private Inventory inventory;
-
-    //Not ued
-    //EFFECTS: create a panel that helps the user create a new category
-    public CategoryGenerator(Inventory inventory) {
-        //this is a job for the inventory controller
-        add(categoryLabel);
-        add(categoryField);
-        add(button);
-
-    }
+//    //Not ued
+//    //EFFECTS: create a panel that helps the user create a new category
+//    public CategoryGenerator(Inventory inventory) {
+//        //this is a job for the inventory controller
+//        add(categoryLabel);
+//        add(categoryField);
+//        add(button);
+//
+//    }
 
     public CategoryGenerator() {
         setLayout(new GridBagLayout());

@@ -5,6 +5,7 @@ import ui.AbstractAdminInputPrompter;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.*;
 
 //A small panel that will be displayed if the user presses register button to create a new account
 public class RegisterPrompter extends AbstractAdminInputPrompter {
@@ -14,9 +15,33 @@ public class RegisterPrompter extends AbstractAdminInputPrompter {
     private static final RegisterPrompter prompter = new RegisterPrompter();
     private static JDialog dialog;
 
+    private KeyListener buttonEnterListener = new KeyListener() {
+        @Override
+        public void keyTyped(KeyEvent e) {
+
+        }
+
+        @Override
+        public void keyPressed(KeyEvent e) {
+            if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+                if (e.getSource() instanceof JButton) {
+                    JButton button = (JButton) e.getSource();
+                    button.doClick();
+                }
+            }
+        }
+
+        @Override
+        public void keyReleased(KeyEvent e) {
+
+        }
+    };
+
+
     //EFFECTS: create a new register panel with empty text fields.
     private RegisterPrompter() {
         registerButton = new JButton("Register");
+        registerButton.addKeyListener(buttonEnterListener);
         add(nameLabel);
         add(nameField);
         add(birthdayLabel);
@@ -28,6 +53,15 @@ public class RegisterPrompter extends AbstractAdminInputPrompter {
         add(pwLabel);
         add(pwField);
         checkBox = new JCheckBox("is an admin member?");
+        checkBox.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+                    ((Component)e.getSource()).transferFocus();
+                }
+
+            }
+        });
         checkBox.setBounds(new Rectangle(100, 100));
         add(checkBox);
         add(registerButton);
