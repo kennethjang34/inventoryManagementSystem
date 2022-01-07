@@ -48,6 +48,11 @@ public class Ledger extends AbstractTableDataFactory implements JsonConvertible,
     }
 
     @Override
+    public void entryRemoved(DataFactory source, List<? extends ViewableTableEntryConvertibleModel> list) {
+
+    }
+
+    @Override
     public void entryRemoved(List<? extends ViewableTableEntryConvertibleModel> removed) {
         double averageCost = calculateAverageCost((List<Product>) removed);
         double averagePrice = calculateAveragePrice((List<Product>) removed);

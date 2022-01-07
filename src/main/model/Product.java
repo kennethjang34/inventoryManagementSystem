@@ -190,12 +190,11 @@ public class Product extends ViewableTableEntryConvertibleModel implements JsonC
     //MODIFIES: this
     //EFFECTS: change the location of this product
     public void setLocation(String location) {
-        if (location.equals(this.location)) {
-            return;
+        if (location == null || !location.equals(this.location)) {
+            String oldLocation = this.location;
+            this.location = location;
+            changeFirer.fireUpdateEvent(this, DataList.LOCATION.toString(), oldLocation, location);
         }
-        String oldLocation = this.location;
-        this.location = location;
-        changeFirer.fireUpdateEvent(this, DataList.LOCATION.toString(), oldLocation, location);
     }
 
 

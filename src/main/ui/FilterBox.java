@@ -72,6 +72,11 @@ public class FilterBox extends JComboBox implements DataViewer {
     }
 
     @Override
+    public void entryRemoved(DataFactory source, List<? extends ViewableTableEntryConvertibleModel> list) {
+
+    }
+
+    @Override
     public void entryRemoved(List<? extends ViewableTableEntryConvertibleModel> removed) {
 
     }

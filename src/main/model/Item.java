@@ -17,7 +17,6 @@ import java.util.*;
 //item can be thought of a super-category of products
 public class Item extends TableEntryConvertibleDataFactory implements JsonConvertible, DataViewer {
     private int processedQty = 0;
-    private int count = 0;
     private final String id;
     private String name;
     private String category;
@@ -64,7 +63,7 @@ public class Item extends TableEntryConvertibleDataFactory implements JsonConver
     @SuppressWarnings({"checkstyle:MethodLength", "checkstyle:SuppressWarnings"})
     public Item(JSONObject json) {
         super(DATA_LIST);
-        count = json.getInt("count");
+        processedQty = json.getInt("processedQty");
         id = json.getString("id");
         name = json.getString("name");
         category = json.getString("category");
@@ -91,6 +90,11 @@ public class Item extends TableEntryConvertibleDataFactory implements JsonConver
 
     @Override
     public void entryRemoved(ui.table.ViewableTableEntryConvertibleModel o) {
+
+    }
+
+    @Override
+    public void entryRemoved(DataFactory source, List<? extends ViewableTableEntryConvertibleModel> list) {
 
     }
 
@@ -306,7 +310,7 @@ public class Item extends TableEntryConvertibleDataFactory implements JsonConver
     //MODIFIES: this
     //EFFECTS: create a next sku
     public String createSku() {
-        return id + count++;
+        return id + processedQty++;
     }
 
     //EFFECTS: return true if this contains the product with the given SKU
@@ -454,7 +458,7 @@ public class Item extends TableEntryConvertibleDataFactory implements JsonConver
     @Override
     public JSONObject toJson() {
         JSONObject json = new JSONObject();
-        json.put("count", count);
+        json.put("processedQty", processedQty);
         json.put("id", id);
         json.put("name", name);
         json.put("category", category);

@@ -254,6 +254,18 @@ public class Inventory extends AbstractTableDataFactory implements JsonConvertib
         return false;
     }
 
+    public void removeProducts(List<Product> toBeRemoved) {
+        for (Product product: toBeRemoved) {
+            product.removeListener(this);
+            String id = product.getID();
+            Item item = items.get(id);
+            if (item == null) {
+                throw new IllegalArgumentException("There doesn't exist such an item with ID: " + id);
+            }
+            item.removeProduct(product);
+        }
+    }
+
 
 
     //MODIFIES: this
@@ -519,18 +531,24 @@ public class Inventory extends AbstractTableDataFactory implements JsonConvertib
     }
 
     @Override
-    public void entryRemoved(ui.table.ViewableTableEntryConvertibleModel source) {
-
+    public void entryRemoved(ui.table.ViewableTableEntryConvertibleModel removed) {
+        changeFirer.fireRemovalEvent(this, PRODUCT, removed);
     }
 
     @Override
-    public void entryRemoved(List<? extends ViewableTableEntryConvertibleModel> removed) {
+    public void entryRemoved(DataFactory source, List<? extends ViewableTableEntryConvertibleModel> list) {
 
+    }
+
+
+    //for product table
+    @Override
+    public void entryRemoved(List<? extends ViewableTableEntryConvertibleModel> removed) {
+        changeFirer.fireRemovalEvent(this, PRODUCT, removed);
     }
 
     @Override
     public void entryAdded(ui.table.ViewableTableEntryConvertibleModel o) {
-
     }
 
     @Override
@@ -594,5 +612,10 @@ public class Inventory extends AbstractTableDataFactory implements JsonConvertib
     public void entryRemoved(DataFactory source, ViewableTableEntryConvertibleModel removed) {
 
     }
+
+    public Item getItem(String id) {
+        return items.get(id);
+    }
+
 }
 

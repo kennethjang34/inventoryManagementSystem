@@ -149,6 +149,24 @@ public class RowDataChangeSupport extends PropertyChangeSupport {
         }
     }
 
+    public void fireRemovalEvent(DataFactory source, String category,
+                                 List<? extends ViewableTableEntryConvertibleModel> removed) {
+
+        List<DataViewer> list = tableDataListeners.get(category);
+        if (list != null) {
+            for (int i = list.size() - 1; i >= 0; i--) {
+                DataViewer viewer = list.get(i);
+                viewer.entryRemoved(source, removed);
+            }
+        }
+
+        list = tableDataListeners.get(UNSPECIFIED);
+        for (int i = list.size() - 1; i >= 0; i--) {
+            DataViewer viewer = list.get(i);
+            viewer.entryRemoved(source, removed);
+        }
+    }
+
     public void fireAdditionEvent(String category, ViewableTableEntryConvertibleModel added) {
         List<DataViewer> list = tableDataListeners.get(category);
         if (list != null) {

@@ -174,6 +174,11 @@ public class Category extends TableEntryConvertibleDataFactory implements JsonCo
     }
 
     @Override
+    public void entryRemoved(DataFactory source, List<? extends ViewableTableEntryConvertibleModel> list) {
+
+    }
+
+    @Override
     public void entryRemoved(List<? extends ViewableTableEntryConvertibleModel> removed) {
 
     }

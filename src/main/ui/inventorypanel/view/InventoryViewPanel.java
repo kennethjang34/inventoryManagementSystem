@@ -5,13 +5,10 @@ import model.Inventory;
 import model.Item;
 import model.Product;
 import ui.*;
-import ui.table.ButtonTable;
-import ui.table.DataFactory;
-import ui.table.RowConverterViewerTableModel;
+import ui.table.*;
 import ui.inventorypanel.CategoryGenerator;
 import ui.inventorypanel.ItemGenerator;
 import ui.inventorypanel.productpanel.AddPanel;
-import ui.table.ViewableTableEntryConvertibleModel;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -125,33 +122,8 @@ public class InventoryViewPanel extends JPanel {
         stockButtonTable.setBaseColumnIndex(1);
         RowConverterViewerTableModel productTableModel = new RowConverterViewerTableModel();
         productTableModel.setColumnNames(Product.DATA_LIST);
-        productTable = new JTable(productTableModel) {
-            @Override
-            public String getToolTipText(MouseEvent e) {
-                Point p = e.getPoint();
-                int row = rowAtPoint(p);
-                int column = columnAtPoint(p);
-                if (row != -1 && column != -1) {
-                    return getValueAt(row, column).toString();
-                }
-                return null;
-            }
-
-            @Override
-            protected JTableHeader createDefaultTableHeader() {
-                return new JTableHeader(columnModel) {
-                    public String getToolTipText(MouseEvent e) {
-                        Point p = e.getPoint();
-                        int column = columnAtPoint(p);
-                        if (column == -1) {
-                            return null;
-                        }
-                        return getColumnName(column);
-                    }
-                };
-            }
-        };
-        inventory.addDataChangeListener(Inventory.PRODUCT, productTableModel);
+        productTable = new EntryRemovableTable(productTableModel);
+//        inventory.addDataChangeListener(Inventory.PRODUCT, productTableModel);
         itemFilter = new JComboBox();
         categoryFilter = new FilterBox(inventory, Inventory.CATEGORY) {
             //For when a new item is added to the category or removed from it

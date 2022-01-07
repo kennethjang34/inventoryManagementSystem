@@ -10,6 +10,12 @@ import java.util.List;
 public interface DataViewer {
     void entryRemoved(ViewableTableEntryConvertibleModel o);
 
+
+    void entryRemoved(DataFactory source, List< ? extends ViewableTableEntryConvertibleModel> list);
+
+    void entryRemoved(DataFactory source, ViewableTableEntryConvertibleModel removed);
+
+
     void entryRemoved(List<? extends ViewableTableEntryConvertibleModel> removed);
 
     void entryAdded(ViewableTableEntryConvertibleModel o);
@@ -27,5 +33,4 @@ public interface DataViewer {
 
     void entryUpdated(ViewableTableEntryConvertibleModel source, Object old, Object newObject);
 
-    void entryRemoved(DataFactory source, ViewableTableEntryConvertibleModel removed);
 }
