@@ -90,7 +90,7 @@ public class LedgerViewPanel extends JPanel {
             }
 
             @Override
-            public void entryUpdated(ViewableTableEntryConvertibleModel entry) {
+            public void updated(ViewableTableEntryConvertibleModel entry) {
                 List<String> itemIDList;
                 String selectedDateString = (String) getSelectedItem();
                 RecordedDate updatedDate = (RecordedDate) entry;

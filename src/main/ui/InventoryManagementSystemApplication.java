@@ -1,7 +1,6 @@
 package ui;
 
 import model.*;
-import model.Event;
 import org.json.JSONObject;
 import persistence.JsonConvertible;
 import persistence.Reader;
@@ -248,7 +247,6 @@ public class InventoryManagementSystemApplication extends JFrame implements Json
         String command = e.getActionCommand();
         switch (MenuItemList.valueOf(command)) {
             case QUIT:
-                printLog(EventLog.getInstance());
                 System.exit(0);
             case SAVE:
                 if (admin.isEmpty()) {
@@ -332,13 +330,6 @@ public class InventoryManagementSystemApplication extends JFrame implements Json
 
 
 
-    //EFFECTS: print logs on the console
-    public void printLog(EventLog log) {
-        for (Event event: log) {
-            System.out.println(event);
-        }
-        log.clear();
-    }
 
     public void reset() {
         getContentPane().removeAll();

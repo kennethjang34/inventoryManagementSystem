@@ -90,17 +90,17 @@ public class Ledger extends AbstractTableDataFactory implements JsonConvertible,
 
 
     @Override
-    public void entryUpdated(ViewableTableEntryConvertibleModel updatedEntry) {
+    public void updated(ViewableTableEntryConvertibleModel updatedEntry) {
 
     }
 
     @Override
-    public void entryUpdated(ViewableTableEntryConvertibleModel source, String property, Object o1, Object o2) {
+    public void updated(ViewableTableEntryConvertibleModel source, String property, Object o1, Object o2) {
 
     }
 
     @Override
-    public void entryUpdated(ViewableTableEntryConvertibleModel source, Object old, Object newObject) {
+    public void updated(ViewableTableEntryConvertibleModel source, Object old, Object newObject) {
 
     }
 
@@ -164,19 +164,6 @@ public class Ledger extends AbstractTableDataFactory implements JsonConvertible,
 
             }
         }
-//        JSONArray jsonAccountsMap = jsonLedger.getJSONArray("accounts");
-//        for (int i = 0; i < jsonAccountsMap.length(); i++) {
-//            JSONObject jsonEntry = jsonAccountsMap.getJSONObject(i);
-//            String date = jsonEntry.getString("date");
-//            List<Account> accountList = new ArrayList<>();
-//            JSONArray jsonAccountList = jsonEntry.getJSONArray("accountList");
-//            for (Object obj: jsonAccountList) {
-//                JSONObject jsonObject = (JSONObject)obj;
-//                accountList.add(new Account(jsonObject));
-//            }
-//            accounts.put(date, accountList);
-//            dates.put(LocalDate.parse(date), new RecordedDate(LocalDate.parse(date), accountList));
-//        }
     }
 
     //EFFECTS: return code size

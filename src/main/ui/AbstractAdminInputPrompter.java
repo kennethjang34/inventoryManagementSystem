@@ -6,7 +6,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 //represents an abstract panel that has neccessary fields for jobs related to login accounts
-public abstract class AbstractLoginAccountPrompter extends JPanel {
+public abstract class AbstractAdminInputPrompter extends JPanel {
     protected JTextField nameField;
     protected JTextField birthdayField;
     protected JTextField codeField;
@@ -15,9 +15,11 @@ public abstract class AbstractLoginAccountPrompter extends JPanel {
     protected JLabel birthdayLabel;
     protected JLabel codeLabel;
     protected JLabel nameLabel;
+    protected JPasswordField pwField;
+    protected JLabel pwLabel;
 
     //MODIFIES: initialize the fields that are used for prompting user to enter the input
-    protected AbstractLoginAccountPrompter() {
+    protected AbstractAdminInputPrompter() {
         setLayout(new FlowLayout());
         nameField = new JTextField(10);
         birthdayField = new JTextField(10);
@@ -27,6 +29,8 @@ public abstract class AbstractLoginAccountPrompter extends JPanel {
         idLabel = new JLabel("ID: ");
         birthdayLabel = new JLabel("Birthday: ");
         codeLabel = new JLabel("Personal Code: ");
+        pwLabel = new JLabel("PW:");
+        pwField = new JPasswordField(10);
     }
 
     public String getBirthDayInput() {
@@ -47,6 +51,13 @@ public abstract class AbstractLoginAccountPrompter extends JPanel {
 
 
 
+    public void emptyPrompter() {
+        idField.setText("");
+        pwField.setText("");
+        nameField.setText("");
+        birthdayField.setText("");
+        codeField.setText("");
+    }
 
 //    @Override
 //    public abstract void actionPerformed(ActionEvent e);

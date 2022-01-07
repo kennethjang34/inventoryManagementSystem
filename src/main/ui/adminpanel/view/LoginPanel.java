@@ -1,15 +1,9 @@
 package ui.adminpanel.view;
 
-import model.Admin;
-import ui.AbstractLoginAccountPrompter;
-import ui.InventoryManagementSystemApplication;
-import ui.adminpanel.controller.AdminController;
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.time.LocalDate;
 
 
 //A panel to prompt the user to log in/register a new login account/retrieve password
@@ -29,7 +23,6 @@ public class LoginPanel extends JPanel {
     private RetrievePrompter retrievePanel = RetrievePrompter.getRetrievePrompter();
     private JButton loginButton;
     private JButton retrieveButton;
-    private JButton cancelButton;
     private JDialog dialog;
     //MODIFIES: this
     //EFFECTS: set the purpose of this login attempt
@@ -99,9 +92,6 @@ public class LoginPanel extends JPanel {
         return retrieveButton;
     }
 
-    public JButton getCancelButton() {
-        return cancelButton;
-    }
 
 
     public boolean isAdmin() {
@@ -131,6 +121,9 @@ public class LoginPanel extends JPanel {
         dialog.setModalityType(Dialog.DEFAULT_MODALITY_TYPE);
         dialog.pack();
         dialog.setVisible(true);
+        idField.setText("");
+        pwField.setText("");
+
     }
 
     public void displayLoginSuccessful() {

@@ -27,10 +27,10 @@ public interface DataViewer {
 
 //    void entryUpdated(Object o1, Object o2);
 
-    void entryUpdated(ViewableTableEntryConvertibleModel updatedEntry);
+    void updated(ViewableTableEntryConvertibleModel updatedEntry);
 
-    void entryUpdated(ViewableTableEntryConvertibleModel source, String property, Object o1, Object o2);
+    void updated(ViewableTableEntryConvertibleModel source, String property, Object o1, Object o2);
 
-    void entryUpdated(ViewableTableEntryConvertibleModel source, Object old, Object newObject);
+    void updated(ViewableTableEntryConvertibleModel source, Object old, Object newObject);
 
 }

@@ -141,7 +141,6 @@ public class Inventory extends AbstractTableDataFactory implements JsonConvertib
         Category category = new Category(name);
         categories.put(name, category);
         changeFirer.fireAdditionEvent(this, CATEGORY, category);
-        EventLog.getInstance().logEvent(new Event("new category " + name + " is created"));
         return true;
     }
 
@@ -174,8 +173,6 @@ public class Inventory extends AbstractTableDataFactory implements JsonConvertib
         categories.get(category).addItem(item);
 //        setChanged(ApplicationConstantValue.ITEM);
 //        notifyObservers();
-        EventLog.getInstance().logEvent(new Event("new item with ID: " + name
-                + " and name " + name + " is created in category " + category));
         changeFirer.fireAdditionEvent(ITEM, item);
         //needs to be replaced by calling fireUpdateEvent inside Category instance directly
         changeFirer.fireUpdateEvent(CATEGORY, categories.get(category));
@@ -562,12 +559,12 @@ public class Inventory extends AbstractTableDataFactory implements JsonConvertib
     }
 
     @Override
-    public void entryUpdated(ui.table.ViewableTableEntryConvertibleModel updatedEntry) {
+    public void updated(ui.table.ViewableTableEntryConvertibleModel updatedEntry) {
 
     }
 
     @Override
-    public void entryUpdated(ui.table.ViewableTableEntryConvertibleModel source, String property, Object o1, Object o2) {
+    public void updated(ui.table.ViewableTableEntryConvertibleModel source, String property, Object o1, Object o2) {
         if (source instanceof Item) {
             Item item = (Item) source;
             Item.ColumnNames dataType = Item.ColumnNames.valueOf(property);
@@ -604,7 +601,7 @@ public class Inventory extends AbstractTableDataFactory implements JsonConvertib
     }
 
     @Override
-    public void entryUpdated(ui.table.ViewableTableEntryConvertibleModel source, Object old, Object newObject) {
+    public void updated(ui.table.ViewableTableEntryConvertibleModel source, Object old, Object newObject) {
 
     }
 

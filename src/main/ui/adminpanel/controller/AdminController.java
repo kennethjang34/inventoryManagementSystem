@@ -32,7 +32,6 @@ public class AdminController extends AbstractController<Admin, AdminViewPanel> {
     private void setUpRegisterPanel() {
         RegisterPrompter registerPrompter =  view.getRegisterPrompter();
         registerPrompter.getRegisterButton().addActionListener(e -> {
-            System.out.println(registerPrompter.getRegisterButton().getActionListeners().length);
             int personalCode = Integer.parseInt(registerPrompter.getCodeInput());
             String birthdayText = registerPrompter.getBirthDayInput();
             LocalDate birthDay = InventoryManagementSystemApplication.convertToLocalDate(birthdayText);

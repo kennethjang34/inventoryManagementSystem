@@ -4,7 +4,6 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import persistence.JsonConvertible;
 import ui.InventoryManagementSystemApplication;
-import ui.Viewable;
 import ui.table.AbstractTableDataFactory;
 import ui.table.ViewableTableEntryConvertibleModel;
 
@@ -312,7 +311,6 @@ public class Admin extends AbstractTableDataFactory implements JsonConvertible {
         changeFirer.fireAdditionEvent(ACCOUNT, account);
         //admin doesn't support TableEntryConvertible function
 //        changeFirer.fireUpdateEvent(this);
-        EventLog.getInstance().logEvent(new Event("new login account with ID: " + id + " is added"));
         return account;
     }
 

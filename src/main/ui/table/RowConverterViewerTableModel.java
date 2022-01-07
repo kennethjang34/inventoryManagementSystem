@@ -511,7 +511,7 @@ public class RowConverterViewerTableModel extends AbstractTableModel implements 
 
 
     @Override
-    public void entryUpdated(ViewableTableEntryConvertibleModel updatedEntry) {
+    public void updated(ViewableTableEntryConvertibleModel updatedEntry) {
         if (data.get(updatedEntry) == null) {
             return;
         }
@@ -523,7 +523,7 @@ public class RowConverterViewerTableModel extends AbstractTableModel implements 
     }
 
     @Override
-    public void entryUpdated(ViewableTableEntryConvertibleModel source, String property, Object o1, Object o2) {
+    public void updated(ViewableTableEntryConvertibleModel source, String property, Object o1, Object o2) {
         Object[] row = data.get(source);
         if (row == null) {
             return;
@@ -544,7 +544,7 @@ public class RowConverterViewerTableModel extends AbstractTableModel implements 
     }
 
     @Override
-    public void entryUpdated(ViewableTableEntryConvertibleModel source, Object old, Object newObject) {
+    public void updated(ViewableTableEntryConvertibleModel source, Object old, Object newObject) {
         Object[] row = data.get(source);
         for (int i = 0; i < row.length; i++) {
             if (row[i].equals(old)) {

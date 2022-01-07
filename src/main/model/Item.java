@@ -119,14 +119,14 @@ public class Item extends TableEntryConvertibleDataFactory implements JsonConver
     }
 
     @Override
-    public void entryUpdated(ui.table.ViewableTableEntryConvertibleModel updatedEntry) {
+    public void updated(ui.table.ViewableTableEntryConvertibleModel updatedEntry) {
 //        if (products.containsValue(updatedEntry)) {
 //            productLocationChanged((Product)updatedEntry);
 //        }
     }
 
     @Override
-    public void entryUpdated(ui.table.ViewableTableEntryConvertibleModel source, String property, Object o1, Object o2) {
+    public void updated(ui.table.ViewableTableEntryConvertibleModel source, String property, Object o1, Object o2) {
         Product product = (Product) source;
         Product.DataList dataType = Product.DataList.valueOf(property);
         switch (dataType) {
@@ -149,7 +149,7 @@ public class Item extends TableEntryConvertibleDataFactory implements JsonConver
     }
 
     @Override
-    public void entryUpdated(ui.table.ViewableTableEntryConvertibleModel source, Object old, Object newObject) {
+    public void updated(ui.table.ViewableTableEntryConvertibleModel source, Object old, Object newObject) {
 
     }
 
@@ -265,7 +265,6 @@ public class Item extends TableEntryConvertibleDataFactory implements JsonConver
         } else {
             stocks.get(product.getLocation()).remove(product);
             product.removeListener(this);
-            EventLog.getInstance().logEvent(new Event("Product with SKU: " + sku + " removed "));
             changeFirer.fireUpdateEvent(this);
             changeFirer.fireRemovalEvent(DataList.PRODUCT.toString(), product);
             return product;
@@ -280,7 +279,6 @@ public class Item extends TableEntryConvertibleDataFactory implements JsonConver
         } else {
             stocks.get(product.getLocation()).remove(product);
             product.removeListener(this);
-            EventLog.getInstance().logEvent(new Event("Product with SKU: " + sku + " removed "));
             changeFirer.fireUpdateEvent(this);
             changeFirer.fireRemovalEvent(DataList.PRODUCT.toString(), product);
             return product;
@@ -357,8 +355,6 @@ public class Item extends TableEntryConvertibleDataFactory implements JsonConver
         } else {
             existing.addAll(added);
         }
-        EventLog.getInstance().logEvent(new Event(quantity + " new products belonging to ID: "
-                + id + " added at " + location));
         if (processedQty != 0) {
             averageCost = (averageCost * processedQty + tag.getUnitCost() * quantity) / (processedQty + quantity);
         } else {
@@ -389,8 +385,6 @@ public class Item extends TableEntryConvertibleDataFactory implements JsonConver
         } else {
             existing.addAll(added);
         }
-        EventLog.getInstance().logEvent(new Event(qty + " new products belonging to ID: "
-                + id + " added at " + location));
         if (processedQty != 0) {
             averageCost = (averageCost * processedQty + cost * qty) / (processedQty + qty);
         } else {

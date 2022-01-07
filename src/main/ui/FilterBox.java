@@ -103,7 +103,7 @@ public class FilterBox extends JComboBox implements DataViewer {
     }
 
     @Override
-    public void entryUpdated(ViewableTableEntryConvertibleModel source, Object o1, Object o2) {
+    public void updated(ViewableTableEntryConvertibleModel source, Object o1, Object o2) {
         removeItem(o1);
         if (getItemCount() == 1 && getItemAt(0).equals(EMPTY)) {
             removeItemAt(0);
@@ -120,12 +120,12 @@ public class FilterBox extends JComboBox implements DataViewer {
 
 
     @Override
-    public void entryUpdated(ViewableTableEntryConvertibleModel updatedEntry) {
+    public void updated(ViewableTableEntryConvertibleModel updatedEntry) {
 
     }
 
     @Override
-    public void entryUpdated(ViewableTableEntryConvertibleModel source, String property, Object o1, Object o2) {
+    public void updated(ViewableTableEntryConvertibleModel source, String property, Object o1, Object o2) {
 
     }
 

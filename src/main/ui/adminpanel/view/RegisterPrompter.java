@@ -1,18 +1,15 @@
 package ui.adminpanel.view;
 
 
-import jdk.nashorn.internal.scripts.JD;
-import ui.AbstractLoginAccountPrompter;
+import ui.AbstractAdminInputPrompter;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 //A small panel that will be displayed if the user presses register button to create a new account
-public class RegisterPrompter extends AbstractLoginAccountPrompter {
+public class RegisterPrompter extends AbstractAdminInputPrompter {
     private JButton registerButton;
-    private JPasswordField pwField = new JPasswordField(10);
+//    private JPasswordField pwField = new JPasswordField(10);
     private JCheckBox checkBox;
     private static final RegisterPrompter prompter = new RegisterPrompter();
     private static JDialog dialog;
@@ -28,7 +25,7 @@ public class RegisterPrompter extends AbstractLoginAccountPrompter {
         add(codeField);
         add(idLabel);
         add(super.idField);
-        add(new JLabel("PW:"));
+        add(pwLabel);
         add(pwField);
         checkBox = new JCheckBox("is an admin member?");
         checkBox.setBounds(new Rectangle(100, 100));
@@ -91,6 +88,7 @@ public class RegisterPrompter extends AbstractLoginAccountPrompter {
         dialog.setModalityType(Dialog.ModalityType.APPLICATION_MODAL);
         dialog.pack();
         dialog.setVisible(true);
+        prompter.emptyPrompter();
     }
 
     public static void displayRegisterPrompterForAdmin() {
@@ -104,6 +102,15 @@ public class RegisterPrompter extends AbstractLoginAccountPrompter {
         dialog.setVisible(true);
         prompter.getCheckBox().setEnabled(true);
         prompter.getCheckBox().setSelected(false);
+        prompter.emptyPrompter();
+    }
+
+    public void emptyPrompter() {
+        idField.setText("");
+        pwField.setText("");
+        nameField.setText("");
+        birthdayField.setText("");
+        codeField.setText("");
     }
 
     public static JDialog getDialog() {

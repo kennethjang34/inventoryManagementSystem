@@ -199,17 +199,17 @@ public class Category extends TableEntryConvertibleDataFactory implements JsonCo
     }
 
     @Override
-    public void entryUpdated(ViewableTableEntryConvertibleModel updatedEntry) {
+    public void updated(ViewableTableEntryConvertibleModel updatedEntry) {
 
     }
 
     @Override
-    public void entryUpdated(ViewableTableEntryConvertibleModel source, String property, Object o1, Object o2) {
+    public void updated(ViewableTableEntryConvertibleModel source, String property, Object o1, Object o2) {
 
     }
 
     @Override
-    public void entryUpdated(ViewableTableEntryConvertibleModel source, Object old, Object newObject) {
+    public void updated(ViewableTableEntryConvertibleModel source, Object old, Object newObject) {
 
     }
 

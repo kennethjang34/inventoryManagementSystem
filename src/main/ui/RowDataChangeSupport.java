@@ -235,19 +235,19 @@ public class RowDataChangeSupport extends PropertyChangeSupport {
         if (list != null) {
             for (int i = list.size() - 1; i >= 0; i--) {
                 DataViewer viewer = list.get(i);
-                viewer.entryUpdated(source);
+                viewer.updated(source);
             }
         }
         list = tableDataListeners.get(UNSPECIFIED);
         for (int i = list.size() - 1; i >= 0; i--) {
             DataViewer viewer = list.get(i);
-            viewer.entryUpdated(source);
+            viewer.updated(source);
         }
 
         list = tableDataListeners.get(UPDATE);
         for (int i = list.size() - 1; i >= 0; i--) {
             DataViewer viewer = list.get(i);
-            viewer.entryUpdated(source);
+            viewer.updated(source);
         }
     }
 
@@ -256,20 +256,20 @@ public class RowDataChangeSupport extends PropertyChangeSupport {
         if (list != null) {
             for (int i = list.size() - 1; i >= 0; i--) {
                 DataViewer viewer = list.get(i);
-                viewer.entryUpdated(source, old, newObject);
+                viewer.updated(source, old, newObject);
             }
         }
 
         list = tableDataListeners.get(UNSPECIFIED);
         for (int i = list.size() - 1; i >= 0; i--) {
             DataViewer viewer = list.get(i);
-            viewer.entryUpdated(source, old, newObject);
+            viewer.updated(source, old, newObject);
         }
 
         list = tableDataListeners.get(UPDATE);
         for (int i = list.size() - 1; i >= 0; i--) {
             DataViewer viewer = list.get(i);
-            viewer.entryUpdated(source);
+            viewer.updated(source);
         }
     }
 
@@ -280,7 +280,7 @@ public class RowDataChangeSupport extends PropertyChangeSupport {
         if (list != null) {
             for (int i = list.size() - 1; i >= 0; i--) {
                 DataViewer viewer = list.get(i);
-                viewer.entryUpdated(source);
+                viewer.updated(source);
             }
         }
 
@@ -288,14 +288,14 @@ public class RowDataChangeSupport extends PropertyChangeSupport {
         if (list != null) {
             for (int i = list.size() - 1; i >= 0; i--) {
                 DataViewer viewer = list.get(i);
-                viewer.entryUpdated(source);
+                viewer.updated(source);
             }
         }
 
         list = tableDataListeners.get(UPDATE);
         for (int i = list.size() - 1; i >= 0; i--) {
             DataViewer viewer = list.get(i);
-            viewer.entryUpdated(source);
+            viewer.updated(source);
         }
     }
 
@@ -306,7 +306,7 @@ public class RowDataChangeSupport extends PropertyChangeSupport {
         if (list != null) {
             for (int i = list.size() - 1; i >= 0; i--) {
                 DataViewer viewer = list.get(i);
-                viewer.entryUpdated(source, old, newObj);
+                viewer.updated(source, old, newObj);
             }
         }
 
@@ -314,14 +314,14 @@ public class RowDataChangeSupport extends PropertyChangeSupport {
         if (list != null) {
             for (int i = list.size() - 1; i >= 0; i--) {
                 DataViewer viewer = list.get(i);
-                viewer.entryUpdated(source, old, newObj);
+                viewer.updated(source, old, newObj);
             }
         }
 
         list = tableDataListeners.get(UPDATE);
         for (int i = list.size() - 1; i >= 0; i--) {
             DataViewer viewer = list.get(i);
-            viewer.entryUpdated(source);
+            viewer.updated(source);
         }
     }
 
@@ -330,7 +330,7 @@ public class RowDataChangeSupport extends PropertyChangeSupport {
         if (list != null) {
             for (int i = list.size() - 1; i >= 0; i--) {
                 DataViewer viewer = list.get(i);
-                viewer.entryUpdated(source, property, old, newObj);
+                viewer.updated(source, property, old, newObj);
             }
 //            for (Iterator<DataViewer> it = list.iterator(); it.hasNext();) {
 //                DataViewer viewer = it.next();
@@ -341,7 +341,7 @@ public class RowDataChangeSupport extends PropertyChangeSupport {
         if (list != null) {
             for (int i = list.size() - 1; i >= 0; i--) {
                 DataViewer viewer = list.get(i);
-                viewer.entryUpdated(source, property, old, newObj);
+                viewer.updated(source, property, old, newObj);
             }
 
         }
@@ -349,7 +349,7 @@ public class RowDataChangeSupport extends PropertyChangeSupport {
         list = tableDataListeners.get(UPDATE);
         for (int i = list.size() - 1; i >= 0; i--) {
             DataViewer viewer = list.get(i);
-            viewer.entryUpdated(source);
+            viewer.updated(source);
         }
     }
 }
