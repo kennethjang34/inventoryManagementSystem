@@ -27,6 +27,10 @@ public class Writer {
         writer.print(jsonObject.toString(indentFactorJson));
     }
 
+    public void write(JSONObject jsonObject) {
+        writer.print(jsonObject.toString(indentFactorJson));
+    }
+
     //MODIFIES: this
     //EFFECTS: save and close the file.
     public void close() {

@@ -11,6 +11,8 @@ import ui.inventorypanel.controller.InventoryController;
 import ui.inventorypanel.view.InventoryViewPanel;
 import ui.ledgerpanel.controller.LedgerController;
 import ui.ledgerpanel.view.LedgerViewPanel;
+import ui.table.DataFactory;
+import ui.table.ViewableTableEntryConvertibleModel;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -26,7 +28,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 //An application that manages an inventory/warehouse
-public class InventoryManagementSystemApplication extends JFrame implements JsonConvertible, ActionListener, PropertyChangeListener {
+public class InventoryManagementSystemApplication extends JFrame implements JsonConvertible, ActionListener, DataViewer, PropertyChangeListener {
     private Image image;
     private String imagePath = "./data/seol.gif";
     private JSONObject jsonData;
@@ -49,6 +51,60 @@ public class InventoryManagementSystemApplication extends JFrame implements Json
     private Inventory inventory;
     private JPanel mainPanel;
 
+    @Override
+    public void entryRemoved(ViewableTableEntryConvertibleModel o) {
+
+    }
+
+    @Override
+    public void entryRemoved(DataFactory source, List<? extends ViewableTableEntryConvertibleModel> list) {
+
+    }
+
+    @Override
+    public void entryRemoved(DataFactory source, ViewableTableEntryConvertibleModel removed) {
+
+    }
+
+    @Override
+    public void entryRemoved(List<? extends ViewableTableEntryConvertibleModel> removed) {
+
+    }
+
+
+    @Override
+    public void entryAdded(ViewableTableEntryConvertibleModel o) {
+        if (o instanceof Admin.LoginAccount) {
+            jsonData.put("admin", admin.toJson());
+            save(jsonData);
+        }
+    }
+
+    @Override
+    public void entryAdded(DataFactory source, ViewableTableEntryConvertibleModel added) {
+
+    }
+
+    @Override
+    public void entryAdded(List<? extends ViewableTableEntryConvertibleModel> list) {
+
+    }
+
+    @Override
+    public void updated(ViewableTableEntryConvertibleModel updatedEntry) {
+
+    }
+
+    @Override
+    public void updated(ViewableTableEntryConvertibleModel source, String property, Object o1, Object o2) {
+
+    }
+
+    @Override
+    public void updated(ViewableTableEntryConvertibleModel source, Object old, Object newObject) {
+
+    }
+
 
     public enum MenuItemList {
         SAVE, LOAD, QUIT, LOGIN, LOGOUT
@@ -65,6 +121,7 @@ public class InventoryManagementSystemApplication extends JFrame implements Json
             admin = new Admin();
         }
         admin.addPropertyChangeListener(Admin.LOGIN, this);
+        admin.addDataChangeListener(Admin.ACCOUNT, this);
         ledger = new Ledger();
         inventory = new Inventory();
         inventory.addDataChangeListener(ledger);
@@ -152,6 +209,16 @@ public class InventoryManagementSystemApplication extends JFrame implements Json
         try {
             Writer writer = new Writer(fileLocation);
             writer.write(this);
+            writer.close();
+        } catch (FileNotFoundException e) {
+            System.out.println("The current file cannot be found");
+        }
+    }
+
+    public void save(JSONObject jsonObject) {
+        try {
+            Writer writer = new Writer(fileLocation);
+            writer.write(jsonObject);
             writer.close();
         } catch (FileNotFoundException e) {
             System.out.println("The current file cannot be found");
