@@ -20,38 +20,12 @@ public class ButtonTableModel extends RowConverterViewerTableModel {
     public ButtonTableModel(List<? extends ViewableTableEntryConvertibleModel> entries, String[] columnNames,
                             String buttonColumnName) {
         super(entries, createColumnNames(columnNames, buttonColumnName));
-//        if (columnNames == null) {
-//            this.columnNames = null;
-//        } else {
-//            this.columnNames = new String[columnNames.length + 1];
-//            for (int i = 0; i < columnNames.length; i++) {
-//                this.columnNames[i] = columnNames[i];
-//            }
-//            this.columnNames[this.columnNames.length - 1] = buttonColumnName;
-//        }
-//        for (TableEntryConvertibleModel entry: entries) {
-//            this.data.put(entry, entry.convertToTableEntry());
-//        }
-
     }
 
     public ButtonTableModel(AbstractTableDataFactory model, String buttonColumnName, String category) {
         super(model, createColumnNames(model.getColumnNames(), buttonColumnName), category);
     }
 
-//    public ButtonTableModel(List<? extends TableEntryConvertibleModel> entries, String buttonColumnName) {
-////        data = new ArrayList<>(entries.size());
-//        for (TableEntryConvertibleModel entry: entries) {
-//            data.put(entry, entry.convertToTableEntry());
-//        }
-//        String[] columnNames = entries.get(0).getColumnNames();
-//        this.columnNames = new String[columnNames.length + 1];
-//        for (int i = 0; i < columnNames.length; i++) {
-//            this.columnNames[i] = columnNames[i];
-//        }
-//        this.columnNames[this.columnNames.length - 1] = buttonColumnName;
-//        addButtonColumn();
-//    }
 
 
 

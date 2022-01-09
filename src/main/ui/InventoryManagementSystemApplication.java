@@ -153,7 +153,7 @@ public class InventoryManagementSystemApplication extends JFrame implements Json
         if (ledgerController != null) {
             ledgerController.setLedger(ledger);
         } else {
-            ledgerController = new LedgerController(ledger, new LedgerViewPanel(ledger));
+            ledgerController = new LedgerController(ledger);
         }
         if (adminController != null) {
 //            adminController.setAdmin(admin);

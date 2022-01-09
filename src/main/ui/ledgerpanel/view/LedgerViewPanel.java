@@ -2,21 +2,21 @@ package ui.ledgerpanel.view;
 
 import model.*;
 import ui.FilterBox;
+import ui.ledgerpanel.controller.LedgerController;
 import ui.table.ButtonTable;
 import ui.table.RowConverterViewerTableModel;
 import ui.table.ToolTipEnabledTable;
 import ui.table.ViewableTableEntryConvertibleModel;
 
 import javax.swing.*;
-import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.JTableHeader;
-import javax.swing.table.TableColumn;
+import javax.swing.table.*;
 import javax.tools.Tool;
 import java.awt.*;
 import java.awt.event.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.logging.Filter;
 import java.util.stream.Stream;
@@ -24,6 +24,7 @@ import java.util.stream.Stream;
 import static ui.inventorypanel.controller.InventoryController.convertToLocalDate;
 
 public class LedgerViewPanel extends JPanel {
+    private LedgerController controller;
     private ButtonTable ledgerTable;
     private JTable accountsTable;
     private Ledger ledger;
@@ -36,10 +37,28 @@ public class LedgerViewPanel extends JPanel {
 
 
 
+    public LedgerViewPanel(Ledger ledger, LedgerController controller) {
+        this.controller = controller;
+        this.ledger = ledger;
+        setUpLedgerTable();
+        setUpAccountsTable();
+        setUpDateFilter();
+        itemFilter = new JComboBox();
+        setUpItemFilter();
+        deployComponents();
+    }
+
     public LedgerViewPanel(Ledger ledger) {
         this.ledger = ledger;
         setUpLedgerTable();
         setUpAccountsTable();
+        setUpDateFilter();
+        itemFilter = new JComboBox();
+        setUpItemFilter();
+        deployComponents();
+    }
+
+    public void setUpDateFilter() {
         dateFilter = new FilterBox(this.ledger, Ledger.DataList.RECORDED_DATE.toString()) {
             @Override
             public void entryAdded(ViewableTableEntryConvertibleModel entry) {
@@ -92,9 +111,14 @@ public class LedgerViewPanel extends JPanel {
                 itemFilter.setModel(new DefaultComboBoxModel(itemIDList.toArray(new String[0])));
             }
         };
-        itemFilter = new JComboBox();
-        setUpItemFilter();
-        deployComponents();
+        dateFilter.addItemListener(new ItemListener() {
+            @Override
+            public void itemStateChanged(ItemEvent e) {
+                if (e.getStateChange() == ItemEvent.SELECTED) {
+                    controller.dateFilterItemSelected((String) e.getItem());
+                }
+            }
+        });
     }
 
     private void deployComponents() {
@@ -145,6 +169,13 @@ public class LedgerViewPanel extends JPanel {
             items.addAll(ledger.getIDs());
         }
         itemFilter.setModel((new DefaultComboBoxModel(items.toArray(new String[0]))));
+        itemFilter.addItemListener(new ItemListener() {
+            @Override
+            public void itemStateChanged(ItemEvent e) {
+                String selectedItem = (String) itemFilter.getSelectedItem();
+                controller.idFilterItemSelected(selectedItem);
+            }
+        });
     }
 
     private void setUpLedgerTable() {
@@ -160,13 +191,35 @@ public class LedgerViewPanel extends JPanel {
                 }
             }
         });
+        ledgerTable.setButtonAction(new AbstractAction("Accounts") {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int row = ledgerTable.findModelRowIndex(e.getSource());
+                int column = ledgerTable.findColumnModelIndex(Ledger.DataList.RECORDED_DATE.toString());
+                LocalDate date = (LocalDate) ledgerTable.getValueAt(row, column);
+                controller.ledgerTableDateSelected(date);
+            }
+        });
+        TableRowSorter sorter = createRowSorter(ledgerTable, null, Comparator.naturalOrder());
+        ledgerTable.setRowSorter(sorter);
+        JPopupMenu menu = createLedgerTablePopUpMenu();
+        ledgerTable.setComponentPopupMenu(menu);
+    }
+
+    //Not determined whether to implement it
+    private JPopupMenu createLedgerTablePopUpMenu() {
+        return null;
     }
 
     private void setUpAccountsTable() {
         accountsTable = new ToolTipEnabledTable(true);
         RowConverterViewerTableModel tableModel = new RowConverterViewerTableModel();
-        tableModel.setColumnNames(Stream.of(Account.DataList.values()).map(Account.DataList::toString).toArray(String[]::new));
+        tableModel.setColumnNames(new String[]{Account.DataList.CODE.toString(), Account.DataList.ID.toString(), Account.DataList.DATE.toString(),
+                Account.DataList.LOCATION.toString(), Account.DataList.AVERAGE_PRICE.toString(),
+                Account.DataList.AVERAGE_COST.toString(), Account.DataList.QUANTITY.toString(), Account.DataList.DESCRIPTION.toString()
+        });
         accountsTable.setModel(tableModel);
+        accountsTable.setRowSorter(createRowSorter(accountsTable, null, Comparator.naturalOrder()));
     }
 
     public void setLedgerTableButtonAction(AbstractAction action) {
@@ -210,10 +263,7 @@ public class LedgerViewPanel extends JPanel {
         return dateFilter;
     }
 
-    public void setIDCellToolTipExpansion(boolean set) {
-        tooltipExpansionForIDs = set;
 
-    }
 
 
     public void addToAccountsTable(List<Account> selectedDateAccounts) {
@@ -238,4 +288,73 @@ public class LedgerViewPanel extends JPanel {
         dateFilter.setDataFactory(ledger);
         setUpItemFilter();
     }
+
+    public void setController(LedgerController controller) {
+        this.controller = controller;
+    }
+
+
+    public TableRowSorter createRowSorter(JTable table,
+                                          RowFilter<TableModel, Integer> filter, Comparator comparator) {
+        TableRowSorter<TableModel> sorter = new TableRowSorter<>(table.getModel());
+        sorter.setRowFilter(filter);
+        sorter.setComparator(0, comparator);
+        List<RowSorter.SortKey> sortKeys = new ArrayList<>();
+        for (int i = 0; i < table.getColumnCount(); i++) {
+            sortKeys.add(new RowSorter.SortKey(i, SortOrder.ASCENDING));
+        }
+        sorter.setSortKeys(sortKeys);
+        return sorter;
+    }
+
+
+
+    public RowFilter<TableModel, Integer> createDateRowFilter(String date) {
+        RowFilter<TableModel, Integer> rowFilter = new RowFilter<TableModel, Integer>() {
+            @Override
+            public boolean include(Entry<? extends TableModel, ? extends Integer> entry) {
+                if (date.equals(FilterBox.ALL) || date.equals(FilterBox.TYPE_MANUALLY)) {
+                    return true;
+                }
+                for (int i = 0; i < entry.getValueCount(); i++) {
+                    if (entry.getStringValue(i).equals(date)) {
+                        return true;
+                    }
+                }
+                return false;
+            }
+        };
+        return rowFilter;
+    }
+
+
+    public RowFilter<TableModel, Integer> createItemRowFilter(String processedItem) {
+        String date = (String) getDateFilter().getSelectedItem();
+        RowFilter<TableModel, Integer> rowFilter = new RowFilter<TableModel, Integer>() {
+            @Override
+            public boolean include(Entry<? extends TableModel, ? extends Integer> entry) {
+                if (processedItem.equals(FilterBox.ALL) || processedItem.equals(FilterBox.TYPE_MANUALLY)) {
+                    if (date.equals(FilterBox.ALL)) {
+                        return true;
+                    }
+                    for (int i = 0; i < entry.getValueCount(); i++) {
+                        if (entry.getStringValue(i).equals(date)) {
+                            return true;
+                        }
+                    }
+                    return false;
+                }
+                for (int i = 0; i < entry.getValueCount(); i++) {
+                    String cellContent = entry.getStringValue(i);
+                    if (cellContent.contains(processedItem)) {
+                        return true;
+                    }
+                }
+                return false;
+            }
+        };
+        return rowFilter;
+    }
+
+
 }
