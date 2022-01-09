@@ -14,7 +14,8 @@ import java.awt.event.MouseEvent;
 import java.util.Arrays;
 import java.util.Vector;
 
-public class EntryRemovableTable extends JTable {
+public class EntryRemovableTable extends ToolTipEnabledTable {
+    private boolean editable = false;
 
     public EntryRemovableTable() {
         JPopupMenu menu = new JPopupMenu();
@@ -95,39 +96,14 @@ public class EntryRemovableTable extends JTable {
         return null;
     }
 
-
-    @Override
-    protected JTableHeader createDefaultTableHeader() {
-        return new JTableHeader(columnModel) {
-            public String getToolTipText(MouseEvent e) {
-                Point p = e.getPoint();
-                int column = columnAtPoint(p);
-                if (column == -1) {
-                    return null;
-                }
-                return getColumnName(column);
-            }
-        };
+    //default: false
+    public void setTableEditable(boolean enabled) {
+        editable = enabled;
     }
 
-    @Override
-    public String getToolTipText(MouseEvent e) {
-        Point p = e.getPoint();
-        int row = rowAtPoint(p);
-        int column = columnAtPoint(p);
-        if (row != -1 && column != -1) {
-            Object value = getValueAt(row, column);
-            if (value == null) {
-                return null;
-            } else {
-                return value.toString();
-            }
-        }
-        return null;
-    }
 
     @Override
     public boolean isCellEditable(int row, int column) {
-        return false;
+        return editable;
     }
 }
