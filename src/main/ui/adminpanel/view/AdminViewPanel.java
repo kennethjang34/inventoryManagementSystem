@@ -3,6 +3,7 @@ package ui.adminpanel.view;
 import model.Account;
 import model.Admin;
 import ui.table.RowConverterViewerTableModel;
+import ui.table.ViewableTableEntryConvertibleModel;
 
 import javax.swing.*;
 import java.awt.*;
@@ -31,8 +32,29 @@ public class AdminViewPanel extends JPanel {
         registerPrompter = RegisterPrompter.getRegisterPrompter();
         retrievePrompter = RetrievePrompter.getRetrievePrompter();
         loginPanel = new LoginPanel();
-        accountsTable = new JTable();
-        accountsTable.setModel(new RowConverterViewerTableModel(admin, Admin.ACCOUNT));
+        accountsTable = new JTable() {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                if (getColumnName(column).equals(Admin.ColumnNameEnum.ID.toString())) {
+                    return false;
+                }
+                return true;
+            }
+        };
+
+        accountsTable.setModel(new RowConverterViewerTableModel(admin, Admin.ACCOUNT) {
+            //Modifies: entry object and row representing that object
+            @Override
+            public void setValueAt(Object value, int row, int column) {
+                ViewableTableEntryConvertibleModel dataModel = tableEntries.get(row);
+                String[] columnNames = dataModel.getColumnNames();
+                try {
+                    admin.updateLoginAccount((Admin.LoginAccount) getRowEntryModel(row), columnNames[column], value);
+                } catch (IndexOutOfBoundsException e) {
+                    return;
+                }
+            }
+        });
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx = 0;
         gbc.gridy = 0;
@@ -76,9 +98,5 @@ public class AdminViewPanel extends JPanel {
     public JTable getAccountsTable() {
         return accountsTable;
     }
-
-
-
-
 
 }

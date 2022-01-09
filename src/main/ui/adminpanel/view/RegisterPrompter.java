@@ -105,8 +105,8 @@ public class RegisterPrompter extends AbstractAdminInputPrompter {
 
     //EFFECTS: display an option pane that indicates the user doesn't
     //have a permission to create a new login account
-    public static void displayPermissionDenied() {
-        JOptionPane.showMessageDialog(null, "you are not allowed to create a new login account");
+    public static void displayPermissionDenied(Component parentComponent) {
+        JOptionPane.showMessageDialog(parentComponent, "you are not allowed to create a new login account");
     }
 
     //EFFECTS: display an option pane that indicates the login account wasn't created
@@ -115,17 +115,19 @@ public class RegisterPrompter extends AbstractAdminInputPrompter {
     }
 
 
-    public static void displayRegisterPrompter() {
+    public static void displayRegisterPrompter(Component parentComponent) {
         prompter.setPreferredSize(new Dimension(600, 400));
         dialog = new JDialog();
         dialog.add(prompter);
         dialog.setModalityType(Dialog.ModalityType.APPLICATION_MODAL);
         dialog.pack();
+        dialog.setLocationRelativeTo(parentComponent);
+
         dialog.setVisible(true);
         prompter.emptyPrompter();
     }
 
-    public static void displayRegisterPrompterForAdmin() {
+    public static void displayRegisterPrompterForAdmin(Component parentComponent) {
         prompter.getCheckBox().setSelected(true);
         prompter.getCheckBox().setEnabled(false);
         prompter.setPreferredSize(new Dimension(600, 400));
@@ -133,6 +135,7 @@ public class RegisterPrompter extends AbstractAdminInputPrompter {
         dialog.add(prompter);
         dialog.setModalityType(Dialog.ModalityType.APPLICATION_MODAL);
         dialog.pack();
+        dialog.setLocationRelativeTo(parentComponent);
         dialog.setVisible(true);
         prompter.getCheckBox().setEnabled(true);
         prompter.getCheckBox().setSelected(false);

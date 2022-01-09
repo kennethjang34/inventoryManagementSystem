@@ -21,6 +21,7 @@ public class ButtonTable extends JTable {
 //
 //    }
 
+    private boolean editingEnabled;
 
 
     private static class ButtonColumnRenderer extends DefaultTableCellRenderer {
@@ -161,6 +162,20 @@ public class ButtonTable extends JTable {
         };
     }
 
+
+
+    @Override
+    public boolean isCellEditable(int row, int column) {
+        if (getValueAt(row, column) instanceof JButton) {
+            return false;
+        } else {
+            return editingEnabled;
+        }
+    }
+
+    public void setEditingEnabled(boolean enabled) {
+        editingEnabled = enabled;
+    }
 
 
 

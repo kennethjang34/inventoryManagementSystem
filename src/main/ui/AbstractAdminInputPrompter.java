@@ -5,7 +5,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-//represents an abstract panel that has neccessary fields for jobs related to login accounts
+//represents an abstract panel that has necessary fields for jobs related to login accounts
 public abstract class AbstractAdminInputPrompter extends JPanel {
     protected JTextField nameField;
     protected JTextField birthdayField;
@@ -59,8 +59,6 @@ public abstract class AbstractAdminInputPrompter extends JPanel {
     public String getIDInput() {
         return idField.getText();
     }
-
-
 
     public void emptyPrompter() {
         idField.setText("");

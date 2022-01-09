@@ -53,11 +53,12 @@ public class RetrievePrompter extends AbstractAdminInputPrompter {
         return birthdayField.getText();
     }
 
-    public static void displayRetrievePrompter() {
+    public static void displayRetrievePrompter(Component parentComponent) {
         prompter.setPreferredSize(new Dimension(600, 400));
         dialog = new JDialog();
         dialog.add(prompter);
         dialog.pack();
+        dialog.setLocationRelativeTo(parentComponent);
         dialog.setModalityType(Dialog.ModalityType.APPLICATION_MODAL);
         dialog.setVisible(true);
         prompter.emptyPrompter();

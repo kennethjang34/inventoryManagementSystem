@@ -50,6 +50,11 @@ public class InventoryManagementSystemApplication extends JFrame implements Json
     private Ledger ledger;
     private Inventory inventory;
     private JPanel mainPanel;
+    private static InventoryManagementSystemApplication application;
+
+    public static Component getApplication() {
+        return application;
+    }
 
     @Override
     public void entryRemoved(ViewableTableEntryConvertibleModel o) {
@@ -107,11 +112,11 @@ public class InventoryManagementSystemApplication extends JFrame implements Json
 
 
     public enum MenuItemList {
-        SAVE, LOAD, QUIT, LOGIN, LOGOUT
+        SAVE, LOAD, QUIT, LOGIN, LOGOUT, SEARCH
     }
 
     //EFFECTS: create a new application program
-    InventoryManagementSystemApplication() {
+    private InventoryManagementSystemApplication() {
         login = false;
         try {
             Reader reader = new Reader(fileLocation);
@@ -289,16 +294,21 @@ public class InventoryManagementSystemApplication extends JFrame implements Json
         quit.setActionCommand(MenuItemList.QUIT.toString());
         JMenuItem logOut = new JMenuItem("Log-out");
         logOut.setActionCommand(MenuItemList.LOGOUT.toString());
+        JMenuItem search = new JMenuItem("Search");
+        search.setActionCommand(MenuItemList.SEARCH.toString());
         save.addActionListener(this);
         load.addActionListener(this);
         quit.addActionListener(this);
         login.addActionListener(this);
         logOut.addActionListener(this);
+        search.addActionListener(this);
         file.add(login);
         file.add(logOut);
         file.add(save);
         file.add(load);
         file.add(quit);
+        file.add(search);
+
         menuBar.add(file);
         if (admin.isLoggedIn()) {
             file.getItem(0).setVisible(false);
@@ -314,8 +324,9 @@ public class InventoryManagementSystemApplication extends JFrame implements Json
     public void actionPerformed(ActionEvent e) {
         String command = e.getActionCommand();
         switch (MenuItemList.valueOf(command)) {
-            case QUIT:
-                System.exit(0);
+            case SEARCH:
+                inventoryController.displaySearchDialog(this);
+                break;
             case SAVE:
                 if (admin.isEmpty()) {
                     JOptionPane.showMessageDialog(this, "Please create a login account first");
@@ -346,6 +357,8 @@ public class InventoryManagementSystemApplication extends JFrame implements Json
             case LOGOUT:
                 adminController.logout();
                 break;
+            case QUIT:
+                System.exit(0);
         }
     }
 
@@ -382,7 +395,7 @@ public class InventoryManagementSystemApplication extends JFrame implements Json
 
 
     public static void main(String[] args) {
-        new InventoryManagementSystemApplication();
+        application = new InventoryManagementSystemApplication();
     }
 
 

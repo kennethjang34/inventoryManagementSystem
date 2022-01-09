@@ -25,37 +25,6 @@ public class AddPanel extends JPanel {
     JButton button;
     private List<JTextField> textFields = new ArrayList<>(7);
 
-//
-//    //EFFECTS: create a new panel that will pop up if the user attempts to add new stocks
-//    public AddPanel(Inventory inventory, JButton button) {
-//        this.inventory = inventory;
-//        add(new JLabel("ID"));
-//        add(idField);
-//        add(new JLabel("Cost: "));
-//        add(costField);
-//        add(new JLabel("Price: "));
-//        add(priceField);
-//        add(new JLabel("Best-before date: "));
-//        add(bbdField);
-//        add(new JLabel("Location: "));
-//        add(locationField);
-//        add(new JLabel("Quantity: "));
-//        add(quantityField);
-//        add(new JLabel("Description: "));
-//        add(description);
-//        this.button = button;
-//        button.setText("Register");
-//        add(button);
-//        setPreferredSize(new Dimension(700, 500));
-//        textFields.add(costField);
-//        textFields.add(bbdField);
-//        textFields.add(priceField);
-//        textFields.add(idField);
-//        textFields.add(locationField);
-//        textFields.add(quantityField);
-//        textFields.add(description);
-//    }
-
     public AddPanel(Inventory inventory) {
         this.inventory = inventory;
         add(new JLabel("ID"));

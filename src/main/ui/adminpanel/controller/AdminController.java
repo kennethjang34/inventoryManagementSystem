@@ -6,11 +6,16 @@ import ui.InventoryManagementSystemApplication;
 import ui.adminpanel.view.AdminViewPanel;
 import ui.adminpanel.view.RegisterPrompter;
 import ui.adminpanel.view.RetrievePrompter;
+import ui.table.RowConverterViewerTableModel;
+import ui.table.ViewableTableEntryConvertibleModel;
+
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.time.LocalDate;
 
 
@@ -47,7 +52,7 @@ public class AdminController extends AbstractController<Admin, AdminViewPanel> {
                                     birthDay, personalCode, false);
                         }
                     } else {
-                        registerPrompter.displayPermissionDenied();
+                        registerPrompter.displayPermissionDenied(view);
                     }
                 } else {
                     model.setLoginAccount(model.createLoginAccount(registerPrompter.getIDInput(),
@@ -60,8 +65,6 @@ public class AdminController extends AbstractController<Admin, AdminViewPanel> {
                 displayExceptionMessage(illegalArgumentException);
             }
         });
-
-
     }
 
     private void setUpRetrievePanel() {
@@ -90,14 +93,36 @@ public class AdminController extends AbstractController<Admin, AdminViewPanel> {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if ( model.isEmpty()) {
-                    RegisterPrompter.displayRegisterPrompterForAdmin();
+                    RegisterPrompter.displayRegisterPrompterForAdmin(InventoryManagementSystemApplication.getApplication());
                 } else if (model.isAdminLoggedIn()) {
-                    RegisterPrompter.displayRegisterPrompter();
+                    RegisterPrompter.displayRegisterPrompter(InventoryManagementSystemApplication.getApplication());
                 } else {
-                    RegisterPrompter.displayPermissionDenied();
+                    RegisterPrompter.displayPermissionDenied(InventoryManagementSystemApplication.getApplication());
                 }
             }
         });
+
+
+        setUpAccountsTable(view.getAccountsTable());
+
+    }
+
+
+    public void setUpAccountsTable(JTable accountsTable) {
+        RowConverterViewerTableModel accountsTableModel = new RowConverterViewerTableModel(model, Admin.ACCOUNT) {
+            //Modifies: entry object and row representing that object
+            @Override
+            public void setValueAt(Object value, int row, int column) {
+                ViewableTableEntryConvertibleModel dataModel = tableEntries.get(row);
+                String[] columnNames = dataModel.getColumnNames();
+                try {
+                    model.updateLoginAccount((Admin.LoginAccount) getRowEntryModel(row), columnNames[column], value);
+                } catch (IndexOutOfBoundsException e) {
+                    return;
+                }
+            }
+        };
+        accountsTable.setModel(accountsTableModel);
     }
 
     //MODIFIES: loginPanel's login button
@@ -136,7 +161,7 @@ public class AdminController extends AbstractController<Admin, AdminViewPanel> {
         retrieveButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                RetrievePrompter.displayRetrievePrompter();
+                RetrievePrompter.displayRetrievePrompter(view.getLoginPanel().getLoginDialog());
             }
         });
     }
@@ -150,7 +175,7 @@ public class AdminController extends AbstractController<Admin, AdminViewPanel> {
     }
 
     private void displayAdminRegisterPanel() {
-        RegisterPrompter.displayRegisterPrompterForAdmin();
+        RegisterPrompter.displayRegisterPrompterForAdmin(InventoryManagementSystemApplication.getApplication());
     }
 
 
@@ -180,4 +205,5 @@ public class AdminController extends AbstractController<Admin, AdminViewPanel> {
     public void promptLogin() {
         displayLoginDialog();
     }
+
 }

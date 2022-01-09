@@ -109,7 +109,7 @@ public class InventoryViewPanel extends JPanel {
         categoryGenerator.getButton().addKeyListener(buttonEnterListener);
         itemGenerator = new ItemGenerator();
         itemGenerator.getButton().addKeyListener(buttonEnterListener);
-        searchPanel = new SearchPanel(inventory);
+        searchPanel = SearchPanel.getSearchPanel();
         //stockButtonTable is decoupled from inventory
         stockButtonTable = new ButtonTable(inventory, "Location view", Inventory.ITEM);
         //ID determines the equivalency
@@ -258,30 +258,6 @@ public class InventoryViewPanel extends JPanel {
         add(panelForGenerators, gbc);
     }
 
-
-    private void setUpCategoryField() {
-//        categoryField.setVisible(false);
-    }
-
-
-
-    private void setUpItemField() {
-//        itemField.setVisible(true);
-    }
-
-
-    private void setUpCategoryFilter() {
-//        List<String> items = new ArrayList<>();
-//        if (inventory.getCategoryNames().isEmpty()) {
-//            items.add("Empty");
-//        } else {
-//            items.add("All");
-//            items.add("TYPE_MANUALLY");
-//            items.addAll(inventory.getCategoryNames());
-//        }
-//        categoryFilter.setModel(new DefaultComboBoxModel(items.toArray(new String[0])));
-    }
-
     private void setUpItemFilter() {
         List<String> items = new ArrayList<>();
         if (inventory.getIDs().isEmpty()) {
@@ -298,11 +274,6 @@ public class InventoryViewPanel extends JPanel {
 
     //EFFECTS: create a new location view of a particular stock based on the request
     public void displayLocationStockView(String id) {
-//        List<QuantityTag> stocks = inventory.getQuantitiesAtLocations(id);
-//        //excludes the button column
-//        String[] locationTableColumns = new String[]{
-//                "ID", "Location"
-//        };
         locationTable = new StockLocationTable(id);
         JScrollPane scrollPane = new JScrollPane(locationTable);
         JDialog dialog = new JDialog();
@@ -408,16 +379,9 @@ public class InventoryViewPanel extends JPanel {
             public void actionPerformed(ActionEvent e) {
                 JDialog dialog = new JDialog();
                 AddPanel addPanel = getAddPanel();
-//                addPanel.addButtonActionListener(new ActionListener() {
-//                    @Override
-//                    public void actionPerformed(ActionEvent e) {
-////                        dialog.setVisible(false);
-//                        dialog.dispose();
-//                    }
-//                });
-                dialog.setLayout(new FlowLayout());
                 dialog.add(addPanel);
                 dialog.pack();
+                dialog.setLocationRelativeTo(null);
                 dialog.setVisible(true);
             }
         });
@@ -428,7 +392,7 @@ public class InventoryViewPanel extends JPanel {
     }
 
     private void setUpProductRemovalButton() {
-        //
+
     }
 
     public void setInventory(Inventory inventory) {
@@ -467,4 +431,7 @@ public class InventoryViewPanel extends JPanel {
         itemFilter.setModel(new DefaultComboBoxModel(ids.toArray(new String[0])));
     }
 
+    public void displaySearchDialog(Component parentFrame) {
+        searchPanel.display(parentFrame);
+    }
 }

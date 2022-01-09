@@ -10,8 +10,6 @@ import java.awt.event.KeyListener;
 
 //A panel to prompt the user to log in/register a new login account/retrieve password
 public class LoginPanel extends JPanel {
-    private int purpose;
-    private boolean isAdmin = false;
     private final JTextField idField = new JTextField(10);
     private final JPasswordField pwField = new JPasswordField(10);
     private final JLabel idLabel = new JLabel("ID");

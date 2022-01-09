@@ -3,11 +3,9 @@ package model;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import persistence.JsonConvertible;
-import ui.InventoryManagementSystemApplication;
 import ui.table.AbstractTableDataFactory;
 import ui.table.ViewableTableEntryConvertibleModel;
 
-import java.beans.PropertyChangeSupport;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,7 +27,35 @@ public class Admin extends AbstractTableDataFactory implements JsonConvertible {
     private final ArrayList<LoginAccount> accounts;
     private LoginAccount currentAccount;
 
-    public enum DataList{
+    public void updateLoginAccount(LoginAccount account, String dataName, Object newCellValue) {
+        if (!accounts.contains(account)) {
+            throw new IllegalArgumentException("There is no such login account");
+        } else {
+            String stringValue = newCellValue.toString();
+            switch (ColumnNameEnum.valueOf(dataName)) {
+                case PW:
+                    account.pw = stringValue;
+                    break;
+                case NAME:
+                    account.name = stringValue;
+                    break;
+                case BIRTHDAY:
+                    account.birthday = LocalDate.parse(stringValue);
+                    break;
+                case PERSONAL_CODE:
+                    account.personalCode = Integer.parseInt(stringValue);
+                    break;
+                case IS_ADMIN:
+                    account.isAdmin = Boolean.parseBoolean(stringValue);
+                    break;
+            }
+
+            changeFirer.fireUpdateEvent(account);
+        }
+
+    }
+
+    public enum ColumnNameEnum {
         ID, PW, NAME, BIRTHDAY, PERSONAL_CODE, IS_ADMIN
     }
 
@@ -37,9 +63,9 @@ public class Admin extends AbstractTableDataFactory implements JsonConvertible {
     @Override
     public Object[] getDataList() {
         return new String[]{
-                DataList.ID.toString(), DataList.PW.toString(),
-                DataList.NAME.toString(), DataList.BIRTHDAY.toString(), DataList.PERSONAL_CODE.toString(),
-                DataList.IS_ADMIN.toString()
+                ColumnNameEnum.ID.toString(), ColumnNameEnum.PW.toString(),
+                ColumnNameEnum.NAME.toString(), ColumnNameEnum.BIRTHDAY.toString(), ColumnNameEnum.PERSONAL_CODE.toString(),
+                ColumnNameEnum.IS_ADMIN.toString()
         };
     }
 
@@ -66,10 +92,10 @@ public class Admin extends AbstractTableDataFactory implements JsonConvertible {
 
         //Once a login account is created, no data can be changed.
         private final String id;
-        private final String pw;
-        private final String name;
-        private final LocalDate birthday;
-        private final int personalCode;
+        private String pw;
+        private String name;
+        private LocalDate birthday;
+        private int personalCode;
         private boolean isAdmin;
 
 
@@ -79,8 +105,8 @@ public class Admin extends AbstractTableDataFactory implements JsonConvertible {
 
         public static String[] getDataListNames() {
             return new String[]{
-                    DataList.ID.toString(), DataList.PW.toString(), DataList.NAME.toString(),
-                    DataList.BIRTHDAY.toString(), DataList.PERSONAL_CODE.toString(), DataList.IS_ADMIN.toString(),
+                    ColumnNameEnum.ID.toString(), ColumnNameEnum.PW.toString(), ColumnNameEnum.NAME.toString(),
+                    ColumnNameEnum.BIRTHDAY.toString(), ColumnNameEnum.PERSONAL_CODE.toString(), ColumnNameEnum.IS_ADMIN.toString(),
             };
         }
 
@@ -88,9 +114,9 @@ public class Admin extends AbstractTableDataFactory implements JsonConvertible {
         private LoginAccount(String id, String password, String name, LocalDate birthDay,
                              int personalCode, boolean isAdmin) {
             super(new String[]{
-                DataList.ID.toString(), DataList.PW.toString(),
-                    DataList.NAME.toString(), DataList.BIRTHDAY.toString(), DataList.PERSONAL_CODE.toString(),
-                    DataList.IS_ADMIN.toString()
+                ColumnNameEnum.ID.toString(), ColumnNameEnum.PW.toString(),
+                    ColumnNameEnum.NAME.toString(), ColumnNameEnum.BIRTHDAY.toString(), ColumnNameEnum.PERSONAL_CODE.toString(),
+                    ColumnNameEnum.IS_ADMIN.toString()
             });
             this.id = id;
             this.pw = password;
@@ -105,9 +131,9 @@ public class Admin extends AbstractTableDataFactory implements JsonConvertible {
         //EFFECTS: create a new account with data in json format
         private LoginAccount(JSONObject jsonLoginAccount) {
             super(new String[]{
-                    DataList.ID.toString(), DataList.PW.toString(),
-                    DataList.NAME.toString(), DataList.BIRTHDAY.toString(), DataList.PERSONAL_CODE.toString(),
-                    DataList.IS_ADMIN.toString()
+                    ColumnNameEnum.ID.toString(), ColumnNameEnum.PW.toString(),
+                    ColumnNameEnum.NAME.toString(), ColumnNameEnum.BIRTHDAY.toString(), ColumnNameEnum.PERSONAL_CODE.toString(),
+                    ColumnNameEnum.IS_ADMIN.toString()
             });
             id = jsonLoginAccount.getString("id");
             pw = jsonLoginAccount.getString("pw");

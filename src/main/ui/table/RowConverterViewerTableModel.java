@@ -23,6 +23,7 @@ public class RowConverterViewerTableModel extends AbstractTableModel implements 
     protected boolean automation = true;
     //category indicates the section of the data factory that this table will display the information of
     protected String category;
+    protected DataFactory factory;
 
 
     //EFFECTS: create a new empty table model
@@ -40,6 +41,7 @@ public class RowConverterViewerTableModel extends AbstractTableModel implements 
         tableEntries = new LinkedList<>();
         columnNames = factory.getColumnNames();
         this.category = category;
+        this.factory = factory;
         List<? extends ViewableTableEntryConvertibleModel> entries = factory.getEntryModels();
         if (entries != null) {
             for (ViewableTableEntryConvertibleModel entry : entries) {
@@ -82,26 +84,28 @@ public class RowConverterViewerTableModel extends AbstractTableModel implements 
 
 
 
-    public RowConverterViewerTableModel(AbstractTableDataFactory model, String[] columnNames, String category) {
+    public RowConverterViewerTableModel(AbstractTableDataFactory factory, String[] columnNames, String category) {
         data = new LinkedHashMap<>();
         tableEntries = new LinkedList<>();
         this.columnNames = columnNames;
-        List<? extends ViewableTableEntryConvertibleModel> entries = (List<? extends ViewableTableEntryConvertibleModel>) model.getEntryModels();
+        List<? extends ViewableTableEntryConvertibleModel> entries = (List<? extends ViewableTableEntryConvertibleModel>) factory.getEntryModels();
         for (ViewableTableEntryConvertibleModel entry: entries) {
             entry.addUpdateListener(this);
             tableEntries.add(entry);
             data.put(entry, createRow(entry.convertToTableEntry()));
         }
         this.category = category;
-        model.addDataChangeListener(category, this);
+        this.factory = factory;
+        factory.addDataChangeListener(category, this);
     }
 
-    //The table model won't get notified when there is an update in entries
-    public RowConverterViewerTableModel(AbstractTableDataFactory model, String[] columnNames, String category, boolean watching) {
+    //The table factory won't get notified when there is an update in entries
+    public RowConverterViewerTableModel(AbstractTableDataFactory factory, String[] columnNames, String category, boolean watching) {
         data = new LinkedHashMap<>();
         tableEntries = new LinkedList<>();
         this.columnNames = columnNames;
-        List<? extends ViewableTableEntryConvertibleModel> entries = model.getEntryModels();
+        this.factory = factory;
+        List<? extends ViewableTableEntryConvertibleModel> entries = factory.getEntryModels();
         for (ViewableTableEntryConvertibleModel entry: entries) {
             if (watching) {
                 entry.addUpdateListener(this);;
@@ -110,7 +114,7 @@ public class RowConverterViewerTableModel extends AbstractTableModel implements 
             data.put(entry, createRow(entry.convertToTableEntry()));
         }
         this.category = category;
-        model.addDataChangeListener(category, this);
+        factory.addDataChangeListener(category, this);
     }
 
 
@@ -145,6 +149,7 @@ public class RowConverterViewerTableModel extends AbstractTableModel implements 
     }
 
     public void setDataFactory(AbstractTableDataFactory factory) {
+        this.factory = factory;
         data = new LinkedHashMap<>();
         tableEntries = new LinkedList<>();
         List<? extends ViewableTableEntryConvertibleModel> entries = factory.getEntryModels();
@@ -431,6 +436,10 @@ public class RowConverterViewerTableModel extends AbstractTableModel implements 
         return new ArrayList<>(data.keySet());
     }
 
+    public ViewableTableEntryConvertibleModel getRowEntryModel(int row) {
+        return tableEntries.get(row);
+    }
+
 
 
     @Override
@@ -554,6 +563,9 @@ public class RowConverterViewerTableModel extends AbstractTableModel implements 
             }
         }
     }
+
+
+
 
 
 
