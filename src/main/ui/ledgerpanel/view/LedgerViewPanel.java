@@ -4,12 +4,14 @@ import model.*;
 import ui.FilterBox;
 import ui.table.ButtonTable;
 import ui.table.RowConverterViewerTableModel;
+import ui.table.ToolTipEnabledTable;
 import ui.table.ViewableTableEntryConvertibleModel;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableColumn;
+import javax.tools.Tool;
 import java.awt.*;
 import java.awt.event.*;
 import java.time.LocalDate;
@@ -32,27 +34,6 @@ public class LedgerViewPanel extends JPanel {
     private JTextField itemField = new JTextField(10);
     boolean tooltipExpansionForIDs = true;
 
-//    public enum DataList{
-//        LEDGER, ACCOUNT, DATE_FILTER, ITEM_FILTER
-//    }
-
-    private KeyListener buttonEnterListener = new KeyListener() {
-        @Override
-        public void keyTyped(KeyEvent e) {
-        }
-
-        @Override
-        public void keyPressed(KeyEvent e) {
-            if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-                JButton button = (JButton) e.getSource();
-                button.doClick();
-            }
-        }
-
-        @Override
-        public void keyReleased(KeyEvent e) {
-        }
-    };
 
 
     public LedgerViewPanel(Ledger ledger) {
@@ -114,17 +95,6 @@ public class LedgerViewPanel extends JPanel {
         itemFilter = new JComboBox();
         setUpItemFilter();
         deployComponents();
-//        ledger.addDataChangeListener(Ledger.DataList.RECORDED_DATE.toString(), itemFilter);
-//        JScrollPane ledgerTableScrollPane = new JScrollPane(ledgerTable);
-//        JScrollPane accountsTableScrollPane = new JScrollPane(accountsTable);
-//        dateField.setVisible(false);
-//        itemField.setVisible(false);
-//        add(accountsTableScrollPane);
-//        add(dateFilter);
-//        add(dateField);
-//        add(itemFilter);
-//        add(itemField);
-//        add(ledgerTableScrollPane);
     }
 
     private void deployComponents() {
@@ -178,75 +148,22 @@ public class LedgerViewPanel extends JPanel {
     }
 
     private void setUpLedgerTable() {
-        ledgerTable = new ButtonTable(ledger, "Accounts", Ledger.DataList.RECORDED_DATE.toString()) {
+        ledgerTable = new ButtonTable(ledger, "Accounts", Ledger.DataList.RECORDED_DATE.toString());
+        ledgerTable.addMouseListener(new MouseAdapter() {
             @Override
-            public String getToolTipText(MouseEvent e) {
-                if (!tooltipExpansionForIDs) {
-                    return null;
-                }
-                Point p = e.getPoint();
-                int row = rowAtPoint(p);
-                int column = columnAtPoint(p);
-                if (row == -1 || column == -1) {
-                    return null;
-                }
-                if (!(getValueAt(row, column) instanceof Component)) {
-                    return getValueAt(row, column).toString();
-                }
-                return null;
-            }
-
-            @Override
-            protected JTableHeader createDefaultTableHeader() {
-                return new JTableHeader(columnModel) {
-                    public String getToolTipText(MouseEvent e) {
-                        Point p = e.getPoint();
-                        int column = columnAtPoint(p);
-                        if (column == -1) {
-                            return null;
-                        }
-                        return getColumnName(column);
+            public void mouseClicked(MouseEvent e) {
+                if (e.getButton() == 1 && e.getClickCount() == 2) {
+                    int index = ledgerTable.convertRowIndexToModel(ledgerTable.getSelectedRow());
+                    if (index != -1) {
+                        ledgerTable.getButtons().get(index).doClick();
                     }
-                };
+                }
             }
-        };
+        });
     }
 
     private void setUpAccountsTable() {
-        accountsTable = new JTable() {
-
-            @Override
-            public String getToolTipText(MouseEvent e) {
-                if (!tooltipExpansionForIDs) {
-                    return null;
-                }
-                Point p = e.getPoint();
-                int row = rowAtPoint(p);
-                int column = columnAtPoint(p);
-                if (row == -1 || column == -1) {
-                    return null;
-                }
-                if (!(getValueAt(row, column) instanceof Component)) {
-                    return getValueAt(row, column).toString();
-                }
-                return null;
-            }
-
-
-            @Override
-            protected JTableHeader createDefaultTableHeader() {
-                return new JTableHeader(columnModel) {
-                    public String getToolTipText(MouseEvent e) {
-                        Point p = e.getPoint();
-                        int column = columnAtPoint(p);
-                        if (column == -1) {
-                            return null;
-                        }
-                        return getColumnName(column);
-                    }
-                };
-            }
-        };
+        accountsTable = new ToolTipEnabledTable(true);
         RowConverterViewerTableModel tableModel = new RowConverterViewerTableModel();
         tableModel.setColumnNames(Stream.of(Account.DataList.values()).map(Account.DataList::toString).toArray(String[]::new));
         accountsTable.setModel(tableModel);
@@ -257,6 +174,13 @@ public class LedgerViewPanel extends JPanel {
     }
 
 
+    public void setAccountsTable(JTable accountsTable) {
+        this.accountsTable = accountsTable;
+    }
+
+    public void setLedgerTable(JTable ledgerTable) {
+        this.ledger = ledger;
+    }
 
     public void addLedgerTableButtonActionListener(ActionListener listener) {
         //add the listener to every button

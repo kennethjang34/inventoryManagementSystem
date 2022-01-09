@@ -77,18 +77,6 @@ public class LedgerController extends AbstractController<Ledger, LedgerViewPanel
     public void setUpLedgerTable() {
         ButtonTable table = view.getLedgerTable();
         table.setButtonAction(new LedgerButtonAction());
-        table.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                if (e.getButton() == 1 && e.getClickCount() == 2) {
-                    int index = table.convertRowIndexToModel(table.getSelectedRow());
-//                    Object[] row = table.getSelectedRowData();
-                    if (index != -1) {
-                        table.getButtons().get(index).doClick();
-                    }
-                }
-            }
-        });
         TableRowSorter sorter = createRowSorter(table, null, Comparator.naturalOrder());
         table.setRowSorter(sorter);
         JPopupMenu menu = createLedgerTablePopUpMenu();

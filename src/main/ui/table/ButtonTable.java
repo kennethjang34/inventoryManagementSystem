@@ -9,7 +9,7 @@ import java.awt.event.MouseEvent;
 import java.util.List;
 
 
-public class ButtonTable extends JTable {
+public class ButtonTable extends ToolTipEnabledTable {
 
 //    Inventory inventory;
     //Maybe you don't need it
