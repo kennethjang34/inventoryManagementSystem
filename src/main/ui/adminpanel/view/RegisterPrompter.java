@@ -115,31 +115,28 @@ public class RegisterPrompter extends AbstractAdminInputPrompter {
     }
 
 
-    public static void displayRegisterPrompter(Component parentComponent) {
+    public static void displayRegisterPrompter(Component parentComponent, Dialog.ModalityType modalityType) {
         prompter.setPreferredSize(new Dimension(600, 400));
         dialog = new JDialog();
         dialog.add(prompter);
-        dialog.setModalityType(Dialog.ModalityType.APPLICATION_MODAL);
+        dialog.setModalityType(modalityType);
         dialog.pack();
         dialog.setLocationRelativeTo(parentComponent);
-
         dialog.setVisible(true);
-        prompter.emptyPrompter();
     }
 
-    public static void displayRegisterPrompterForAdmin(Component parentComponent) {
+    public static void displayRegisterPrompterForAdmin(Component parentComponent, Dialog.ModalityType modalityType) {
         prompter.getCheckBox().setSelected(true);
         prompter.getCheckBox().setEnabled(false);
         prompter.setPreferredSize(new Dimension(600, 400));
         dialog = new JDialog();
         dialog.add(prompter);
-        dialog.setModalityType(Dialog.ModalityType.APPLICATION_MODAL);
+        dialog.setModalityType(modalityType);
         dialog.pack();
         dialog.setLocationRelativeTo(parentComponent);
         dialog.setVisible(true);
         prompter.getCheckBox().setEnabled(true);
         prompter.getCheckBox().setSelected(false);
-        prompter.emptyPrompter();
     }
 
     public void emptyPrompter() {

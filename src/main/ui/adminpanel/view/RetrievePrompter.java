@@ -61,8 +61,9 @@ public class RetrievePrompter extends AbstractAdminInputPrompter {
         dialog.setLocationRelativeTo(parentComponent);
         dialog.setModalityType(Dialog.ModalityType.APPLICATION_MODAL);
         dialog.setVisible(true);
-        prompter.emptyPrompter();
     }
+
+
 
     public void emptyPrompter() {
         idField.setText("");

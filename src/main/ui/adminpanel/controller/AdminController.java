@@ -4,6 +4,7 @@ import model.Admin;
 import ui.AbstractController;
 import ui.InventoryManagementSystemApplication;
 import ui.adminpanel.view.AdminViewPanel;
+import ui.adminpanel.view.LoginPanel;
 import ui.adminpanel.view.RegisterPrompter;
 import ui.adminpanel.view.RetrievePrompter;
 import ui.table.RowConverterViewerTableModel;
@@ -14,13 +15,36 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.time.LocalDate;
 
 
 //control admin + login status
 public class AdminController extends AbstractController<Admin, AdminViewPanel> {
+
+    private KeyListener buttonEnterListener = new KeyListener() {
+        @Override
+        public void keyTyped(KeyEvent e) {
+
+        }
+
+        @Override
+        public void keyPressed(KeyEvent e) {
+            if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+                JButton button = (JButton) e.getSource();
+                button.doClick();
+            }
+        }
+
+        @Override
+        public void keyReleased(KeyEvent e) {
+
+        }
+    };
+
+
 
     public AdminController(Admin admin, AdminViewPanel adminViewPanel) {
         super(admin, adminViewPanel);
@@ -93,18 +117,17 @@ public class AdminController extends AbstractController<Admin, AdminViewPanel> {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if ( model.isEmpty()) {
-                    RegisterPrompter.displayRegisterPrompterForAdmin(InventoryManagementSystemApplication.getApplication());
+                    RegisterPrompter.displayRegisterPrompterForAdmin(InventoryManagementSystemApplication.getApplication(),
+                            Dialog.ModalityType.APPLICATION_MODAL);
                 } else if (model.isAdminLoggedIn()) {
-                    RegisterPrompter.displayRegisterPrompter(InventoryManagementSystemApplication.getApplication());
+                    RegisterPrompter.displayRegisterPrompter(InventoryManagementSystemApplication.getApplication(),
+                            Dialog.ModalityType.APPLICATION_MODAL);
                 } else {
                     RegisterPrompter.displayPermissionDenied(InventoryManagementSystemApplication.getApplication());
                 }
             }
         });
-
-
         setUpAccountsTable(view.getAccountsTable());
-
     }
 
 
@@ -129,7 +152,13 @@ public class AdminController extends AbstractController<Admin, AdminViewPanel> {
     //EFFECTS: the login button will get an action listener for when the button is pressed, which
     //makes a login attempt with the given field inputs in the login panel
     public void setUpLoginPanel() {
-        JButton loginButton = view.getLoginPanel().getLoginButton();
+        LoginPanel loginPanel = view.getLoginPanel();
+        JButton loginButton = loginPanel.getLoginButton();
+        JButton cancelButton = loginPanel.getCancelButton();
+        JButton retrieveButton = loginPanel.getRetrieveButton();
+        loginButton.addKeyListener(buttonEnterListener);
+        cancelButton.addKeyListener(buttonEnterListener);
+        retrieveButton.addKeyListener(buttonEnterListener);
         loginButton.addActionListener(new ActionListener() {
             //MODIFIES: this
             //EFFECTS: If the user has tried to sign in, check if the input is valid.
@@ -148,41 +177,31 @@ public class AdminController extends AbstractController<Admin, AdminViewPanel> {
                     model.setLoginAccount(loginAccount);
                     view.getLoginPanel().displayLoginSuccessful();
                     view.getLoginPanel().getLoginDialog().setVisible(false);
-                    if (model.isAdminLoggedIn()) {
-                        view.setAccountsTableVisible(true);
-                    } else {
-                        view.setAccountsTableVisible(false);
-                    }
                 }
             }
         });
-
-        JButton retrieveButton = view.getLoginPanel().getRetrieveButton();
+        cancelButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                loginPanel.getLoginDialog().setVisible(false);
+            }
+        });
         retrieveButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 RetrievePrompter.displayRetrievePrompter(view.getLoginPanel().getLoginDialog());
+                RetrievePrompter.getRetrievePrompter().emptyPrompter();
             }
         });
     }
 
-
-
-
-
-    public void promptAdminRegister() {
-        displayAdminRegisterPanel();
-    }
-
     private void displayAdminRegisterPanel() {
-        RegisterPrompter.displayRegisterPrompterForAdmin(InventoryManagementSystemApplication.getApplication());
+        RegisterPrompter.displayRegisterPrompterForAdmin(InventoryManagementSystemApplication.getApplication(),
+                Dialog.ModalityType.APPLICATION_MODAL);
     }
-
-
-
 
     private void displayLoginDialog() {
-        view.getLoginPanel().displayLoginDialog();
+        view.getLoginPanel().displayLoginDialog(Dialog.ModalityType.APPLICATION_MODAL);
     }
 
     public void logout() {
@@ -200,10 +219,17 @@ public class AdminController extends AbstractController<Admin, AdminViewPanel> {
     }
 
 
-
+    //It is only when the admin is empty
+    public void promptAdminRegister() {
+        displayAdminRegisterPanel();
+        RegisterPrompter.getRegisterPrompter().emptyPrompter();
+    }
 
     public void promptLogin() {
         displayLoginDialog();
+        view.getLoginPanel().clearFields();
     }
+
+
 
 }

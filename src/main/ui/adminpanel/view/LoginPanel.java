@@ -18,28 +18,10 @@ public class LoginPanel extends JPanel {
     private RetrievePrompter retrievePanel = RetrievePrompter.getRetrievePrompter();
     private JButton loginButton;
     private JButton retrieveButton;
+    private JButton cancelButton;
     private JDialog dialog;
 
 
-    private KeyListener buttonEnterListener = new KeyListener() {
-        @Override
-        public void keyTyped(KeyEvent e) {
-
-        }
-
-        @Override
-        public void keyPressed(KeyEvent e) {
-            if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-                JButton button = (JButton) e.getSource();
-                button.doClick();
-            }
-        }
-
-        @Override
-        public void keyReleased(KeyEvent e) {
-
-        }
-    };
 
 
     //EFFECTS: create a new panel that is used to process user login attempt/register a new account/retrieve password
@@ -55,16 +37,9 @@ public class LoginPanel extends JPanel {
         retrieveButton = new JButton("press here");
 //        retrieveButton.setActionCommand(RETRIEVE);
         add(retrieveButton);
-        JButton cancelButton = new JButton("Cancel");
-        cancelButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                dialog.setVisible(false);
-                clearFields();
-            }
-        });
-        loginButton.addKeyListener(buttonEnterListener);
-        cancelButton.addKeyListener(buttonEnterListener);
+        cancelButton = new JButton("Cancel");
+//        loginButton.addKeyListener(buttonEnterListener);
+//        cancelButton.addKeyListener(buttonEnterListener);
 //        cancelButton.addActionListener(e -> application.dataChangeHandler(CANCEL));
         add(cancelButton);
         setPreferredSize(new Dimension(400, 500));
@@ -113,6 +88,10 @@ public class LoginPanel extends JPanel {
         return loginButton;
     }
 
+    public JButton getCancelButton() {
+        return cancelButton;
+    };
+
     public JButton getRetrieveButton() {
         return retrieveButton;
     }
@@ -133,13 +112,12 @@ public class LoginPanel extends JPanel {
     }
 
 
-    public void displayLoginDialog() {
+    public void displayLoginDialog(Dialog.ModalityType modalityType) {
         dialog = new JDialog();
         dialog.add(this);
-        dialog.setModalityType(Dialog.DEFAULT_MODALITY_TYPE);
+        dialog.setModalityType(modalityType);
         dialog.pack();
         dialog.setVisible(true);
-        clearFields();
     }
 
     public void displayLoginSuccessful() {

@@ -41,20 +41,6 @@ public class AdminViewPanel extends JPanel {
                 return true;
             }
         };
-
-        accountsTable.setModel(new RowConverterViewerTableModel(admin, Admin.ACCOUNT) {
-            //Modifies: entry object and row representing that object
-            @Override
-            public void setValueAt(Object value, int row, int column) {
-                ViewableTableEntryConvertibleModel dataModel = tableEntries.get(row);
-                String[] columnNames = dataModel.getColumnNames();
-                try {
-                    admin.updateLoginAccount((Admin.LoginAccount) getRowEntryModel(row), columnNames[column], value);
-                } catch (IndexOutOfBoundsException e) {
-                    return;
-                }
-            }
-        });
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx = 0;
         gbc.gridy = 0;
@@ -62,20 +48,13 @@ public class AdminViewPanel extends JPanel {
         gbc.gridheight = 3;
         gbc.weightx = 1;
         gbc.fill = GridBagConstraints.BOTH;
-//        gbc.anchor = GridBagConstraints.PAGE_START;
         JScrollPane scrollPane = new JScrollPane(accountsTable);
         add(scrollPane, gbc);
-//        scrollPane.setVisible(false);
         gbc.gridx = gbc.gridx + gbc.gridwidth - 1;
         gbc.gridy = gbc.gridy + gbc.gridheight;
         gbc.weightx = 0;
         gbc.weighty = 0;
         add(createButton, gbc);
-//        accountsTable.setVisible(false);
-    }
-
-    public void setAccountsTableVisible(boolean visible) {
-        accountsTable.setVisible(visible);
     }
 
     public RegisterPrompter getRegisterPrompter() {
@@ -98,5 +77,6 @@ public class AdminViewPanel extends JPanel {
     public JTable getAccountsTable() {
         return accountsTable;
     }
+
 
 }
