@@ -23,26 +23,33 @@ import java.util.List;
 public class InventoryController extends AbstractController<Inventory, InventoryViewPanel> {
 
 
-    private class StockTableButtonAction extends AbstractAction {
-        private int buttonColumnIndex;
 
-        public StockTableButtonAction(ButtonTable table) {
-            super("Location");
-            buttonColumnIndex = table.findColumnModelIndex("ID");
-        }
-
-        //EFFECTS: create a location table
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            ButtonTable table = view.getStockButtonTable();
-            int row = table.findModelRowIndex(e.getSource());
-            int column = table.findColumnModelIndex("ID");
-            String id = (String) table.getModel().getValueAt(row, column);
+    public void stockTableLocationButtonClicked(ViewableTableEntryConvertibleModel selectedEntry) {
+        if (selectedEntry instanceof Item) {
+            Item item = (Item) selectedEntry;
+            String id = item.getId();
             if (view.isLocationTableDialogDisplayed()) {
                 view.addToLocationStockView(id);
             } else {
                 view.displayLocationStockView(id);
             }
+        }
+
+    }
+
+    public void inputSearch(String input) {
+        Item item = model.getItem(input);
+        if (item != null) {
+            view.displayFoundItemWithProducts(item);
+        } else {
+            view.displayFoundProductWithSKU(model.getProduct(input));
+        }
+
+    }
+
+    public void productsRemovalConfirmed(List<List<Product>> productsLists) {
+        for (List<Product> products: productsLists) {
+            model.removeProducts(products);
         }
     }
 
@@ -75,35 +82,34 @@ public class InventoryController extends AbstractController<Inventory, Inventory
 
     @Override
     public void setUpView() {
-//        ButtonTable stockTable = view.getStockButtonTable();
-        setUpStockTable(view.getStockButtonTable());
+        view.setController(this);
+//        setUpStockTable(view.getStockButtonTable());
         setUpItemGenerator(view.getItemGenerator());
         setUpCategoryGenerator(view.getCategoryGenerator());
-        setUpProductTable(view.getProductTable());
-//        setUpSearchPanel(view.getSearchPanel());
+//        setUpProductTable(view.getProductTable());
         setUpCategoryFilter(view.getCategoryFilter());
         setUpItemFilter(view.getItemFilter());
         setUpCategoryField(view.getCategoryField());
         setUpItemField(view.getItemField());
-        setUpRemovalButton();
+//        setUpRemovalButton();
         view.setLocationTableAction(new LocationTableButtonAction());
         setUpAddPanel();
-        setUpSearchPanel(view.getSearchPanel());
+//        setUpSearchPanel(view.getSearchPanel());
     }
 
-    private void setUpRemovalButton() {
-        JButton button = view.getProductRemovalButton();
-        button.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                JTable productTable = view.getProductTable();
-                List<ViewableTableEntryConvertibleModel> entries = getProductTableModel().getEntryModelList(InventoryViewPanel.getSelectedTableModelRows(productTable));
-                productRemovalHelper(entries);
-            }
-        });
-    }
+//    private void setUpRemovalButton() {
+//        JButton button = view.getProductRemovalButton();
+//        button.addActionListener(new ActionListener() {
+//            @Override
+//            public void actionPerformed(ActionEvent e) {
+//                JTable productTable = view.getProductTable();
+//                List<ViewableTableEntryConvertibleModel> entries = getProductTableModel().getEntryModelList(InventoryViewPanel.getSelectedTableModelRows(productTable));
+//                productRemovalHelper(entries);
+//            }
+//        });
+//    }
 
-    private JTable createSelectedProductsTable(List<ViewableTableEntryConvertibleModel> rows) {
+    public JTable createSelectedProductsTable(List<ViewableTableEntryConvertibleModel> rows) {
         JTable table = new EntryRemovableTable();
         RowConverterViewerTableModel tableModel = new RowConverterViewerTableModel(rows, Product.DATA_LIST);
         table.setModel(tableModel);
@@ -111,7 +117,7 @@ public class InventoryController extends AbstractController<Inventory, Inventory
         return table;
     }
 
-    private JTable createSelectedItemTable(List<ViewableTableEntryConvertibleModel> rows) {
+    public JTable createSelectedItemTable(List<ViewableTableEntryConvertibleModel> rows) {
         JTable table = new EntryRemovableTable();
         RowConverterViewerTableModel tableModel = new RowConverterViewerTableModel(rows, Item.DATA_LIST);
         table.setModel(tableModel);
@@ -119,7 +125,7 @@ public class InventoryController extends AbstractController<Inventory, Inventory
         return table;
     }
 
-    private void productRemovalHelper(List<ViewableTableEntryConvertibleModel> entries) {
+    public void productRemovalHelper(List<ViewableTableEntryConvertibleModel> entries) {
         JTable table = createSelectedProductsTable(entries);
         JPanel panel = new JPanel();
         panel.add(new JLabel("The total quantity to be removed: " + entries.size()));
@@ -136,8 +142,7 @@ public class InventoryController extends AbstractController<Inventory, Inventory
         }
     }
 
-
-    private void setUpCategoryFilter(JComboBox categoryFilter) {
+    public void setUpCategoryFilter(JComboBox categoryFilter) {
         categoryFilter.addItemListener(new ItemListener() {
             @Override
             public void itemStateChanged(ItemEvent e) {
@@ -157,7 +162,7 @@ public class InventoryController extends AbstractController<Inventory, Inventory
     }
 
 
-    private void setUpItemFilter(JComboBox itemFilter) {
+    public void setUpItemFilter(JComboBox itemFilter) {
 
         itemFilter.addItemListener(new ItemListener() {
             @Override
@@ -176,89 +181,9 @@ public class InventoryController extends AbstractController<Inventory, Inventory
     }
 
 
-    //TBI
-    //MODIFIES: productTable
-    //EFFECTS: initialize productTable
-    private void setUpProductTable(JTable productTable) {
-        RowConverterViewerTableModel tableModel = (RowConverterViewerTableModel) productTable.getModel();
-        tableModel.setColumnNames(Product.DATA_LIST);
-        tableModel.setDuplicateAllowed(false);
-        tableModel.setBaseColumnIndex(tableModel.findColumn("SKU"));
-        productTable.setRowSorter(createRowSorter(productTable, null, Comparator.<String>naturalOrder()));
-        JPopupMenu menu = createPopUpMenuForProductTable(productTable);
-        productTable.setComponentPopupMenu(menu);
-    }
 
-    private JPopupMenu createPopUpMenuForProductTable(JTable productTable) {
-        JPopupMenu menu = productTable.getComponentPopupMenu();
-        if (menu == null) {
-            menu = new JPopupMenu();
-        }
-        JMenuItem remove = new JMenuItem("remove");
-        RowConverterViewerTableModel tableModel = ((RowConverterViewerTableModel)(productTable.getModel()));
-        remove.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                List<ViewableTableEntryConvertibleModel> entries = tableModel.getEntryModelList(InventoryViewPanel.getSelectedTableModelRows(productTable));
-                productRemovalHelper(entries);
-            }
-        });
-        JMenuItem location = new JMenuItem("change location");
-        location.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                List<ViewableTableEntryConvertibleModel> entries = tableModel.getEntryModelList(InventoryViewPanel.getSelectedTableModelRows(productTable));
-                productLocationChangeHelper(entries);
-            }
-        });
 
-        JMenuItem price = new JMenuItem("change price");
-        price.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                List<ViewableTableEntryConvertibleModel> products = tableModel.getEntryModelList(InventoryViewPanel.getSelectedTableModelRows(productTable));
-                productPriceChangeHelper(products);
-            }
-        });
-
-        JMenuItem cost = new JMenuItem("change cost");
-        cost.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                List<ViewableTableEntryConvertibleModel> products = tableModel.getEntryModelList(InventoryViewPanel.getSelectedTableModelRows(productTable));
-                productCostChangeHelper(products);
-            }
-        });
-
-        JMenuItem bbd = new JMenuItem("change best-before-date");
-        bbd.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                List<ViewableTableEntryConvertibleModel> products = tableModel.getEntryModelList(InventoryViewPanel.getSelectedTableModelRows(productTable));
-                productBBDChangeHelper(products);
-            }
-        });
-
-        JMenuItem id = new JMenuItem("change id");
-        id.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                List<ViewableTableEntryConvertibleModel> products =
-                        tableModel.getEntryModelList(InventoryViewPanel.getSelectedTableModelRows(productTable));
-                productIdChangeHelper(products);
-            }
-        });
-
-        menu.add(remove);
-        menu.add(location);
-        menu.add(price);
-        menu.add(cost);
-        menu.add(bbd);
-        menu.add(id);
-        return menu;
-    }
-
-    private void productLocationChangeHelper(List<ViewableTableEntryConvertibleModel> entries) {
+    public void productLocationChangeHelper(List<ViewableTableEntryConvertibleModel> entries) {
         JTable table = createSelectedProductsTable(entries);
         JPanel panel = new JPanel();
         panel.add(new JScrollPane(table));
@@ -271,7 +196,7 @@ public class InventoryController extends AbstractController<Inventory, Inventory
         }
     }
 
-    private void productPriceChangeHelper(List<ViewableTableEntryConvertibleModel> entries) {
+    public void productPriceChangeHelper(List<ViewableTableEntryConvertibleModel> entries) {
         JTable table = createSelectedProductsTable(entries);
         JPanel panel = new JPanel();
         panel.add(new JScrollPane(table));
@@ -294,7 +219,7 @@ public class InventoryController extends AbstractController<Inventory, Inventory
         }
     }
 
-    private void productCostChangeHelper(List<ViewableTableEntryConvertibleModel> entries) {
+    public void productCostChangeHelper(List<ViewableTableEntryConvertibleModel> entries) {
         JTable table = createSelectedProductsTable(entries);
         JPanel panel = new JPanel();
         panel.add(new JScrollPane(table));
@@ -317,7 +242,7 @@ public class InventoryController extends AbstractController<Inventory, Inventory
         }
     }
 
-    private void productBBDChangeHelper(List<ViewableTableEntryConvertibleModel> entries) {
+    public void productBBDChangeHelper(List<ViewableTableEntryConvertibleModel> entries) {
         JTable table = createSelectedProductsTable(entries);
         JPanel panel = new JPanel();
         panel.add(new JScrollPane(table));
@@ -338,7 +263,7 @@ public class InventoryController extends AbstractController<Inventory, Inventory
 
     }
 
-    private void productIdChangeHelper(List<ViewableTableEntryConvertibleModel> entries) {
+    public void productIdChangeHelper(List<ViewableTableEntryConvertibleModel> entries) {
         JTable table = createSelectedProductsTable(entries);
         JPanel panel = new JPanel();
         panel.add(new JScrollPane(table));
@@ -363,18 +288,6 @@ public class InventoryController extends AbstractController<Inventory, Inventory
             product.setId(id);
         }
     }
-
-
-
-
-
-    private RowConverterViewerTableModel getProductTableModel() {
-        JTable productTable = view.getProductTable();
-        RowConverterViewerTableModel tableModel = (RowConverterViewerTableModel) productTable.getModel();
-        return tableModel;
-    }
-
-
 
 
     private void setUpCategoryField(JTextField categoryField) {
@@ -436,7 +349,6 @@ public class InventoryController extends AbstractController<Inventory, Inventory
         categoryGenerator.setAction(action);
     }
 
-//done
     //MODIFIES: Inventory
     //EFFECTS:create a new item
     private void setUpItemGenerator(ItemGenerator itemGenerator) {
@@ -476,112 +388,17 @@ public class InventoryController extends AbstractController<Inventory, Inventory
         itemGenerator.setAction(textFieldAction, buttonAction);
     }
 
-
-//done
-    private void setUpStockTable(ButtonTable stockTable) {
-        AbstractAction action = new StockTableButtonAction(stockTable);
-        stockTable.setButtonAction(action);
-        stockTable.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                if (e.getButton() == MouseEvent.BUTTON1) {
-                    if (e.getClickCount() == 2) {
-                        Object[] row = stockTable.getSelectedRowData();
-                        if (row != null) {
-                            String id = (String) row[stockTable.findColumnModelIndex(Inventory.ID)];
-                            RowConverterViewerTableModel tableModel = (RowConverterViewerTableModel) (view.getProductTable().getModel());
-                            model.getItem(id).addDataChangeListener(Item.DataList.PRODUCT.toString(), tableModel);
-                            tableModel.addRowsWithDataList(model.getProductList(id));
-                        }
-                    }
-                } else if (e.getButton() == MouseEvent.BUTTON2) {
-                    //
-                }
-            }
-        });
-        ButtonTableModel tableModel = (ButtonTableModel) stockTable.getModel();
-        tableModel.setBaseColumnIndex(tableModel.findColumn(Inventory.ID));
-        stockTable.setRowSorter(createRowSorter(stockTable, null, Comparator.<String>naturalOrder()));
-        JPopupMenu menu = createPopUpMenuForItemsTable(stockTable);
-        stockTable.setComponentPopupMenu(menu);
+    public void stockTableRowDoubleClicked(ViewableTableEntryConvertibleModel entry) {
+        if (entry instanceof Item) {
+            Item item = (Item) entry;
+            RowConverterViewerTableModel tableModel = (RowConverterViewerTableModel) (view.getProductTable().getModel());
+            item.addDataChangeListener(Item.DataList.PRODUCT.toString(), tableModel);
+            tableModel.addRowsWithDataList(item.getProducts());
+        }
     }
 
-    private JPopupMenu createPopUpMenuForItemsTable(JTable stockTable) {
-        JPopupMenu menu = new JPopupMenu();
-        JMenuItem category = new JMenuItem("change category");
-        JMenuItem name = new JMenuItem("change name");
-        JMenuItem description = new JMenuItem("change description");
-        JMenuItem note = new JMenuItem("change note");
-        JMenuItem listPrice = new JMenuItem("change list price");
-        JMenuItem remove = new JMenuItem("remove products");
-        JMenuItem add = new JMenuItem("add products");
-        RowConverterViewerTableModel tableModel = (RowConverterViewerTableModel) stockTable.getModel();
-        category.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                List<ViewableTableEntryConvertibleModel> items = (tableModel.getEntryModelList(InventoryViewPanel.getSelectedTableModelRows(stockTable)));
-                itemCategoryChangeHelper(items);
-            }
-        });
 
-        name.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                List<ViewableTableEntryConvertibleModel> items = (tableModel.getEntryModelList(InventoryViewPanel.getSelectedTableModelRows(stockTable)));
-                itemNameChangeHelper(items);
-            }
-        });
-
-        description.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                List<ViewableTableEntryConvertibleModel> items = (tableModel.getEntryModelList(InventoryViewPanel.getSelectedTableModelRows(stockTable)));
-                itemDescriptionChangeHelper(items);
-            }
-        });
-
-        note.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                List<ViewableTableEntryConvertibleModel> items = (tableModel.getEntryModelList(InventoryViewPanel.getSelectedTableModelRows(stockTable)));
-                itemNoteChangeHelper(items);
-            }
-        });
-
-        listPrice.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                List<ViewableTableEntryConvertibleModel> items = (tableModel.getEntryModelList(InventoryViewPanel.getSelectedTableModelRows(stockTable)));
-                itemListPriceChangeHelper(items);
-            }
-        });
-
-        remove.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                List<? extends ViewableTableEntryConvertibleModel> items = (tableModel.getEntryModelList(InventoryViewPanel.getSelectedTableModelRows(stockTable)));
-                itemStockRemovalHelper((List<Item>) items);
-
-            }
-        });
-
-        add.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-
-            }
-        });
-
-        menu.add(remove);
-        menu.add(category);
-        menu.add(name);
-        menu.add(description);
-        menu.add(note);
-        menu.add(listPrice);
-        return menu;
-    }
-
-    private void itemCategoryChangeHelper(List<ViewableTableEntryConvertibleModel> entries) {
+    public void itemCategoryChangeHelper(List<ViewableTableEntryConvertibleModel> entries) {
         JTable table = createSelectedItemTable(entries);
         JPanel panel = new JPanel();
         panel.add(new JScrollPane(table));
@@ -600,7 +417,7 @@ public class InventoryController extends AbstractController<Inventory, Inventory
 
     }
 
-    private void itemNameChangeHelper(List<ViewableTableEntryConvertibleModel> entries) {
+    public void itemNameChangeHelper(List<ViewableTableEntryConvertibleModel> entries) {
         JTable table = createSelectedItemTable(entries);
         JPanel panel = new JPanel();
         panel.add(new JScrollPane(table));
@@ -614,7 +431,7 @@ public class InventoryController extends AbstractController<Inventory, Inventory
         }
     }
 
-    private void itemDescriptionChangeHelper(List<ViewableTableEntryConvertibleModel> entries) {
+    public void itemDescriptionChangeHelper(List<ViewableTableEntryConvertibleModel> entries) {
         JTable table = createSelectedItemTable(entries);
         JPanel panel = new JPanel();
         panel.add(new JScrollPane(table));
@@ -628,7 +445,7 @@ public class InventoryController extends AbstractController<Inventory, Inventory
         }
     }
 
-    private void itemNoteChangeHelper(List<ViewableTableEntryConvertibleModel> entries) {
+    public void itemNoteChangeHelper(List<ViewableTableEntryConvertibleModel> entries) {
         JTable table = createSelectedItemTable(entries);
         JPanel panel = new JPanel();
         panel.add(new JScrollPane(table));
@@ -642,7 +459,7 @@ public class InventoryController extends AbstractController<Inventory, Inventory
         }
     }
 
-    private void itemListPriceChangeHelper(List<ViewableTableEntryConvertibleModel> entries) {
+    public void itemListPriceChangeHelper(List<ViewableTableEntryConvertibleModel> entries) {
         JTable table = createSelectedItemTable(entries);
         JPanel panel = new JPanel();
         panel.add(new JScrollPane(table));
@@ -666,118 +483,28 @@ public class InventoryController extends AbstractController<Inventory, Inventory
     }
 
 
-    private void itemStockRemovalHelper(List<Item> items) {
+    public void itemStockRemovalHelper(List<Item> items) {
         List<Object[]> selectedRows = getStockTableModel().getRowObjects(items);
         List<Object[]> copy = new LinkedList<>();
         for (int i = 0; i < selectedRows.size(); i++) {
             Object[] newRow = (Arrays.copyOf(selectedRows.get(i), selectedRows.get(i).length));
             newRow[newRow.length - 1] = null;
             copy.add(newRow);
-//            selectedRows.get(i)[selectedRows.get(0).length - 1] = null;
         }
-        String[] columnNames = new String[Item.DATA_LIST.length + 1];
-        System.arraycopy(Item.DATA_LIST, 0, columnNames, 0, Item.DATA_LIST.length);
-        columnNames[columnNames.length - 1] = "Change in QTY";
-        DefaultTableModel tableModel = new DefaultTableModel();
-        tableModel.setDataVector(copy.toArray(new Object[0][]), columnNames);
-        EntryRemovableTable table = new EntryRemovableTable() {
-            @Override
-            public boolean isCellEditable(int row, int column) {
-                if (column == columnNames.length - 1) {
-                    return true;
-                }
-                return false;
-            }
-        };
+        view.displayRemovalRegisterTable(copy);
+    }
 
-        table.setModel(tableModel);
-        JPanel panel = new JPanel();
-        panel.setLayout(new GridBagLayout());
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        gbc.gridwidth = 5;
-        gbc.gridheight = 5;
-        gbc.weightx = 1;
-        gbc.weighty = 1;
-        gbc.fill = GridBagConstraints.BOTH;
-        panel.add(new JScrollPane(table), gbc);
-        panel.setPreferredSize(new Dimension(900, 600));
-        JButton button = new JButton("Register");
-        gbc.gridx = gbc.gridx + gbc.gridwidth - 1;
-        gbc.gridy = gbc.gridy + gbc.gridheight;
-        gbc.gridwidth = 1;
-        gbc.gridheight = 1;
-        panel.add(button, gbc);
-        button.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                List<QuantityTag> toBeRemoved = new ArrayList<>();
-                int qtyChangeColumn = table.getColumnCount() - 1;
-                for (int i = 0; i < selectedRows.size(); i++) {
-                    int idColumn = tableModel.findColumn(Item.DataList.ID.toString());
-                    try {
-                        int qtyChange = Integer.valueOf(table.getValueAt(i, qtyChangeColumn).toString());
-                        if (qtyChange > 0) {
-                            toBeRemoved.add(new QuantityTag((String) tableModel.getValueAt(i, idColumn), qtyChange));
-                        }
-                    } catch (NullPointerException exception) {
-
-                    }
-                }
-                JPanel panel = new JPanel();
-                panel.setLayout(new GridBagLayout());
-                GridBagConstraints gbc = new GridBagConstraints();
-                gbc.gridx = 0;
-                gbc.gridy = 0;
-                List<RowConverterViewerTableModel> tableModels = new ArrayList<>();
-                for (QuantityTag tag: toBeRemoved) {
-                    EntryRemovableTable productsToBeRemovedTable = new EntryRemovableTable();
-                    List<Product> productsToBeRemoved;
-                    try {
-                        productsToBeRemoved = model.getProductList(tag.getId(), tag.getLocation(), tag.getQuantity());
-                    } catch (IndexOutOfBoundsException exception) {
-                        JOptionPane.showMessageDialog(view,"cannot remove more productsToBeRemoved than existing. Check stocks for item: " + tag.getId());
-                        return;
-                    }
-                    gbc.gridy = gbc.gridy + gbc.gridheight;
-                    gbc.gridx = 1;
-                    gbc.gridheight = 1;
-                    gbc.gridwidth = 1;
-                    gbc.fill = GridBagConstraints.NONE;
-                    panel.add(new JLabel("ID: " + tag.getId() + " Products to be removed: " + productsToBeRemoved.size()), gbc);
-                    RowConverterViewerTableModel toBeRemovedTableModel = new RowConverterViewerTableModel(productsToBeRemoved);
-                    tableModels.add(toBeRemovedTableModel);
-                    productsToBeRemovedTable.setModel(toBeRemovedTableModel);
-//                    gbc.gridx = gbc.gridx + gbc.gridWidth;
-                    gbc.gridy = gbc.gridy + gbc.gridheight;
-                    gbc.gridwidth = 5;
-                    gbc.gridheight = 5;
-                    gbc.weightx = 1;
-                    gbc.weighty = 1;
-                    gbc.fill = GridBagConstraints.BOTH;
-                    panel.add(new JScrollPane(productsToBeRemovedTable), gbc);
-                }
-                JScrollPane scrollPane = new JScrollPane(panel);
-                scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-                scrollPane.setMaximumSize(new Dimension(600, 700));
-                scrollPane.setPreferredSize(new Dimension(600, 600));
-                scrollPane.scrollRectToVisible(scrollPane.getVisibleRect());
-                int confirm = JOptionPane.showConfirmDialog(view, scrollPane, "Do you really want to remove following products?", JOptionPane.YES_OPTION, JOptionPane.PLAIN_MESSAGE);
-                if (confirm == JOptionPane.YES_OPTION) {
-                    for (RowConverterViewerTableModel tableProductsToBeRemoved: tableModels) {
-                        model.removeProducts((List<Product>) tableProductsToBeRemoved.getEntryModelList());
-                    }
-                }
+    public void removalRegisterButtonClicked(List<QuantityTag> toBeRemoved) {
+        List<List<Product>> productsLists = new ArrayList<>();
+        for (QuantityTag tag: toBeRemoved) {
+            try {
+                productsLists.add(model.getProductList(tag.getId(), tag.getLocation(), tag.getQuantity()));
+            } catch (IndexOutOfBoundsException exception) {
+                JOptionPane.showMessageDialog(view, "cannot remove more productsToBeRemoved than existing. Check stocks for item: " + tag.getId());
+                return;
             }
-        });
-        JDialog dialog = new JDialog();
-        JScrollPane scrollPane = new JScrollPane(panel);
-        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-        scrollPane.setMaximumSize(new Dimension(600, 800));
-        dialog.add(scrollPane);
-        dialog.pack();
-        dialog.setVisible(true);
+        }
+        view.displayRemovalConfirmDialog(productsLists);
     }
 
 
@@ -894,29 +621,6 @@ public class InventoryController extends AbstractController<Inventory, Inventory
         return rowFilter;
     }
 
-
-    /**
-     * REQUIRES: there must be at least one column
-     * @param comparator a comparator that is used to compare rows for sorting
-     * @return a new row sorter that uses the given comparator
-     */
-    public TableRowSorter createRowSorter(JTable table,
-                                          RowFilter<TableModel, Integer> filter, Comparator comparator) {
-        TableRowSorter<TableModel> sorter = new TableRowSorter<>(table.getModel());
-        sorter.setRowFilter(filter);
-        sorter.setComparator(0, comparator);
-        List<RowSorter.SortKey> sortKeys = new ArrayList<>();
-        for (int i = 0; i < table.getColumnCount(); i++) {
-            sortKeys.add(new RowSorter.SortKey(i, SortOrder.ASCENDING));
-        }
-        sorter.setSortKeys(sortKeys);
-        sorter.setSortsOnUpdates(true);
-        return sorter;
-    }
-
-
-
-
     public void setSortingBasis(JTable table, int index, Comparator comparator) {
         TableRowSorter<TableModel> sorter = (TableRowSorter<TableModel>)table.getRowSorter();
         sorter.setComparator(index, comparator);
@@ -990,75 +694,73 @@ public class InventoryController extends AbstractController<Inventory, Inventory
     }
 
 
-    public void setUpSearchPanel(SearchPanel searchPanel) {
-        JButton searchButton = searchPanel.getSearchButton();
-        searchButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                JTextField searchField = searchPanel.getSearchField();
-                String input = searchField.getText().toUpperCase();
-                Item item = model.getItem(input);
-                List<Product> products;
-                JPanel panel = new JPanel();
-                panel.setLayout(new GridBagLayout());
-                GridBagConstraints gbc = new GridBagConstraints();
-                //item search
-                if (item != null) {
-                    EntryRemovableTable itemEntry = new EntryRemovableTable();
-                    List<Item> itemList = new ArrayList<>();
-                    itemList.add(item);
-                    RowConverterViewerTableModel itemEntryModel = new RowConverterViewerTableModel(itemList, Item.DATA_LIST);
-                    itemEntry.setModel(itemEntryModel);
-                    itemEntry.setComponentPopupMenu(createPopUpMenuForItemsTable(itemEntry));
-                    products = model.getProductList(input);
-                    RowConverterViewerTableModel productsFound = new RowConverterViewerTableModel(products, Product.DATA_LIST);
-                    item.addDataChangeListener(Item.DataList.PRODUCT.toString(), productsFound);
-                    EntryRemovableTable productsTable = new EntryRemovableTable(productsFound);
-                    productsTable.setComponentPopupMenu(createPopUpMenuForProductTable(productsTable));
-                    panel.add(new JLabel("Item Found:"), gbc);
-                    gbc.gridx++;
-                    gbc.gridwidth = 3;
-                    panel.add(itemEntry, gbc);
-                    gbc.gridx = gbc.gridx + gbc.gridwidth;
-                    gbc.gridwidth = 1;
-                    gbc.fill = GridBagConstraints.NONE;
-                    panel.add(new JLabel("Products found"), gbc);
-                    gbc.gridx++;
-                    gbc.gridwidth = 3;
-//                    gbc.fill = GridBagConstraints.BOTH;
-                    panel.add(new JScrollPane(productsTable), gbc);
-                    JDialog dialog = new JDialog();
-                    dialog.add(panel);
-                    dialog.pack();
-                    dialog.setLocationRelativeTo(InventoryManagementSystemApplication.getApplication());
-                    dialog.setVisible(true);
-                    return;
-                } else {
-                    //corresponding item id not found
-                    products = new ArrayList<>();
-                    Product product = model.getProduct(input);
-                    if (product == null) {
-                        JOptionPane.showMessageDialog(searchPanel, "There is no such product at all");
-                        return;
-                    }
-                    products.add(product);
-                    RowConverterViewerTableModel productsFound = new RowConverterViewerTableModel(products);
-                    EntryRemovableTable productsTable = new EntryRemovableTable(productsFound);
-                    productsTable.setComponentPopupMenu(createPopUpMenuForProductTable(productsTable));
-                    panel.add(new JLabel("Products found"));
-                    panel.add(productsTable);
-                    JDialog dialog = new JDialog();
-                    dialog.add(panel);
-                    dialog.pack();
-                    dialog.setLocationRelativeTo(InventoryManagementSystemApplication.getApplication());
-                    dialog.setVisible(true);
-                }
-            }
-        });
-
-    }
-
-
+//    public void setUpSearchPanel(SearchPanel searchPanel) {
+////        JButton searchButton = searchPanel.getSearchButton();
+////        searchButton.addActionListener(new ActionListener() {
+////            @Override
+////            public void actionPerformed(ActionEvent e) {
+////                JTextField searchField = searchPanel.getSearchField();
+////                String input = searchField.getText().toUpperCase();
+////                Item item = model.getItem(input);
+////                List<Product> products;
+////                JPanel panel = new JPanel();
+////                panel.setLayout(new GridBagLayout());
+////                GridBagConstraints gbc = new GridBagConstraints();
+////                //item search
+////                if (item != null) {
+////                    EntryRemovableTable itemEntry = new EntryRemovableTable();
+////                    List<Item> itemList = new ArrayList<>();
+////                    itemList.add(item);
+////                    RowConverterViewerTableModel itemEntryModel = new RowConverterViewerTableModel(itemList, Item.DATA_LIST);
+////                    itemEntry.setModel(itemEntryModel);
+////                    itemEntry.setComponentPopupMenu(createPopUpMenuForItemsTable(itemEntry));
+////                    products = model.getProductList(input);
+////                    RowConverterViewerTableModel productsFound = new RowConverterViewerTableModel(products, Product.DATA_LIST);
+////                    item.addDataChangeListener(Item.DataList.PRODUCT.toString(), productsFound);
+////                    EntryRemovableTable productsTable = new EntryRemovableTable(productsFound);
+////                    productsTable.setComponentPopupMenu(createPopUpMenuForProductTable(productsTable));
+////                    panel.add(new JLabel("Item Found:"), gbc);
+////                    gbc.gridx++;
+////                    gbc.gridwidth = 3;
+////                    panel.add(itemEntry, gbc);
+////                    gbc.gridx = gbc.gridx + gbc.gridwidth;
+////                    gbc.gridwidth = 1;
+////                    gbc.fill = GridBagConstraints.NONE;
+////                    panel.add(new JLabel("Products found"), gbc);
+////                    gbc.gridx++;
+////                    gbc.gridwidth = 3;
+//////                    gbc.fill = GridBagConstraints.BOTH;
+////                    panel.add(new JScrollPane(productsTable), gbc);
+////                    JDialog dialog = new JDialog();
+////                    dialog.add(panel);
+////                    dialog.pack();
+////                    dialog.setLocationRelativeTo(InventoryManagementSystemApplication.getApplication());
+////                    dialog.setVisible(true);
+////                    return;
+////                } else {
+////                    //corresponding item id not found
+////                    products = new ArrayList<>();
+////                    Product product = model.getProduct(input);
+////                    if (product == null) {
+////                        JOptionPane.showMessageDialog(searchPanel, "There is no such product at all");
+////                        return;
+////                    }
+////                    products.add(product);
+////                    RowConverterViewerTableModel productsFound = new RowConverterViewerTableModel(products);
+////                    EntryRemovableTable productsTable = new EntryRemovableTable(productsFound);
+////                    productsTable.setComponentPopupMenu(createPopUpMenuForProductTable(productsTable));
+////                    panel.add(new JLabel("Products found"));
+////                    panel.add(productsTable);
+////                    JDialog dialog = new JDialog();
+////                    dialog.add(panel);
+////                    dialog.pack();
+////                    dialog.setLocationRelativeTo(InventoryManagementSystemApplication.getApplication());
+////                    dialog.setVisible(true);
+////                }
+////            }
+////        });
+//
+//    }
 
 
 }

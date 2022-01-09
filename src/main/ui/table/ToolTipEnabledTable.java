@@ -1,6 +1,7 @@
 package ui.table;
 
 import javax.swing.*;
+import javax.swing.event.TableModelListener;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableModel;
 import java.awt.*;
@@ -16,6 +17,11 @@ public class ToolTipEnabledTable extends JTable {
 
     public ToolTipEnabledTable(TableModel tableModel) {
         super(tableModel);
+    }
+
+    public ToolTipEnabledTable(TableModel tableModel, boolean enabled) {
+        super(tableModel);
+        this.tooltipEnabled = enabled;
     }
 
     public ToolTipEnabledTable(boolean enabled) {
@@ -35,7 +41,7 @@ public class ToolTipEnabledTable extends JTable {
         if (row == -1 || column == -1) {
             return null;
         }
-        if (!(getValueAt(row, column) instanceof Component)) {
+        if (!(getValueAt(row, column) instanceof Component) || getValueAt(row, column) != null) {
             return getValueAt(row, column).toString();
         }
         return null;
