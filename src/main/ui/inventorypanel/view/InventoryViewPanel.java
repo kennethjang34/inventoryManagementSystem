@@ -39,6 +39,7 @@ public class InventoryViewPanel extends JPanel {
     private boolean isLocationViewDialogDisplayed = false;
     private JDialog removalRegisterDialog;
 
+
     public static int[] getSelectedTableModelRows(JTable table) {
         int[] selectedViewIndices = table.getSelectedRows();
         int[] modelRows = new int[selectedViewIndices.length];
@@ -83,6 +84,22 @@ public class InventoryViewPanel extends JPanel {
         }
     }
 
+    public JDialog getAddPanelDialog() {
+        return getAddPanelDialog();
+    }
+
+    public void displayAddDialog(Component parentComponent) {
+        addPanel.displayAdditionDialog(parentComponent);
+    }
+
+    public void clearAddPanelFields() {
+        addPanel.clearFields();
+    }
+
+    public InventoryController getController() {
+        return controller;
+    }
+
 
     private enum LocationTableColumns {
         ID, LOCATION, QUANTITY
@@ -96,7 +113,7 @@ public class InventoryViewPanel extends JPanel {
 
 
 
-    private KeyListener buttonEnterListener = new KeyListener() {
+    private final static KeyListener buttonEnterListener = new KeyListener() {
         @Override
         public void keyTyped(KeyEvent e) {
 
@@ -158,6 +175,7 @@ public class InventoryViewPanel extends JPanel {
         setUpStockButtonTable(stockButtonTable);
         setUpProductTable(productTable);
         setUpSearchPanel(searchPanel);
+//        setUpAddPanel(getAddPanel());
         itemFilter = new JComboBox();
 
 
@@ -215,12 +233,13 @@ public class InventoryViewPanel extends JPanel {
         productRemovalButton = new JButton("Remove");
         productRemovalButton.addKeyListener(buttonEnterListener);
         setUpItemFilter();
-        addPanel = new AddPanel(inventory);
-        addPanel.getButton().addKeyListener(buttonEnterListener);
+        addPanel = new AddPanel(this);
         setUpProductGeneratorButton();
         setUpProductRemovalButton();
         deployComponents();
     }
+
+
 
     private void setUpSearchPanel(SearchPanel searchPanel) {
         JButton searchButton = searchPanel.getSearchButton();
@@ -746,12 +765,13 @@ public class InventoryViewPanel extends JPanel {
         productGeneratorButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                JDialog dialog = new JDialog();
-                AddPanel addPanel = getAddPanel();
-                dialog.add(addPanel);
-                dialog.pack();
-                dialog.setLocationRelativeTo(null);
-                dialog.setVisible(true);
+                controller.addButtonClicked();
+//                JDialog dialog = new JDialog();
+//                AddPanel addPanel = getAddPanel();
+//                dialog.add(addPanel);
+//                dialog.pack();
+//                dialog.setLocationRelativeTo(null);
+//                dialog.setVisible(true);
             }
         });
     }
@@ -817,6 +837,10 @@ public class InventoryViewPanel extends JPanel {
         sorter.setSortKeys(sortKeys);
         sorter.setSortsOnUpdates(true);
         return sorter;
+    }
+
+    public static KeyListener getButtonEnterKeyListener() {
+        return buttonEnterListener;
     }
 
 

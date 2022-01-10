@@ -15,12 +15,25 @@ public class InventoryTag implements TableEntryConvertible {
     private double unitPrice;
     private final LocalDate bestBeforeDate;
     private final LocalDate dateGenerated;
+    private String description;
     public enum DataList {
-        ID, QUANTITY, LOCATION, UNIT_COST, UNIT_PRICE, BEST_BEFORE_DATE, DATE_GENERATED
+        ID, QUANTITY, LOCATION, UNIT_COST, UNIT_PRICE, BEST_BEFORE_DATE, DATE_GENERATED, DESCRIPTION
     }
 
 
     //EFFECTS: create a new tag that contains all information needed for creating a product with its assigned location
+    public InventoryTag(String itemCode, double cost, double price, LocalDate dateGenerated,
+                        LocalDate bestBeforeDate, String location, int quantity, String description) {
+        this.id = itemCode.toUpperCase();
+        this.quantity = quantity;
+        this.unitCost = cost;
+        this.unitPrice = price;
+        this.location = location;
+        this.bestBeforeDate = bestBeforeDate;
+        this.dateGenerated = dateGenerated;
+        this.description = description;
+    }
+
     public InventoryTag(String itemCode, double cost, double price, LocalDate dateGenerated,
                         LocalDate bestBeforeDate, String location, int quantity) {
         this.id = itemCode.toUpperCase();
@@ -30,6 +43,7 @@ public class InventoryTag implements TableEntryConvertible {
         this.location = location;
         this.bestBeforeDate = bestBeforeDate;
         this.dateGenerated = dateGenerated;
+        this.description = null;
     }
 
     //EFFECTS: create a new tag that contains all information needed for creating a product with its assigned location
@@ -43,6 +57,7 @@ public class InventoryTag implements TableEntryConvertible {
         this.location = location;
         this.bestBeforeDate = null;
         this.dateGenerated = dateGenerated;
+        this.description = "";
     }
 
     //EFFECTS: create a list of inventory tags that contains information about
@@ -60,7 +75,7 @@ public class InventoryTag implements TableEntryConvertible {
                 assert location.getValue().size() > 0;
                 LocalDate dateGenerated = location.getValue().get(0).getDateGenerated();
                 tags.add(new InventoryTag(id, cost, price,
-                        dateGenerated, null, location.getKey(), qty));
+                        dateGenerated, null, location.getKey(), qty, null));
 
             }
         }
@@ -191,5 +206,9 @@ public class InventoryTag implements TableEntryConvertible {
             names[i] = DataList.values()[i].toString();
         }
         return names;
+    }
+
+    public String getDescription() {
+        return description;
     }
 }

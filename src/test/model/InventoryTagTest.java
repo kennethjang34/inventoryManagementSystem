@@ -35,15 +35,15 @@ public class InventoryTagTest {
     void testCreateTagsForRemovedFromRemovedProducts() {
         List<Product> products = new ArrayList<>();
         products.add(new Product("APP", "111",
-                20, 30, null, LocalDate.now(),"F11"));
+                20, 30, null, LocalDate.now(),"F11", ""));
         products.add(new Product("APP", "1511",
-                20, 30, null, LocalDate.now(),"F#"));
+                20, 30, null, LocalDate.now(),"F#",""));
         products.add(new Product("APP", "412",
-                20, 30, null, LocalDate.now(),"F11"));
+                20, 30, null, LocalDate.now(),"F11",""));
         products.add(new Product("EEW", "123",
-                20, 30, null, LocalDate.now(),"F!!"));
+                20, 30, null, LocalDate.now(),"F!!",""));
         products.add(new Product("EEW", "324",
-                20, 30, null, LocalDate.now(),"F11"));
+                20, 30, null, LocalDate.now(),"F11",""));
         List<InventoryTag> tags = InventoryTag.createTagsForRemoved(products);
         assertEquals(4, tags.size());
         for (int i = 0 ; i < tags.size(); i++) {

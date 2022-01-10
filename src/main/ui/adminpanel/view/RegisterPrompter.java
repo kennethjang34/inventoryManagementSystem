@@ -59,7 +59,6 @@ public class RegisterPrompter extends AbstractAdminInputPrompter {
                 if (e.getKeyCode() == KeyEvent.VK_ENTER) {
                     ((Component)e.getSource()).transferFocus();
                 }
-
             }
         });
         checkBox.setBounds(new Rectangle(100, 100));

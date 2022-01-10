@@ -45,9 +45,6 @@ public class WriterTest {
             fail();
         }
         ArrayList<InventoryTag> tags = new ArrayList<>();
-        tags.add(new InventoryTag("abc", 12, 20,
-                LocalDate.now(), LocalDate.now(),"t", 30));
-        tags.add(new InventoryTag("bnn", 13, 20, LocalDate.now(),LocalDate.now(), "f11", 100));
         Inventory inventory = new Inventory();
         inventory.addProducts(tags);
         assertEquals(130, inventory.getTotalQuantity());

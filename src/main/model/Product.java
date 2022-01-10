@@ -22,41 +22,17 @@ public class Product extends ViewableTableEntryConvertibleModel implements JsonC
     private double price;
     private double cost;
     private String location;
+    private String description;
 
-//
-//    @Override
-//    public List<String> getContentsOf(String property) {
-//        property = property.toUpperCase();
-//        List<String> contents = new ArrayList<>();
-//        switch (property) {
-//            case "ID":
-//                contents.add(id);
-//                break;
-//            case "SKU":
-//                contents.add(sku);
-//                break;
-//            case "BESTBEFOREDATE":
-//                contents.add(bestBeforeDate.toString());
-//            case "PRICE":
-//                contents.add(String.valueOf(price));
-//                break;
-//            case "COST":
-//                contents.add(String.valueOf(cost));
-//                break;
-//            case "LOCATION":
-//                contents.add(location);
-//        }
-//        return contents;
-//    }
 
     public enum DataList {
-        ID, SKU, COST, PRICE, BEST_BEFORE_DATE, DATE_GENERATED, LOCATION
+        ID, SKU, COST, PRICE, BEST_BEFORE_DATE, DATE_GENERATED, LOCATION, DESCRIPTION
     }
 
     public static final String[] DATA_LIST = new String[]{
             DataList.ID.toString(), DataList.SKU.toString(), DataList.COST.toString(),
             DataList.PRICE.toString(), DataList.BEST_BEFORE_DATE.toString(),
-            DataList.DATE_GENERATED.toString(), DataList.LOCATION.toString()
+            DataList.DATE_GENERATED.toString(), DataList.LOCATION.toString(), DataList.DESCRIPTION.toString()
     };
 
 
@@ -65,7 +41,7 @@ public class Product extends ViewableTableEntryConvertibleModel implements JsonC
     //REQUIRES: sku must be 9-digit natural number, cost must be positive.
     //EFFECTS: create a product with specified data.
     public Product(String id, String sku, double cost, double price,
-                   LocalDate dateGenerated, LocalDate bestBeforeDate, String location) {
+                   LocalDate dateGenerated, LocalDate bestBeforeDate, String location, String description) {
         super(DATA_LIST);
         id = id.toUpperCase();
         this.id = id;
@@ -75,7 +51,10 @@ public class Product extends ViewableTableEntryConvertibleModel implements JsonC
         this.dateGenerated = dateGenerated;
         this.bestBeforeDate = bestBeforeDate;
         this.location = location;
+        this.description = description;
     }
+
+
 
     //REQUIRES: data in JSONObject format must contain all the information necessary for creating a new product
     //EFFECTS: create a new product with data in JSON format
@@ -96,6 +75,7 @@ public class Product extends ViewableTableEntryConvertibleModel implements JsonC
                     jsonDate.getInt("month"), jsonDate.getInt("day"));
         }
         location = json.getString("location");
+        description = json.getString("description");
     }
 
 
@@ -222,6 +202,7 @@ public class Product extends ViewableTableEntryConvertibleModel implements JsonC
             json.put("bestBeforeDate", jsonDate);
         }
         json.put("location", location);
+        json.put("description", description);
         return json;
     }
 
@@ -229,7 +210,7 @@ public class Product extends ViewableTableEntryConvertibleModel implements JsonC
 
     @Override
     public Object[] convertToTableEntry() {
-        Object[] entry = new Object[7];
+        Object[] entry = new Object[8];
         entry[0] = id;
         entry[1] = sku;
         entry[2] = cost;
@@ -237,6 +218,7 @@ public class Product extends ViewableTableEntryConvertibleModel implements JsonC
         entry[4] = bestBeforeDate == null ? "N/A" : bestBeforeDate.toString();
         entry[5] = dateGenerated.toString();
         entry[6] = location;
+        entry[7] = description;
         return entry;
     }
 

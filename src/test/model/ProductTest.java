@@ -28,13 +28,13 @@ public class ProductTest {
     //test test
     @Test
     void testConstructor() {
-        Product product = new Product(id, sku, cost, price, today, bestBeforeDate, "a");
+        Product product = new Product(id, sku, cost, price, today, bestBeforeDate, "a", "");
         assertEquals(id, product.getID());
         assertEquals(sku, product.getSku());
         assertEquals(today, product.getDateGenerated());
         assertEquals(bestBeforeDate, product.getBestBeforeDate());
         assertEquals(cost, product.getCost());
-        Product product2 = new Product(id, sku, cost, price, today, null, "a");
+        Product product2 = new Product(id, sku, cost, price, today, null, "a", "");
         assertEquals(id, product2.getID());
         assertEquals(sku, product2.getSku());
         assertEquals(today, product2.getDateGenerated());
@@ -45,21 +45,21 @@ public class ProductTest {
 
     @Test
     void testSettingPrice() {
-        Product product = new Product(id, sku, cost, price, today, bestBeforeDate, "a");
+        Product product = new Product(id, sku, cost, price, today, bestBeforeDate, "a", "");
         product.setPrice(1000);
         assertEquals(1000, product.getPrice());
     }
 
     @Test
     void testSettingLocation() {
-        Product product = new Product(id, sku, cost, price, today, bestBeforeDate, "a");
+        Product product = new Product(id, sku, cost, price, today, bestBeforeDate, "a", "");
         product.setLocation("Testing Location");
         assertEquals("Testing Location", product.getLocation());
     }
 
     @Test
     void testJsonConversion() {
-        Product product = new Product(id, sku, cost, price, today, bestBeforeDate, "a");
+        Product product = new Product(id, sku, cost, price, today, bestBeforeDate, "a", "");
         assertEquals(id, product.getID());
         assertEquals(sku, product.getSku());
         assertEquals(today, product.getDateGenerated());
@@ -73,7 +73,7 @@ public class ProductTest {
         assertEquals(bestBeforeDate, product.getBestBeforeDate());
         assertEquals(cost, product.getCost());
         assertEquals(price, product.getPrice());
-        Product product2 = new Product(id, sku, cost, price, today, null, "a");
+        Product product2 = new Product(id, sku, cost, price, today, null, "a", "");
         assertEquals(id, product2.getID());
         assertEquals(sku, product2.getSku());
         assertEquals(today, product2.getDateGenerated());

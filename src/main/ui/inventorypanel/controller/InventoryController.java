@@ -83,31 +83,14 @@ public class InventoryController extends AbstractController<Inventory, Inventory
     @Override
     public void setUpView() {
         view.setController(this);
-//        setUpStockTable(view.getStockButtonTable());
         setUpItemGenerator(view.getItemGenerator());
         setUpCategoryGenerator(view.getCategoryGenerator());
-//        setUpProductTable(view.getProductTable());
         setUpCategoryFilter(view.getCategoryFilter());
         setUpItemFilter(view.getItemFilter());
         setUpCategoryField(view.getCategoryField());
         setUpItemField(view.getItemField());
-//        setUpRemovalButton();
         view.setLocationTableAction(new LocationTableButtonAction());
-        setUpAddPanel();
-//        setUpSearchPanel(view.getSearchPanel());
     }
-
-//    private void setUpRemovalButton() {
-//        JButton button = view.getProductRemovalButton();
-//        button.addActionListener(new ActionListener() {
-//            @Override
-//            public void actionPerformed(ActionEvent e) {
-//                JTable productTable = view.getProductTable();
-//                List<ViewableTableEntryConvertibleModel> entries = getProductTableModel().getEntryModelList(InventoryViewPanel.getSelectedTableModelRows(productTable));
-//                productRemovalHelper(entries);
-//            }
-//        });
-//    }
 
     public JTable createSelectedProductsTable(List<ViewableTableEntryConvertibleModel> rows) {
         JTable table = new EntryRemovableTable();
@@ -514,44 +497,34 @@ public class InventoryController extends AbstractController<Inventory, Inventory
     }
 
 
-    @SuppressWarnings({"checkstyle:MethodLength", "checkstyle:SuppressWarnings"})
-    private void setUpAddPanel() {
-        AddPanel addPanel = view.getAddPanel();
-        Action buttonAction = new AbstractAction("Register") {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                //Item ids: case-insensitive
-                String id = addPanel.getId().toUpperCase();
-                if (!model.containsItem(id)) {
-                    view.displayErrorMessage(addPanel, "There is no such ID");
-                    return;
-                }
-                double cost = convertToDoubleCost(addPanel.getCostText());
-                double price = convertToDoublePrice(addPanel.getPriceText(), id);
-                LocalDate bestBeforeDate;
-                try {
-                    bestBeforeDate =
-                            InventoryManagementSystemApplication.convertToLocalDate(addPanel.getBestBeforeDateText());
-                } catch (IllegalArgumentException ila) {
-                    view.displayErrorMessage(addPanel, ila.getMessage());
-                    return;
-                }
-                String location = trimLocationFormat(addPanel.getLocationText());
-                int qty = addPanel.getQuantityText().isEmpty() ? 0 : Integer.parseInt(addPanel.getQuantityText());
-                InventoryTag tag = new InventoryTag(id, cost, price,
-                        LocalDate.now(), bestBeforeDate, location, qty);
-                model.addProducts(tag);
-                addPanel.clearFields();
-            }
-        };
-        Action textFieldAction = new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                JComponent component = (JComponent) e.getSource();
-                component.transferFocus();
-            }
-        };
-        addPanel.setAction(textFieldAction,buttonAction);
+    public void productsAdditionRequest(String idInput, String costInput, String priceInput,
+                              String bestBeforeDateInput, String locationInput, String qtyInput, String description) {
+        JPanel addPanel = getView().getAddPanel();
+        String id = idInput.toUpperCase();
+        if (!model.containsItem(id)) {
+            view.displayErrorMessage(addPanel, "There is no such ID");
+            return;
+        }
+        double cost = convertToDoubleCost(costInput);
+        double price = convertToDoublePrice(priceInput, id);
+        LocalDate bestBeforeDate;
+        try {
+            bestBeforeDate =
+                    InventoryManagementSystemApplication.convertToLocalDate(bestBeforeDateInput);
+        } catch (IllegalArgumentException ila) {
+            view.displayErrorMessage(addPanel, ila.getMessage());
+            return;
+        }
+        String location = trimLocationFormat(locationInput);
+        int qty = qtyInput.isEmpty() ? 0 : Integer.parseInt(qtyInput);
+        InventoryTag tag = new InventoryTag(id, cost, price,
+                LocalDate.now(), bestBeforeDate, location, qty, description);
+        model.addProducts(tag);
+        view.clearAddPanelFields();
+    }
+
+    public void addButtonClicked() {
+        view.displayAddDialog(view);
     }
 
 
@@ -621,16 +594,6 @@ public class InventoryController extends AbstractController<Inventory, Inventory
         return rowFilter;
     }
 
-    public void setSortingBasis(JTable table, int index, Comparator comparator) {
-        TableRowSorter<TableModel> sorter = (TableRowSorter<TableModel>)table.getRowSorter();
-        sorter.setComparator(index, comparator);
-    }
-
-    public void setSortingBasis(JTable table, Comparator comparator) {
-        TableRowSorter<TableModel> sorter = (TableRowSorter<TableModel>)table.getRowSorter();
-        sorter.setComparator(0, comparator);
-    }
-
     //EFFECTS: process string as cost and return a valid cost.
     //if any exception happens(ex. null or empty string), return 0
     public double convertToDoubleCost(String s) {
@@ -692,75 +655,6 @@ public class InventoryController extends AbstractController<Inventory, Inventory
     public void displaySearchDialog(Component parentComponent) {
         view.displaySearchDialog(parentComponent);
     }
-
-
-//    public void setUpSearchPanel(SearchPanel searchPanel) {
-////        JButton searchButton = searchPanel.getSearchButton();
-////        searchButton.addActionListener(new ActionListener() {
-////            @Override
-////            public void actionPerformed(ActionEvent e) {
-////                JTextField searchField = searchPanel.getSearchField();
-////                String input = searchField.getText().toUpperCase();
-////                Item item = model.getItem(input);
-////                List<Product> products;
-////                JPanel panel = new JPanel();
-////                panel.setLayout(new GridBagLayout());
-////                GridBagConstraints gbc = new GridBagConstraints();
-////                //item search
-////                if (item != null) {
-////                    EntryRemovableTable itemEntry = new EntryRemovableTable();
-////                    List<Item> itemList = new ArrayList<>();
-////                    itemList.add(item);
-////                    RowConverterViewerTableModel itemEntryModel = new RowConverterViewerTableModel(itemList, Item.DATA_LIST);
-////                    itemEntry.setModel(itemEntryModel);
-////                    itemEntry.setComponentPopupMenu(createPopUpMenuForItemsTable(itemEntry));
-////                    products = model.getProductList(input);
-////                    RowConverterViewerTableModel productsFound = new RowConverterViewerTableModel(products, Product.DATA_LIST);
-////                    item.addDataChangeListener(Item.DataList.PRODUCT.toString(), productsFound);
-////                    EntryRemovableTable productsTable = new EntryRemovableTable(productsFound);
-////                    productsTable.setComponentPopupMenu(createPopUpMenuForProductTable(productsTable));
-////                    panel.add(new JLabel("Item Found:"), gbc);
-////                    gbc.gridx++;
-////                    gbc.gridwidth = 3;
-////                    panel.add(itemEntry, gbc);
-////                    gbc.gridx = gbc.gridx + gbc.gridwidth;
-////                    gbc.gridwidth = 1;
-////                    gbc.fill = GridBagConstraints.NONE;
-////                    panel.add(new JLabel("Products found"), gbc);
-////                    gbc.gridx++;
-////                    gbc.gridwidth = 3;
-//////                    gbc.fill = GridBagConstraints.BOTH;
-////                    panel.add(new JScrollPane(productsTable), gbc);
-////                    JDialog dialog = new JDialog();
-////                    dialog.add(panel);
-////                    dialog.pack();
-////                    dialog.setLocationRelativeTo(InventoryManagementSystemApplication.getApplication());
-////                    dialog.setVisible(true);
-////                    return;
-////                } else {
-////                    //corresponding item id not found
-////                    products = new ArrayList<>();
-////                    Product product = model.getProduct(input);
-////                    if (product == null) {
-////                        JOptionPane.showMessageDialog(searchPanel, "There is no such product at all");
-////                        return;
-////                    }
-////                    products.add(product);
-////                    RowConverterViewerTableModel productsFound = new RowConverterViewerTableModel(products);
-////                    EntryRemovableTable productsTable = new EntryRemovableTable(productsFound);
-////                    productsTable.setComponentPopupMenu(createPopUpMenuForProductTable(productsTable));
-////                    panel.add(new JLabel("Products found"));
-////                    panel.add(productsTable);
-////                    JDialog dialog = new JDialog();
-////                    dialog.add(panel);
-////                    dialog.pack();
-////                    dialog.setLocationRelativeTo(InventoryManagementSystemApplication.getApplication());
-////                    dialog.setVisible(true);
-////                }
-////            }
-////        });
-//
-//    }
 
 
 }

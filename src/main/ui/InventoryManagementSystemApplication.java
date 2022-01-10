@@ -1,6 +1,7 @@
 package ui;
 
 import model.*;
+import org.json.JSONException;
 import org.json.JSONObject;
 import persistence.JsonConvertible;
 import persistence.Reader;
@@ -80,6 +81,9 @@ public class InventoryManagementSystemApplication extends JFrame implements Json
     @Override
     public void entryAdded(ViewableTableEntryConvertibleModel o) {
         if (o instanceof Admin.LoginAccount) {
+            if (jsonData == null) {
+                jsonData = new JSONObject();
+            }
             jsonData.put("admin", admin.toJson());
             save(jsonData);
         }
@@ -239,8 +243,16 @@ public class InventoryManagementSystemApplication extends JFrame implements Json
             getContentPane().removeAll();
             setVisible(false);
             repaint();
-            inventory = new Inventory(jsonData.getJSONObject("inventory"));
-            ledger = new Ledger(jsonData.getJSONObject("ledger"));
+            try {
+                inventory = new Inventory(jsonData.getJSONObject("inventory"));
+            } catch (JSONException e) {
+                inventory = new Inventory();
+            }
+            try {
+                ledger = new Ledger(jsonData.getJSONObject("ledger"));
+            } catch (JSONException e) {
+                ledger = new Ledger();
+            }
             inventory.addDataChangeListener(ledger);
             for (Item item: inventory.getItemList()) {
                 item.addDataChangeListener(ledger);

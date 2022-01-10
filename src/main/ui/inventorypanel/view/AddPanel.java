@@ -2,6 +2,7 @@ package ui.inventorypanel.view;
 
 import model.Inventory;
 import ui.InventoryManagementSystemApplication;
+import ui.inventorypanel.controller.InventoryController;
 
 import javax.swing.*;
 import java.awt.*;
@@ -13,20 +14,21 @@ import java.util.List;
 
 //A panel that prompts the user to enter inputs for creating new products
 public class AddPanel extends JPanel {
-    Inventory inventory;
     //JTextField codeField = new JTextField(10);
-    JTextField costField = new JTextField(10);
-    JTextField bbdField = new JTextField(10);
-    JTextField priceField = new JTextField(10);
-    JTextField idField = new JTextField(10);
-    JTextField locationField = new JTextField(10);
-    JTextField quantityField = new JTextField(10);
-    JTextField description = new JTextField(10);
-    JButton button;
+    private JTextField costField = new JTextField(10);
+    private JTextField bbdField = new JTextField(10);
+    private JTextField priceField = new JTextField(10);
+    private JTextField idField = new JTextField(10);
+    private JTextField locationField = new JTextField(10);
+    private JTextField quantityField = new JTextField(10);
+    private JTextField descriptionField = new JTextField(10);
+    private JButton button;
     private List<JTextField> textFields = new ArrayList<>(7);
 
-    public AddPanel(Inventory inventory) {
-        this.inventory = inventory;
+
+    private static JDialog dialog;
+
+    public AddPanel(InventoryViewPanel viewPanel) {
         add(new JLabel("ID"));
         add(idField);
 //        add(new JLabel("SKU: "));
@@ -42,7 +44,7 @@ public class AddPanel extends JPanel {
         add(new JLabel("Quantity: "));
         add(quantityField);
         add(new JLabel("Description: "));
-        add(description);
+        add(descriptionField);
         this.button = new JButton();
         button.setText("Register");
 //        button.addActionListener(this);
@@ -54,75 +56,52 @@ public class AddPanel extends JPanel {
         textFields.add(idField);
         textFields.add(locationField);
         textFields.add(quantityField);
-        textFields.add(description);
-    }
+        textFields.add(descriptionField);
 
-    //MODIFIES: this
-    //EFFECTS: process string as cost and return a valid cost.
-    //if any exception happens(ex. null or empty string), return 0
-    public double convertToDoubleCost(String s) {
-        double cost;
-        try {
-            cost = Double.parseDouble(s);
-        } catch (Exception e) {
-            return 0;
-        }
-        return cost;
-    }
-
-
-    public String getId() {
-        return idField.getText();
-    }
-
-    public String getDescription() {
-        return description.getText();
-    }
-
-    public String getCostText() {
-        return costField.getText();
-    }
-
-    public String getPriceText() {
-        return priceField.getText();
-    }
-
-    public String getQuantityText() {
-        return quantityField.getText();
-    }
-
-    public String getLocationText() {
-        return locationField.getText();
-    }
-
-    public String getBestBeforeDateText() {
-        return bbdField.getText();
-    }
-
-    public JButton getButton() {
-        return button;
-    }
-
-//
-//    public List<JTextField> getTextFields() {
-//        return textFields;
-//    }
-
-    public void setAction(Action textFieldAction, Action buttonAction) {
+        //
         for (JTextField textField: textFields) {
-            textField.addActionListener(textFieldAction);
+            textField.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    JComponent component = (JComponent) e.getSource();
+                    component.transferFocus();
+                }
+            });
         }
-        button.setAction(buttonAction);
+
+        button.addKeyListener(InventoryViewPanel.getButtonEnterKeyListener());
+
+        button.setAction(new AbstractAction("Register") {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                //needs to convert it to uppercase in controller
+                String id = idField.getText();
+                String costInput = costField.getText();
+                String priceInput = priceField.getText();
+                String bestBeforeDateText = bbdField.getText();
+                String locationInput = locationField.getText();
+                String qtyInput = quantityField.getText();
+                String description = descriptionField.getText();
+                viewPanel.getController().productsAdditionRequest(id, costInput, priceInput, bestBeforeDateText,
+                        locationInput, qtyInput, description);
+            }
+        });
     }
 
-    public void addButtonActionListener(ActionListener listener) {
-        button.addActionListener(listener);
-    }
 
     public void clearFields() {
         for (JTextField textField: textFields) {
             textField.setText("");
         }
+    }
+
+    public void displayAdditionDialog(Component parentComponent) {
+        dialog = new JDialog();
+        dialog.add(this);
+        dialog.pack();
+        dialog.setLocationRelativeTo(parentComponent);
+        dialog.setLocationRelativeTo(null);
+        dialog.setVisible(true);
     }
 
 

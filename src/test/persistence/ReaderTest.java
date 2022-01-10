@@ -59,7 +59,7 @@ public class ReaderTest {
             fail();
         }
         Product product = new Product("abc", "abc11119", 20.1, 30,
-                LocalDate.now(),  LocalDate.now(), "f11");
+                LocalDate.now(),  LocalDate.now(), "f11", "");
         writer.write(product);
         writer.close();
         Reader reader = new Reader(location);

@@ -344,7 +344,7 @@ public class Item extends TableEntryConvertibleDataFactory implements JsonConver
         List<Product> added = new ArrayList<>();
         for (int i = 0; i < quantity; i++) {
             Product product = new Product(id, createSku(), tag.getUnitCost(), tag.getUnitPrice(),
-                    tag.getDateGenerated(), tag.getBestBeforeDate(), location);
+                    tag.getDateGenerated(), tag.getBestBeforeDate(), location, tag.getDescription());
             product.addDataChangeListener(this);
             added.add(product);
             products.put(product.getSku(), product);
@@ -374,7 +374,7 @@ public class Item extends TableEntryConvertibleDataFactory implements JsonConver
         List<Product> added = new ArrayList<>();
         for (int i = 0; i < qty; i++) {
             Product product = new Product(id, createSku(), cost, price,
-                    dateGenerated, bestBeforeDate, location);
+                    dateGenerated, bestBeforeDate, location, null);
             product.addDataChangeListener(this);
             added.add(product);
             products.put(product.getSku(), product);

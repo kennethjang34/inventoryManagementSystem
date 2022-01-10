@@ -96,7 +96,7 @@ public class InventoryTest {
         assertEquals("F11",
                 inventory.findLocations(tags.get(0).getId()).get(0).getLocation());
         assertFalse(inventory.addProducts(new InventoryTag("NonExistingItem", cost, price,
-                LocalDate.now(), LocalDate.now(), "eqwf", basicQty)));
+                LocalDate.now(), LocalDate.now(), "eqwf", basicQty, null)));
     }
 
     @Test
