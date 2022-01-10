@@ -12,14 +12,14 @@ import java.time.LocalDate;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
-public class ReaderTest {
+public class FileLoaderTest {
     private final String location = "./data/reader_test.json";
 
     @Test
     void testReadNonExistingFile() {
-        Reader reader = new Reader("./data/non_existing.json");
+        FileLoader fileLoader = new FileLoader("./data/non_existing.json");
         try {
-            JSONObject json = reader.read();
+            JSONObject json = fileLoader.load();
             //reader should throw IOException as there is no file to read
             fail();
         } catch (JSONException e) {
@@ -38,9 +38,9 @@ public class ReaderTest {
             fail();
         }
         writer.close();
-        Reader reader = new Reader(location);
+        FileLoader fileLoader = new FileLoader(location);
         try {
-            JSONObject json = reader.read();
+            JSONObject json = fileLoader.load();
             //reader should throw JSONException as JSONObject cannot be made with empty text
             fail();
         } catch (JSONException e) {
@@ -62,11 +62,11 @@ public class ReaderTest {
                 LocalDate.now(),  LocalDate.now(), "f11", "");
         writer.write(product);
         writer.close();
-        Reader reader = new Reader(location);
+        FileLoader fileLoader = new FileLoader(location);
         JSONObject jsonProduct = null;
         //NO exception is required.
         try {
-            jsonProduct = reader.read();
+            jsonProduct = fileLoader.load();
         } catch (IOException e) {
             fail();
         } catch (JSONException e) {

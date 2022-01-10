@@ -7,7 +7,6 @@ import org.junit.jupiter.api.Test;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.time.LocalDate;
 import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -50,10 +49,10 @@ public class WriterTest {
         assertEquals(130, inventory.getTotalQuantity());
         writer.write(inventory);
         writer.close();
-        Reader reader = new Reader(location);
+        FileLoader fileLoader = new FileLoader(location);
         JSONObject jsonInventory = null;
         try {
-            jsonInventory = reader.read();
+            jsonInventory = fileLoader.load();
         } catch (IOException e) {
             fail();
         }

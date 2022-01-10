@@ -4,14 +4,13 @@ import model.*;
 import org.json.JSONException;
 import org.json.JSONObject;
 import persistence.JsonConvertible;
-import persistence.Reader;
+import persistence.FileLoader;
 import persistence.Writer;
 import ui.adminpanel.controller.AdminController;
 import ui.adminpanel.view.AdminViewPanel;
 import ui.inventorypanel.controller.InventoryController;
 import ui.inventorypanel.view.InventoryViewPanel;
 import ui.ledgerpanel.controller.LedgerController;
-import ui.ledgerpanel.view.LedgerViewPanel;
 import ui.table.DataFactory;
 import ui.table.ViewableTableEntryConvertibleModel;
 
@@ -123,8 +122,8 @@ public class InventoryManagementSystemApplication extends JFrame implements Json
     private InventoryManagementSystemApplication() {
         login = false;
         try {
-            Reader reader = new Reader(fileLocation);
-            JSONObject jsonObject = reader.read();
+            FileLoader fileLoader = new FileLoader(fileLocation);
+            JSONObject jsonObject = fileLoader.load();
             admin = new Admin(jsonObject.getJSONObject("admin"));
         } catch (IOException e) {
             admin = new Admin();
@@ -238,8 +237,8 @@ public class InventoryManagementSystemApplication extends JFrame implements Json
     public void load() {
         try {
 //            Admin.LoginAccount account = adminPanel.getLoginAccount();
-            Reader reader = new Reader(fileLocation);
-            jsonData = reader.read();
+            FileLoader fileLoader = new FileLoader(fileLocation);
+            jsonData = fileLoader.load();
             getContentPane().removeAll();
             setVisible(false);
             repaint();

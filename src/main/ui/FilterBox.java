@@ -129,9 +129,6 @@ public class FilterBox extends JComboBox implements DataViewer {
 
     }
 
-    public List<Object> getCorrespondingItems() {
-        return null;
-    }
 
     public void setPropertyWatched(String propertyName) {
         model.removeListener(this.propertyName, this);
