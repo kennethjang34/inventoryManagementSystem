@@ -28,7 +28,6 @@ public class InventoryViewPanel extends JPanel {
     private JComboBox<String> itemFilter;
     private FilterBox categoryFilter;
     private InventoryController controller;
-    //locationTable is created by the controller when needed
     private ButtonTable locationTable;
     private JTable productTable;
     private Inventory inventory;
@@ -40,49 +39,6 @@ public class InventoryViewPanel extends JPanel {
     private JDialog removalRegisterDialog;
 
 
-    public static int[] getSelectedTableModelRows(JTable table) {
-        int[] selectedViewIndices = table.getSelectedRows();
-        int[] modelRows = new int[selectedViewIndices.length];
-        for (int i = 0; i < selectedViewIndices.length; i++) {
-            modelRows[i] = table.convertRowIndexToModel(selectedViewIndices[i]);
-        }
-        return modelRows;
-    }
-
-    public void displayRemovalConfirmDialog(List<List<Product>> productsLists) {
-        JPanel panel = new JPanel();
-        panel.setLayout(new GridBagLayout());
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        List<RowConverterViewerTableModel> tableModels = new ArrayList<>();
-        for (List<Product> products: productsLists) {
-            EntryRemovableTable productsToBeRemovedTable = new EntryRemovableTable();
-            gbc.gridy = gbc.gridy + gbc.gridheight;
-            gbc.gridx = 1;
-            gbc.gridheight = 1;
-            gbc.gridwidth = 1;
-            gbc.fill = GridBagConstraints.NONE;
-            panel.add(new JLabel("ID: " + products.get(0).getID() + " Products to be removed: " + products.size()), gbc);
-            RowConverterViewerTableModel toBeRemovedTableModel = new RowConverterViewerTableModel(products);
-            tableModels.add(toBeRemovedTableModel);
-            productsToBeRemovedTable.setModel(toBeRemovedTableModel);
-            gbc.gridy = gbc.gridy + gbc.gridheight;
-            gbc.gridwidth = 5;
-            gbc.gridheight = 5;
-            gbc.weightx = 1;
-            gbc.weighty = 1;
-            gbc.fill = GridBagConstraints.BOTH;
-            panel.add(new JScrollPane(productsToBeRemovedTable), gbc);
-        }
-        JScrollPane scrollPane = new JScrollPane(panel);
-        scrollPane.setPreferredSize(new Dimension(600, 600));
-        int confirm = JOptionPane.showConfirmDialog(removalRegisterDialog, scrollPane, "Do you really want to remove following products?", JOptionPane.YES_OPTION, JOptionPane.PLAIN_MESSAGE);
-        if (confirm == JOptionPane.YES_OPTION) {
-            controller.productsRemovalConfirmed(productsLists);
-            removalRegisterDialog.setVisible(false);
-        }
-    }
 
     public JDialog getAddPanelDialog() {
         return getAddPanelDialog();
@@ -192,7 +148,7 @@ public class InventoryViewPanel extends JPanel {
                 } else if (added instanceof Item) {
                     Item item = (Item) added;
                     if (categoryFilter.getSelectedItem().equals(item.getCategory().toString())
-                            || categoryFilter.getSelectedItem().equals(FilterBox.ALL)) {
+                            || categoryFilter.getSelectedItem().equals(FilterBox.ALL) || categoryFilter.getSelectedItem().equals(FilterBox.TYPE_MANUALLY)) {
                         if (itemFilter.getSelectedItem().equals(FilterBox.EMPTY)) {
                             itemFilter.removeAllItems();
                             itemFilter.addItem(ALL);
@@ -223,12 +179,16 @@ public class InventoryViewPanel extends JPanel {
                 }
             }
         };
-        categoryField = new JTextField(10);
-        itemField = new JTextField(10);
+        categoryField = new JTextField();
+        categoryField.setPreferredSize(new Dimension(20, 10));
+        itemField = new JTextField();
+        itemField.setPreferredSize(new Dimension(20, 10));
         productGeneratorButton = new JButton("ADD");
         productGeneratorButton.addKeyListener(buttonEnterListener);
         productRemovalButton = new JButton("Remove");
         productRemovalButton.addKeyListener(buttonEnterListener);
+        setUpItemField();
+        setUpCategoryField();
         setUpItemFilter();
         setUpCategoryFilter();
         addPanel = new AddPanel(this);
@@ -237,6 +197,22 @@ public class InventoryViewPanel extends JPanel {
         deployComponents();
     }
 
+    private void setUpCategoryField() {
+        categoryField.setVisible(false);
+        categoryField.addActionListener(e -> {
+            String text = categoryField.getText();
+            controller.categoryFieldFilled(text);
+        });
+    }
+
+    private void setUpItemField() {
+        itemField.setVisible(false);
+        itemField.addActionListener(e -> {
+            String text = itemField.getText().toString();
+            controller.itemFieldFilled(text);
+
+        });
+    }
 
 
     private void setUpSearchPanel(SearchPanel searchPanel) {
@@ -527,14 +503,23 @@ public class InventoryViewPanel extends JPanel {
         panelForTables.add(productRemovalButton, gbc);
         gbc.gridx = 0;
         gbc.gridy = gbc.gridy + gbc.gridheight;
-        gbc.gridwidth = 3;
+        gbc.gridwidth = 2;
         gbc.gridheight = 3;
+        gbc.fill = GridBagConstraints.BOTH;
         panelForTables.add(categoryFilter, gbc);
         gbc.gridx = gbc.gridx + gbc.gridwidth;
-        gbc.gridwidth = 3;
+        gbc.gridwidth = 2;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        panelForTables.add(categoryField, gbc);
+        gbc.gridx = gbc.gridx + gbc.gridwidth;
+        gbc.gridwidth = 2;
         gbc.gridheight = 3;
         gbc.fill = GridBagConstraints.BOTH;
         panelForTables.add(itemFilter, gbc);
+        gbc.gridx = gbc.gridx + gbc.gridwidth;
+        gbc.gridwidth = 2;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        panelForTables.add(itemField, gbc);
         gbc.gridx = 0;
         gbc.gridy = gbc.gridy + gbc.gridheight;
         gbc.gridwidth = 40;
@@ -578,8 +563,10 @@ public class InventoryViewPanel extends JPanel {
         categoryFilter.addItemListener(new ItemListener() {
             @Override
             public void itemStateChanged(ItemEvent e) {
-                String selectedItem = (String) categoryFilter.getSelectedItem();
-                controller.categoryFilterSelected(selectedItem);
+                if (e.getStateChange() == ItemEvent.SELECTED) {
+                    String selectedItem = (String) categoryFilter.getSelectedItem();
+                    controller.categoryFilterSelected(selectedItem);
+                }
             }
         });
 
@@ -594,13 +581,17 @@ public class InventoryViewPanel extends JPanel {
             items.add("TYPE_MANUALLY");
             items.addAll(inventory.getIDs());
         }
+
+
         itemFilter.setModel((new DefaultComboBoxModel(items.toArray(new String[0]))));
 
         itemFilter.addItemListener(new ItemListener() {
             @Override
             public void itemStateChanged(ItemEvent e) {
-                String selectedItem = (String) itemFilter.getSelectedItem();
-                controller.itemFilterSelected(selectedItem);
+                if (e.getStateChange() == ItemEvent.SELECTED) {
+                    String selectedItem = (String) itemFilter.getSelectedItem();
+                    controller.itemFilterSelected(selectedItem);
+                }
             }
         });
 
@@ -856,5 +847,65 @@ public class InventoryViewPanel extends JPanel {
     }
 
 
+    public JTable createSelectedProductsTable(List<ViewableTableEntryConvertibleModel> rows) {
+        JTable table = new EntryRemovableTable();
+        RowConverterViewerTableModel tableModel = new RowConverterViewerTableModel(rows, Product.DATA_LIST);
+        table.setModel(tableModel);
+        table.setPreferredSize(new Dimension(600, 400));
+        return table;
+    }
+
+    public JTable createSelectedItemTable(List<ViewableTableEntryConvertibleModel> rows) {
+        JTable table = new EntryRemovableTable();
+        RowConverterViewerTableModel tableModel = new RowConverterViewerTableModel(rows, Item.DATA_LIST);
+        table.setModel(tableModel);
+        table.setPreferredSize(new Dimension(600, 400));
+        return table;
+    }
+
+
+    public static int[] getSelectedTableModelRows(JTable table) {
+        int[] selectedViewIndices = table.getSelectedRows();
+        int[] modelRows = new int[selectedViewIndices.length];
+        for (int i = 0; i < selectedViewIndices.length; i++) {
+            modelRows[i] = table.convertRowIndexToModel(selectedViewIndices[i]);
+        }
+        return modelRows;
+    }
+
+    public void displayRemovalConfirmDialog(List<List<Product>> productsLists) {
+        JPanel panel = new JPanel();
+        panel.setLayout(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        List<RowConverterViewerTableModel> tableModels = new ArrayList<>();
+        for (List<Product> products: productsLists) {
+            EntryRemovableTable productsToBeRemovedTable = new EntryRemovableTable();
+            gbc.gridy = gbc.gridy + gbc.gridheight;
+            gbc.gridx = 1;
+            gbc.gridheight = 1;
+            gbc.gridwidth = 1;
+            gbc.fill = GridBagConstraints.NONE;
+            panel.add(new JLabel("ID: " + products.get(0).getID() + " Products to be removed: " + products.size()), gbc);
+            RowConverterViewerTableModel toBeRemovedTableModel = new RowConverterViewerTableModel(products);
+            tableModels.add(toBeRemovedTableModel);
+            productsToBeRemovedTable.setModel(toBeRemovedTableModel);
+            gbc.gridy = gbc.gridy + gbc.gridheight;
+            gbc.gridwidth = 5;
+            gbc.gridheight = 5;
+            gbc.weightx = 1;
+            gbc.weighty = 1;
+            gbc.fill = GridBagConstraints.BOTH;
+            panel.add(new JScrollPane(productsToBeRemovedTable), gbc);
+        }
+        JScrollPane scrollPane = new JScrollPane(panel);
+        scrollPane.setPreferredSize(new Dimension(600, 600));
+        int confirm = JOptionPane.showConfirmDialog(removalRegisterDialog, scrollPane, "Do you really want to remove following products?", JOptionPane.YES_OPTION, JOptionPane.PLAIN_MESSAGE);
+        if (confirm == JOptionPane.YES_OPTION) {
+            controller.productsRemovalConfirmed(productsLists);
+            removalRegisterDialog.setVisible(false);
+        }
+    }
 
 }

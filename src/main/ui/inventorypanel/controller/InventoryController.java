@@ -70,42 +70,51 @@ public class InventoryController extends AbstractController<Inventory, Inventory
     }
 
 
-
-
-
     public InventoryController(Inventory model, InventoryViewPanel view) {
         super(model, view);
     }
 
 
-
-
     @Override
     public void setUpView() {
         view.setController(this);
-        setUpCategoryField(view.getCategoryField());
-        setUpItemField(view.getItemField());
         view.setLocationTableAction(new LocationTableButtonAction());
     }
 
-    public JTable createSelectedProductsTable(List<ViewableTableEntryConvertibleModel> rows) {
-        JTable table = new EntryRemovableTable();
-        RowConverterViewerTableModel tableModel = new RowConverterViewerTableModel(rows, Product.DATA_LIST);
-        table.setModel(tableModel);
-        table.setPreferredSize(new Dimension(600, 400));
-        return table;
+    public void categoryFieldFilled(String text) {
+        JComboBox categoryFilter = view.getCategoryFilter();
+        DefaultComboBoxModel model = (DefaultComboBoxModel) categoryFilter.getModel();
+        int index = model.getIndexOf(text.toUpperCase());
+        if (index == -1) {
+            JOptionPane.showMessageDialog(null, "There is no such category!");
+        } else {
+            categoryFilter.setSelectedIndex(index);
+            view.getCategoryField().setVisible(false);
+            view.repaint();
+            view.revalidate();
+        }
+        view.getCategoryField().setText("");
     }
 
-    public JTable createSelectedItemTable(List<ViewableTableEntryConvertibleModel> rows) {
-        JTable table = new EntryRemovableTable();
-        RowConverterViewerTableModel tableModel = new RowConverterViewerTableModel(rows, Item.DATA_LIST);
-        table.setModel(tableModel);
-        table.setPreferredSize(new Dimension(600, 400));
-        return table;
+
+    public void itemFieldFilled(String text) {
+        JComboBox itemFilter = view.getItemFilter();
+        JTextField itemField = view.getItemField();
+        DefaultComboBoxModel model = (DefaultComboBoxModel) itemFilter.getModel();
+        int index = model.getIndexOf(text.toUpperCase());
+        if (index == -1) {
+            JOptionPane.showMessageDialog(null, "There is no such item!");
+        } else {
+            itemFilter.setSelectedIndex(index);
+            itemField.setVisible(false);
+            view.repaint();
+            view.revalidate();
+        }
+        itemField.setText("");
     }
 
     public void productRemovalHelper(List<ViewableTableEntryConvertibleModel> entries) {
-        JTable table = createSelectedProductsTable(entries);
+        JTable table = view.createSelectedProductsTable(entries);
         JPanel panel = new JPanel();
         panel.add(new JLabel("The total quantity to be removed: " + entries.size()));
         panel.add(new JScrollPane(table));
@@ -121,31 +130,20 @@ public class InventoryController extends AbstractController<Inventory, Inventory
         }
     }
 
-//    public void setUpCategoryFilter(JComboBox categoryFilter) {
-//        categoryFilter.addItemListener(new ItemListener() {
-//            @Override
-//            public void itemStateChanged(ItemEvent e) {
-//                if (categoryFilter.getSelectedItem() != null) {
-//                    String selectedCategory = (String) categoryFilter.getSelectedItem();
-//                    if (selectedCategory.equals(FilterBox.TYPE_MANUALLY)) {
-//                        view.getCategoryField().setVisible(true);
-//                        return;
-//                    }
-//                    view.updateItemFilter(selectedCategory);
-//                    TableRowSorter sorter = (TableRowSorter) view.getStockButtonTable().getRowSorter();
-//                    RowFilter<TableModel, Integer> filter = createCategoryRowFilter(selectedCategory);
-//                    sorter.setRowFilter(filter);
-//                }
-//            }
-//        });
-//    }
 
     public void categoryFilterSelected(String selectedCategory) {
         if (selectedCategory != null) {
             if (selectedCategory.equals(FilterBox.TYPE_MANUALLY)) {
                 view.getCategoryField().setVisible(true);
+                view.updateItemFilter(FilterBox.ALL);
+                TableRowSorter sorter = (TableRowSorter) view.getStockButtonTable().getRowSorter();
+                RowFilter<TableModel, Integer> filter = createCategoryRowFilter(FilterBox.ALL);
+                sorter.setRowFilter(filter);
+                view.repaint();
+                view.revalidate();
                 return;
             }
+            view.getCategoryField().setVisible(false);
             view.updateItemFilter(selectedCategory);
             TableRowSorter sorter = (TableRowSorter) view.getStockButtonTable().getRowSorter();
             RowFilter<TableModel, Integer> filter = createCategoryRowFilter(selectedCategory);
@@ -157,9 +155,16 @@ public class InventoryController extends AbstractController<Inventory, Inventory
 
     public void itemFilterSelected(String selectedItem) {
         if (selectedItem != null) {
-            if (selectedItem.equals("TYPE_MANUALLY")) {
+            if (selectedItem.equals(FilterBox.TYPE_MANUALLY)) {
                 view.getItemField().setVisible(true);
+                view.repaint();
+                view.revalidate();
+                TableRowSorter sorter = (TableRowSorter) view.getStockButtonTable().getRowSorter();
+                RowFilter<TableModel, Integer> filter = createIDRowFilter(FilterBox.ALL);
+                sorter.setRowFilter(filter);
+                return;
             }
+            view.getItemField().setVisible(false);
             TableRowSorter sorter = (TableRowSorter) view.getStockButtonTable().getRowSorter();
             RowFilter<TableModel, Integer> filter = createIDRowFilter(selectedItem);
             sorter.setRowFilter(filter);
@@ -170,7 +175,7 @@ public class InventoryController extends AbstractController<Inventory, Inventory
 
 
     public void productLocationChangeHelper(List<ViewableTableEntryConvertibleModel> entries) {
-        JTable table = createSelectedProductsTable(entries);
+        JTable table = view.createSelectedProductsTable(entries);
         JPanel panel = new JPanel();
         panel.add(new JScrollPane(table));
         String newLocation = JOptionPane.showInputDialog(view, panel,
@@ -183,7 +188,7 @@ public class InventoryController extends AbstractController<Inventory, Inventory
     }
 
     public void productPriceChangeHelper(List<ViewableTableEntryConvertibleModel> entries) {
-        JTable table = createSelectedProductsTable(entries);
+        JTable table = view.createSelectedProductsTable(entries);
         JPanel panel = new JPanel();
         panel.add(new JScrollPane(table));
         double newPrice;
@@ -206,7 +211,7 @@ public class InventoryController extends AbstractController<Inventory, Inventory
     }
 
     public void productCostChangeHelper(List<ViewableTableEntryConvertibleModel> entries) {
-        JTable table = createSelectedProductsTable(entries);
+        JTable table = view.createSelectedProductsTable(entries);
         JPanel panel = new JPanel();
         panel.add(new JScrollPane(table));
         double newCost;
@@ -229,7 +234,7 @@ public class InventoryController extends AbstractController<Inventory, Inventory
     }
 
     public void productBBDChangeHelper(List<ViewableTableEntryConvertibleModel> entries) {
-        JTable table = createSelectedProductsTable(entries);
+        JTable table = view.createSelectedProductsTable(entries);
         JPanel panel = new JPanel();
         panel.add(new JScrollPane(table));
         LocalDate date;
@@ -250,7 +255,7 @@ public class InventoryController extends AbstractController<Inventory, Inventory
     }
 
     public void productIdChangeHelper(List<ViewableTableEntryConvertibleModel> entries) {
-        JTable table = createSelectedProductsTable(entries);
+        JTable table = view.createSelectedProductsTable(entries);
         JPanel panel = new JPanel();
         panel.add(new JScrollPane(table));
         String id = (JOptionPane.showInputDialog(view, panel,
@@ -276,38 +281,7 @@ public class InventoryController extends AbstractController<Inventory, Inventory
     }
 
 
-    private void setUpCategoryField(JTextField categoryField) {
-        categoryField.setVisible(false);
-        categoryField.addActionListener(e -> {
-            DefaultComboBoxModel model = (DefaultComboBoxModel) view.getCategoryFilter().getModel();
-            int index = model.getIndexOf(categoryField.getText());
-            if (index == -1) {
-                JOptionPane.showMessageDialog(null, "There is no such category!");
-            } else {
-                view.getCategoryFilter().setSelectedIndex(index);
-                categoryField.setVisible(false);
-            }
-            categoryField.removeAll();
-            view.repaint();
-        });
-    }
 
-
-    private void setUpItemField(JTextField itemField) {
-        itemField.setVisible(false);
-        itemField.addActionListener(e -> {
-            DefaultComboBoxModel model = (DefaultComboBoxModel) view.getItemFilter().getModel();
-            int index = model.getIndexOf(itemField.getText());
-            if (index == -1) {
-                JOptionPane.showMessageDialog(null, "There is no such item!");
-            } else {
-                view.getItemFilter().setSelectedIndex(index);
-                itemField.setVisible(false);
-            }
-            itemField.removeAll();
-            view.repaint();
-        });
-    }
 
 
     public void categoryGeneratorButtonClicked(String name) {
@@ -354,45 +328,6 @@ public class InventoryController extends AbstractController<Inventory, Inventory
         }
     }
 
-    //MODIFIES: Inventory
-    //EFFECTS:create a new item
-//    private void setUpItemGenerator(ItemGenerator itemGenerator) {
-//        Action buttonAction = new AbstractAction("Create") {
-//            @Override
-//            public void actionPerformed(ActionEvent e) {
-//                String id = itemGenerator.getIDFieldValue().toUpperCase();
-//                String category = itemGenerator.getCategoryFieldValue().toUpperCase();
-//                double listPrice;
-//                try {
-//                    listPrice = Double.parseDouble(itemGenerator.getPriceFieldValue());
-//                } catch (NumberFormatException exception) {
-//                    listPrice = 0;
-//                }
-//                if (id.equals("") || model.containsItem(id)) {
-//                    JOptionPane.showMessageDialog(null,
-//                            "ID is invalid or duplicate");
-//                } else if (!model.containsCategory(category)) {
-//                    JOptionPane.showMessageDialog(null,
-//                            "The given category: " + category + " is invalid");
-//                } else {
-//                    model.createItem(id, itemGenerator.getNameFieldValue(), category,
-//                            listPrice, itemGenerator.getDescriptionFieldValue(), itemGenerator.getNoteFieldValue());
-//                    //            stockPanel.itemAddedUpdate(id);
-//                    JOptionPane.showMessageDialog(null,
-//                            "Item: " + id + " has been successfully created");
-//                    itemGenerator.clearFields();
-//                }
-//            }
-//        };
-//        Action textFieldAction = new AbstractAction() {
-//            @Override
-//            public void actionPerformed(ActionEvent e) {
-//                ((JComponent)(e.getSource())).transferFocus();
-//            }
-//        };
-//        itemGenerator.setAction(textFieldAction, buttonAction);
-//    }
-
     public void stockTableRowDoubleClicked(ViewableTableEntryConvertibleModel entry) {
         if (entry instanceof Item) {
             Item item = (Item) entry;
@@ -404,7 +339,7 @@ public class InventoryController extends AbstractController<Inventory, Inventory
 
 
     public void itemCategoryChangeHelper(List<ViewableTableEntryConvertibleModel> entries) {
-        JTable table = createSelectedItemTable(entries);
+        JTable table = view.createSelectedItemTable(entries);
         JPanel panel = new JPanel();
         panel.add(new JScrollPane(table));
         String newCategory = (JOptionPane.showInputDialog(view, panel,
@@ -423,7 +358,7 @@ public class InventoryController extends AbstractController<Inventory, Inventory
     }
 
     public void itemNameChangeHelper(List<ViewableTableEntryConvertibleModel> entries) {
-        JTable table = createSelectedItemTable(entries);
+        JTable table = view.createSelectedItemTable(entries);
         JPanel panel = new JPanel();
         panel.add(new JScrollPane(table));
         String newName = (JOptionPane.showInputDialog(view, panel,
@@ -437,7 +372,7 @@ public class InventoryController extends AbstractController<Inventory, Inventory
     }
 
     public void itemDescriptionChangeHelper(List<ViewableTableEntryConvertibleModel> entries) {
-        JTable table = createSelectedItemTable(entries);
+        JTable table = view.createSelectedItemTable(entries);
         JPanel panel = new JPanel();
         panel.add(new JScrollPane(table));
         String newDescription = (JOptionPane.showInputDialog(view, panel,
@@ -451,7 +386,7 @@ public class InventoryController extends AbstractController<Inventory, Inventory
     }
 
     public void itemNoteChangeHelper(List<ViewableTableEntryConvertibleModel> entries) {
-        JTable table = createSelectedItemTable(entries);
+        JTable table = view.createSelectedItemTable(entries);
         JPanel panel = new JPanel();
         panel.add(new JScrollPane(table));
         String newNote = (JOptionPane.showInputDialog(view, panel,
@@ -465,7 +400,7 @@ public class InventoryController extends AbstractController<Inventory, Inventory
     }
 
     public void itemListPriceChangeHelper(List<ViewableTableEntryConvertibleModel> entries) {
-        JTable table = createSelectedItemTable(entries);
+        JTable table = view.createSelectedItemTable(entries);
         JPanel panel = new JPanel();
         panel.add(new JScrollPane(table));
         String newPriceString = (JOptionPane.showInputDialog(view, panel,
@@ -594,7 +529,7 @@ public class InventoryController extends AbstractController<Inventory, Inventory
             @Override
             public boolean include(Entry<? extends TableModel, ? extends Integer> entry) {
                 if (id.equals(FilterBox.ALL) || id.equals(FilterBox.TYPE_MANUALLY)) {
-                    if (category.equals(FilterBox.ALL)) {
+                    if (category.equals(FilterBox.ALL) || category.equals(FilterBox.TYPE_MANUALLY)) {
                         return true;
                     }
                     for (int i = 0; i < entry.getValueCount(); i++) {

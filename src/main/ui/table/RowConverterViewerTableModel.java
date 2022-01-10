@@ -88,7 +88,7 @@ public class RowConverterViewerTableModel extends AbstractTableModel implements 
         data = new LinkedHashMap<>();
         tableEntries = new LinkedList<>();
         this.columnNames = columnNames;
-        List<? extends ViewableTableEntryConvertibleModel> entries = (List<? extends ViewableTableEntryConvertibleModel>) factory.getEntryModels();
+        List<? extends ViewableTableEntryConvertibleModel> entries = factory.getEntryModels();
         for (ViewableTableEntryConvertibleModel entry: entries) {
             entry.addUpdateListener(this);
             tableEntries.add(entry);

@@ -11,9 +11,9 @@ import java.util.List;
 
 public class FilterBox extends JComboBox implements DataViewer {
 
-    public static final String EMPTY = "Empty";
-    public static final String ALL = "All";
-    public static final String TYPE_MANUALLY = "Type_manually";
+    public static final String EMPTY = "EMPTY";
+    public static final String ALL = "ALL";
+    public static final String TYPE_MANUALLY = "TYPE_MANUALLY";
     private AbstractTableDataFactory model;
     private String propertyName;
 //    protected PropertyChangeSupport changeSupport = new PropertyChangeSupport(this);

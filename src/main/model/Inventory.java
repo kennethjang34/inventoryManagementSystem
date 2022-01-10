@@ -171,13 +171,8 @@ public class Inventory extends AbstractTableDataFactory implements JsonConvertib
         item.addDataChangeListener(this);
         items.put(id, item);
         categories.get(category).addItem(item);
-//        setChanged(ApplicationConstantValue.ITEM);
-//        notifyObservers();
         changeFirer.fireAdditionEvent(ITEM, item);
-        //needs to be replaced by calling fireUpdateEvent inside Category instance directly
         changeFirer.fireUpdateEvent(CATEGORY, categories.get(category));
-//        changeFirer.firePropertyChange(ITEM, null, item);
-//        changeFirer.firePropertyChange(CATEGORY, null, item);
         return true;
     }
 
