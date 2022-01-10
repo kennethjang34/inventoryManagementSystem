@@ -83,8 +83,6 @@ public class InventoryController extends AbstractController<Inventory, Inventory
     @Override
     public void setUpView() {
         view.setController(this);
-        setUpItemGenerator(view.getItemGenerator());
-        setUpCategoryGenerator(view.getCategoryGenerator());
         setUpCategoryFilter(view.getCategoryFilter());
         setUpItemFilter(view.getItemFilter());
         setUpCategoryField(view.getCategoryField());
@@ -306,70 +304,89 @@ public class InventoryController extends AbstractController<Inventory, Inventory
         });
     }
 
-    //MODIFIES: Inventory
-    //EFFECTS:create a new category
-    private void setUpCategoryGenerator(CategoryGenerator categoryGenerator) {
-        AbstractAction action = new AbstractAction("Create") {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                String name = categoryGenerator.getCategoryField().getText();
-                name = name.toUpperCase();
-                if (name.equals("")) {
-                    JOptionPane.showMessageDialog(null, "Category name cannot be empty");
-                    return;
-                }
-                if (model.createCategory(name)) {
-                    //stockPanel.categoryAddedUpdate(name);
-                    JOptionPane.showMessageDialog(null, "New Category: "
-                            + name + " has been successfully created");
-                    categoryGenerator.clearFields();
-                } else {
-                    JOptionPane.showMessageDialog(null, "The category with the name: "
-                            + name + " is already existing");
-                }
-            }
-        };
-        categoryGenerator.setAction(action);
+
+    public void categoryGeneratorButtonClicked(String name) {
+        name = name.toUpperCase();
+        if (name.equals("")) {
+            JOptionPane.showMessageDialog(null, "Category name cannot be empty");
+            return;
+        }
+        if (model.createCategory(name)) {
+            //stockPanel.categoryAddedUpdate(name);
+            JOptionPane.showMessageDialog(null, "New Category: "
+                    + name + " has been successfully created");
+            view.getCategoryGenerator().clearFields();
+        } else {
+            JOptionPane.showMessageDialog(null, "The category with the name: "
+                    + name + " is already existing");
+        }
+    }
+
+
+
+    public void itemGeneratorButtonClicked(String idInput, String name, String categoryInput, String priceInput, String description, String note) {
+        String id = idInput.toUpperCase();
+        String category = categoryInput.toUpperCase();
+        double listPrice;
+        try {
+            listPrice = Double.parseDouble(priceInput);
+        } catch (NumberFormatException exception) {
+            listPrice = 0;
+        }
+        if (id.equals("") || model.containsItem(id)) {
+            JOptionPane.showMessageDialog(null,
+                    "ID is invalid or duplicate");
+        } else if (!model.containsCategory(category)) {
+            JOptionPane.showMessageDialog(null,
+                    "The given category: " + category + " is invalid");
+        } else {
+            model.createItem(id, name, category,
+                    listPrice, description, note);
+            //            stockPanel.itemAddedUpdate(id);
+            JOptionPane.showMessageDialog(null,
+                    "Item: " + id + " has been successfully created");
+            view.getItemGenerator().clearFields();
+        }
     }
 
     //MODIFIES: Inventory
     //EFFECTS:create a new item
-    private void setUpItemGenerator(ItemGenerator itemGenerator) {
-        Action buttonAction = new AbstractAction("Create") {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                String id = itemGenerator.getIDFieldValue().toUpperCase();
-                String category = itemGenerator.getCategoryFieldValue().toUpperCase();
-                double listPrice;
-                try {
-                    listPrice = Double.parseDouble(itemGenerator.getPriceFieldValue());
-                } catch (NumberFormatException exception) {
-                    listPrice = 0;
-                }
-                if (id.equals("") || model.containsItem(id)) {
-                    JOptionPane.showMessageDialog(null,
-                            "ID is invalid or duplicate");
-                } else if (!model.containsCategory(category)) {
-                    JOptionPane.showMessageDialog(null,
-                            "The given category: " + category + " is invalid");
-                } else {
-                    model.createItem(id, itemGenerator.getNameFieldValue(), category,
-                            listPrice, itemGenerator.getDescriptionFieldValue(), itemGenerator.getNoteFieldValue());
-                    //            stockPanel.itemAddedUpdate(id);
-                    JOptionPane.showMessageDialog(null,
-                            "Item: " + id + " has been successfully created");
-                    itemGenerator.clearFields();
-                }
-            }
-        };
-        Action textFieldAction = new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                ((JComponent)(e.getSource())).transferFocus();
-            }
-        };
-        itemGenerator.setAction(textFieldAction, buttonAction);
-    }
+//    private void setUpItemGenerator(ItemGenerator itemGenerator) {
+//        Action buttonAction = new AbstractAction("Create") {
+//            @Override
+//            public void actionPerformed(ActionEvent e) {
+//                String id = itemGenerator.getIDFieldValue().toUpperCase();
+//                String category = itemGenerator.getCategoryFieldValue().toUpperCase();
+//                double listPrice;
+//                try {
+//                    listPrice = Double.parseDouble(itemGenerator.getPriceFieldValue());
+//                } catch (NumberFormatException exception) {
+//                    listPrice = 0;
+//                }
+//                if (id.equals("") || model.containsItem(id)) {
+//                    JOptionPane.showMessageDialog(null,
+//                            "ID is invalid or duplicate");
+//                } else if (!model.containsCategory(category)) {
+//                    JOptionPane.showMessageDialog(null,
+//                            "The given category: " + category + " is invalid");
+//                } else {
+//                    model.createItem(id, itemGenerator.getNameFieldValue(), category,
+//                            listPrice, itemGenerator.getDescriptionFieldValue(), itemGenerator.getNoteFieldValue());
+//                    //            stockPanel.itemAddedUpdate(id);
+//                    JOptionPane.showMessageDialog(null,
+//                            "Item: " + id + " has been successfully created");
+//                    itemGenerator.clearFields();
+//                }
+//            }
+//        };
+//        Action textFieldAction = new AbstractAction() {
+//            @Override
+//            public void actionPerformed(ActionEvent e) {
+//                ((JComponent)(e.getSource())).transferFocus();
+//            }
+//        };
+//        itemGenerator.setAction(textFieldAction, buttonAction);
+//    }
 
     public void stockTableRowDoubleClicked(ViewableTableEntryConvertibleModel entry) {
         if (entry instanceof Item) {
@@ -495,7 +512,6 @@ public class InventoryController extends AbstractController<Inventory, Inventory
     private RowConverterViewerTableModel getStockTableModel() {
         return (RowConverterViewerTableModel) (view.getStockButtonTable().getModel());
     }
-
 
     public void productsAdditionRequest(String idInput, String costInput, String priceInput,
                               String bestBeforeDateInput, String locationInput, String qtyInput, String description) {

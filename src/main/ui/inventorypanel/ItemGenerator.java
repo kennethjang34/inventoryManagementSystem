@@ -1,19 +1,16 @@
 package ui.inventorypanel;
 
-import model.Inventory;
-import ui.inventorypanel.controller.InventoryController;
+import ui.inventorypanel.view.InventoryViewPanel;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 //represents a panel that can generate items
-public class ItemGenerator extends JPanel implements ActionListener {
-    private Inventory inventory;
+public class ItemGenerator extends JPanel {
     private JTextField idField = new JTextField(10);
     private JTextField nameField = new JTextField(10);
     private JTextField categoryField = new JTextField(10);
@@ -21,10 +18,10 @@ public class ItemGenerator extends JPanel implements ActionListener {
     private JTextField description = new JTextField(10);
     private JTextField note = new JTextField(10);
     private JButton button = new JButton("Create");
-    private List<JComponent> components = new ArrayList<>();
+    private List<JTextField> textFields = new ArrayList<>();
 
     //EFFECTS: create a new panel that generates items
-    public ItemGenerator() {
+    public ItemGenerator(InventoryViewPanel viewPanel) {
         JPanel fieldPanel = new JPanel();
         initializeFieldPanel(fieldPanel);
         //button.addActionListener(stockPanel);
@@ -38,20 +35,35 @@ public class ItemGenerator extends JPanel implements ActionListener {
         gc.gridx = 0;
         gc.gridy = 1;
         add(button, gc);
-        components.add(idField);
-        components.add(nameField);
-        components.add(categoryField);
-        components.add(priceField);
-        components.add(description);
-        components.add(note);
-        components.add(button);
+        textFields.add(idField);
+        textFields.add(nameField);
+        textFields.add(categoryField);
+        textFields.add(priceField);
+        textFields.add(description);
+        textFields.add(note);
+//        components.add(button);
+        button.addKeyListener(InventoryViewPanel.getButtonEnterKeyListener());
+        for (JTextField field: textFields) {
+            field.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    JComponent component = (JComponent) e.getSource();
+                    component.transferFocus();
+                }
+            });
+        }
+
+        button.setAction(new AbstractAction("Create") {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                viewPanel.getController().itemGeneratorButtonClicked(idField.getText(), nameField.getText(),
+                        categoryField.getText(), priceField.getText(), description.getText(), note.getText());
+            }
+        });
+
 
     }
 
-
-//    public void setButtonActionListener(ActionListener actionListener) {
-//        button.addActionListener(actionListener);
-//    }
 
     public JButton getButton() {
         return button;
@@ -89,35 +101,35 @@ public class ItemGenerator extends JPanel implements ActionListener {
     //MODIFIES: this
     //EFFECTS: when the button is pressed, attempt to create a new item
     //If error happens, display proper error messages
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        if (inventory == null) {
-            return;
-        }
-        String id = idField.getText().toUpperCase();
-        String category = categoryField.getText().toUpperCase();
-        double listPrice;
-        try {
-            listPrice = Double.parseDouble(priceField.getText());
-        } catch (NumberFormatException exception) {
-            listPrice = 0;
-        }
-        if (id.equals("") || inventory.containsItem(id)) {
-            JOptionPane.showMessageDialog(null,
-                    "ID is invalid or duplicate");
-        } else if (!inventory.containsCategory(category)) {
-            JOptionPane.showMessageDialog(null,
-                    "The given category: " + category + " is invalid");
-        } else {
-            inventory.createItem(id, nameField.getText(), category,
-                    listPrice, description.getText(), note.getText()
-            );
-//            stockPanel.itemAddedUpdate(id);
-            JOptionPane.showMessageDialog(null,
-                    "Item: " + id + " has been successfully created");
-        }
-        clearFields();
-    }
+//    @Override
+//    public void actionPerformed(ActionEvent e) {
+//        if (inventory == null) {
+//            return;
+//        }
+//        String id = idField.getText().toUpperCase();
+//        String category = categoryField.getText().toUpperCase();
+//        double listPrice;
+//        try {
+//            listPrice = Double.parseDouble(priceField.getText());
+//        } catch (NumberFormatException exception) {
+//            listPrice = 0;
+//        }
+//        if (id.equals("") || inventory.containsItem(id)) {
+//            JOptionPane.showMessageDialog(null,
+//                    "ID is invalid or duplicate");
+//        } else if (!inventory.containsCategory(category)) {
+//            JOptionPane.showMessageDialog(null,
+//                    "The given category: " + category + " is invalid");
+//        } else {
+//            inventory.createItem(id, nameField.getText(), category,
+//                    listPrice, description.getText(), note.getText()
+//            );
+////            stockPanel.itemAddedUpdate(id);
+//            JOptionPane.showMessageDialog(null,
+//                    "Item: " + id + " has been successfully created");
+//        }
+//        clearFields();
+//    }
 
     public String getPriceFieldValue() {
         return priceField.getText();
@@ -144,7 +156,7 @@ public class ItemGenerator extends JPanel implements ActionListener {
     }
 
     public void setAction(Action textFieldAction, Action buttonAction) {
-        for (JComponent component: components) {
+        for (JComponent component: textFields) {
             if (component instanceof JButton) {
                 ((JButton) component).setAction(buttonAction);
             } else if (component instanceof JTextField) {

@@ -160,9 +160,9 @@ public class InventoryViewPanel extends JPanel {
     public InventoryViewPanel(Inventory inventory) {
         this.inventory = inventory;
         //Generators don't get updated when the model changes
-        categoryGenerator = new CategoryGenerator();
+        categoryGenerator = new CategoryGenerator(this);
         categoryGenerator.getButton().addKeyListener(buttonEnterListener);
-        itemGenerator = new ItemGenerator();
+        itemGenerator = new ItemGenerator(this);
         itemGenerator.getButton().addKeyListener(buttonEnterListener);
         searchPanel = SearchPanel.getSearchPanel();
         //stockButtonTable is decoupled from inventory

@@ -1,9 +1,12 @@
 package ui.inventorypanel;
 
 import model.Inventory;
+import ui.inventorypanel.controller.InventoryController;
+import ui.inventorypanel.view.InventoryViewPanel;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
 
 //represents a panel that makes it possible to create a new category as requested by the user
 public class CategoryGenerator extends JPanel {
@@ -12,18 +15,7 @@ public class CategoryGenerator extends JPanel {
     private JButton button = new JButton("create");
 
 
-
-//    //Not ued
-//    //EFFECTS: create a panel that helps the user create a new category
-//    public CategoryGenerator(Inventory inventory) {
-//        //this is a job for the inventory controller
-//        add(categoryLabel);
-//        add(categoryField);
-//        add(button);
-//
-//    }
-
-    public CategoryGenerator() {
+    public CategoryGenerator(InventoryViewPanel viewPanel) {
         setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.fill = GridBagConstraints.HORIZONTAL;
@@ -40,6 +32,14 @@ public class CategoryGenerator extends JPanel {
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.weightx = 1;
         add(button, gbc);
+        Action action = new AbstractAction("Create") {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String name = categoryField.getText();
+                viewPanel.getController().categoryGeneratorButtonClicked(name);
+            }
+        };
+        setAction(action);
     }
 
     //EFFECTS: return the button of this
