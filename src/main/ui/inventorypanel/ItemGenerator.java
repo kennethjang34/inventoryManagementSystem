@@ -41,8 +41,6 @@ public class ItemGenerator extends JPanel {
         textFields.add(priceField);
         textFields.add(description);
         textFields.add(note);
-//        components.add(button);
-        button.addKeyListener(InventoryViewPanel.getButtonEnterKeyListener());
         for (JTextField field: textFields) {
             field.addActionListener(new ActionListener() {
                 @Override
@@ -98,39 +96,6 @@ public class ItemGenerator extends JPanel {
         nameField.setText("");
     }
 
-    //MODIFIES: this
-    //EFFECTS: when the button is pressed, attempt to create a new item
-    //If error happens, display proper error messages
-//    @Override
-//    public void actionPerformed(ActionEvent e) {
-//        if (inventory == null) {
-//            return;
-//        }
-//        String id = idField.getText().toUpperCase();
-//        String category = categoryField.getText().toUpperCase();
-//        double listPrice;
-//        try {
-//            listPrice = Double.parseDouble(priceField.getText());
-//        } catch (NumberFormatException exception) {
-//            listPrice = 0;
-//        }
-//        if (id.equals("") || inventory.containsItem(id)) {
-//            JOptionPane.showMessageDialog(null,
-//                    "ID is invalid or duplicate");
-//        } else if (!inventory.containsCategory(category)) {
-//            JOptionPane.showMessageDialog(null,
-//                    "The given category: " + category + " is invalid");
-//        } else {
-//            inventory.createItem(id, nameField.getText(), category,
-//                    listPrice, description.getText(), note.getText()
-//            );
-////            stockPanel.itemAddedUpdate(id);
-//            JOptionPane.showMessageDialog(null,
-//                    "Item: " + id + " has been successfully created");
-//        }
-//        clearFields();
-//    }
-
     public String getPriceFieldValue() {
         return priceField.getText();
     }
@@ -155,13 +120,4 @@ public class ItemGenerator extends JPanel {
         return note.getText();
     }
 
-    public void setAction(Action textFieldAction, Action buttonAction) {
-        for (JComponent component: textFields) {
-            if (component instanceof JButton) {
-                ((JButton) component).setAction(buttonAction);
-            } else if (component instanceof JTextField) {
-                ((JTextField) component).setAction(textFieldAction);
-            }
-        }
-    }
 }

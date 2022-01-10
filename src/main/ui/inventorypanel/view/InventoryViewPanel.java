@@ -177,9 +177,6 @@ public class InventoryViewPanel extends JPanel {
         setUpSearchPanel(searchPanel);
 //        setUpAddPanel(getAddPanel());
         itemFilter = new JComboBox();
-
-
-
         categoryFilter = new FilterBox(inventory, Inventory.CATEGORY) {
             //For when a new item is added to the category or removed from it
             @Override
@@ -233,6 +230,7 @@ public class InventoryViewPanel extends JPanel {
         productRemovalButton = new JButton("Remove");
         productRemovalButton.addKeyListener(buttonEnterListener);
         setUpItemFilter();
+        setUpCategoryFilter();
         addPanel = new AddPanel(this);
         setUpProductGeneratorButton();
         setUpProductRemovalButton();
@@ -576,6 +574,17 @@ public class InventoryViewPanel extends JPanel {
         add(panelForGenerators, gbc);
     }
 
+    private void setUpCategoryFilter() {
+        categoryFilter.addItemListener(new ItemListener() {
+            @Override
+            public void itemStateChanged(ItemEvent e) {
+                String selectedItem = (String) categoryFilter.getSelectedItem();
+                controller.categoryFilterSelected(selectedItem);
+            }
+        });
+
+    }
+
     private void setUpItemFilter() {
         List<String> items = new ArrayList<>();
         if (inventory.getIDs().isEmpty()) {
@@ -586,6 +595,15 @@ public class InventoryViewPanel extends JPanel {
             items.addAll(inventory.getIDs());
         }
         itemFilter.setModel((new DefaultComboBoxModel(items.toArray(new String[0]))));
+
+        itemFilter.addItemListener(new ItemListener() {
+            @Override
+            public void itemStateChanged(ItemEvent e) {
+                String selectedItem = (String) itemFilter.getSelectedItem();
+                controller.itemFilterSelected(selectedItem);
+            }
+        });
+
     }
 
     //EFFECTS: create a new location view of a particular stock based on the request
@@ -766,12 +784,6 @@ public class InventoryViewPanel extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 controller.addButtonClicked();
-//                JDialog dialog = new JDialog();
-//                AddPanel addPanel = getAddPanel();
-//                dialog.add(addPanel);
-//                dialog.pack();
-//                dialog.setLocationRelativeTo(null);
-//                dialog.setVisible(true);
             }
         });
     }

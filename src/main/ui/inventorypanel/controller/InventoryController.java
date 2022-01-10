@@ -83,8 +83,6 @@ public class InventoryController extends AbstractController<Inventory, Inventory
     @Override
     public void setUpView() {
         view.setController(this);
-        setUpCategoryFilter(view.getCategoryFilter());
-        setUpItemFilter(view.getItemFilter());
         setUpCategoryField(view.getCategoryField());
         setUpItemField(view.getItemField());
         view.setLocationTableAction(new LocationTableButtonAction());
@@ -123,42 +121,49 @@ public class InventoryController extends AbstractController<Inventory, Inventory
         }
     }
 
-    public void setUpCategoryFilter(JComboBox categoryFilter) {
-        categoryFilter.addItemListener(new ItemListener() {
-            @Override
-            public void itemStateChanged(ItemEvent e) {
-                if (categoryFilter.getSelectedItem() != null) {
-                    String selectedCategory = (String) categoryFilter.getSelectedItem();
-                    if (selectedCategory.equals(FilterBox.TYPE_MANUALLY)) {
-                        view.getCategoryField().setVisible(true);
-                        return;
-                    }
-                    view.updateItemFilter(selectedCategory);
-                    TableRowSorter sorter = (TableRowSorter) view.getStockButtonTable().getRowSorter();
-                    RowFilter<TableModel, Integer> filter = createCategoryRowFilter(selectedCategory);
-                    sorter.setRowFilter(filter);
-                }
+//    public void setUpCategoryFilter(JComboBox categoryFilter) {
+//        categoryFilter.addItemListener(new ItemListener() {
+//            @Override
+//            public void itemStateChanged(ItemEvent e) {
+//                if (categoryFilter.getSelectedItem() != null) {
+//                    String selectedCategory = (String) categoryFilter.getSelectedItem();
+//                    if (selectedCategory.equals(FilterBox.TYPE_MANUALLY)) {
+//                        view.getCategoryField().setVisible(true);
+//                        return;
+//                    }
+//                    view.updateItemFilter(selectedCategory);
+//                    TableRowSorter sorter = (TableRowSorter) view.getStockButtonTable().getRowSorter();
+//                    RowFilter<TableModel, Integer> filter = createCategoryRowFilter(selectedCategory);
+//                    sorter.setRowFilter(filter);
+//                }
+//            }
+//        });
+//    }
+
+    public void categoryFilterSelected(String selectedCategory) {
+        if (selectedCategory != null) {
+            if (selectedCategory.equals(FilterBox.TYPE_MANUALLY)) {
+                view.getCategoryField().setVisible(true);
+                return;
             }
-        });
+            view.updateItemFilter(selectedCategory);
+            TableRowSorter sorter = (TableRowSorter) view.getStockButtonTable().getRowSorter();
+            RowFilter<TableModel, Integer> filter = createCategoryRowFilter(selectedCategory);
+            sorter.setRowFilter(filter);
+        }
     }
 
 
-    public void setUpItemFilter(JComboBox itemFilter) {
 
-        itemFilter.addItemListener(new ItemListener() {
-            @Override
-            public void itemStateChanged(ItemEvent e) {
-                String selectedItem = (String) itemFilter.getSelectedItem();
-                if (selectedItem != null) {
-                    if (selectedItem.equals("TYPE_MANUALLY")) {
-                        view.getItemField().setVisible(true);
-                    }
-                    TableRowSorter sorter = (TableRowSorter) view.getStockButtonTable().getRowSorter();
-                    RowFilter<TableModel, Integer> filter = createIDRowFilter(selectedItem);
-                    sorter.setRowFilter(filter);
-                }
+    public void itemFilterSelected(String selectedItem) {
+        if (selectedItem != null) {
+            if (selectedItem.equals("TYPE_MANUALLY")) {
+                view.getItemField().setVisible(true);
             }
-        });
+            TableRowSorter sorter = (TableRowSorter) view.getStockButtonTable().getRowSorter();
+            RowFilter<TableModel, Integer> filter = createIDRowFilter(selectedItem);
+            sorter.setRowFilter(filter);
+        }
     }
 
 
