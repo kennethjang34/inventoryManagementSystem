@@ -15,33 +15,11 @@ public class RegisterPrompter extends AbstractAdminInputPrompter {
     private static final RegisterPrompter prompter = new RegisterPrompter();
     private static JDialog dialog;
 
-    private KeyListener buttonEnterListener = new KeyListener() {
-        @Override
-        public void keyTyped(KeyEvent e) {
-
-        }
-
-        @Override
-        public void keyPressed(KeyEvent e) {
-            if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-                if (e.getSource() instanceof JButton) {
-                    JButton button = (JButton) e.getSource();
-                    button.doClick();
-                }
-            }
-        }
-
-        @Override
-        public void keyReleased(KeyEvent e) {
-
-        }
-    };
 
 
     //EFFECTS: create a new register panel with empty text fields.
     private RegisterPrompter() {
         registerButton = new JButton("Register");
-        registerButton.addKeyListener(buttonEnterListener);
         add(nameLabel);
         add(nameField);
         add(birthdayLabel);

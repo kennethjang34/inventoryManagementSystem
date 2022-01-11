@@ -5,6 +5,10 @@ import ui.AbstractAdminInputPrompter;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 
 //A small panel that will be displayed if the user presses retrieve button
 public class RetrievePrompter extends AbstractAdminInputPrompter {
@@ -26,6 +30,17 @@ public class RetrievePrompter extends AbstractAdminInputPrompter {
         add(codeLabel);
         add(codeField);
         add(retrieveButton);
+        ActionListener listener = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Component component = (Component) e.getSource();
+                component.transferFocus();
+            }
+        };
+        idField.addActionListener(listener);
+        nameField.addActionListener(listener);
+        birthdayField.addActionListener(listener);
+        codeField.addActionListener(listener);
     }
 
     //Singleton pattern applied
@@ -60,6 +75,7 @@ public class RetrievePrompter extends AbstractAdminInputPrompter {
         dialog.pack();
         dialog.setLocationRelativeTo(parentComponent);
         dialog.setModalityType(Dialog.ModalityType.APPLICATION_MODAL);
+        dialog.setAlwaysOnTop(true);
         dialog.setVisible(true);
     }
 

@@ -222,7 +222,6 @@ public class Product extends ViewableTableEntryConvertibleModel implements JsonC
         return entry;
     }
 
-
 }
 
 

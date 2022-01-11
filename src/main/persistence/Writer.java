@@ -24,6 +24,8 @@ public class Writer {
     //with the pre-set indent factor.
     public void write(JsonConvertible obj) {
         JSONObject jsonObject = obj.toJson();
+        //This line of code was cited from JsonSerializationDemo
+        //Link: https://github.students.cs.ubc.ca/CPSC210/JsonSerializationDemo.git
         writer.print(jsonObject.toString(indentFactorJson));
     }
 

@@ -9,6 +9,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 
 //NOTE: planning to make AdminPanel extend Admin directly
 //A panel that lets the user deal with administrative jobs
@@ -21,6 +23,25 @@ public class AdminViewPanel extends JPanel {
     private JButton createButton;
 
 
+    private KeyListener buttonEnterListener = new KeyListener() {
+        @Override
+        public void keyTyped(KeyEvent e) {
+
+        }
+
+        @Override
+        public void keyPressed(KeyEvent e) {
+            if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+                JButton button = (JButton) e.getSource();
+                button.doClick();
+            }
+        }
+
+        @Override
+        public void keyReleased(KeyEvent e) {
+
+        }
+    };
 
 
     //EFFECTS: create a new admin panel with the given admin and application
@@ -55,6 +76,11 @@ public class AdminViewPanel extends JPanel {
         gbc.weightx = 0;
         gbc.weighty = 0;
         add(createButton, gbc);
+        loginPanel.getLoginButton().addKeyListener(buttonEnterListener);
+        loginPanel.getCancelButton().addKeyListener(buttonEnterListener);
+        loginPanel.getRetrieveButton().addKeyListener(buttonEnterListener);
+        retrievePrompter.getRetrieveButton().addKeyListener(buttonEnterListener);
+        registerPrompter.getRegisterButton().addKeyListener(buttonEnterListener);
     }
 
     public RegisterPrompter getRegisterPrompter() {

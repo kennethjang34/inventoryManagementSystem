@@ -31,11 +31,6 @@ public class Ledger extends AbstractTableDataFactory implements JsonConvertible,
         RECORDED_DATE_LIST, ACCOUNTS, NEXT_ACCOUNT_NUMBER, CODE_SIZE
     }
 
-    public static final String[] DATA_LIST = new String[]{
-            RecordedDate.ColumnName.DATE.toString(), RecordedDate.ColumnName.ID.toString(), RecordedDate.ColumnName.TOTAL_ACCOUNTS.toString(),
-            RecordedDate.ColumnName.BROUGHT_IN.toString(), RecordedDate.ColumnName.TAKEN_OUT.toString()
-    };
-
     @Override
     public void entryRemoved(ViewableTableEntryConvertibleModel o) {
         if (o instanceof Product) {

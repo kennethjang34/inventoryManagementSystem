@@ -24,27 +24,6 @@ import java.time.LocalDate;
 //control admin + login status
 public class AdminController extends AbstractController<Admin, AdminViewPanel> {
 
-    private KeyListener buttonEnterListener = new KeyListener() {
-        @Override
-        public void keyTyped(KeyEvent e) {
-
-        }
-
-        @Override
-        public void keyPressed(KeyEvent e) {
-            if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-                JButton button = (JButton) e.getSource();
-                button.doClick();
-            }
-        }
-
-        @Override
-        public void keyReleased(KeyEvent e) {
-
-        }
-    };
-
-
 
     public AdminController(Admin admin, AdminViewPanel adminViewPanel) {
         super(admin, adminViewPanel);
@@ -97,15 +76,19 @@ public class AdminController extends AbstractController<Admin, AdminViewPanel> {
             //EFFECTS: show the password of the account matching the given information.
             //If there isn't any, display error message.
             public void actionPerformed(ActionEvent e) {
-                int personalCode = Integer.parseInt(retrievePrompter.getPersonalCodeFieldInput());
-                LocalDate birthday = InventoryManagementSystemApplication.convertToLocalDate(retrievePrompter.getBirthDayFieldInput());
-                String pw = model.retrievePassword(retrievePrompter.getIdFieldInput(),
-                        retrievePrompter.getNameFieldInput(), birthday, personalCode);
-                if (pw != null) {
-                    JOptionPane.showMessageDialog(RetrievePrompter.getDialog(), "The password is : " + pw);
-                    RetrievePrompter.getDialog().setVisible(false);
-                } else {
-                    JOptionPane.showMessageDialog(null, "Given info is not correct");
+                try {
+                    int personalCode = Integer.parseInt(retrievePrompter.getPersonalCodeFieldInput());
+                    LocalDate birthday = InventoryManagementSystemApplication.convertToLocalDate(retrievePrompter.getBirthDayFieldInput());
+                    String pw = model.retrievePassword(retrievePrompter.getIdFieldInput(),
+                            retrievePrompter.getNameFieldInput(), birthday, personalCode);
+                    if (pw != null) {
+                        JOptionPane.showMessageDialog(RetrievePrompter.getDialog(), "The password is : " + pw);
+                        RetrievePrompter.getDialog().setVisible(false);
+                    } else {
+                        JOptionPane.showMessageDialog(null, "Given info is not correct");
+                    }
+                } catch (Exception exception) {
+                    JOptionPane.showMessageDialog(null, "Given inputs are not in valid format");
                 }
             }
         });
@@ -156,9 +139,6 @@ public class AdminController extends AbstractController<Admin, AdminViewPanel> {
         JButton loginButton = loginPanel.getLoginButton();
         JButton cancelButton = loginPanel.getCancelButton();
         JButton retrieveButton = loginPanel.getRetrieveButton();
-        loginButton.addKeyListener(buttonEnterListener);
-        cancelButton.addKeyListener(buttonEnterListener);
-        retrieveButton.addKeyListener(buttonEnterListener);
         loginButton.addActionListener(new ActionListener() {
             //MODIFIES: this
             //EFFECTS: If the user has tried to sign in, check if the input is valid.
