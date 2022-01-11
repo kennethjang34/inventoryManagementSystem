@@ -60,12 +60,7 @@ To save the changes of the inventory, the user needs to manually click "Save" op
 However, whenever a new login account is created, the application will save the new account automatically right away.
 
 The user can click retrieve button on login panel to retrieve the password, providing id, name, birthday, and personal number that was registered in the login account when it was created.
-
-
-
-
-
-##Reasons behind choice of this project
+## Reasons behind choice of this project
 To briefly mention why I chose this project, I was looking for a project to which I can apply various design pattern/architectures such as observer pattern or MVC architecture 
 that can also be directly used in real life. Along the way of finding a good project to start with, I found out that applications such as to-do list program and inventory management software
 require those skills I was intending to apply and improve. Since this type of project involves creating several entries(products, items, categories, dates, etc.) and
@@ -73,9 +68,7 @@ editing and recording those entries as well as presenting them in the easy-to-us
 where I could practice applying several design patterns including observer pattern and singleton pattern to a real application and 
 learn how MVC architecture helped decouples model, view and controller, making codes more re-usable.
 
-
-
-##Review
+## Review
 There were many things to be improved that I couldn't deal with due to lack of time.
 As this project was done in a limited time period, I couldn't make the best GUI design I can make. 
 GUI design is still very intuitive and easy to use, but each panel might look simple as I only used basic design of Java Swing components.
