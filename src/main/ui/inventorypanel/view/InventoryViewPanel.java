@@ -1,6 +1,5 @@
 package ui.inventorypanel.view;
 
-import jdk.nashorn.internal.scripts.JD;
 import model.*;
 import ui.*;
 import ui.inventorypanel.controller.InventoryController;

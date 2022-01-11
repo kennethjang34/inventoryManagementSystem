@@ -1,7 +1,5 @@
 package ui.table;
 
-import java.util.List;
-
 public abstract class AbstractTableDataFactory extends AbstractViewableDataModel implements DataFactory {
 
 

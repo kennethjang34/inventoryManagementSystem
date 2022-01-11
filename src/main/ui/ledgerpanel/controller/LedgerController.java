@@ -4,16 +4,13 @@ import model.*;
 import ui.AbstractController;
 import ui.FilterBox;
 import ui.ledgerpanel.view.LedgerViewPanel;
-import ui.table.ButtonTable;
 
 import javax.swing.*;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
-import java.awt.event.*;
 import java.beans.PropertyChangeEvent;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 
 import static ui.inventorypanel.controller.InventoryController.convertToLocalDate;

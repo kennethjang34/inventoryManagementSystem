@@ -1,7 +1,6 @@
 package ui.table;
 
 import model.TableEntryConvertible;
-import ui.RowDataChangeSupport;
 
 public abstract class ViewableTableEntryConvertibleModel extends AbstractViewableDataModel
         implements TableEntryConvertible {

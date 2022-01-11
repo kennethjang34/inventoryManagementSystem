@@ -10,18 +10,12 @@ import ui.table.ViewableTableEntryConvertibleModel;
 
 import javax.swing.*;
 import javax.swing.table.*;
-import javax.tools.Tool;
 import java.awt.*;
 import java.awt.event.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
-import java.util.logging.Filter;
-import java.util.stream.Stream;
-
-import static ui.inventorypanel.controller.InventoryController.convertToLocalDate;
 
 public class LedgerViewPanel extends JPanel {
     private LedgerController controller;

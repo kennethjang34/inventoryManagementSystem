@@ -3,10 +3,8 @@ package model;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import persistence.JsonConvertible;
-import ui.table.ViewableTableEntryConvertibleModel;
 
 import java.time.LocalDate;
-import java.util.*;
 
 //represents an account that contains information about the change that happens on a particular date.
 //will have account code, description, date, and quantities for each different item code.

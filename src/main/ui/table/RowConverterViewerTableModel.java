@@ -1,16 +1,8 @@
 package ui.table;
 
-import model.Item;
-import model.Product;
 import ui.DataViewer;
 
-import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
-import javax.swing.table.DefaultTableModel;
-import javax.swing.table.JTableHeader;
-import java.awt.*;
-import java.awt.event.MouseEvent;
-import java.time.LocalDate;
 import java.util.*;
 import java.util.List;
 

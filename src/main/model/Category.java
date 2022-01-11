@@ -8,7 +8,6 @@ import ui.table.DataFactory;
 import ui.table.TableEntryConvertibleDataFactory;
 import ui.table.ViewableTableEntryConvertibleModel;
 
-import javax.xml.crypto.Data;
 import java.util.*;
 
 //represents a category where similar items belong

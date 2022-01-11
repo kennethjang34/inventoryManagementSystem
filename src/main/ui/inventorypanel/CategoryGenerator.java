@@ -1,7 +1,5 @@
 package ui.inventorypanel;
 
-import model.Inventory;
-import ui.inventorypanel.controller.InventoryController;
 import ui.inventorypanel.view.InventoryViewPanel;
 
 import javax.swing.*;

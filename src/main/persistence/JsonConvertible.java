@@ -3,9 +3,7 @@ package persistence;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 //This interface was modelled after JsonSerializationDemo
 //a sample application for using JSON package provided by UBC Computer science Faculty
 //for CPSC 210 Students (2021/10/19).

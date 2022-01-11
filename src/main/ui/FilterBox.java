@@ -1,7 +1,6 @@
 package ui;
 
 import ui.table.AbstractTableDataFactory;
-import ui.DataViewer;
 import ui.table.DataFactory;
 import ui.table.ViewableTableEntryConvertibleModel;
 

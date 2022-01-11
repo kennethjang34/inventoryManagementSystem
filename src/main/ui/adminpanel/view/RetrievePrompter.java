@@ -1,14 +1,11 @@
 package ui.adminpanel.view;
 
-import model.Admin;
 import ui.AbstractAdminInputPrompter;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
 
 //A small panel that will be displayed if the user presses retrieve button
 public class RetrievePrompter extends AbstractAdminInputPrompter {

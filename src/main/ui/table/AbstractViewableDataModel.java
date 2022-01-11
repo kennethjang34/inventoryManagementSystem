@@ -3,9 +3,7 @@ package ui.table;
 import ui.RowDataChangeSupport;
 import ui.DataViewer;
 
-import javax.xml.crypto.Data;
 import java.beans.PropertyChangeListener;
-import java.util.List;
 
 //represents an abstract model that can fire propertyChangeEvent
 public abstract class AbstractViewableDataModel {

@@ -2,11 +2,7 @@ package ui.inventorypanel.controller;
 
 import model.*;
 import ui.*;
-import ui.inventorypanel.view.SearchPanel;
 import ui.table.*;
-import ui.inventorypanel.CategoryGenerator;
-import ui.inventorypanel.ItemGenerator;
-import ui.inventorypanel.view.AddPanel;
 import ui.FilterBox;
 import ui.inventorypanel.view.InventoryViewPanel;
 
