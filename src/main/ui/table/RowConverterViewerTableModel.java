@@ -6,13 +6,13 @@ import javax.swing.table.AbstractTableModel;
 import java.util.*;
 import java.util.List;
 
+//represents a table model that can convert ViewableTableEntryConvertibleModel into a row object and pair the entry model and the actual row
 public class RowConverterViewerTableModel extends AbstractTableModel implements DataViewer {
     protected LinkedHashMap<ViewableTableEntryConvertibleModel, Object[]> data;
     protected List<ViewableTableEntryConvertibleModel> tableEntries;
     protected String[] columnNames;
     protected int baseColumnIndex;
     protected boolean duplicateAllowed;
-    protected boolean automation = true;
     //category indicates the section of the data factory that this table will display the information of
     protected String category;
     protected DataFactory factory;
@@ -112,34 +112,6 @@ public class RowConverterViewerTableModel extends AbstractTableModel implements 
 
 
 
-    public RowConverterViewerTableModel(List<? extends ViewableTableEntryConvertibleModel> entries, boolean watching) {
-        data = new LinkedHashMap<>(entries.size());
-        tableEntries = new LinkedList<>();
-        for (ViewableTableEntryConvertibleModel entry: entries) {
-            if (watching) {
-                entry.addUpdateListener(this);;
-            }
-            data.put(entry, createRow(entry.convertToTableEntry()));
-            tableEntries.add(entry);
-        }
-        this.columnNames = entries.get(0).getColumnNames();
-        duplicateAllowed = false;
-    }
-
-    public RowConverterViewerTableModel(List<? extends ViewableTableEntryConvertibleModel> entries, String[] columnNames, boolean watching) {
-        this.columnNames = columnNames;
-        tableEntries = new LinkedList<>();
-        data = new LinkedHashMap<>(entries.size());
-        for (ViewableTableEntryConvertibleModel entry: entries) {
-            if (watching) {
-                entry.addUpdateListener(this);;
-            }
-            data.put(entry, createRow(entry.convertToTableEntry()));
-            tableEntries.add(entry);
-        }
-        duplicateAllowed = false;
-    }
-
     public void setDataFactory(AbstractTableDataFactory factory) {
         this.factory = factory;
         data = new LinkedHashMap<>();
@@ -166,17 +138,11 @@ public class RowConverterViewerTableModel extends AbstractTableModel implements 
 
 
 
-    public void setAutomation(boolean automation) {
-        this.automation = automation;
-    }
 
     public void setDuplicateAllowed(boolean duplicate) {
         duplicateAllowed = duplicate;
     }
 
-    public boolean getDuplicateAllowed() {
-        return duplicateAllowed;
-    }
 
     //
     @Override
@@ -330,13 +296,6 @@ public class RowConverterViewerTableModel extends AbstractTableModel implements 
         return data.get(tableEntries.get(index));
     }
 
-    public List<Object[]> getRowObjects(int[] indices) {
-        List<Object[]> rows = new ArrayList<>();
-        for (int i: indices) {
-            rows.add(getRow(i));
-        }
-        return rows;
-    }
 
     public List<Object[]> getRowObjects(List<? extends ViewableTableEntryConvertibleModel> entries) {
         List<Object[]> rows = new LinkedList<>();
@@ -346,53 +305,7 @@ public class RowConverterViewerTableModel extends AbstractTableModel implements 
         return rows;
     }
 
-    public Object[] getRowObject(ViewableTableEntryConvertibleModel entry) {
-        return data.get(entry);
-    }
-
-    //if there is a row that contains the same item in the specified column, return the index of the row
-    //Otherwise, return -1
-    public int findRowIndex(Object obj, int baseColumnIndex) {
-        for (int i = 0; i < tableEntries.size(); i++) {
-            if (obj.equals(getRow(i)[baseColumnIndex])) {
-                return i;
-            }
-        }
-        return -1;
-    }
-
-    //if there is a row that contains the same item, return the index of the row
-    //Otherwise, return -1
-    @SuppressWarnings({"checkstyle:MethodLength", "checkstyle:SuppressWarnings"})
-    public int findRowIndex(Object[] row) {
-        if (row == null || data.isEmpty() || row.length != data.get(0).length) {
-            return -1;
-        }
-
-        if (baseColumnIndex < 0) {
-            for (int i = 0; i < data.size(); i++) {
-                Object[] existing = data.get(i);
-                int j = 0;
-                for (; j < existing.length; j++) {
-                    if (!existing[j].equals(row[j])) {
-                        break;
-                    }
-                }
-                if (j == existing.length) {
-                    return i;
-                }
-            }
-        } else {
-            Object obj = row[baseColumnIndex];
-            for (int i = 0; i < data.size(); i++) {
-                if (obj.equals(data.get(i)[baseColumnIndex])) {
-                    return i;
-                }
-            }
-        }
-        return -1;
-    }
-
+    //find the model row of the given entry model
     public int findRowIndex(ViewableTableEntryConvertibleModel entryModel) {
         ArrayList<ViewableTableEntryConvertibleModel> list = new ArrayList<>(data.keySet());
         return list.indexOf(entryModel);
@@ -408,6 +321,7 @@ public class RowConverterViewerTableModel extends AbstractTableModel implements 
         fireTableRowsDeleted(correspondingTableIndex, correspondingTableIndex);
     }
 
+
     public void removeRow(ViewableTableEntryConvertibleModel entryConvertibleModel) {
         int correspondingTableIndex = tableEntries.indexOf(entryConvertibleModel);
         if (tableEntries.remove(entryConvertibleModel)) {
@@ -418,7 +332,7 @@ public class RowConverterViewerTableModel extends AbstractTableModel implements 
 
 
 
-
+    //will be overridden in child class when needed
     protected Object[] createRow(Object[] entryData) {
         return entryData;
     }
@@ -506,7 +420,7 @@ public class RowConverterViewerTableModel extends AbstractTableModel implements 
     }
 
     @Override
-    public void entryAdded(List<? extends ViewableTableEntryConvertibleModel> list) {
+    public void entryAdded(List<? extends ViewableTableEntryConvertibleModel> added) {
 
     }
 
@@ -524,19 +438,19 @@ public class RowConverterViewerTableModel extends AbstractTableModel implements 
     }
 
     @Override
-    public void updated(ViewableTableEntryConvertibleModel source, String property, Object o1, Object o2) {
+    public void updated(ViewableTableEntryConvertibleModel source, String property, Object old, Object newProperty) {
         Object[] row = data.get(source);
         if (row == null) {
             return;
         }
         int column = findColumn(property);
         if (column >= 0) {
-            row[column] = o2;
+            row[column] = newProperty;
             fireTableCellUpdated(tableEntries.indexOf(source), column);
         } else {
             for (int i = 0; i < row.length; i++) {
-                if (row[i].equals(o1)) {
-                    row[i] = o2;
+                if (row[i].equals(old)) {
+                    row[i] = newProperty;
                     fireTableCellUpdated(tableEntries.indexOf(source), i);
                     return;
                 }

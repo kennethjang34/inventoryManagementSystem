@@ -19,7 +19,7 @@ import java.beans.PropertyChangeEvent;
 import java.time.LocalDate;
 
 
-//control admin + login status
+//controller for admin portion of the application.
 public class AdminController extends AbstractController<Admin, AdminViewPanel> {
 
 
@@ -35,6 +35,8 @@ public class AdminController extends AbstractController<Admin, AdminViewPanel> {
     }
 
 
+    //Set up the register panel so that it can report the input to the controller and specify what to happen
+    //MODIFIES: Register panel
     private void setUpRegisterPanel() {
         RegisterPrompter registerPrompter =  view.getRegisterPrompter();
         registerPrompter.getRegisterButton().addActionListener(e -> {
@@ -68,6 +70,8 @@ public class AdminController extends AbstractController<Admin, AdminViewPanel> {
         });
     }
 
+    //set up the retrieve panel so that it could report the user input and display the proper output.
+    //MODIFIES: Retrieve panel
     private void setUpRetrievePanel() {
         RetrievePrompter retrievePrompter = view.getRetrievePrompter();
         retrievePrompter.getRetrieveButton().addActionListener(new ActionListener() {
@@ -92,6 +96,9 @@ public class AdminController extends AbstractController<Admin, AdminViewPanel> {
         });
     }
 
+    //set up admin panel so that the create button could properly report inputs.
+    //if there is no account in the admin, prompt the user to register a new account first
+    //MODIFIES: loginPanel
     public void setUpAdminPanel() {
         JButton createButton = view.getCreateButton();
         createButton.addActionListener(new ActionListener() {
@@ -112,6 +119,7 @@ public class AdminController extends AbstractController<Admin, AdminViewPanel> {
     }
 
 
+    //when the user changes data entries of a login account, update the login account model accordingly
     public void setUpAccountsTable(JTable accountsTable) {
         RowConverterViewerTableModel accountsTableModel = new RowConverterViewerTableModel(model, Admin.ACCOUNT) {
             //Modifies: entry object and row representing that object
@@ -173,6 +181,7 @@ public class AdminController extends AbstractController<Admin, AdminViewPanel> {
         });
     }
 
+
     private void displayAdminRegisterPanel() {
         RegisterPrompter.displayRegisterPrompterForAdmin(InventoryManagementSystemApplication.getApplication(),
                 Dialog.ModalityType.APPLICATION_MODAL);
@@ -185,6 +194,8 @@ public class AdminController extends AbstractController<Admin, AdminViewPanel> {
     public void logout() {
         model.setLoginAccount(null);
     }
+
+
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {

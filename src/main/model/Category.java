@@ -168,12 +168,12 @@ public class Category extends TableEntryConvertibleDataFactory implements JsonCo
     }
 
     @Override
-    public void entryRemoved(ViewableTableEntryConvertibleModel o) {
+    public void entryRemoved(ViewableTableEntryConvertibleModel removed) {
 
     }
 
     @Override
-    public void entryRemoved(DataFactory source, List<? extends ViewableTableEntryConvertibleModel> list) {
+    public void entryRemoved(DataFactory source, List<? extends ViewableTableEntryConvertibleModel> removed) {
 
     }
 
@@ -183,7 +183,7 @@ public class Category extends TableEntryConvertibleDataFactory implements JsonCo
     }
 
     @Override
-    public void entryAdded(ViewableTableEntryConvertibleModel o) {
+    public void entryAdded(ViewableTableEntryConvertibleModel added) {
 
     }
 
@@ -193,7 +193,7 @@ public class Category extends TableEntryConvertibleDataFactory implements JsonCo
     }
 
     @Override
-    public void entryAdded(List<? extends ViewableTableEntryConvertibleModel> list) {
+    public void entryAdded(List<? extends ViewableTableEntryConvertibleModel> added) {
 
     }
 
@@ -203,7 +203,7 @@ public class Category extends TableEntryConvertibleDataFactory implements JsonCo
     }
 
     @Override
-    public void updated(ViewableTableEntryConvertibleModel source, String property, Object o1, Object o2) {
+    public void updated(ViewableTableEntryConvertibleModel source, String property, Object old, Object newProperty) {
 
     }
 

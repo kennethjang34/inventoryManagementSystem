@@ -7,30 +7,25 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-//represents a table model with a column dedicated to buttons
+//represents a table model with the last column dedicated to buttons
 public class ButtonTableModel extends RowConverterViewerTableModel {
 
-//    ActionListener buttonActionListener;
-//    String buttonText;
-//    Action actionInitiator;
     Action buttonAction;
 
 
-    //entry must be object[] or TableEntryConvertible instance
+    //entries must implement ViewableTableEntryConvertibleModel abstract class
     public ButtonTableModel(List<? extends ViewableTableEntryConvertibleModel> entries, String[] columnNames,
                             String buttonColumnName) {
         super(entries, createColumnNames(columnNames, buttonColumnName));
     }
 
-    public ButtonTableModel(AbstractTableDataFactory model, String buttonColumnName, String category) {
-        super(model, createColumnNames(model.getColumnNames(), buttonColumnName), category);
+    //category: the specific category that the entries of the table  belong in the data factory they are from
+    public ButtonTableModel(AbstractTableDataFactory factory, String buttonColumnName, String category) {
+        super(factory, createColumnNames(factory.getColumnNames(), buttonColumnName), category);
     }
 
 
-
-
-
-
+    //merge the entry column names from entry models with a new button column name
     private static String[] createColumnNames(String[] columnNames, String buttonColumnName) {
         String[] newColumnNames = new String[columnNames.length + 1];
         for (int i = 0; i < columnNames.length; i++) {
@@ -38,52 +33,6 @@ public class ButtonTableModel extends RowConverterViewerTableModel {
         }
         newColumnNames[newColumnNames.length - 1] = buttonColumnName;
         return newColumnNames;
-    }
-
-
-
-    //EFFECTS: add a new column of JButtons to the data of the table model
-    //and add new buttons with the given action listener attached
-    //set the text of the button to the given text
-    private void addButtonColumn(List<Object[]> data, String buttonColumnName,
-                                 ActionListener actionListener, String text) {
-        int buttonColumnLength = data.size();
-        for (int i = 0; i < data.size() + 1; i++) {
-            JButton button = new JButton();
-            button.addActionListener(actionListener);
-            button.setText(text);
-            Object[] newRow = new Object[columnNames.length];
-            Object[] existing = data.get(i);
-            for (int j = 0; j < existing.length; j++) {
-                newRow[j] = existing[j];
-            }
-            newRow[columnNames.length - 1] = button;
-            data.set(i, newRow);
-        }
-    }
-
-
-    //EFFECTS: add a new column of JButtons to the data of the table model
-    //and add new buttons with no action listener attached
-    //set the text of the button to the given text
-    private void addButtonColumn() {
-        if (data.isEmpty()) {
-            return;
-        }
-        int buttonColumnLength = data.size();
-        for (Map.Entry<ViewableTableEntryConvertibleModel, Object[]> entry: data.entrySet()) {
-            JButton button = new JButton();
-//            button.addActionListener(actionListener);
-            button.setAction(buttonAction);
-            Object[] newRow = new Object[columnNames.length];
-            Object[] existing = entry.getValue();
-            for (int j = 0; j < existing.length; j++) {
-                newRow[j] = existing[j];
-            }
-            newRow[columnNames.length - 1] = button;
-            entry.setValue(newRow);
-//            data.put(i, newRow);
-        }
     }
 
     public int getButtonColumnIndex() {
@@ -123,7 +72,7 @@ public class ButtonTableModel extends RowConverterViewerTableModel {
 
 
 
-
+    //for each button of the last column, set the action to the given
     public void setButtonAction(Action action) {
         buttonAction = action;
         for (JButton button: getButtons()) {

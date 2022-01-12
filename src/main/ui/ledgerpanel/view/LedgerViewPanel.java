@@ -55,18 +55,18 @@ public class LedgerViewPanel extends JPanel {
     public void setUpDateFilter() {
         dateFilter = new FilterBox(this.ledger, Ledger.DataList.RECORDED_DATE.toString()) {
             @Override
-            public void entryAdded(ViewableTableEntryConvertibleModel entry) {
-                if (entry instanceof RecordedDate) {
-                    entry.addDataChangeListener(this);
+            public void entryAdded(ViewableTableEntryConvertibleModel added) {
+                if (added instanceof RecordedDate) {
+                    added.addDataChangeListener(this);
                     if (getItemCount() == 1 && getItemAt(0).equals(EMPTY)) {
                         removeItemAt(0);
                         addItem(ALL);
                         addItem(TYPE_MANUALLY);
                     }
-                    addItem(entry.toString());
+                    addItem(added.toString());
                 }
-                else if (entry instanceof Account) {
-                    Account account = (Account) entry;
+                else if (added instanceof Account) {
+                    Account account = (Account) added;
                     DefaultComboBoxModel<String> itemFilterModel = (DefaultComboBoxModel<String>) itemFilter.getModel();
                     if (itemFilterModel.getIndexOf(account.getID()) != -1) {
                         return;

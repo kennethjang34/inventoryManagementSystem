@@ -15,56 +15,45 @@ public abstract class AbstractViewableDataModel {
         changeFirer = new RowDataChangeSupport(this);
     }
 
-    public AbstractViewableDataModel(Object sourceBean) {
-        changeFirer = new RowDataChangeSupport(sourceBean);
-    }
 
     //MODIFIES: this
-    //EFFECTS: add a new property change listener to this that will be notified
+    //EFFECTS: add a new data change listener to this that will be notified
     //when the specified property has changed
     public void addDataChangeListener(String propertyName, DataViewer listener) {
         changeFirer.addTableDataModelListener(propertyName, listener);
     }
 
+    //MODIFIES: this
+    //EFFECTS: add a new data change listener for every property
     public void addDataChangeListener(DataViewer listener) {
         changeFirer.addTableDataModelListener(listener);
     }
 
+    //MODIFIES: this
+    //EFFECTS: remove this as data change listener from the specified property data change listener list
     public void removeListener(String propertyName, DataViewer listener) {
         changeFirer.removeTableModelListener(propertyName, listener);
     }
 
-    public void removeGeneralListener(DataViewer listener) {
-        changeFirer.removeTableModelListener(RowDataChangeSupport.GENERAL, listener);
-    }
 
+    //MODIFIES: this
+    //EFFECTS: remove this as data change listener from all properties
     public void removeListener(DataViewer listener) {
         changeFirer.removeTableModelListener(listener);
     }
 
+    //MODIFIES: this
+    //EFFECTS: add this as a listener that will be notified only when updatedEvent was fired
     public void addUpdateListener(DataViewer listener) {
         changeFirer.addUpdateDataModelListener(listener);
     }
 
-    public void addPropertyChangeListener(PropertyChangeListener listener) {
-        changeFirer.addPropertyChangeListener(listener);
-    }
 
     public void addPropertyChangeListener(String property, PropertyChangeListener listener) {
         changeFirer.addPropertyChangeListener(property, listener);
     }
 
 
-//    public abstract List<TableEntryConvertibleModel> getEntryModels();
-
-
-//    public void entryRemoved(String category, TableEntryConvertibleModel o) {
-//        changeFirer.fireRemovalEvent(category, o);
-//    }
-//
-//    public void entryAdded(String category, TableEntryConvertibleModel o) {
-//        changeFirer.fireAdditionEvent(category, o);
-//    }
 
 
 

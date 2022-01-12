@@ -65,13 +65,13 @@ public class FilterBox extends JComboBox implements DataViewer {
 
 
     @Override
-    public void entryRemoved(ViewableTableEntryConvertibleModel entry) {
-        entry.removeListener(this);
-        removeItem(entry.toString());
+    public void entryRemoved(ViewableTableEntryConvertibleModel removed) {
+        removed.removeListener(this);
+        removeItem(removed.toString());
     }
 
     @Override
-    public void entryRemoved(DataFactory source, List<? extends ViewableTableEntryConvertibleModel> list) {
+    public void entryRemoved(DataFactory source, List<? extends ViewableTableEntryConvertibleModel> removed) {
 
     }
 
@@ -81,14 +81,14 @@ public class FilterBox extends JComboBox implements DataViewer {
     }
 
     @Override
-    public void entryAdded(ViewableTableEntryConvertibleModel entry) {
-        entry.addDataChangeListener(this);
+    public void entryAdded(ViewableTableEntryConvertibleModel added) {
+        added.addDataChangeListener(this);
         if (getItemCount() == 1 && getItemAt(0).equals(EMPTY)) {
             removeItemAt(0);
             addItem(ALL);
             addItem(TYPE_MANUALLY);
         }
-        addItem(entry.toString());
+        addItem(added.toString());
     }
 
     @Override
@@ -97,7 +97,7 @@ public class FilterBox extends JComboBox implements DataViewer {
     }
 
     @Override
-    public void entryAdded(List<? extends ViewableTableEntryConvertibleModel> list) {
+    public void entryAdded(List<? extends ViewableTableEntryConvertibleModel> added) {
 
     }
 
@@ -124,7 +124,7 @@ public class FilterBox extends JComboBox implements DataViewer {
     }
 
     @Override
-    public void updated(ViewableTableEntryConvertibleModel source, String property, Object o1, Object o2) {
+    public void updated(ViewableTableEntryConvertibleModel source, String property, Object old, Object newProperty) {
 
     }
 

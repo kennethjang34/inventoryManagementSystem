@@ -9,18 +9,11 @@ import java.awt.event.MouseEvent;
 import java.util.List;
 
 
+
+//Table with the last column filled with JButtons
 public class ButtonTable extends ToolTipEnabledTable {
 
-//    Inventory inventory;
-    //Maybe you don't need it
-//    private String category = null;
-//    private String item = null;
-
-//    //REQUIRES: columnNames length must be one bigger than that of data's each row
-//    public ButtonTable(List<Object[]> data, String[] columnNames, ActionListener actionListener, String buttonLabel) {
-//
-//    }
-
+    //when enabled, the table will allow the user to manually change table data
     private boolean editingEnabled;
 
 
@@ -48,8 +41,9 @@ public class ButtonTable extends ToolTipEnabledTable {
     }
 
 
-    public ButtonTable(AbstractTableDataFactory model, String buttonColumnName, String category) {
-        setModel(new ButtonTableModel(model, buttonColumnName, category));
+    //
+    public ButtonTable(AbstractTableDataFactory factory, String buttonColumnName, String category) {
+        setModel(new ButtonTableModel(factory, buttonColumnName, category));
         setDefaultRenderer(JButton.class, ButtonColumnRenderer.getInstance());
         addMouseListener(new MouseAdapter() {
             @Override
@@ -90,16 +84,6 @@ public class ButtonTable extends ToolTipEnabledTable {
     }
 
 
-    //EFFECTS: return selected row data
-    public Object[] getSelectedRowData() {
-        ButtonTableModel model = (ButtonTableModel)getModel();
-        int index = getSelectedRow();
-        if (index < 0) {
-            return null;
-        }
-        return model.getRow(convertRowIndexToModel(index));
-    }
-
     public void setButtonAction(AbstractAction action) {
         ButtonTableModel tableModel = (ButtonTableModel)getModel();
         tableModel.setButtonAction(action);
@@ -111,23 +95,19 @@ public class ButtonTable extends ToolTipEnabledTable {
         return tableModel.findRow(object);
     }
 
-    public int findModelRowIndex(Object object, int columnBasisIndex) {
-        ButtonTableModel tableModel = (ButtonTableModel)getModel();
-        return tableModel.findRowIndex(object, columnBasisIndex);
-    }
-
     //return the index of the column of the table model whose name corresponds to the argument
     public int findColumnModelIndex(String columnName) {
         ButtonTableModel tableModel = (ButtonTableModel)getModel();
         return tableModel.findColumn(columnName);
     }
 
+    //not used
     public void setBaseColumnIndex(int index) {
         ButtonTableModel tableModel = (ButtonTableModel)getModel();
         tableModel.setBaseColumnIndex(index);
-
     }
 
+    //each entry will be given a new button
     public void addDataWithNewButton(List<? extends ViewableTableEntryConvertibleModel> entries) {
         ButtonTableModel tableModel = (ButtonTableModel)getModel();
         tableModel.addRowsWithDataList(entries);

@@ -73,6 +73,9 @@ There were many things to be improved that I couldn't deal with due to lack of t
 As this project was done in a limited time period, I couldn't make the best GUI design I can make. 
 GUI design is still very intuitive and easy to use, but each panel might look simple as I only used basic design of Java Swing components.
 
+Documentations also remain to be improved.
+As GUI parts were developed intensively for a short time of period, so some methods lack documentations.
+
 
 In terms of the design of the application, I wish I had more time to work on refactoring RowDataChangeSupport class and DataViewer interface.
 RowDataChangeSupport and DataViewer were first created to implement observer pattern among model, view, controller. 

@@ -8,28 +8,35 @@ import java.util.List;
 //!!!!!!!!!tight coupling among methods
 
 public interface DataViewer {
-    void entryRemoved(ViewableTableEntryConvertibleModel o);
+    //called when an entry of a data factory is removed.
+    void entryRemoved(ViewableTableEntryConvertibleModel removed);
 
+    //called when a list of  entries of a data factory(source) is removed.
+    void entryRemoved(DataFactory source, List< ? extends ViewableTableEntryConvertibleModel> removed);
 
-    void entryRemoved(DataFactory source, List< ? extends ViewableTableEntryConvertibleModel> list);
-
+    //called when an entry of a data factory(source) is removed.
     void entryRemoved(DataFactory source, ViewableTableEntryConvertibleModel removed);
 
-
+    //called when a list of  entries of a data factory is removed.
     void entryRemoved(List<? extends ViewableTableEntryConvertibleModel> removed);
 
-    void entryAdded(ViewableTableEntryConvertibleModel o);
+    //called when a new entry is added to the data factory
+    void entryAdded(ViewableTableEntryConvertibleModel added);
 
+
+    //called when a new entry is added to the data factory (source)
     void entryAdded(DataFactory source, ViewableTableEntryConvertibleModel added);
 
-    void entryAdded(List<? extends ViewableTableEntryConvertibleModel> list);
+    //called when a list of new entries is added to the data factory
+    void entryAdded(List<? extends ViewableTableEntryConvertibleModel> added);
 
 
-//    void entryUpdated(Object o1, Object o2);
-
+    //the updated methods are for when the data factory itself implements ViewableTableEntryConvertibleModel.
     void updated(ViewableTableEntryConvertibleModel updatedEntry);
 
-    void updated(ViewableTableEntryConvertibleModel source, String property, Object o1, Object o2);
+    //source: updated data factory
+    //property: changed property name
+    void updated(ViewableTableEntryConvertibleModel source, String property, Object old, Object newProperty);
 
     void updated(ViewableTableEntryConvertibleModel source, Object old, Object newObject);
 

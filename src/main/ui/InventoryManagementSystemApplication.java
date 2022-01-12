@@ -28,20 +28,20 @@ import java.time.LocalDate;
 import java.util.List;
 
 //An application that manages an inventory/warehouse
+//implements MVC architecture using mainly observer pattern.
 public class InventoryManagementSystemApplication extends JFrame implements JsonConvertible, ActionListener, DataViewer, PropertyChangeListener {
+    //These Image related fields: image, imagePath, description are not used currently anymore.
+    //The application used to display an image of my dog when started.
     private Image image;
     private String imagePath = "./data/seol.gif";
+    private String description = "WELCOMEEEEEE!";
+    //store the current file of data this program is storing.
+    //only admin portion will be updated automatically.
     private JSONObject jsonData;
     private static final String fileLocation = "./data/inventory_management_system.json";
-    private String description = "WELCOMEEEEEE!";
-    public static final int WIDTH = 1100;
-    public static final int HEIGHT = 850;
-    private boolean login;
     //tabbed pane is only for application panels. Login panel won't have any tabs on it
     private JTabbedPane tabbedPane;
-//    private LoginPanel loginPanel;
-//    private LedgerPanel ledgerPanel;
-//    private AdminViewPanel adminPanel;
+    //each controller will set up the corresponding view class
     private AdminController adminController;
     private InventoryController inventoryController;
     private LedgerController ledgerController;
@@ -51,18 +51,20 @@ public class InventoryManagementSystemApplication extends JFrame implements Json
     private Inventory inventory;
     private JPanel mainPanel;
     private static InventoryManagementSystemApplication application;
-
+    //implements singleton pattern
     public static Component getApplication() {
         return application;
     }
 
+
     @Override
-    public void entryRemoved(ViewableTableEntryConvertibleModel o) {
+    public void entryRemoved(ViewableTableEntryConvertibleModel removed) {
 
     }
 
+
     @Override
-    public void entryRemoved(DataFactory source, List<? extends ViewableTableEntryConvertibleModel> list) {
+    public void entryRemoved(DataFactory source, List<? extends ViewableTableEntryConvertibleModel> removed) {
 
     }
 
@@ -76,10 +78,10 @@ public class InventoryManagementSystemApplication extends JFrame implements Json
 
     }
 
-
+    //change and save jsonData so that the newly created account is directly saved into the file this application is based on
     @Override
-    public void entryAdded(ViewableTableEntryConvertibleModel o) {
-        if (o instanceof Admin.LoginAccount) {
+    public void entryAdded(ViewableTableEntryConvertibleModel added) {
+        if (added instanceof Admin.LoginAccount) {
             if (jsonData == null) {
                 jsonData = new JSONObject();
             }
@@ -94,7 +96,7 @@ public class InventoryManagementSystemApplication extends JFrame implements Json
     }
 
     @Override
-    public void entryAdded(List<? extends ViewableTableEntryConvertibleModel> list) {
+    public void entryAdded(List<? extends ViewableTableEntryConvertibleModel> added) {
 
     }
 
@@ -104,7 +106,7 @@ public class InventoryManagementSystemApplication extends JFrame implements Json
     }
 
     @Override
-    public void updated(ViewableTableEntryConvertibleModel source, String property, Object o1, Object o2) {
+    public void updated(ViewableTableEntryConvertibleModel source, String property, Object old, Object newProperty) {
 
     }
 
@@ -113,14 +115,13 @@ public class InventoryManagementSystemApplication extends JFrame implements Json
 
     }
 
-
+    //Each enum will be used to match menu item with the corresponding task
     public enum MenuItemList {
         SAVE, LOAD, QUIT, LOGIN, LOGOUT, SEARCH
     }
 
     //EFFECTS: create a new application program
     private InventoryManagementSystemApplication() {
-        login = false;
         try {
             FileLoader fileLoader = new FileLoader(fileLocation);
             JSONObject jsonObject = fileLoader.load();
@@ -223,6 +224,7 @@ public class InventoryManagementSystemApplication extends JFrame implements Json
         }
     }
 
+    //EFFECTS: overrite the current file with the new JSONObject
     public void save(JSONObject jsonObject) {
         try {
             Writer writer = new Writer(fileLocation);
@@ -425,7 +427,9 @@ public class InventoryManagementSystemApplication extends JFrame implements Json
 
 
 
-
+    //MODIFIES: inventory, ledger, and their panels as well as the tabbed pane.
+    //EFFECTS: will reset this application so that the user will see an empty inventory without pre-loaded data.
+    //The admin panel will be deactivated rather than re-created
     public void reset() {
         getContentPane().removeAll();
         setVisible(false);
@@ -445,6 +449,9 @@ public class InventoryManagementSystemApplication extends JFrame implements Json
         setVisible(true);
     }
 
+    //called when a user has logged in or logged out.
+    //MODIFIES: this
+    //activates or deactivates the admin panel tab of the pane based on the access given to the current user.
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
         if (evt.getSource() == admin) {

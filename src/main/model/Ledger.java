@@ -43,7 +43,7 @@ public class Ledger extends AbstractTableDataFactory implements JsonConvertible,
     }
 
     @Override
-    public void entryRemoved(DataFactory source, List<? extends ViewableTableEntryConvertibleModel> list) {
+    public void entryRemoved(DataFactory source, List<? extends ViewableTableEntryConvertibleModel> removed) {
 
     }
 
@@ -59,9 +59,9 @@ public class Ledger extends AbstractTableDataFactory implements JsonConvertible,
 
     //for new item
     @Override
-    public void entryAdded(ViewableTableEntryConvertibleModel o) {
-        if (o instanceof Item) {
-            Item item = (Item) o;
+    public void entryAdded(ViewableTableEntryConvertibleModel added) {
+        if (added instanceof Item) {
+            Item item = (Item) added;
             item.addDataChangeListener(this);
         }
     }
@@ -90,7 +90,7 @@ public class Ledger extends AbstractTableDataFactory implements JsonConvertible,
     }
 
     @Override
-    public void updated(ViewableTableEntryConvertibleModel source, String property, Object o1, Object o2) {
+    public void updated(ViewableTableEntryConvertibleModel source, String property, Object old, Object newProperty) {
 
     }
 

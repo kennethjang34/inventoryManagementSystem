@@ -89,12 +89,12 @@ public class Item extends TableEntryConvertibleDataFactory implements JsonConver
     }
 
     @Override
-    public void entryRemoved(ui.table.ViewableTableEntryConvertibleModel o) {
+    public void entryRemoved(ui.table.ViewableTableEntryConvertibleModel removed) {
 
     }
 
     @Override
-    public void entryRemoved(DataFactory source, List<? extends ViewableTableEntryConvertibleModel> list) {
+    public void entryRemoved(DataFactory source, List<? extends ViewableTableEntryConvertibleModel> removed) {
 
     }
 
@@ -104,7 +104,7 @@ public class Item extends TableEntryConvertibleDataFactory implements JsonConver
     }
 
     @Override
-    public void entryAdded(ui.table.ViewableTableEntryConvertibleModel o) {
+    public void entryAdded(ui.table.ViewableTableEntryConvertibleModel added) {
 
     }
 
@@ -114,7 +114,7 @@ public class Item extends TableEntryConvertibleDataFactory implements JsonConver
     }
 
     @Override
-    public void entryAdded(List<? extends ViewableTableEntryConvertibleModel> list) {
+    public void entryAdded(List<? extends ViewableTableEntryConvertibleModel> added) {
 
     }
 
@@ -126,18 +126,18 @@ public class Item extends TableEntryConvertibleDataFactory implements JsonConver
     }
 
     @Override
-    public void updated(ui.table.ViewableTableEntryConvertibleModel source, String property, Object o1, Object o2) {
+    public void updated(ui.table.ViewableTableEntryConvertibleModel source, String property, Object old, Object newProperty) {
         Product product = (Product) source;
         Product.DataList dataType = Product.DataList.valueOf(property);
         switch (dataType) {
             case ID:
-                productIDChange(product, (String)o1, (String)o2);
+                productIDChange(product, (String) old, (String) newProperty);
                 break;
             case LOCATION:
-                productLocationChanged(product, (String) o1, (String) o2);
+                productLocationChanged(product, (String) old, (String) newProperty);
                 break;
             case COST:
-                productCostChanged(product, (Double) o1, (Double) o2);
+                productCostChanged(product, (Double) old, (Double) newProperty);
                 break;
 //            case PRICE:
 //

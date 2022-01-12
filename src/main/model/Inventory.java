@@ -528,7 +528,7 @@ public class Inventory extends AbstractTableDataFactory implements JsonConvertib
     }
 
     @Override
-    public void entryRemoved(DataFactory source, List<? extends ViewableTableEntryConvertibleModel> list) {
+    public void entryRemoved(DataFactory source, List<? extends ViewableTableEntryConvertibleModel> removed) {
 
     }
 
@@ -540,7 +540,7 @@ public class Inventory extends AbstractTableDataFactory implements JsonConvertib
     }
 
     @Override
-    public void entryAdded(ui.table.ViewableTableEntryConvertibleModel o) {
+    public void entryAdded(ui.table.ViewableTableEntryConvertibleModel added) {
     }
 
     @Override
@@ -549,7 +549,7 @@ public class Inventory extends AbstractTableDataFactory implements JsonConvertib
     }
 
     @Override
-    public void entryAdded(List<? extends ViewableTableEntryConvertibleModel> list) {
+    public void entryAdded(List<? extends ViewableTableEntryConvertibleModel> added) {
 
     }
 
@@ -559,7 +559,7 @@ public class Inventory extends AbstractTableDataFactory implements JsonConvertib
     }
 
     @Override
-    public void updated(ui.table.ViewableTableEntryConvertibleModel source, String property, Object o1, Object o2) {
+    public void updated(ui.table.ViewableTableEntryConvertibleModel source, String property, Object o1, Object newProperty) {
         if (source instanceof Item) {
             Item item = (Item) source;
             Item.ColumnNames dataType = Item.ColumnNames.valueOf(property);
@@ -570,7 +570,7 @@ public class Inventory extends AbstractTableDataFactory implements JsonConvertib
                         return;
                     }
                     item.removeListener(old);
-                    categories.get(o2).addItem(item);
+                    categories.get(newProperty).addItem(item);
 //                    item.addDataChangeListener(categories.get(o2));
                     //Need to make it so that category notifies the listener directly
 //                    changeFirer.fireUpdateEvent(ITEM, source, o1, o2);
