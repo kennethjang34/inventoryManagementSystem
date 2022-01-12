@@ -74,7 +74,7 @@ As this project was done in a limited time period, I couldn't make the best GUI 
 GUI design is still very intuitive and easy to use, but each panel might look simple as I only used basic design of Java Swing components.
 
 Documentations also remain to be improved.
-As GUI parts were developed intensively for a short time of period, so some methods lack documentations.
+As GUI parts were developed intensively for a short time of period, some methods lack documentations.
 
 
 In terms of the design of the application, I wish I had more time to work on refactoring RowDataChangeSupport class and DataViewer interface.
