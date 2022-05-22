@@ -2,6 +2,9 @@
 
 ## A system that manages remaining stocks of a business as well as many functions that can facilitate business owners running their companies.
 
+Demo Video: https://youtu.be/7IzVImG-z-M
+
+
 _This project was started as a school project of UBC CS 210 course (2021 Winter). Except for those specified for marking purpose (ex. Storing data in JSON format, displaying at least one graphical component when started, etc.),
 All the features of the application were never specified by anyone else other than the author. Apart from loadFile method of FileLoader class and writer class' JSONObject.toString(indentFactor) line in persistence package, 
 which were provided by the instructor, the author implements the features of the application and write their codes._
