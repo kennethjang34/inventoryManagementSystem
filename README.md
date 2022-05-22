@@ -2,7 +2,7 @@
 
 ## A system that manages remaining stocks of a business as well as many functions that can facilitate business owners running their companies.
 
-Demo Video: https://youtu.be/7IzVImG-z-M
+Demo Video: https://youtu.be/Ky5jwdRnsoU
 
 
 _This project was started as a school project of UBC CS 210 course (2021 Winter). Except for those specified for marking purpose (ex. Storing data in JSON format, displaying at least one graphical component when started, etc.),
