@@ -1,4 +1,4 @@
-# Inventory management system
+# Inventory management system (Invengers)
 
 ## A system that manages remaining stocks of a business as well as many functions that can facilitate business owners running their companies.
 
